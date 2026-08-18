@@ -1,0 +1,1231 @@
+package Main;
+
+import java.awt.*;
+import java.awt.GradientPaint;
+
+import Item.DeathTotemManager;
+import Item.DropItem;
+import java.util.ArrayList;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import World.DomainManager;
+
+import Item.Item;
+import Item.ItemManager;
+import Item.ItemStack;
+import Entitas.monster;
+import World.WorldSystem;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
+
+import World.HouseManager;
+import World.RainDrop;
+import World.WorldSystem;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import Entitas.player;
+import Object.Barang;
+import SFX.MusicManager;
+import UI.BackpackUI;
+import UI.MobIndexUI;
+import UI.PlayerStatUI;
+import UI.UICommandButton;
+import bahan.KeyHandlerObj;
+import bahan.TileM;
+import Entitas.DarkMerchant;
+import Entitas.DialogNode;
+import Entitas.Entity;
+import Entitas.MonsterBatu;
+import Entitas.NPC;
+import Entitas.WeaponDealer;
+import Main.AsetSetter;
+import javax.imageio.ImageIO;
+import javax.sound.sampled.LineUnavailableException;
+import javax.swing.JPanel;
+import javax.swing.event.AncestorListener;
+
+public class GamePanel extends JPanel implements Runnable{
+	public boolean showDebug = true; // koordinat
+	public boolean dialogOn = false;
+	public String dialogText = "";
+	public Entity currentNPC = null;
+	public Map<String, DialogNode> dialogMap = new HashMap<>();
+	public boolean chatMode = false;
+	public String chatInput = "";
+	public int chatTimer = 0; // durasi tampil
+	
+	public DeathTotemManager deathTotemManager;
+	public Entitas.PlayerSpeechBubble speechBubble;
+	
+	// grafik warna
+	// Sunset / golden hour atmosphere
+	public boolean sunsetMode = true;
+	public float sunsetIntensity = 0.2f; // 0.0 = off, 0.3 = kuat banget
+	public UI.DeathScreenUI deathScreenUI;
+	
+	// drop item
+	public ArrayList<DropItem> drops = new ArrayList<>();
+	
+	// npc
+	public WeaponDealer weaponDealer;
+	
+	public HouseManager houseManager;
+	
+	public DomainManager domainManager;
+	
+	// music
+	public MusicManager music = new MusicManager();
+	private MusicState lastMusicState = null; // untuk detect perubahan state BGM
+
+	// ===== BGM CONFIG =====
+	// NEW: state musik terpisah dari GameState, biar bisa bedain DOMAIN biasa vs BOSS
+	private enum MusicState { MENU, OUTSIDE, INSIDE, DOMAIN, BOSS }
+
+	// NEW: ganti nama file ini sesuai file audio kamu (taro di folder /SFX/)
+	private static final String MUSIC_MENU    = "Amber Road Glee.wav";
+	private static final String MUSIC_OUTSIDE = "Amber Road Glee.wav";
+	private static final String MUSIC_INSIDE  = "Amber Road Glee.wav";
+	private static final String MUSIC_DOMAIN  = "Umbrae Surgunt.wav";
+	
+	//backpack
+	public BackpackUI backpack;
+	
+	// Atmosper
+	public boolean darkMode = true;
+	public int darknessAlpha = 80; // 0–255 (semakin gede = makin gelap)
+	
+	public UI.MainMenu mainMenu;
+	public PlayerStatUI statUI;
+	
+	public WorldSystem world;
+
+	final int originalTileSize = 16;
+	public final int scale = 3;
+	public final int tileSize = originalTileSize * scale;
+	public final int maxScreenColumn = 16;
+	public final int maxScreenRow = 12;
+	public final int screenWidth = tileSize * maxScreenColumn;
+	public final int screenHeight = tileSize * maxScreenRow;
+	// interior
+	public final int maxWorldCol = 700;
+	public final int maxWorldRow = 700;
+	public final int worldWidth = tileSize * maxWorldCol;
+	public final int worldHeight = tileSize * maxWorldRow;
+
+	public boolean inspectOn = false;
+	public Entity inspectedNPC = null;
+	
+	public boolean debugCollision = true;
+	RainDrop[] rain;
+	
+	int FPS = 40;
+	public WorldObject objCol = new WorldObject();
+	public KeyHandler KeyH = new KeyHandler();
+
+	TerrainMusic.land land = new TerrainMusic.land();
+	Thread gameThread;
+	public Collision colision = new Collision(this);
+
+	public AsetSetter AS = new AsetSetter(this);
+	public player player = new player(this,KeyH);
+	
+
+	public Barang obj[]= new Barang[10];
+	public Entity npc [] = new Entity[10];
+	public Entity monsters [] = new Entity[20];
+	
+	//UI Field Death totem aka sung jin woo
+	public UI.TotemUI totemUI;
+	public TileM tileM = new TileM(this);
+	
+	public MobIndexUI mobIndexUI = new MobIndexUI(this);
+	
+	
+	UICommandButton btnStay;
+	UICommandButton btnFollow;
+	UICommandButton btnCancel;
+	
+	public BufferedImage setup(String imageName) {
+	    BufferedImage image = null;
+	    try {
+	        image = ImageIO.read(
+	            getClass().getResourceAsStream("/Aset/" + imageName + ".png")
+	        );
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return image;
+	}
+
+	int pX = 100;
+	int pY = 100;
+	int pSpeed = 2;
+	
+	public GamePanel () throws IOException {
+		
+		ItemManager.get(); // PAKSA LOAD ITEM
+		this.setFocusable(true);
+		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+		this.setDoubleBuffered(true);
+		this.addKeyListener(KeyH);
+		this.setFocusable(true);
+		this.setFocusTraversalKeysEnabled(false);
+		this.player = new player(this, KeyH); // Player lahir
+		this.deathScreenUI = new UI.DeathScreenUI(this, player);
+	    this.statUI = new PlayerStatUI(this, player);
+	    this.deathTotemManager = new DeathTotemManager(this);
+		world = new WorldSystem();
+		world.hour = 6; // sore ke malam
+		mainMenu = new UI.MainMenu(this); 
+		houseManager = new HouseManager(this);
+		mainMenu.active = true;
+		domainManager = new DomainManager(this);
+		speechBubble = new Entitas.PlayerSpeechBubble(this);
+		totemUI = new UI.TotemUI(this);
+		SaveManager.init();
+		
+
+		
+		backpack = new BackpackUI(ItemManager.inventory);
+		this.addMouseWheelListener(backpack);
+		
+
+		rain = new RainDrop[100];
+		for (int i = 0; i < rain.length; i++) {
+		    rain[i] = new RainDrop(screenWidth, screenHeight);
+		}
+
+		// ===== SPAWN MONSTER =====
+		spawnSlime(0, 1000, 2300);
+
+		
+        spawnOrc(5,  1400, 2500);
+        spawnGolem(6, 750, 1300);
+
+		// KODE BARU YANG SUDAH DIPERBAIKI:
+		addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mousePressed(MouseEvent e) {
+		        if (deathScreenUI != null && deathScreenUI.visible) {
+		            deathScreenUI.handleClick(e);
+		            return;
+		        }
+
+		        // ── TAMBAHKAN INI ──
+		        if (statUI != null && statUI.visible) {
+		            statUI.handleClick(e);
+		            return; // jangan proses punch/backpack saat stat UI terbuka
+		        }
+		        if (mobIndexUI != null && mobIndexUI.visible) {
+		            mobIndexUI.handleMouseClick(e, GamePanel.this);
+		            return; // Kunci input agar tidak memicu pukul/buka backpack belakang layar
+		        }
+		        // ── SAMPAI SINI ──
+
+		        if (backpack != null && backpack.visible) {
+		            backpack.handleMouseClick(e, GamePanel.this);
+		        }
+
+		        if (!backpack.visible && e.getButton() == MouseEvent.BUTTON1) {
+		            if (player.isNotPunching()) {
+		                player.startPunch();
+		            }
+		        }
+		    }
+		});
+
+		// NEW: Mouse hover — SEBELUMNYA GAK PERNAH DI-REGISTER, makanya hover buat
+		// detail item BackpackUI, hover TotemUI, dan hover tombol inspect NPC gak pernah jalan.
+		addMouseMotionListener(new MouseAdapter() {
+		    @Override
+		    public void mouseMoved(MouseEvent e) {
+		        GamePanel.this.mouseMoved(e);
+		    }
+		});
+
+		
+		KeyH.gp  = this;
+	}
+	
+	private void spawnGolem(int index, int worldX, int worldY) {
+	    Entitas.Golem golem = new Entitas.Golem(this);
+	    golem.x = worldX;
+	    golem.y = worldY;
+	    golem.spawnX = worldX;
+	    golem.spawnY = worldY;
+
+	    // Tambahkan ini ↓
+	    int range = 300;
+	    golem.wanderArea = new Rectangle(
+	        worldX - range,
+	        worldY - range,
+	        range * 2,
+	        range * 2
+	    );
+
+	    monsters[index] = golem;
+	}
+	
+	public enum GameState {
+	    OUTSIDE,
+	    INSIDE,
+	    DIALOG,
+	    DOMAIN
+	    }
+
+	public GameState gameState = GameState.OUTSIDE;
+
+	public void setupGame() {
+	    AS.setObject();
+
+	    setupDialogs();
+
+	    AS.setNPC();
+
+	    weaponDealer = new WeaponDealer(this);
+	    weaponDealer.initDialog();  
+	    npc[3] = weaponDealer;  
+	    
+	    mainMenu.active = true;                        // matiin main menu
+	   // domainManager.forceEnterDomain("Tomb");         // langsung masuk domain
+	}
+	
+	public void drawSunsetOverlay(Graphics2D g2) {
+	    if (!sunsetMode) return;
+
+	    // Base warm amber overlay
+	    Composite old = g2.getComposite();
+	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, sunsetIntensity));
+	    g2.setColor(new Color(180, 90, 10)); // amber-oranye
+	    g2.fillRect(0, 0, screenWidth, screenHeight);
+
+	    // Top sky glow (lebih oranye di atas)
+	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, sunsetIntensity * 0.6f));
+	    GradientPaint skyGlow = new GradientPaint(
+	        0, 0, new Color(210, 100, 20, 200),
+	        0, screenHeight / 2, new Color(160, 70, 0, 0)
+	    );
+	    g2.setPaint(skyGlow);
+	    g2.fillRect(0, 0, screenWidth, screenHeight / 2);
+
+	    // Bottom shadow (bawah lebih gelap coklat)
+	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, sunsetIntensity * 0.4f));
+	    GradientPaint groundShadow = new GradientPaint(
+	        0, screenHeight * 0.6f, new Color(80, 30, 0, 0),
+	        0, screenHeight, new Color(60, 20, 0, 180)
+	    );
+	    g2.setPaint(groundShadow);
+	    g2.fillRect(0, 0, screenWidth, screenHeight);
+
+	    g2.setComposite(old);
+	}
+	
+	
+	
+	private void spawnSlime(int index, int worldX, int worldY) {
+	    Entitas.monster slime = new Entitas.monster(this);
+
+	    slime.x = worldX;
+	    slime.y = worldY;
+
+	    slime.spawnX = worldX;
+	    slime.spawnY = worldY;
+
+	    // 🔥 PERBAIKI & BESARIN AREA
+	    int range = 400; // sebelumnya 200 → sekarang lebih luas
+
+	    slime.wanderArea = new Rectangle(
+	        worldX - range,
+	        worldY - range,
+	        range * 2,
+	        range * 2
+	    );
+
+	    monsters[index] = slime;
+	}
+	
+	 private void spawnOrc(int index, int worldX, int worldY) {
+	        Entitas.Orc orc = new Entitas.Orc(this);
+	 
+	        orc.x = worldX;
+	        orc.y = worldY;
+	 
+	        int range = 350;
+	        orc.wanderArea = new java.awt.Rectangle(
+	            worldX - range,
+	            worldY - range,
+	            range * 2,
+	            range * 2
+	        );
+	 
+	        monsters[index] = orc;
+	    }
+	
+	public void drawDebugInfo(Graphics2D g2) {
+
+	    if (!showDebug) return;
+
+	    g2.setFont(new Font("Consolas", Font.PLAIN, 14));
+	    g2.setColor(Color.WHITE);
+
+	    int x = 20;
+	    int y = 30;
+
+	    g2.drawString("PLAYER WORLD COORD", x, y);
+	    y += 18;
+
+	    g2.drawString("X : " + player.x, x, y);
+	    y += 18;
+
+	    g2.drawString("Y : " + player.y, x, y);
+	}
+	
+	
+	public void initInspectButtons() {
+
+	    int w = 180;
+	    int h = 35;
+	    int x = screenWidth / 2 - w / 2;
+	    int y = screenHeight / 2 - 50;
+
+	    btnStay   = new UICommandButton(x, y, w, h, "Stay here");
+	    btnFollow = new UICommandButton(x, y + 45, w, h, "Follow me");
+	    btnCancel = new UICommandButton(x, y + 90, w, h, "Cancel follow");
+	}
+
+	
+	public void startThread () {
+		this.requestFocusInWindow();
+		gameThread = new Thread(this);
+		gameThread.start();
+	}
+
+	@Override
+	public void run() {
+			
+			double drawInterval = 1000000000/FPS; 
+			double delta = 0;
+			long lastTime = System.nanoTime();
+			long currentTime;
+			long timer = 0;
+			int drawCount = 0;
+			
+			while (gameThread != null) {
+				currentTime = System.nanoTime();
+			delta += (currentTime - lastTime) / drawInterval;
+			timer += (currentTime - lastTime);
+			lastTime = currentTime;
+			
+			if (delta >= 1) {
+				update();
+				repaint();
+				delta--;
+				drawCount++;
+				
+				if (timer >= 1000000000) {
+					drawCount = 0;
+					timer = 0;
+				}
+			}
+			}
+			}
+				
+		
+	public void play() throws LineUnavailableException {
+	//	playMusic(0);
+		
+	}
+	
+	public void playSE(String fileName) {
+	    if (music != null) {
+	        music.playSE(fileName); 
+	    }
+	}
+	public void playSE(String fileName, float volume) {
+        if (music != null) {
+            music.playSE(fileName, volume); 
+        }
+    }
+
+	// ===== NEW: BGM state machine =====
+	// Cek state musik saat ini, kalau beda dari state terakhir, ganti track.
+	private void updateMusic() {
+	    MusicState current;
+
+	    if (mainMenu.active) {
+	        current = MusicState.MENU;
+	    } else if (gameState == GameState.DOMAIN
+	            && domainManager.getBossSkeleton() != null
+	            && !domainManager.getBossSkeleton().isDead) {
+	        current = MusicState.BOSS;
+	    } else if (gameState == GameState.DOMAIN) {
+	        current = MusicState.DOMAIN;
+	    } else if (gameState == GameState.INSIDE) {
+	        current = MusicState.INSIDE;
+	    } else {
+	        current = MusicState.OUTSIDE;
+	    }
+
+	    if (current != lastMusicState) {
+	        switch (current) {
+	            case MENU:    music.play(MUSIC_MENU);    break;
+	            case OUTSIDE: music.play(MUSIC_OUTSIDE); break;
+	            case INSIDE:  music.play(MUSIC_INSIDE);  break;
+	            case DOMAIN:  music.play(MUSIC_DOMAIN);  break; 
+	        }
+	        lastMusicState = current;
+	    }
+	}
+	
+	public void drawDarkOverlay(Graphics2D g2) {
+
+	    if (!darkMode) return;
+
+	    Composite old = g2.getComposite();
+
+	    g2.setComposite(
+	        AlphaComposite.getInstance(
+	            AlphaComposite.SRC_OVER,
+	            darknessAlpha / 255f
+	        )
+	    );
+
+	    g2.setColor(Color.BLACK);
+	    g2.fillRect(0, 0, screenWidth, screenHeight);
+
+	    g2.setComposite(old);
+	}
+
+	public void drawDialog(Graphics2D g2) {
+		 
+	    // ← TAMBAHAN: guard null supaya tidak crash
+	    if (currentNPC == null || currentNPC.currentDialog == null) {
+	        dialogOn = false;
+	        return;
+	    }
+	 
+	    int x = 30;
+	    int y = screenHeight - 180;
+	    int width = screenWidth - 60;
+	    int height = 150;
+	 
+	    g2.setColor(new java.awt.Color(0, 0, 0, 220));
+	    g2.fillRoundRect(x, y, width, height, 30, 30);
+	 
+	    g2.setColor(java.awt.Color.WHITE);
+	    g2.setStroke(new java.awt.BasicStroke(8));
+	    g2.drawRoundRect(x, y, width, height, 30, 30);
+	 
+	    g2.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 15));
+	    g2.setColor(java.awt.Color.WHITE);
+	 
+	    int textX = x + 25;
+	    int textY = y + 45;
+	 
+	    drawWrappedText(g2, currentNPC.currentDialog.text, textX, textY, width - 50);
+	 
+	    g2.setFont(new java.awt.Font("Dialog", java.awt.Font.PLAIN, 13));
+	    int optionY = y + 100;
+	    for (int i = 0; i < currentNPC.currentDialog.options.size(); i++) {
+	        g2.drawString(
+	            (i + 1) + ". " + currentNPC.currentDialog.options.get(i).text,
+	            textX, optionY
+	        );
+	        optionY += 24;
+	    }
+	}
+	
+	
+	private void drawWrappedText(Graphics2D g2, String text, int x, int y, int maxWidth) {
+
+	    FontMetrics fm = g2.getFontMetrics();
+	    String[] words = text.split(" ");
+	    String line = "";
+	    int lineHeight = fm.getHeight();
+
+	    for (String word : words) {
+	        if (fm.stringWidth(line + word) > maxWidth) {
+	            g2.drawString(line, x, y);
+	            line = word + " ";
+	            y += lineHeight;
+	        } else {
+	            line += word + " ";
+	        }}
+
+	    if (!line.isEmpty()) {
+	        g2.drawString(line, x, y);
+	    }}
+	private void resetDialogKeys() {
+	    KeyH.onePressed = false;
+	    KeyH.twoPressed = false;
+	    KeyH.threePressed = false;
+	    KeyH.interactPressed = false;
+	}
+
+	private void setupDialogs() {
+
+	    // NPC 1 : Penjaga Desa
+	    DialogNode guardRoot = new DialogNode("yoo dawg, im just a freaky npc here, youre so lucky to be a player :3");
+	    DialogNode guardWho = new DialogNode("Aku penjaga desa ini.");
+	    DialogNode guardJob = new DialogNode("Aku jaga supaya desa tetap aman.");
+	    
+	    // weapon dealer npc nih
+	    DialogNode dealerRoot = new DialogNode(
+	    	    "Yo! Need a weapon? You've come to the right place."
+	    	);
+	    	DialogNode dealerMore = new DialogNode(
+	    	    "Come back when I have more stock, soldier."
+	    	);
+	    	dealerRoot.addOption("What do you sell?", dealerMore);
+	    	dealerRoot.addOption("Nevermind.", null);
+	    	dealerMore.addOption("Got it, thanks.", null);
+
+
+	    dialogMap.put("guard", guardRoot);
+
+
+	    // NPC 2 : Orang Misterius 
+	    DialogNode mystRoot = new DialogNode("Keep humble...");
+	    DialogNode mystTruth = new DialogNode("He's our creator...");
+
+	    mystRoot.addOption("who's Lord K?", mystTruth);
+	    mystTruth.addOption("OHH...", null);
+
+	    dialogMap.put("mystic", mystRoot);
+
+
+	    // 
+	    DialogNode kidRoot = new DialogNode("This world belong to lord K");
+
+
+	    dialogMap.put("kid", kidRoot);
+	    
+	    DialogNode dealerRoots = new DialogNode(
+	            "Yo! Need a weapon? You've come to the right place."
+	        );
+	        DialogNode dealerStock = new DialogNode(
+	            "Right now I got swords, daggers, and a few bows. Take your pick."
+	        );
+	        DialogNode dealerBye = new DialogNode(
+	            "Alright, come back anytime soldier."
+	        );
+	     
+	        dealerRoot.addOption("What do you sell?",  dealerStock);
+	        dealerStock.addOption("Interesting...",    dealerBye);
+	        dealerStock.addOption("Nothing for me.",   dealerBye);
+	        dealerBye.addOption("Take care.",          null);
+	     
+	        dialogMap.put("weapondealer", dealerRoot);  // ← key harus sama dengan dialogId
+	}
+
+
+
+	public void update() {
+		updateMusic(); // NEW: cek & ganti BGM sesuai state, jalan tiap frame
+
+		if (deathScreenUI != null && player.isDeathAnimDone()) {
+		    deathScreenUI.visible = true;
+		}
+		if (mainMenu.active) { mainMenu.update(); return; }
+
+		world.update();
+		// Di bagian update(), setelah world.update()
+		int hour = world.hour;
+
+		float targetSunset;
+		if (hour >= 6 && hour <= 19) {
+		    targetSunset = 0.2f;
+		} else {
+		    targetSunset = 0.06f; // malam tetap ada sedikit warm tone, gak ilang total
+		}
+
+		// Transisi pelan-pelan, mirip darknessAlpha
+		float step = 0.001f; // makin kecil = makin lambat transisinya
+		if (sunsetIntensity < targetSunset) {
+		    sunsetIntensity = Math.min(sunsetIntensity + step, targetSunset);
+		} else if (sunsetIntensity > targetSunset) {
+		    sunsetIntensity = Math.max(sunsetIntensity - step, targetSunset);
+		}
+
+		sunsetMode = sunsetIntensity > 0.01f;
+		
+		// UPDATE MONSTER (HANYA SAAT OUTSIDE)
+		if (gameState == GameState.OUTSIDE) {
+		    for (int i = 0; i < monsters.length; i++) {
+		        if (monsters[i] != null) {
+		            if (!monsters[i].isDead || monsters[i] instanceof Entitas.Golem) {
+		                monsters[i].update();
+		            }
+		        }
+		    }
+		}
+ 
+		int targetAlpha = world.getTargetDarkness();
+
+		if (KeyH.yPressed) {
+		    backpack.visible = !backpack.visible;
+		    KeyH.yPressed = false;
+		}
+		// ── ESC: TotemUI prioritas pertama ──
+        if (KeyH.escPressed && totemUI != null && totemUI.visible) {
+            totemUI.handleEsc();
+            KeyH.escPressed = false;
+            return; // stop update frame ini
+        }
+		if (KeyH.tabPressed) { 
+		    statUI.visible = !statUI.visible; // Switch true ke false atau sebaliknya
+		    KeyH.tabPressed = false; // Reset agar tidak kedap-kedip
+		}
+		if (KeyH.mPressed) { 
+		    mobIndexUI.visible = !mobIndexUI.visible;
+		    KeyH.mPressed = false; // Reset agar tidak kedap-kedip
+		}
+
+		// TRANSISI HALUS
+		if (darknessAlpha < targetAlpha) darknessAlpha++;
+		else if (darknessAlpha > targetAlpha) darknessAlpha--;
+
+		darkMode = darknessAlpha > 0;
+
+		// AKTIFKAN DARK MODE SAAT ADA GELAP
+		darkMode = darknessAlpha > 0;
+
+
+		if (world.isRaining) {
+		    for (RainDrop r : rain) {
+		        r.update();
+		    }
+		}
+
+		if (KeyH.chatPressed) {
+		    chatMode = true;
+		    chatInput = "";
+		    KeyH.chatPressed = false;
+		}
+
+		// CHAT MODE
+		if (chatMode) {
+
+		    // BACKSPACE
+		    if (KeyH.backspacePressed && chatInput.length() > 0) {
+		        chatInput = chatInput.substring(0, chatInput.length() - 1);
+		        KeyH.backspacePressed = false;
+		    }
+
+		    // ENTER, KIRIM CHAT
+		    if (KeyH.enterPressed) {
+		        player.chatText = chatInput;
+		        player.chatTimer = 120; // 3 detik (FPS 40)
+
+		        chatInput = "";
+		        chatMode = false;
+
+		        KeyH.enterPressed = false;
+		        return;
+		    }
+
+		    // INPUT KARAKTER
+		    char c = KeyH.typedChar;
+		    if (c >= 32 && c <= 126 && chatInput.length() < 40) {
+		        chatInput += c;
+		    }
+		    KeyH.typedChar = 0;
+
+		    return; // STOP GAME SAAT CHAT
+		}
+		
+		// Di KeyHandler, tambah key F5
+		// Di GamePanel.update(), tambah:
+		if (KeyH.f5Pressed) {
+		    SaveManager.save(this, 1); // save ke slot 1
+		    KeyH.f5Pressed = false;
+		}
+
+	    //
+	    // 1. SAAT DIALOG AKTIF
+		if (dialogOn && currentNPC != null) {
+
+		    //ESC SELALU BISA KELUAR
+		    if (KeyH.escPressed) {
+		        dialogOn = false;
+
+		        currentNPC.isTalking = false;
+		        currentNPC.talkCooldown = 80; // 2 detik (FPS 40)
+		        currentNPC = null;
+
+		        KeyH.escPressed = false;
+		        resetDialogKeys();
+		        return;
+		    }
+
+		    int choice = -1;
+		    if (KeyH.onePressed)   choice = 0;
+		    if (KeyH.twoPressed)   choice = 1;
+		    if (KeyH.threePressed) choice = 2;
+
+		    //JIKA PLAYER NEKAN ANGKA
+		    if (choice != -1) {
+
+		        //OPSI TIDAK ADA → ABAIKAN
+		        if (choice >= currentNPC.currentDialog.options.size()) {
+		            resetDialogKeys();
+		            return;
+		        }
+
+		        //OPSI VALID
+		        DialogNode next =
+		            currentNPC.currentDialog.options.get(choice).next;
+
+		        if (next == null) {
+		            dialogOn = false;
+
+		            currentNPC.isTalking = false;
+		            currentNPC.talkCooldown = 80; // delay jalan lagi
+		            currentNPC = null;
+		        } else {
+		            currentNPC.currentDialog = next;
+		        }
+
+		        resetDialogKeys();
+		    }
+
+		    return; // STOP update saat dialog
+		}
+		//
+		// INSPECT NPC (KEY I)
+		if (KeyH.inspectPressed && !dialogOn) {
+
+		    Rectangle playerArea = player.getInteractArea();
+
+		    for (int i = 0; i < npc.length; i++) {
+		        if (npc[i] != null) {
+
+		            if (playerArea.intersects(npc[i].getInteractArea())) {
+
+		                inspectOn = true;
+		                inspectedNPC = npc[i];
+
+		                initInspectButtons();
+
+		                KeyH.inspectPressed = false;
+		                break;
+		            }
+		        }
+		    }
+		
+		}
+		if (inspectOn && inspectedNPC != null) {
+
+		    // 1. STAY
+		    if (KeyH.onePressed) {
+		        inspectedNPC.npcState = Entity.NPCState.STAY;
+		        inspectedNPC.followTarget = null;
+		        inspectOn = false;
+		    }
+
+		    // 2. FOLLOW
+		    if (KeyH.twoPressed) {
+		        inspectedNPC.npcState = Entity.NPCState.FOLLOW;
+		        inspectedNPC.followTarget = player;
+
+		        // INIT TRACKING
+		        inspectedNPC.lastTargetX = player.x;
+		        inspectedNPC.lastTargetY = player.y;
+		        inspectedNPC.followIdleTimer = 0;
+		        inspectedNPC.alreadyComplained = false;
+
+
+		        inspectOn = false;
+		    }
+
+
+		    // 3. CANCEL FOLLOW (BALIK KE IDLE)
+		    if (KeyH.threePressed) {
+		        inspectedNPC.npcState = Entity.NPCState.IDLE;
+		        inspectedNPC.followTarget = null;
+		        inspectOn = false;
+		    }
+
+		    // ESC → TUTUP PANEL
+		    if (KeyH.escPressed) {
+		        inspectOn = false;
+		    }
+
+		    resetDialogKeys();
+		    return;
+		}
+	    // 2. UPDATE NORMAL
+	    player.update();
+
+	    for (int i = 0; i < npc.length; i++) {
+	        if (npc[i] != null) {
+	            npc[i].update();
+	        }
+	    }
+
+	    //
+	    // 3. INTERAKSI NPC
+	    //
+	    if (KeyH.interactPressed) {
+
+	        Rectangle playerArea = player.getInteractArea();
+
+	        for (int i = 0; i < npc.length; i++) {
+	            if (npc[i] != null) {
+
+	                Rectangle npcArea = npc[i].getInteractArea();
+
+	                if (playerArea.intersects(npcArea)) {
+
+	                    dialogOn = true;
+
+	                    // beda dialog per NPC (opsional)
+	                    if (i == 0) {
+	                        dialogText = "yoo dawg, im just a freaky npc here, youre so lucky to be a player :3";
+	                    } else if (i == 1) {
+	                        dialogText = "hey Kid, keep humble...";
+	                    }
+	                    else if (i == 2) {
+	                    	dialogText = "this world belong to Lord K";
+	                    }
+
+	                    currentNPC = npc[i];
+
+	                    //INI YANG BIKIN NOLEH
+	                    currentNPC.facePlayer(player);
+	                    currentNPC.currentDialog = currentNPC.dialogRoot;
+	                    currentNPC.dialogRoot = dialogMap.get(currentNPC.dialogId);
+	                    currentNPC.currentDialog = currentNPC.dialogRoot;
+	                    
+	                    currentNPC.isTalking = true;
+	                    currentNPC.imgNum = 3; // STAND
+	                    currentNPC.animIndex = 0;
+	                    currentNPC.imgCount = 0;
+
+
+	                    KeyH.interactPressed = false;
+	                    break;
+	                }
+	            }
+	        }
+	    }
+
+	    houseManager.update();
+	    domainManager.update(); 
+	    
+	    if (deathTotemManager != null) {
+            deathTotemManager.update();
+        }
+	    if (speechBubble != null) {
+            speechBubble.update();
+        }
+	    if (totemUI != null) totemUI.update();
+
+	    if (gameState == GameState.DOMAIN && KeyH.escPressed) {
+	        // Kalau shop merchant lagi buka, ESC ditanganin checkMerchantInteract()
+	        // bukan di sini — jadi cek dulu
+	    	// ── ESC: TotemUI prioritas pertama ──
+	        if (KeyH.escPressed && totemUI != null && totemUI.visible) {
+	            totemUI.handleEsc();
+	            KeyH.escPressed = false;
+	            return; // stop update frame ini
+	        }
+	        DarkMerchant dm = domainManager.darkMerchant;
+	        boolean merchantBusy = dm != null && (dm.isShopOpen() || dm.isInDialog());
+	        if (!merchantBusy) {
+	            domainManager.exitDomain();
+	            KeyH.escPressed = false;
+	        }
+	    }
+	    
+	    
+	    if (gameState == GameState.DOMAIN) {
+	        darknessAlpha = 0;
+	        darkMode = false;
+	    }
+	    
+	     // ── TAMBAHAN 2: Trigger spawn pion saat player tekan tombol T ──
+            if (KeyH.tPressed) {
+                if (deathTotemManager != null) {
+                    deathTotemManager.trySpawn();
+                
+                KeyH.tPressed = false; // reset tombol agar tidak ke-spawn berkali-kali
+            }
+	    }
+	    // 4. LOGIKA RUMAH (TETAP)
+	    if (gameState == GameState.OUTSIDE) {
+	        tileM.checkHouseInteraction();
+	    }
+
+	    if (gameState == GameState.INSIDE && KeyH.escPressed) {
+	        houseManager.exitHouse();   // ← pakai ini, bukan exitHouse() lama
+	        KeyH.escPressed = false;
+	     // ── ESC: TotemUI prioritas pertama ──
+	        if (KeyH.escPressed && totemUI != null && totemUI.visible) {
+	            totemUI.handleEsc();
+	            KeyH.escPressed = false;
+	            return; // stop update frame ini
+	        }
+	    }
+	 // Saat INSIDE, matikan dark overlay
+	    if (gameState == GameState.INSIDE) {
+	        darknessAlpha = 0;
+	        darkMode = false;
+	    }
+	    
+	}
+
+
+	public void enterHouse() {
+	    gameState = GameState.INSIDE;
+
+	    if (!tileM.interiorLoaded) {
+	        tileM.loadInteriorFloor();
+	        tileM.loadInteriorObjects();
+	        tileM.interiorLoaded = true;
+	    }
+
+	    
+	    player.x = tileSize * 8;
+	    player.y = tileSize * 6;
+	}
+
+
+public void exitHouse() {
+    gameState = GameState.OUTSIDE;
+
+    // spawn di depan pintu rumah
+    player.x = 1100;
+    player.y = 900;
+}
+
+public void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    Graphics2D g2 = (Graphics2D) g;
+    if (mainMenu.active) { mainMenu.draw(g2); g2.dispose(); return; }
+
+    if (gameState == GameState.INSIDE) {
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0, 0, screenWidth, screenHeight);
+        houseManager.draw(g2);
+        player.draw(g2);
+        if (speechBubble != null) speechBubble.draw(g2);
+        if (totemUI != null && totemUI.visible) totemUI.draw(g2);
+        
+
+        // UI saat INSIDE
+        if (dialogOn) drawDialog(g2);
+        if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
+        if (statUI != null && statUI.visible) statUI.draw(g2);
+        if (mobIndexUI != null && mobIndexUI.visible) mobIndexUI.draw(g2, screenWidth, screenHeight, this);
+        drawDebugInfo(g2);
+        g2.setFont(new Font("Arial", Font.BOLD, 13));
+        g2.setColor(Color.RED);
+        g2.drawString(world.getTimeString(), 20, 40);
+        g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 0, 70);
+        
+    } else if (gameState == GameState.DOMAIN) {
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0, 0, screenWidth, screenHeight);
+
+        domainManager.drawBackground(g2);
+
+        // Y-sort semua entity
+        List<Entity> sortList = new ArrayList<>();
+        sortList.add(player);
+        for (Entitas.Skeleton sk : domainManager.getSkeletons()) {
+            if (sk != null) sortList.add(sk);
+        }
+        for (Entitas.Skeleton sk : domainManager.getRoomSkeletons()) {   // NEW
+            if (sk != null) sortList.add(sk);
+        }
+        if (domainManager.darkMerchant != null) {
+            sortList.add(domainManager.darkMerchant);
+        }
+        if (domainManager.getBossSkeleton() != null) {
+            sortList.add(domainManager.getBossSkeleton());
+        }
+
+        // ── TAMBAHAN: Masukkan minion ke list Y-Sort agar digambar di layar ──
+        if (deathTotemManager != null) {
+            for (Entity minion : deathTotemManager.getMinions()) {
+                if (minion != null) sortList.add(minion);
+            }
+        }
+        
+
+        sortList.sort((a, b) -> a.getSortY() - b.getSortY());
+        for (Entity e : sortList) {
+            e.draw(g2);
+        }
+        if (speechBubble != null) speechBubble.draw(g2);
+        if (totemUI != null && totemUI.visible) totemUI.draw(g2);
+
+        // UI merchant — setelah entity, biar overlay di atas segalanya
+        DarkMerchant dm = domainManager.darkMerchant;
+        if (dm != null) {
+            dm.drawDialogBox(g2);
+            dm.drawShopUI(g2);
+        }
+
+        // UI lain
+        if (dialogOn) drawDialog(g2);
+        if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
+        if (statUI != null && statUI.visible) statUI.draw(g2);
+        if (mobIndexUI != null && mobIndexUI.visible) mobIndexUI.draw(g2, screenWidth, screenHeight, this);
+        drawDebugInfo(g2);
+    
+    } else if (gameState == GameState.OUTSIDE) {
+        tileM.draw(g2);
+        
+        if (world.isRaining) {
+            for (RainDrop r : rain) r.draw(g2);
+        }
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) obj[i].draw(g2, this);
+        }
+        tileM.drawYSorted(g2, player, npc, monsters);
+        
+        if (deathTotemManager != null) {
+
+        }
+        
+        for (Entity n : npc) {
+            if (n != null) n.drawOverhead(g2);
+        }
+        
+        player.drawOverhead(g2);
+        if (speechBubble != null) speechBubble.draw(g2);
+        if (totemUI != null && totemUI.visible) totemUI.draw(g2);
+        drawDarkOverlay(g2);
+        drawSunsetOverlay(g2);
+
+        // UI saat OUTSIDE
+        if (dialogOn) drawDialog(g2);
+        if (inspectOn) drawInspectPanel(g2);
+        if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
+        if (statUI != null && statUI.visible) statUI.draw(g2);
+        if (mobIndexUI != null && mobIndexUI.visible) mobIndexUI.draw(g2, screenWidth, screenHeight, this);
+        drawDebugInfo(g2);
+
+        for (int i = 0; i < drops.size(); i++) {
+            DropItem d = drops.get(i);
+            int screenX = d.x - player.x + player.screenX;
+            int screenY = d.y - player.y + player.screenY;
+            g2.drawImage(d.item.icon, screenX, screenY, 32, 32, null);
+        }
+
+        g2.setFont(new Font("Arial", Font.BOLD, 13));
+        g2.setColor(Color.RED);
+        g2.drawString(world.getTimeString(), 650, 40);
+        g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 650, 70);
+    }
+    if (deathScreenUI != null) {
+        deathScreenUI.draw(g2);
+    }
+    g2.dispose();
+}
+	public void drawInspectPanel(Graphics2D g2) {
+
+	    int width = 260;
+	    int height = 200;
+	    int x = screenWidth / 2 - width / 2;
+	    int y = screenHeight / 2 - height / 2;
+
+	    // panel bg
+	    g2.setColor(new Color(0, 0, 0, 220));
+	    g2.fillRoundRect(x, y, width, height, 20, 20);
+
+	    // border
+	    g2.setColor(Color.WHITE);
+	    g2.drawRoundRect(x, y, width, height, 20, 20);
+
+	    g2.setFont(new Font("Dialog", Font.BOLD, 15));
+	    g2.drawString("NPC Command", x + 70, y + 30);
+
+	    g2.setFont(new Font("Dialog", Font.PLAIN, 13));
+
+	    btnStay.draw(g2);
+	    btnFollow.draw(g2);
+	    btnCancel.draw(g2);
+	}
+	
+	
+	public void mouseMoved(MouseEvent e) {
+	    // TotemUI hover — jalan selalu, ga perlu inspectOn
+	    if (totemUI != null && totemUI.visible) {
+	        totemUI.handleMouseMove(e);
+	    }
+
+	    // NEW: Backpack hover — detail item otomatis muncul pas mouse masuk area item,
+	    // dan ilang lagi pas mouse keluar dari area itemnya.
+	    if (backpack != null && backpack.visible) {
+	        backpack.handleMouseMove(e, this);
+	    }
+
+	    if (!inspectOn) return;
+
+	    int mx = e.getX();
+	    int my = e.getY();
+	    btnStay.hovered   = btnStay.contains(mx, my);
+	    btnFollow.hovered = btnFollow.contains(mx, my);
+	    btnCancel.hovered = btnCancel.contains(mx, my);
+	}
+	
+	
+	public void mousePressed(MouseEvent e) {
+	    // ── TotemUI: prioritas pertama, ga perlu inspectOn ──
+	    if (totemUI != null && totemUI.visible) {
+	        totemUI.handleMouseClick(e);
+	        return;
+	    }
+
+	    // ── BackpackUI ──
+	    if (backpack != null && backpack.visible) {
+	        backpack.handleMouseClick(e, this);
+	        return;
+	    }
+
+	    if (!inspectOn || inspectedNPC == null) return;
+
+	    int mx = e.getX();
+	    int my = e.getY();
+	    if (btnStay.contains(mx, my)) {
+	        inspectedNPC.npcState = Entity.NPCState.STAY;}
+	    if (btnFollow.contains(mx, my)) {
+	        inspectedNPC.npcState = Entity.NPCState.FOLLOW;
+	        inspectedNPC.followTarget = player;
+	   }
+	    if (statUI != null && statUI.visible) {
+	        statUI.handleClick(e);
+	    }
+
+	    if (btnCancel.contains(mx, my)) {
+	        inspectedNPC.npcState = Entity.NPCState.IDLE;
+	        inspectedNPC.followTarget = null;
+	 }
+	    if (statUI.visible && player.attributePoints > 0) {
+	        //cek area klik STR (contoh angka kasar, sesuaikan dengan koordinat draw mu)
+	        if(mx >= 130 && mx <= 160 && my >= 150 && my <= 170) {
+	             player.strength++;
+	             player.attributePoints--;
+	        }
+	        //cek area klik DEX
+	        if(mx >= 130 && mx <= 160 && my >= 180 && my <= 200) {
+	             player.dexterity++;
+	             player.attributePoints--;
+	        }
+	    }
+
+	    inspectOn = false;
+	}
+	
+}
