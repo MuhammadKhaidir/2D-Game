@@ -27,7 +27,7 @@ public class DomainManager {
     private RoomData nearDoorRoom = null; // buat nampilin hint "[E] Masuk ..." pas deket pintu
     
  // ── Debug: gambar kotak collision biar gampang nge-tune posisinya ──
-    private boolean showCollisionDebug = true; // ganti ke false kalau udah kelar nge-tune
+    private boolean showCollisionDebug = false; // ganti ke false kalau udah kelar nge-tune
     
  // ── Spawn Boss via Skeleton Key ──
     private final Rectangle bossSpawnAltar = new Rectangle(580 - 40, 190 - 40, 80, 80);
