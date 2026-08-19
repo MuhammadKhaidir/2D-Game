@@ -27,7 +27,7 @@ public class DomainManager {
     private RoomData nearDoorRoom = null; // buat nampilin hint "[E] Masuk ..." pas deket pintu
     
  // ── Debug: gambar kotak collision biar gampang nge-tune posisinya ──
-    private boolean showCollisionDebug = false; // ganti ke false kalau udah kelar nge-tune
+    private boolean showCollisionDebug = true; // ganti ke false kalau udah kelar nge-tune
     
  // ── Spawn Boss via Skeleton Key ──
     private final Rectangle bossSpawnAltar = new Rectangle(580 - 40, 190 - 40, 80, 80);
@@ -175,10 +175,12 @@ public class DomainManager {
             .setReturnPoint(895, 260)
             // TODO: koordinat di bawah cuma CONTOH — sesuaikan sama gambar BosSkeletonRoom.png,
             // pas gambar debug muncul, geser angkanya sampai pas nutup obstacle di background.
-            .addCollision(0,   0,   600, 40)   // dinding atas
-            .addCollision(0,   0,   40,  400)  // dinding kiri
-            .addCollision(560, 0,   40,  400)  // dinding kanan
-            .addCollision(0,   360, 600, 40)   // dinding bawah
+            .addCollision(0,   0,   1250, 250)   // dinding atas
+            .addCollision(0,   0,   80,  850)  // dinding kiri
+            .addCollision(1130, 0,   80,  850)  // dinding kanan
+            .addCollision(0,   750, 1250, 40)   // dinding bawah
+            .addCollision(350, 250, 45, 65)
+            .addCollision(820, 250, 45, 65)
         );
     }
 
@@ -242,7 +244,7 @@ public class DomainManager {
                     bossSpawnCountdownActive = false;
                     bossSkeleton = new SkeletonKing(gp);
                     bossSkeleton.x = 580;
-                    bossSkeleton.y = 190;
+                    bossSkeleton.y = 230;
                     bossSkeleton.beginSpawnAnimation();
                 }
             }
