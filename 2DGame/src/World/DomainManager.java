@@ -244,7 +244,7 @@ public class DomainManager {
                     bossSpawnCountdownActive = false;
                     bossSkeleton = new SkeletonKing(gp);
                     bossSkeleton.x = 580;
-                    bossSkeleton.y = 230;
+                    bossSkeleton.y = 250;
                     bossSkeleton.beginSpawnAnimation();
                 }
             }
