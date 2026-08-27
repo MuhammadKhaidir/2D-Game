@@ -395,18 +395,18 @@ public class BackpackUI implements MouseWheelListener {
 
     private String getItemDescriptionText(String itemName) {
         switch (itemName.toLowerCase()) {
-            case "log": return "A solid chunk of raw wood. Useful for crafting basic survival items or burning as campfire fuel.";
-            case "ore": return "Unrefined mineral rock rich in metal iron ore. Requires smelting in a hot furnace.";
+            case "log": return "A solid chunk of raw wood. Useful for crafting basic survival items or burning as campfire fuel, can be crafted.";
+            case "ore": return "Unrefined mineral rock rich in metal iron ore. Requires smelting in a hot furnace, can be crafted.";
             case "slime gel": return "A sticky, glowing gelatinous glob dropped by slimes. Gross, but chemically reactive.";
             case "sword": return "A standard iron sword forged by blacksmiths. Reliable blade for fighting off dangerous wildlife.";
-            case "axe": return "A sharp iron tool engineered for felling thick trees, though it splits skeleton skulls just fine.";
-            case "bone": return "A sturdy skeletal bone covered in crypt dust. Seems to hum with a weak, dark residual magic.";
-            case "skull": return "A hollow skull of a long-dead wanderer. Radiates an unsettling chill to whoever holds it.";
+            case "axe": return "A sharp iron tool engineered for felling thick trees, though it splits skeleton skulls just fine, can be crafted.";
+            case "bone": return "A sturdy skeletal bone covered in crypt dust. Seems to hum with a weak, dark residual magic, can be crafted.";
+            case "skull": return "A hollow skull of a long-dead wanderer. Radiates an unsettling chill to whoever holds it, can be crafted.";
             case "death totem": return "An ancient, forbidden relic that traps souls of slain foes. Press T to spawn them as minions.";
-            case "skeleton key": return "An old bony key carved from calcified remains. Looks like it unlocks a sealed dungeon gate.";
+            case "skeleton key": return "An old bony key carved from calcified remains. Looks like it awaken something terrifying.";
             case "bone sword": return "A lethal, dark-attributed sword crafted entirely out of hardened bones. High damage output.";
             case "helm": return "A protective iron helmet that shields the wearer's head from blunt strikes and falling debris.";
-            case "soul of skeleton": return "A faintly glowing soul torn from a fallen Skeleton King. Whispers of dark power linger within.";
+            case "soul of skeleton": return "A faintly glowing soul torn from a fallen Skeleton King. can be crafted,.";
             default: return "A mysterious artifact discovered on your journey. Its exact properties and uses are unknown.";
         }
     }
