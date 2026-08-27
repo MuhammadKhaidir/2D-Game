@@ -70,7 +70,6 @@ public class CapturedMob {
         storedHP = Math.min(storedHP + (int)(baseMaxHP * 0.01), maxHP);
     }
 
-    /** Stat attack saat ini berdasarkan level. */
     public int getCurrentAttack() {
         // ATK: +5% dari baseAttack per level di atas 1
         return (int)(baseAttack * (1.0 + 0.05 * (level - 1)));

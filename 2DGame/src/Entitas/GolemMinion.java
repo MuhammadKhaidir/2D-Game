@@ -163,7 +163,7 @@ public class GolemMinion extends Entity {
         else if (mdy > 0) direction = "down";
         else if (mdy < 0) direction = "up";
 
-        this.collisionOn = false;
+        this.collisionOn = true;
 
         // 1. Cek collision tile map/tembok
         if (gp.domainManager != null) {
