@@ -130,7 +130,7 @@ public TileM(GamePanel gp) {
 			tile[54] = new Tile();tile[55] = new Tile();tile[56] = new Tile();
 			tile[57] = new Tile();tile[58] = new Tile();tile[59] = new Tile();
 			tile[60] = new Tile();tile[61] = new Tile();tile[62] = new Tile();tile[63] = new Tile();tile[64] = new Tile();tile[65] = new Tile();
-			tile[66] = new Tile();tile[67] = new Tile();
+			tile[66] = new Tile();tile[67] = new Tile();tile[68] = new Tile();tile[69] = new Tile();tile[70] = new Tile();
 			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/latar/grass00.png"));//tile rumput
 			tile[0].collision = true;
 			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/latar/water01.png"));//
@@ -207,6 +207,8 @@ public TileM(GamePanel gp) {
 			tile[64].image = ImageIO.read(getClass().getResource("/latar/Road13.png"));
 			tile[65].image = ImageIO.read(getClass().getResource("/Aset/Rock1_grass_shadow_dark2.png"));
 			tile[66].image = ImageIO.read(getClass().getResource("/Aset/Bush.png"));
+			tile[68].image = ImageIO.read(getClass().getResource("/Aset/snow1.png"));
+			tile[67].image = ImageIO.read(getClass().getResource("/Aset/snow.png"));
 			// dst. tiap rumah baru = tile baru
 			
 			tile[14].collision = true;
@@ -265,17 +267,18 @@ public TileM(GamePanel gp) {
 	            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f));
 	            g2.setColor(Color.BLACK);
 
-	            int shadowOffsetX = 12;          // geser ke kanan
-	            int shadowScaleH  = (int)(height * 0.25f); // tinggi bayangan = 25% tinggi objek
+	            int shadowOffsetX = 5;          // geser ke kanan
+	            int shadowOffsetY = -30;           // geser ke bawah, TINGGAL ATUR INI
+	            int shadowScaleH  = (int)(height * 0.30f); // tinggi bayangan = 25% tinggi objek
 
 	            // Bayangan = oval gepeng di bawah kaki objek
 	            g2.fillOval(
 	                screenX + shadowOffsetX,
-	                screenY + height - shadowScaleH / 2,
-	                (int)(width * 0.75f),
+	                screenY + height - (shadowScaleH / 2) + shadowOffsetY,
+	                (int)(width * 0.90f),
 	                shadowScaleH
 	            );
-
+	            
 	            g2.setComposite(old);
 	        }
 
@@ -705,9 +708,10 @@ public TileM(GamePanel gp) {
 	        // ── RUINS BESAR ──
 	        {1300,2100,200,200,49,0,  0},
 	        
-	        // semak
-	        {1005,3175,100,100,66,0,  0},{1305,3110,100,100,66,0,  0},
-	        {990,3185,100,100,66,0,  0}
+	        // semak/Bush
+	        {1005,3175,100,100,66,0,  1},{1305,3110,100,100,66,0,  1},
+	        {985,3185,100,100,66,0,  1},{1325,3035,100,100,66,0,  1},
+	        {1020,3185,100,100,66,0,  1},{1350,3045,100,100,66,0,  1}
 
 	        // ── BARREL ──
 	        //{550,2280,30,40,64,0,     0},
