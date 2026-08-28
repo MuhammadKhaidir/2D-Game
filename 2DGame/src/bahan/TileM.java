@@ -206,6 +206,7 @@ public TileM(GamePanel gp) {
 			tile[64].image = ImageIO.read(getClass().getResource("/latar/Barrel Sprite.png"));
 			tile[64].image = ImageIO.read(getClass().getResource("/latar/Road13.png"));
 			tile[65].image = ImageIO.read(getClass().getResource("/Aset/Rock1_grass_shadow_dark2.png"));
+			tile[66].image = ImageIO.read(getClass().getResource("/Aset/Bush.png"));
 			// dst. tiap rumah baru = tile baru
 			
 			tile[14].collision = true;
@@ -703,6 +704,10 @@ public TileM(GamePanel gp) {
 
 	        // ── RUINS BESAR ──
 	        {1300,2100,200,200,49,0,  0},
+	        
+	        // semak
+	        {1005,3175,100,100,66,0,  0},{1305,3110,100,100,66,0,  0},
+	        {990,3185,100,100,66,0,  0}
 
 	        // ── BARREL ──
 	        //{550,2280,30,40,64,0,     0},
