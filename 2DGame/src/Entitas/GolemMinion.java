@@ -331,6 +331,7 @@ public class GolemMinion extends Entity {
         }
     }
 
+    
     /**
      * Helper buat manggil takeDamage yang signature-nya beda-beda
      * tergantung tipe musuhnya (Skeleton/Golem pakai 1 parameter,

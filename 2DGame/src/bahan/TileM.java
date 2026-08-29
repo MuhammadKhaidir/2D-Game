@@ -131,6 +131,7 @@ public TileM(GamePanel gp) {
 			tile[57] = new Tile();tile[58] = new Tile();tile[59] = new Tile();
 			tile[60] = new Tile();tile[61] = new Tile();tile[62] = new Tile();tile[63] = new Tile();tile[64] = new Tile();tile[65] = new Tile();
 			tile[66] = new Tile();tile[67] = new Tile();tile[68] = new Tile();tile[69] = new Tile();tile[70] = new Tile();
+			tile[71] = new Tile();tile[72] = new Tile();
 			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/latar/grass00.png"));//tile rumput
 			tile[0].collision = true;
 			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/latar/water01.png"));//
@@ -209,6 +210,7 @@ public TileM(GamePanel gp) {
 			tile[66].image = ImageIO.read(getClass().getResource("/Aset/Bush.png"));
 			tile[68].image = ImageIO.read(getClass().getResource("/Aset/snow1.png"));
 			tile[67].image = ImageIO.read(getClass().getResource("/Aset/snow.png"));
+			
 			// dst. tiap rumah baru = tile baru
 			
 			tile[14].collision = true;
@@ -699,6 +701,7 @@ public TileM(GamePanel gp) {
 	        {1220,1050,200,200,5,0,   0},{1300,1050,200,200,5,0,0},{1380,1050,200,200,5,0,0},{1460,1050,200,200,5,0,0},
 	        {1680,1050,200,200,5,0,   0},
 	        {980,1130,200,200,5,0,    0},{980,1210,200,200,5,0, 0},{980,1290,200,200,5,0, 0},
+	        
 
 	        // ── POHON DI LUAR BASE ──
 	        {1240,1880,240,240,10,0,  0},{1440,1980,240,240,10,0,0},{1130,2300,240,240,10,0,0},
@@ -711,7 +714,10 @@ public TileM(GamePanel gp) {
 	        // semak/Bush
 	        {1005,3175,100,100,66,0,  1},{1305,3110,100,100,66,0,  1},
 	        {985,3185,100,100,66,0,  1},{1325,3035,100,100,66,0,  1},
-	        {1020,3185,100,100,66,0,  1},{1350,3045,100,100,66,0,  1}
+	        {1020,3185,100,100,66,0,  1},{1350,3045,100,100,66,0,  1},
+	        {1040,3170,100,100,66,0,  1}
+	        
+	        
 
 	        // ── BARREL ──
 	        //{550,2280,30,40,64,0,     0},
