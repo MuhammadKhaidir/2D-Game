@@ -149,7 +149,7 @@ public class player extends Entity {
     int jumpCooldown = 0;
     final int JUMP_COOLDOWN_TIME = 40;
     public double baseSpeed = 2.5;
-    double sprintMultiplier = 2.0;
+    double sprintMultiplier = 20.0;
     
     // Stamina
     public int maxStamina = 500;
