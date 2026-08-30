@@ -210,6 +210,8 @@ public TileM(GamePanel gp) {
 			tile[66].image = ImageIO.read(getClass().getResource("/Aset/Bush.png"));
 			tile[68].image = ImageIO.read(getClass().getResource("/Aset/snow1.png"));
 			tile[67].image = ImageIO.read(getClass().getResource("/Aset/snow.png"));
+			tile[69].image = ImageIO.read(getClass().getResource("/Aset/Snowybush.png"));
+			tile[70].image = ImageIO.read(getClass().getResource("/Aset/Snowybush.png"));
 			
 			// dst. tiap rumah baru = tile baru
 			
@@ -710,7 +712,7 @@ public TileM(GamePanel gp) {
 
 	        // ── RUINS BESAR ──
 	        {1300,2100,200,200,49,0,  0},
-	        {1400,11000,200,200,50,0,  0},
+	        {1400,110000,200,200,50,0,  0},
 	        
 	        // semak/Bush
 	        {1005,3175,100,100,66,0,  1},{1305,3110,100,100,66,0,  1},
@@ -724,8 +726,7 @@ public TileM(GamePanel gp) {
 	        
 	        
 	        // Ice Biome
-	        {1410,1100,100,100,66,0,  1},{1420,11020,100,100,66,0,  1},
-	        {1400,11050,100,100,66,0,  1},{1420,11050,100,100,66,0,  1},
+	        {1415,11005,100,100,70,0,  1},{1500,11005,100,100,66,0,  1},
 	        
 	        
 
