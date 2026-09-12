@@ -753,8 +753,8 @@ public class Golem extends Entity {
             g2.fillRect(barX, barY, hpFill, barH);
         }
 
-        g2.setColor(Color.RED); 
-        g2.setStroke(new BasicStroke(2)); 
-        g2.drawRect(sx + solidArea.x, sy + solidArea.y, solidArea.width, solidArea.height);
+        //g2.setColor(Color.RED); 
+        //g2.setStroke(new BasicStroke(2)); 
+        //g2.drawRect(sx + solidArea.x, sy + solidArea.y, solidArea.width, solidArea.height);
     }
 }

@@ -169,7 +169,7 @@ public class GolemMinion extends Entity {
         if (gp.domainManager != null) {
             Rectangle next = new Rectangle(x + solidArea.x + mdx, y + solidArea.y + mdy, solidArea.width, solidArea.height);
             if (gp.domainManager.checkCollision(next)) {
-                this.collisionOn = false;
+                this.collisionOn = true;
             }
         }
 
@@ -498,14 +498,14 @@ public class GolemMinion extends Entity {
             g2.drawImage(charImg, sx, sy, drawSize, drawSize, null);
         }
 
-        // Tint ungu
-        if (state != MinionState.DEATH) {
-            Composite old = g2.getComposite();
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
-            g2.setColor(new Color(140, 80, 255));
-            g2.fillRect(sx, sy, drawSize, drawSize);
-            g2.setComposite(old);
-        }
+       // // Tint ungu
+  //      if (state != MinionState.DEATH) {
+       //     Composite old = g2.getComposite();
+          //  g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+        //    g2.setColor(new Color(140, 80, 255));
+        //    g2.fillRect(sx, sy, drawSize, drawSize);
+           // g2.setComposite(old);
+       // }
 
         // HP bar warna ungu
         if (state != MinionState.DEATH && life < maxLife) {
