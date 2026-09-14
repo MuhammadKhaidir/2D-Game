@@ -7,8 +7,7 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 public class Golem extends Entity {
-	
-    // ── Static sprite cache (shared ke GolemMinion) ──────────────────────
+
     public static BufferedImage[] S_dead = new BufferedImage[7];
     
     public static BufferedImage[] S_walkFront   = new BufferedImage[6];
@@ -38,7 +37,7 @@ public class Golem extends Entity {
     private static boolean imagesLoaded = false;
     
     private int deadFrameIndex  = 0, deadAnimTimer  = 0;
-    private static final double DEAD_DRAW_SCALE = 1.4; // sprite mati digedein 1.4x dari ukuran normal
+    private static final double DEAD_DRAW_SCALE = 1.0; // sprite mati digedein 1.4x dari ukuran normal
     private static final int    DEAD_OFFSET_X   = -3;  // geser ke kiri (px)
     private static final int    DEAD_OFFSET_Y   = 3;   // geser ke bawah (px)
     
@@ -138,11 +137,7 @@ public class Golem extends Entity {
     public int getSortY() {
         return this.y + solidArea.y + solidArea.height;
     }
-    
-    /**
-     * Target Golem liar = entity terdekat antara player dan pion GolemMinion aktif
-     * (kalau ada). Setara prioritasnya, murni jarak.
-     */
+
     private Entity findNearestThreat() {
         Entity nearest = gp.player;
         double minDist = distCenterToCenter(this, gp.player);
@@ -584,7 +579,11 @@ public class Golem extends Entity {
     private void finalizeDeath() {
         alive      = false;
         golemState = GolemState.DEAD;
-        isDead     = true;
+        // isDead SENGAJA gak di-set true di sini.
+        // Kalo di-set true, kemungkinan ada sistem lain (GamePanel / killMonster)
+        // yang ngecek isDead buat skip gambar, jadi mayatnya ilang instan
+        // pas animasi kelar — padahal maunya baru ilang pas respawn.
+        // Status "mati"-nya cukup diwakilin alive + golemState di file ini.
 
         if (gp.deathTotemManager != null) {
             gp.deathTotemManager.tryCapture(this);
@@ -752,9 +751,5 @@ public class Golem extends Entity {
             g2.setColor(new Color(200, 50, 50));
             g2.fillRect(barX, barY, hpFill, barH);
         }
-
-        //g2.setColor(Color.RED); 
-        //g2.setStroke(new BasicStroke(2)); 
-        //g2.drawRect(sx + solidArea.x, sy + solidArea.y, solidArea.width, solidArea.height);
     }
 }

@@ -208,7 +208,9 @@ public class GamePanel extends JPanel implements Runnable{
 
 		
         spawnOrc(5,  1400, 2500);
-        spawnGolem(6, 750, 1300);
+        spawnGolem(6, 1300, 3000);
+        spawnGolem(7, 1500, 3100);
+        spawnGolem(8, 2500, 3500);
 
 		// KODE BARU YANG SUDAH DIPERBAIKI:
 		addMouseListener(new MouseAdapter() {
@@ -254,6 +256,7 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		KeyH.gp  = this;
 	}
+
 	
 	private void spawnGolem(int index, int worldX, int worldY) {
 	    Entitas.Golem golem = new Entitas.Golem(this);
