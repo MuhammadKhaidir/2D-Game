@@ -548,13 +548,24 @@ public class Golem extends Entity {
     }
     
     private void updateWalkAnim() {
+
         walkAnimTimer++;
-        if (walkAnimTimer >= 8) { 
-            walkFrameIndex = (walkFrameIndex + 1) % 6; 
-            walkAnimTimer = 0; 
-            
+
+        if (walkAnimTimer >= 8) {
+
+            walkFrameIndex = (walkFrameIndex + 1) % 6;
+
+            walkAnimTimer = 0;
+
             if (walkFrameIndex == 2 || walkFrameIndex == 5) {
-                gp.playSE("GolemFootStep.wav");
+
+                // Cek jarak Golem ke player
+                double distance = distCenterToCenter(this, gp.player);
+
+                // Footstep hanya terdengar kalau Golem dekat player
+                if (distance <= 500) {
+                    gp.playSE("GolemFootStep.wav");
+                }
             }
         }
     }
