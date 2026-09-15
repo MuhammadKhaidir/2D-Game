@@ -195,9 +195,18 @@ public class GamePanel extends JPanel implements Runnable{
 
 		
 		backpack = new BackpackUI(ItemManager.inventory);
-		this.addMouseWheelListener(backpack);
 		
+		this.addMouseWheelListener(backpack);
 
+		this.addMouseWheelListener(e -> {
+		    if (domainManager != null) {
+		        domainManager.handleMerchantMouseWheel(
+		            e.getWheelRotation()
+		        );
+		    }
+		});
+		
+		
 		rain = new RainDrop[100];
 		for (int i = 0; i < rain.length; i++) {
 		    rain[i] = new RainDrop(screenWidth, screenHeight);
@@ -216,8 +225,13 @@ public class GamePanel extends JPanel implements Runnable{
 		addMouseListener(new MouseAdapter() {
 		    @Override
 		    public void mousePressed(MouseEvent e) {
-		        if (deathScreenUI != null && deathScreenUI.visible) {
-		            deathScreenUI.handleClick(e);
+
+		        // ── DARK MERCHANT SHOP ──
+		        if (domainManager != null
+		                && domainManager.darkMerchant != null
+		                && domainManager.darkMerchant.isShopOpen()) {
+
+		            domainManager.handleMerchantMouseClick(e);
 		            return;
 		        }
 
@@ -1163,6 +1177,16 @@ public void paintComponent(Graphics g) {
 	
 	
 	public void mouseMoved(MouseEvent e) {
+
+	    // ── DARK MERCHANT SHOP HOVER ──
+	    if (domainManager != null
+	            && domainManager.darkMerchant != null
+	            && domainManager.darkMerchant.isShopOpen()) {
+
+	        domainManager.handleMerchantMouseMove(e);
+	        return;
+	    }
+
 	    // TotemUI hover — jalan selalu, ga perlu inspectOn
 	    if (totemUI != null && totemUI.visible) {
 	        totemUI.handleMouseMove(e);

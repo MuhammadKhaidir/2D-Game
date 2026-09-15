@@ -627,10 +627,12 @@ public class DomainManager {
     private void checkMerchantInteract() {
         if (darkMerchant == null) return;
 
-        // ── Shop sedang terbuka ──────────────────────────────────────────────
+        // Shop terbuka:
+        // navigasi = mouse wheel
+        // beli = klik tombol BUY
+        // tutup = ESC
         if (darkMerchant.isShopOpen()) {
 
-            // ESC = tutup shop
             if (gp.KeyH.escPressed) {
                 darkMerchant.closeShop();
                 gp.KeyH.escPressed = false;
@@ -639,23 +641,30 @@ public class DomainManager {
             return;
         }
 
-        // ── Dialog sedang berjalan ───────────────────────────────────────────
+        // Dialog sedang berjalan
         if (darkMerchant.isInDialog()) {
             if (gp.KeyH.interactPressed) {
-                darkMerchant.onInteract(); // lanjut baris / buka shop
+                darkMerchant.onInteract();
                 gp.KeyH.interactPressed = false;
             }
             return;
         }
 
-        // ── Belum berinteraksi — cek jarak ──────────────────────────────────
+        // Belum berinteraksi — cek jarak
         if (!gp.KeyH.interactPressed) return;
-        int dist = (int) Math.hypot(darkMerchant.x - gp.player.x, darkMerchant.y - gp.player.y);
+
+        int dist = (int) Math.hypot(
+            darkMerchant.x - gp.player.x,
+            darkMerchant.y - gp.player.y
+        );
+
         if (dist < gp.tileSize * 2) {
             darkMerchant.onInteract();
             gp.KeyH.interactPressed = false;
         }
     }
+    
+    
     
     public void handleMerchantMouseClick(java.awt.event.MouseEvent e) {
         if (darkMerchant == null) return;
@@ -665,21 +674,20 @@ public class DomainManager {
             handleShopBuy();
         }
     }
-    
+
     public void handleMerchantMouseMove(java.awt.event.MouseEvent e) {
         if (darkMerchant == null) return;
         if (!darkMerchant.isShopOpen()) return;
 
         darkMerchant.handleMouseMove(e);
     }
-    
+
     public void handleMerchantMouseWheel(int rotation) {
         if (darkMerchant == null) return;
         if (!darkMerchant.isShopOpen()) return;
 
         darkMerchant.handleMouseWheel(rotation);
     }
-
     /**
      * Cek stok Bone & Skull, kurangi jika cukup, tambahkan item ke inventory.
      */
