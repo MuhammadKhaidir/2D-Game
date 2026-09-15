@@ -1,6 +1,7 @@
 package Entitas;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -15,6 +16,9 @@ public class DarkMerchant extends Entity {
     private int animTimer = 0;
     private boolean showImg1 = true;
     public int navCooldown = 0;
+    
+    private Rectangle buyButtonBounds = new Rectangle();
+    private boolean buyButtonHovered = false;
 
     // Icon item yang dijual
     private BufferedImage iconBoneSword;
@@ -102,6 +106,41 @@ public class DarkMerchant extends Entity {
         shopItems[0].icon = iconBoneSword;
         shopItems[1].icon = iconSkeletonKey;
     }
+    
+    public void handleMouseWheel(int rotation) {
+        if (!isShopOpen()) return;
+
+        if (rotation > 0) {
+            selectedIndex = Math.min(
+                shopItems.length - 1,
+                selectedIndex + 1
+            );
+        } else if (rotation < 0) {
+            selectedIndex = Math.max(
+                0,
+                selectedIndex - 1
+            );
+        }
+    }
+
+    public void handleMouseMove(MouseEvent e) {
+        if (!isShopOpen()) return;
+
+        buyButtonHovered = buyButtonBounds.contains(e.getPoint());
+    }
+
+    public boolean handleMouseClick(MouseEvent e) {
+        if (!isShopOpen()) return false;
+
+        if (e.getButton() == MouseEvent.BUTTON1 &&
+            buyButtonBounds.contains(e.getPoint())) {
+
+            return true;
+        }
+
+        return false;
+    }
+    
 
     @Override
     public void update() {
@@ -261,7 +300,7 @@ public class DarkMerchant extends Entity {
 
         int panelW = 480;
         int panelH = 300;
-        int panelX = gp.screenWidth  / 2 - panelW / 2;
+        int panelX = gp.screenWidth / 2 - panelW / 2;
         int panelY = gp.screenHeight / 2 - panelH / 2;
 
         // Background
@@ -277,32 +316,118 @@ public class DarkMerchant extends Entity {
         // Judul
         g2.setFont(new Font("Monospaced", Font.BOLD, 15));
         g2.setColor(new Color(200, 120, 255));
-        String title = "✦  Dark Merchant's Wares  ✦";
+
+        String title = "✦ Dark Merchant's Wares ✦";
         FontMetrics fmT = g2.getFontMetrics();
-        g2.drawString(title, panelX + panelW / 2 - fmT.stringWidth(title) / 2, panelY + 30);
+
+        g2.drawString(
+            title,
+            panelX + panelW / 2 - fmT.stringWidth(title) / 2,
+            panelY + 30
+        );
 
         // Garis bawah judul
         g2.setColor(new Color(140, 60, 200, 160));
-        g2.drawLine(panelX + 20, panelY + 38, panelX + panelW - 20, panelY + 38);
+        g2.drawLine(
+            panelX + 20,
+            panelY + 38,
+            panelX + panelW - 20,
+            panelY + 38
+        );
 
-        // Daftar item
+        // Item
         for (int i = 0; i < shopItems.length; i++) {
-            drawShopItem(g2, shopItems[i], i, panelX, panelY + 50 + i * 110);
+            drawShopItem(
+                g2,
+                shopItems[i],
+                i,
+                panelX,
+                panelY + 50 + i * 95
+            );
         }
 
-        // Footer
+        // BUY button
+        int buttonW = 100;
+        int buttonH = 32;
+
+        int buttonX = panelX + panelW - buttonW - 20;
+        int buttonY = panelY + panelH - buttonH - 25;
+
+        buyButtonBounds.setBounds(
+            buttonX,
+            buttonY,
+            buttonW,
+            buttonH
+        );
+
+        // Hover
+        if (buyButtonHovered) {
+            g2.setColor(new Color(180, 80, 255));
+            g2.fillRoundRect(
+                buttonX,
+                buttonY,
+                buttonW,
+                buttonH,
+                10,
+                10
+            );
+
+            g2.setColor(Color.WHITE);
+        } else {
+            g2.setColor(new Color(100, 40, 160));
+            g2.fillRoundRect(
+                buttonX,
+                buttonY,
+                buttonW,
+                buttonH,
+                10,
+                10
+            );
+
+            g2.setColor(new Color(220, 180, 255));
+        }
+
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(
+            buttonX,
+            buttonY,
+            buttonW,
+            buttonH,
+            10,
+            10
+        );
+        g2.setStroke(new BasicStroke(1));
+
+        // BUY text
+        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
+
+        String buyText = "BUY";
+        FontMetrics fmBuy = g2.getFontMetrics();
+
+        g2.drawString(
+            buyText,
+            buttonX + buttonW / 2 - fmBuy.stringWidth(buyText) / 2,
+            buttonY + 21
+        );
+
+        // Instruction
         g2.setFont(new Font("Monospaced", Font.ITALIC, 10));
         g2.setColor(new Color(120, 100, 160));
-        String footer = "W/S  Navigate    E  Buy    ESC  Leave";
+
+        String footer = "Scroll to select    Click BUY to purchase    ESC Leave";
+
         FontMetrics fmF = g2.getFontMetrics();
-        g2.drawString(footer,
+
+        g2.drawString(
+            footer,
             panelX + panelW / 2 - fmF.stringWidth(footer) / 2,
-            panelY + panelH - 12);
+            panelY + panelH - 7
+        );
     }
 
     private void drawShopItem(Graphics2D g2, ShopItem item, int index, int px, int py) {
         boolean selected = (index == selectedIndex);
-        int rowH = 100;
+        int rowH = 85;
         int rowW = 440;
         int rx   = px + 20;
 

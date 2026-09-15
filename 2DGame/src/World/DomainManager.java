@@ -629,31 +629,13 @@ public class DomainManager {
 
         // ── Shop sedang terbuka ──────────────────────────────────────────────
         if (darkMerchant.isShopOpen()) {
-            // Navigasi atas/bawah dengan cooldown
-            if (darkMerchant.navCooldown == 0) {
-                if (gp.KeyH.upPressed) {
-                    darkMerchant.selectedIndex = Math.max(0, darkMerchant.selectedIndex - 1);
-                    darkMerchant.navCooldown = 12;
-                }
-                if (gp.KeyH.downPressed) {
-                    darkMerchant.selectedIndex = Math.min(
-                        darkMerchant.shopItems.length - 1,
-                        darkMerchant.selectedIndex + 1);
-                    darkMerchant.navCooldown = 12;
-                }
-            }
-
-            // E = beli
-            if (gp.KeyH.interactPressed) {
-                handleShopBuy();
-                gp.KeyH.interactPressed = false;
-            }
 
             // ESC = tutup shop
             if (gp.KeyH.escPressed) {
                 darkMerchant.closeShop();
                 gp.KeyH.escPressed = false;
             }
+
             return;
         }
 
@@ -673,6 +655,29 @@ public class DomainManager {
             darkMerchant.onInteract();
             gp.KeyH.interactPressed = false;
         }
+    }
+    
+    public void handleMerchantMouseClick(java.awt.event.MouseEvent e) {
+        if (darkMerchant == null) return;
+        if (!darkMerchant.isShopOpen()) return;
+
+        if (darkMerchant.handleMouseClick(e)) {
+            handleShopBuy();
+        }
+    }
+    
+    public void handleMerchantMouseMove(java.awt.event.MouseEvent e) {
+        if (darkMerchant == null) return;
+        if (!darkMerchant.isShopOpen()) return;
+
+        darkMerchant.handleMouseMove(e);
+    }
+    
+    public void handleMerchantMouseWheel(int rotation) {
+        if (darkMerchant == null) return;
+        if (!darkMerchant.isShopOpen()) return;
+
+        darkMerchant.handleMouseWheel(rotation);
     }
 
     /**

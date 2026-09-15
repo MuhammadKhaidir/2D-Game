@@ -114,6 +114,7 @@ public class KeyHandler implements KeyListener {
         
         // ◄ BARU: Matikan status tPressed saat tombol dilepas
         if(code == KeyEvent.VK_T) tPressed = false; 
+        if(code == KeyEvent.VK_T) escPressed = false; 
         
         if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
             shiftPressed = false;
