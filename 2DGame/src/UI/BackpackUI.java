@@ -394,21 +394,76 @@ public class BackpackUI implements MouseWheelListener {
     }
 
     private String getItemDescriptionText(String itemName) {
+
         switch (itemName.toLowerCase()) {
-            case "log": return "A solid chunk of raw wood. Useful for crafting basic survival items or burning as campfire fuel, can be crafted.";
-            case "ore": return "Unrefined mineral rock rich in metal iron ore. Requires smelting in a hot furnace, can be crafted.";
-            case "slime gel": return "A sticky, glowing gelatinous glob dropped by slimes. Gross, but chemically reactive.";
-            case "sword": return "A standard iron sword forged by blacksmiths. Reliable blade for fighting off dangerous wildlife.";
-            case "axe": return "A sharp iron tool engineered for felling thick trees, though it splits skeleton skulls just fine, can be crafted.";
-            case "bone": return "A sturdy skeletal bone covered in crypt dust. Seems to hum with a weak, dark residual magic, can be crafted.";
-            case "skull": return "A hollow skull of a long-dead wanderer. Radiates an unsettling chill to whoever holds it, can be crafted.";
-            case "death totem": return "An ancient, forbidden relic that traps souls of slain foes. Press T to spawn them as minions.";
-            case "skeleton key": return "An old bony key carved from calcified remains. Looks like it awaken something terrifying.";
-            case "bone sword": return "A lethal, dark-attributed sword crafted entirely out of hardened bones. High damage output.";
-            case "helm": return "A protective iron helmet that shields the wearer's head from blunt strikes and falling debris.";
-            case "soul of skeleton": return "A faintly glowing soul torn from a fallen Skeleton King. can be crafted,.";
-            default: return "A mysterious artifact discovered on your journey. Its exact properties and uses are unknown.";
+
+            case "log":
+                return "A solid chunk of raw wood. Useful for crafting basic "
+                     + "survival items or burning as campfire fuel. "
+                     + "Can be crafted.";
+
+            case "ore":
+                return "Unrefined iron ore rich in metal. Requires smelting "
+                     + "in a hot furnace. Can be crafted.";
+
+            case "slime gel":
+                return "A sticky, glowing gelatinous glob dropped by slimes. "
+                     + "Gross, but chemically reactive.";
+
+            case "sword":
+                return "A standard iron sword forged by blacksmiths. "
+                     + "Reliable weapon for combat. "
+                     + "Damage: [DAMAGE] | Crit Chance: [CRIT]% "
+                     + "| Crit Damage: [CRIT_DAMAGE]% "
+                     + "| Equipable: Weapon.";
+
+            case "axe":
+                return "A sharp iron tool engineered for felling thick trees. "
+                     + "Can also be used as a weapon. "
+                     + "Damage: [DAMAGE] | Crit Chance: [CRIT]% "
+                     + "| Equipable: Weapon. Can be crafted.";
+
+            case "bone":
+                return "A sturdy skeletal bone covered in crypt dust. "
+                     + "Seems to hum with weak, dark residual magic. "
+                     + "Can be crafted.";
+
+            case "skull":
+                return "A hollow skull of a long-dead wanderer. "
+                     + "Radiates an unsettling chill to whoever holds it. "
+                     + "Can be crafted.";
+
+            case "death totem":
+                return "An ancient, forbidden relic that traps the souls "
+                     + "of slain foes. Press T to spawn them as minions.";
+
+            case "skeleton key":
+                return "An old bony key carved from calcified remains. "
+                     + "Looks like it could awaken something terrifying.";
+
+            case "bone sword":
+                return "A lethal, dark-attributed sword crafted entirely "
+                     + "from hardened bones. "
+                     + "Damage: [DAMAGE] | Crit Chance: [CRIT]% "
+                     + "| Crit Damage: [CRIT_DAMAGE]% "
+                     + "| Equipable: Weapon.";
+
+            case "helm":
+                return "A protective iron helmet that shields the wearer's "
+                     + "head from blunt strikes and falling debris. "
+                     + "Defense: [DEFENSE] | Damage Reduction: [REDUCTION]% "
+                     + "| Equipable: Helmet.";
+
+            case "soul of skeleton":
+                return "A faintly glowing soul torn from a fallen Skeleton King. "
+                     + "Contains traces of dark energy. Can be crafted.";
+
+            default:
+                return "A mysterious artifact discovered on your journey. "
+                     + "Its exact properties and uses are unknown.";
+
         }
+
     }
 
     private void drawWrappedString(Graphics2D g2, String text, int x, int y, int wrapWidth, int lineHeight) {
