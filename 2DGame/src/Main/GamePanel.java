@@ -221,42 +221,52 @@ public class GamePanel extends JPanel implements Runnable{
         spawnGolem(7, 1500, 3100);
         spawnGolem(8, 2500, 3500);
 
-		// KODE BARU YANG SUDAH DIPERBAIKI:
-		addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mousePressed(MouseEvent e) {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
 
-		        // ── DARK MERCHANT SHOP ──
-		        if (domainManager != null
-		                && domainManager.darkMerchant != null
-		                && domainManager.darkMerchant.isShopOpen()) {
+                // ── DEATH SCREEN ──
+                // Harus paling atas supaya klik Respawn benar-benar diterima
+                if (deathScreenUI != null && deathScreenUI.visible) {
+                    deathScreenUI.handleClick(e);
+                    return;
+                }
 
-		            domainManager.handleMerchantMouseClick(e);
-		            return;
-		        }
+                // ── DARK MERCHANT SHOP ──
+                if (domainManager != null
+                        && domainManager.darkMerchant != null
+                        && domainManager.darkMerchant.isShopOpen()) {
 
-		        // ── TAMBAHKAN INI ──
-		        if (statUI != null && statUI.visible) {
-		            statUI.handleClick(e);
-		            return; // jangan proses punch/backpack saat stat UI terbuka
-		        }
-		        if (mobIndexUI != null && mobIndexUI.visible) {
-		            mobIndexUI.handleMouseClick(e, GamePanel.this);
-		            return; // Kunci input agar tidak memicu pukul/buka backpack belakang layar
-		        }
-		        // ── SAMPAI SINI ──
+                    domainManager.handleMerchantMouseClick(e);
+                    return;
+                }
 
-		        if (backpack != null && backpack.visible) {
-		            backpack.handleMouseClick(e, GamePanel.this);
-		        }
+                // ── PLAYER STAT UI ──
+                if (statUI != null && statUI.visible) {
+                    statUI.handleClick(e);
+                    return;
+                }
 
-		        if (!backpack.visible && e.getButton() == MouseEvent.BUTTON1) {
-		            if (player.isNotPunching()) {
-		                player.startPunch();
-		            }
-		        }
-		    }
-		});
+                // ── MOB INDEX UI ──
+                if (mobIndexUI != null && mobIndexUI.visible) {
+                    mobIndexUI.handleMouseClick(e, GamePanel.this);
+                    return;
+                }
+
+                // ── BACKPACK ──
+                if (backpack != null && backpack.visible) {
+                    backpack.handleMouseClick(e, GamePanel.this);
+                    return;
+                }
+
+                // ── PUNCH ──
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    if (player.isNotPunching()) {
+                        player.startPunch();
+                    }
+                }
+            }
+        });
 
 		// NEW: Mouse hover — SEBELUMNYA GAK PERNAH DI-REGISTER, makanya hover buat
 		// detail item BackpackUI, hover TotemUI, dan hover tombol inspect NPC gak pernah jalan.
