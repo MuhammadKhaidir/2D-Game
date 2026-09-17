@@ -1,6 +1,8 @@
 package UI;
 
 import java.awt.*;
+import java.util.Map;
+import java.util.HashMap;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -198,24 +200,26 @@ public class BackpackUI implements MouseWheelListener {
      * sinkron — gak ada lagi versi "basi" dari frame render sebelumnya yang
      * bikin celah ke-detect sebagai keluar area.
      */
-    private Rectangle calcTooltipRect(Rectangle slot, int screenW, int screenH) {
-        int tw = 230;
-        int th = 180;
+    private Rectangle calcTooltipRect(
+            Rectangle slot, int screenW, int screenH) {
 
-        // DEMPET: nempel langsung di tepi slot, malah overlap 2px biar
-        // beneran nol celah (gak ada garis batas yang bisa "keloncat").
+        int tw = 260;
+        int th = 300;
+
         int tx = slot.x + slot.width - 2;
-        boolean placedLeft = false;
+
         if (tx + tw > screenW - 5) {
-            tx = slot.x - tw + 2; // gak muat di kanan, taro nempel di kiri slot
-            placedLeft = true;
+            tx = slot.x - tw + 2;
         }
+
         if (tx < 5) tx = 5;
 
         int ty = slot.y;
+
         if (ty + th > screenH - 5) {
             ty = screenH - th - 5;
         }
+
         if (ty < 5) ty = 5;
 
         return new Rectangle(tx, ty, tw, th);
@@ -226,8 +230,13 @@ public class BackpackUI implements MouseWheelListener {
      * Posisi dihitung via calcTooltipRect() biar konsisten sama hit-test di
      * handleMouseMove().
      */
-    private void drawItemTooltip(Graphics2D g2, int screenW, int screenH) {
-        if (hoveredItem == null || hoveredItem.item == null || hoveredSlotRect == null) {
+    private void drawItemTooltip(
+            Graphics2D g2, int screenW, int screenH) {
+
+        if (hoveredItem == null
+                || hoveredItem.item == null
+                || hoveredSlotRect == null) {
+
             tooltipRect = null;
             deleteBtnRect = null;
             minusBtnRect = null;
@@ -237,48 +246,165 @@ public class BackpackUI implements MouseWheelListener {
             return;
         }
 
-        tooltipRect = calcTooltipRect(hoveredSlotRect, screenW, screenH);
+        tooltipRect = calcTooltipRect(
+                hoveredSlotRect, screenW, screenH);
+
         int tx = tooltipRect.x;
         int ty = tooltipRect.y;
         int tw = tooltipRect.width;
         int th = tooltipRect.height;
 
-        g2.setColor(new Color(0, 0, 0, 100));
-        g2.fillRect(tx + 4, ty + 4, tw, th);
+        // Shadow
+        g2.setColor(new Color(0, 0, 0, 120));
+        g2.fillRect(tx + 5, ty + 5, tw, th);
+
+        // Main panel
         g2.setColor(colorSubPanel);
         g2.fillRect(tx, ty, tw, th);
+
         g2.setColor(colorBorder);
         g2.setStroke(new BasicStroke(2));
         g2.drawRect(tx, ty, tw, th);
 
-        int iconSize = 36;
-        int iconX = tx + 12;
-        int iconY = ty + 12;
-        g2.drawImage(hoveredItem.item.icon, iconX, iconY, iconSize, iconSize, null);
+        // =========================
+        // HEADER ITEM
+        // =========================
 
-        int textX = iconX + iconSize + 10;
+        int padding = 12;
+        int iconSize = 40;
+        int iconX = tx + padding;
+        int iconY = ty + padding;
+
+        g2.drawImage(
+                hoveredItem.item.icon,
+                iconX, iconY,
+                iconSize, iconSize, null);
+
+        int textX = iconX + iconSize + 12;
+
         g2.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2.setColor(colorAccent);
-        g2.drawString(truncateText(hoveredItem.item.name, 15), textX, iconY + 14);
+        g2.drawString(
+                truncateText(hoveredItem.item.name, 17),
+                textX, iconY + 16);
 
         g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
-        g2.setColor(new Color(170, 170, 170));
-        g2.drawString("Quantity: " + hoveredItem.amount, textX, iconY + 30);
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawString(
+                "Quantity: " + hoveredItem.amount,
+                textX, iconY + 32);
 
-        int divY = iconY + iconSize + 10;
+        // Divider
+        int dividerY = ty + 68;
+
         g2.setColor(new Color(120, 100, 80));
-        g2.drawLine(tx + 10, divY, tx + tw - 10, divY);
+        g2.drawLine(
+                tx + padding,
+                dividerY,
+                tx + tw - padding,
+                dividerY);
 
-        g2.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        // =========================
+        // DESCRIPTION PANEL
+        // =========================
+
+        int descX = tx + padding;
+        int descY = dividerY + 18;
+        int descW = tw - padding * 2;
+
+        g2.setColor(colorAccent);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 11));
+        g2.drawString("DESCRIPTION", descX, descY);
+
+        int descriptionStartY = descY + 17;
+
         g2.setColor(Color.WHITE);
-        String descText = getItemDescriptionText(hoveredItem.item.name);
-        drawWrappedString(g2, descText, tx + 12, divY + 18, tw - 24, 14);
+        g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
+
+        drawWrappedString(
+                g2,
+                getItemDescriptionText(hoveredItem.item.name),
+                descX,
+                descriptionStartY,
+                descW,
+                13);
+
+        // =========================
+        // STATS PANEL
+        // =========================
+
+        ItemStats stats = getItemStats(hoveredItem.item.name);
+
+        int statsX = tx + padding;
+        int statsY = ty + 142;
+        int statsW = tw - padding * 2;
+
+        statsY += 8;
+
+        if (stats != null) {
+
+            statsY += 20;
+
+            if (stats.damage != null) {
+                statsY = drawStatRow(
+                        g2, "[+]", "DAMAGE",
+                        String.valueOf(stats.damage),
+                        statsX, statsY, statsW);
+            }
+
+            if (stats.defense != null) {
+                statsY = drawStatRow(
+                        g2, "[+]", "DEFENSE",
+                        String.valueOf(stats.defense),
+                        statsX, statsY, statsW);
+            }
+
+            if (stats.critChance != null) {
+                statsY = drawStatRow(
+                        g2, "[%]", "CRIT CHANCE",
+                        stats.critChance + "%",
+                        statsX, statsY, statsW);
+            }
+
+            if (stats.critDamage != null) {
+                statsY = drawStatRow(
+                        g2, "[%]", "CRIT DAMAGE",
+                        stats.critDamage + "%",
+                        statsX, statsY, statsW);
+            }
+
+            if (stats.damageReduction != null) {
+                statsY = drawStatRow(
+                        g2, "[%]", "DMG REDUCTION",
+                        stats.damageReduction + "%",
+                        statsX, statsY, statsW);
+            }
+
+
+        } else {
+
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
+            g2.setColor(new Color(170, 170, 170));
+            g2.drawString(
+                    "No equipment stats available.",
+                    statsX, statsY + 22);
+        }
+
+        // =========================
+        // DELETE BUTTON
+        // =========================
 
         int btnY = ty + th - 32;
+
         if (!showDeleteConfirm) {
-            int btnW = 84, btnH = 20;
-            int btnX = tx + 12;
-            deleteBtnRect = new Rectangle(btnX, btnY, btnW, btnH);
+
+            int btnW = 84;
+            int btnH = 20;
+            int btnX = tx + padding;
+
+            deleteBtnRect = new Rectangle(
+                    btnX, btnY, btnW, btnH);
+
             minusBtnRect = null;
             plusBtnRect = null;
             confirmBtnRect = null;
@@ -286,57 +412,83 @@ public class BackpackUI implements MouseWheelListener {
 
             g2.setColor(new Color(120, 30, 25));
             g2.fillRect(btnX, btnY, btnW, btnH);
+
             g2.setColor(colorBorder);
             g2.drawRect(btnX, btnY, btnW, btnH);
+
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
             g2.setColor(Color.WHITE);
-            g2.drawString("[ Delete ]", btnX + 6, btnY + 14);
+            g2.drawString(
+                    "[ Delete ]",
+                    btnX + 6, btnY + 14);
+
         } else {
+
             deleteBtnRect = null;
 
-            int btnX0 = tx + 12;
+            int btnX0 = tx + padding;
 
-            minusBtnRect = new Rectangle(btnX0, btnY, 20, 20);
+            minusBtnRect = new Rectangle(
+                    btnX0, btnY, 20, 20);
+
             g2.setColor(colorSlot);
             g2.fillRect(btnX0, btnY, 20, 20);
+
             g2.setColor(colorBorder);
             g2.drawRect(btnX0, btnY, 20, 20);
+
             g2.setFont(new Font("Monospaced", Font.BOLD, 13));
             g2.setColor(Color.WHITE);
             g2.drawString("-", btnX0 + 7, btnY + 15);
 
-            String qtyText = deleteAmount + "/" + hoveredItem.amount;
+            String qtyText = deleteAmount
+                    + "/" + hoveredItem.amount;
+
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
             g2.setColor(colorAccent);
             g2.drawString(qtyText, btnX0 + 26, btnY + 14);
 
             int plusX = btnX0 + 58;
-            plusBtnRect = new Rectangle(plusX, btnY, 20, 20);
+
+            plusBtnRect = new Rectangle(
+                    plusX, btnY, 20, 20);
+
             g2.setColor(colorSlot);
             g2.fillRect(plusX, btnY, 20, 20);
+
             g2.setColor(colorBorder);
             g2.drawRect(plusX, btnY, 20, 20);
+
             g2.setFont(new Font("Monospaced", Font.BOLD, 13));
             g2.setColor(Color.WHITE);
             g2.drawString("+", plusX + 6, btnY + 15);
 
             int confirmX = plusX + 26;
-            confirmBtnRect = new Rectangle(confirmX, btnY, 50, 20);
+
+            confirmBtnRect = new Rectangle(
+                    confirmX, btnY, 50, 20);
+
             g2.setColor(new Color(120, 30, 25));
             g2.fillRect(confirmX, btnY, 50, 20);
+
             g2.setColor(colorBorder);
             g2.drawRect(confirmX, btnY, 50, 20);
+
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
             g2.setColor(Color.WHITE);
             g2.drawString("OK", confirmX + 17, btnY + 14);
 
             int cancelX = confirmX + 56;
-            cancelBtnRect = new Rectangle(cancelX, btnY, 50, 20);
+
+            cancelBtnRect = new Rectangle(
+                    cancelX, btnY, 50, 20);
+
             g2.setColor(colorSlot);
             g2.fillRect(cancelX, btnY, 50, 20);
+
             g2.setColor(colorBorder);
             g2.drawRect(cancelX, btnY, 50, 20);
-            g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+
             g2.setColor(Color.WHITE);
             g2.drawString("X", cancelX + 20, btnY + 14);
         }
@@ -412,17 +564,11 @@ public class BackpackUI implements MouseWheelListener {
 
             case "sword":
                 return "A standard iron sword forged by blacksmiths. "
-                     + "Reliable weapon for combat. "
-                     + "Damage: [DAMAGE] | Crit Chance: [CRIT]% "
-                     + "| Crit Damage: [CRIT_DAMAGE]% "
-                     + "| Equipable: Weapon.";
+                     + "Reliable weapon for combat. ";
 
             case "axe":
                 return "A sharp iron tool engineered for felling thick trees. "
-                     + "Can also be used as a weapon. "
-                     + "Damage: [DAMAGE] | Crit Chance: [CRIT]% "
-                     + "| Equipable: Weapon. Can be crafted.";
-
+                     + "Can also be used as a weapon. ";
             case "bone":
                 return "A sturdy skeletal bone covered in crypt dust. "
                      + "Seems to hum with weak, dark residual magic. "
@@ -443,17 +589,12 @@ public class BackpackUI implements MouseWheelListener {
 
             case "bone sword":
                 return "A lethal, dark-attributed sword crafted entirely "
-                     + "from hardened bones. "
-                     + "Damage: [DAMAGE] | Crit Chance: [CRIT]% "
-                     + "| Crit Damage: [CRIT_DAMAGE]% "
-                     + "| Equipable: Weapon.";
+                     + "from hardened bones. ";
 
             case "helm":
                 return "A protective iron helmet that shields the wearer's "
-                     + "head from blunt strikes and falling debris. "
-                     + "Defense: [DEFENSE] | Damage Reduction: [REDUCTION]% "
-                     + "| Equipable: Helmet.";
-
+                     + "head from blunt strikes and falling debris. ";
+                
             case "soul of skeleton":
                 return "A faintly glowing soul torn from a fallen Skeleton King. "
                      + "Contains traces of dark energy. Can be crafted.";
@@ -664,6 +805,96 @@ public class BackpackUI implements MouseWheelListener {
         g2.drawRect(x, y, slotSize, slotSize);
     }
 
+    
+    private static class ItemStats {
+        String equipType;
+        Integer damage;
+        Integer defense;
+        Integer critChance;
+        Integer critDamage;
+        Integer damageReduction;
+
+        ItemStats(String equipType) {
+            this.equipType = equipType;
+        }
+    }
+    
+    private int drawStatRow(
+            Graphics2D g2,
+            String icon,
+            String label,
+            String value,
+            int x,
+            int y,
+            int width) {
+
+        int rowH = 25;
+
+        // Background baris stat
+        g2.setColor(new Color(45, 35, 28));
+        g2.fillRect(x, y, width, rowH);
+
+        g2.setColor(new Color(100, 80, 60));
+        g2.drawRect(x, y, width, rowH);
+
+        // Ikon stat
+        g2.setFont(new Font("Monospaced", Font.BOLD, 12));
+        g2.setColor(colorAccent);
+        g2.drawString(icon, x + 8, y + 17);
+
+        // Nama stat
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+        g2.drawString(label, x + 32, y + 16);
+
+        // Nilai stat
+        g2.setColor(colorAccent);
+        g2.drawString(value, x + width - 48, y + 16);
+
+        return y + rowH + 4;
+    }
+    
+    private ItemStats getItemStats(String itemName) {
+
+        String name = itemName.toLowerCase();
+        ItemStats stats = null;
+
+        switch (name) {
+
+            case "sword":
+                stats = new ItemStats("WEAPON");
+                stats.damage = 20;       // TODO: Sesuaikan damage asli
+                stats.critChance = 5;    // TODO: Sesuaikan crit asli
+                stats.critDamage = 150;  // TODO: Sesuaikan crit damage asli
+                break;
+
+            case "bone sword":
+                stats = new ItemStats("WEAPON");
+                stats.damage = 35;       // TODO: Sesuaikan damage asli
+                stats.critChance = 8;
+                stats.critDamage = 175;
+                break;
+
+            case "axe":
+                stats = new ItemStats("WEAPON");
+                stats.damage = 15;       // TODO: Sesuaikan damage asli
+                stats.critChance = 3;
+                stats.critDamage = 150;
+                break;
+
+            case "helm":
+                stats = new ItemStats("HELMET");
+                stats.defense = 10;     // TODO: Sesuaikan defense asli
+                stats.damageReduction = 5;
+                break;
+
+            default:
+                break;
+        }
+
+        return stats;
+    }
+    
     private void drawScrollbar(Graphics2D g2, int contentX, int contentY, int contentW, int contentH) {
         int barW = 6;
         int barX = contentX + contentW - 12;
