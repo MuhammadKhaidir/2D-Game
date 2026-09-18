@@ -98,6 +98,9 @@ public class HouseManager {
         	.addCollision(260, 285, 55, 100)
         	.addCollision(320, 90, 30, 30);
         	houses.add(blacksmith);
+
+        // ── Rumah Penyihir ──────────────────────────────────────────────
+        houses.add(WitchHouse.create(gp));
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -106,6 +109,7 @@ public class HouseManager {
     public void update() {
         handleFade();
         checkEnterHouse();
+        checkExitZone();
     }
 
     private void checkEnterHouse() {
@@ -124,6 +128,32 @@ public class HouseManager {
                 return;
             }
         }
+    }
+
+    /**
+     * Cek apakah player lagi berdiri di exitZone rumah yang aktif.
+     * Kalau iya, keluar otomatis tanpa perlu ESC/tombol apapun.
+     */
+    private void checkExitZone() {
+        if (!insideHouse || activeHouse == null || fading) return;
+        if (activeHouse.exitZone == null) return;
+
+        // TODO: kalau Player udah punya hitbox sendiri (misal solidArea atau
+        // getCollisionArea()), pake itu di sini biar deteksinya lebih akurat
+        // daripada nebak x,y + tileSize kayak sekarang.
+        Rectangle playerBox = new Rectangle(gp.player.x, gp.player.y, gp.tileSize, gp.tileSize);
+
+        if (playerBox.intersects(activeHouse.exitZone)) {
+            exitHouse();
+        }
+    }
+
+    /**
+     * Dipanggil dari KeyHandler/GamePanel sebelum proses keluar via ESC,
+     * misalnya: if (gp.houseManager.isEscExitAllowed()) gp.houseManager.exitHouse();
+     */
+    public boolean isEscExitAllowed() {
+        return activeHouse == null || activeHouse.escExitEnabled;
     }
 
     private void startEnter(HouseData h) {

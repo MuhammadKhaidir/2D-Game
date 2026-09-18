@@ -54,6 +54,28 @@ public class HouseData {
         interiorCollisions.add(new Rectangle(x, y, w, h));
         return this;
     }
+
+    // ── Exit Zone (opsional) ─────────────────────────────────────────────
+    // Kalau di-set: player OTOMATIS keluar rumah begitu masuk area ini,
+    // gak perlu pencet ESC atau tombol apapun.
+    public Rectangle exitZone = null;
+
+    // Default true = ESC tetap bisa dipake buat keluar seperti biasa.
+    // Set false lewat disableEscExit() kalau exit HARUS lewat exitZone aja.
+    public boolean escExitEnabled = true;
+
+    /** Set area (koordinat lokal interior) yang bikin player auto-keluar rumah. */
+    public HouseData setExitZone(int x, int y, int w, int h) {
+        this.exitZone = new Rectangle(x, y, w, h);
+        return this;
+    }
+
+    /** Matikan ESC sebagai cara keluar — exit cuma bisa lewat exitZone. */
+    public HouseData disableEscExit() {
+        this.escExitEnabled = false;
+        return this;
+    }
+
     public int exitWorldY   = 900;
 
     // Furniture: {imagePath, x, y, w, h, hasCollision}
