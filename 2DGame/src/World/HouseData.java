@@ -70,10 +70,11 @@ public class HouseData {
         return this;
     }
 
-    /** Matikan ESC sebagai cara keluar — exit cuma bisa lewat exitZone. */
+    /** Matikan ESC sebagai cara keluar — exit cuma bisa lewat exitZone. 
+     * @return */
     public HouseData disableEscExit() {
         this.escExitEnabled = false;
-        return this;
+		return this;
     }
 
     public int exitWorldY   = 900;
