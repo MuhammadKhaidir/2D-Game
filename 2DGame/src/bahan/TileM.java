@@ -31,6 +31,11 @@ public class TileM {
 GamePanel gp;
 public Tile []tile;
 public int mapTileNum[][];
+
+// ==== TILE GIF ANIMASI ====
+// tileAnimImage[i] != null artinya tile index "i" itu GIF animasi (bukan gambar statis).
+// Kalau null, tile itu tetap gambar statis biasa (ambil dari tile[i].image seperti sebelumnya).
+public Image[] tileAnimImage;
 ImageIcon npcGif;
 ImageIcon firecamp;
 ImageIcon GrassGif, RockWater, RockWater1, RockWater2, herbShop;
@@ -72,6 +77,7 @@ public BufferedImage setup(String imageName) {
 public TileM(GamePanel gp) {
     this.gp = gp;
     tile = new Tile[1000];
+    tileAnimImage = new Image[tile.length];
     mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
 
@@ -99,6 +105,12 @@ public TileM(GamePanel gp) {
     		);
 
     getTileImage();
+
+    // Daftarin tile yang berupa GIF animasi di sini (harus SEBELUM loadMap dipanggil).
+    // index 62 masih kosong/belum kepake tile lain di getTileImage(), jadi aman dipakai.
+    // Format: loadAnimatedTile(index, "/path/ke/file.gif");
+    loadAnimatedTile(62, "/Aset/GrassGiff.gif");
+
     loadMap("/Aset/map01.txt");
     loadObjectCollision();
 
@@ -132,24 +144,24 @@ public TileM(GamePanel gp) {
 			tile[60] = new Tile();tile[61] = new Tile();tile[62] = new Tile();tile[63] = new Tile();tile[64] = new Tile();tile[65] = new Tile();
 			tile[66] = new Tile();tile[67] = new Tile();tile[68] = new Tile();tile[69] = new Tile();tile[70] = new Tile();
 			tile[71] = new Tile();tile[72] = new Tile();
-			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Aset/Grass (3).png"));//tile rumput
+			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Aset/Grass (1).png"));//tile rumput
 			tile[0].collision = true;
 			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/latar/water01.png"));//
 			tile[1].collision = true;
 			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/latar/water00.png"));//aer
 			tile[2].collision = true;
-			tile[3].image = ImageIO.read(getClass().getResource("/Aset/Grass (2).png"));//batu
+			tile[3].image = ImageIO.read(getClass().getResource("/latar/road16.png"));//batu
 			tile[3].collision = true;
-			tile[4].image = ImageIO.read(getClass().getResource("/Aset/Grass (3).png"));//reruntuhan
+			tile[4].image = ImageIO.read(getClass().getResource("/Aset/Grass (2).png"));//reruntuhan
 			tile[4].collision = true;
 			tile[5].image = ImageIO.read(getClass().getResource("/Aset/Tree1.png"));//poshon
 			tile[5].collision = true;
-			tile[6].image = ImageIO.read(getClass().getResource("/Aset/Grass (4).png"));//pohon
+			tile[6].image = ImageIO.read(getClass().getResource("/Aset/Grass (3).png"));//pohon
 			tile[6].collision = true;
 			tile[7].image = ImageIO.read(getClass().getResource("/latar/road14.png"));
 			tile[8].image = ImageIO.read(getClass().getResource("/latar/road01.png"));
 			tile[9].image = ImageIO.read(getClass().getResource("/latar/road02.png"));
-			tile[10].image = ImageIO.read(getClass().getResource("/latar/road16.png"));
+			tile[10].image = ImageIO.read(getClass().getResource("/Aset/Grass (4).png"));
 			tile[11].image = ImageIO.read(getClass().getResource("/Aset/4.png"));
 			tile[12].image = ImageIO.read(getClass().getResource("/Aset/Snowybush.png"));
 			tile[13].image = ImageIO.read(getClass().getResource("/Aset/Tile2_02.png"));
@@ -255,6 +267,48 @@ public TileM(GamePanel gp) {
 	    }
 	}
 
+	/**
+	 * Daftarin sebuah GIF sebagai tile animasi.
+	 *
+	 * index   = index tile-nya (angka yang sama dipakai di map01.txt / mapTileNum)
+	 * gifPath = path resource ke file .gif, contoh: "/Aset/GrassGiff.gif"
+	 *
+	 * PENTING kenapa sebelumnya macet/stuck di frame pertama:
+	 * ImageIO.read(...) itu cuma ngedecode GIF jadi SATU BufferedImage statis
+	 * (cuma nangkep frame pertama doang, animasinya ilang).
+	 * Makanya di sini kita load GIF-nya pakai ImageIcon (lewat Toolkit), sama
+	 * persis kayak npcGif/firecamp/RockWater di atas -- Toolkit yang otomatis
+	 * jalanin animasi GIF-nya sendiri di background thread. Kita tinggal ambil
+	 * Image-nya tiap kali digambar (bukan nyimpen 1 frame statis doang).
+	 */
+	public void loadAnimatedTile(int index, String gifPath) {
+	    try {
+	        java.net.URL url = getClass().getResource(gifPath);
+	        if (url == null) {
+	            System.out.println("ANIMATED TILE NOT FOUND: " + gifPath);
+	            return;
+	        }
+
+	        ImageIcon icon = new ImageIcon(url); // constructor ini nunggu sampe gambar full ke-load
+	        tileAnimImage[index] = icon.getImage();
+
+	        // tile[index] tetep disiapin (buat collision & fallback frame statis),
+	        // biar kode lama yang masih baca tile[index].image gak error/kosong.
+	        if (tile[index] == null) tile[index] = new Tile();
+	        BufferedImage fallback = new BufferedImage(
+	                Math.max(icon.getIconWidth(), 1),
+	                Math.max(icon.getIconHeight(), 1),
+	                BufferedImage.TYPE_INT_ARGB);
+	        Graphics2D g = fallback.createGraphics();
+	        g.drawImage(icon.getImage(), 0, 0, null);
+	        g.dispose();
+	        tile[index].image = fallback;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 	public void drawObject(Graphics2D g2,
 	        int worldX, int worldY, int width, int height, int tileIndex,
 	        int camX, int camY, int shadow) {
@@ -286,8 +340,13 @@ public TileM(GamePanel gp) {
 	            g2.setComposite(old);
 	        }
 
-	        g2.drawImage(tile[tileIndex].image,
-	                     screenX, screenY, width, height, null);
+	        if (tileAnimImage[tileIndex] != null) {
+	            g2.drawImage(tileAnimImage[tileIndex],
+	                         screenX, screenY, width, height, null);
+	        } else {
+	            g2.drawImage(tile[tileIndex].image,
+	                         screenX, screenY, width, height, null);
+	        }
 	    }
 	}
 	
@@ -479,8 +538,15 @@ public TileM(GamePanel gp) {
 
                 if (screenX + gp.tileSize > 0 && screenX < gp.screenWidth &&
                     screenY + gp.tileSize > 0 && screenY < gp.screenHeight) {
-                    g2.drawImage(tile[tileNum].image, screenX, screenY,
-                                 gp.tileSize, gp.tileSize, null);
+
+                    if (tileAnimImage[tileNum] != null) {
+                        // tile GIF animasi -> ambil frame yang lagi "hidup" sekarang dari Toolkit
+                        g2.drawImage(tileAnimImage[tileNum], screenX, screenY,
+                                     gp.tileSize, gp.tileSize, null);
+                    } else {
+                        g2.drawImage(tile[tileNum].image, screenX, screenY,
+                                     gp.tileSize, gp.tileSize, null);
+                    }
                 }
             }
         }
@@ -767,12 +833,6 @@ public TileM(GamePanel gp) {
 	        {1680,1050,200,200,5,0,   0},
 	        {980,1130,200,200,5,0,    0},{980,1210,200,200,5,0, 0},{980,1290,200,200,5,0, 0},
 	      
-	        
-
-	        // ── POHON DI LUAR BASE ──
-	        {1240,1880,240,240,10,0,  0},{1440,1980,240,240,10,0,0},{1130,2300,240,240,10,0,0},
-	        {1500,2100,240,240,10,0,  0},{1420,2350,240,240,10,0,0},
-	        {1600,2100,240,240,10,0,  0},
 
 	        // ── RUINS BESAR ──
 	        {1300,2100,200,200,49,0,  0},
