@@ -132,24 +132,24 @@ public TileM(GamePanel gp) {
 			tile[60] = new Tile();tile[61] = new Tile();tile[62] = new Tile();tile[63] = new Tile();tile[64] = new Tile();tile[65] = new Tile();
 			tile[66] = new Tile();tile[67] = new Tile();tile[68] = new Tile();tile[69] = new Tile();tile[70] = new Tile();
 			tile[71] = new Tile();tile[72] = new Tile();
-			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Aset/GrassGiff.gif"));//tile rumput
+			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Aset/Grass (3).png"));//tile rumput
 			tile[0].collision = true;
 			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/latar/water01.png"));//
 			tile[1].collision = true;
 			tile[2].image = ImageIO.read(getClass().getResourceAsStream("/latar/water00.png"));//aer
 			tile[2].collision = true;
-			tile[3].image = ImageIO.read(getClass().getResource("/latar/road16.png"));//batu
+			tile[3].image = ImageIO.read(getClass().getResource("/Aset/Grass (2).png"));//batu
 			tile[3].collision = true;
-			tile[4].image = ImageIO.read(getClass().getResource("/Aset/Grass03.png"));//reruntuhan
+			tile[4].image = ImageIO.read(getClass().getResource("/Aset/Grass (3).png"));//reruntuhan
 			tile[4].collision = true;
 			tile[5].image = ImageIO.read(getClass().getResource("/Aset/Tree1.png"));//poshon
 			tile[5].collision = true;
-			tile[6].image = ImageIO.read(getClass().getResource("/latar/Grassadv01.png"));//pohon
+			tile[6].image = ImageIO.read(getClass().getResource("/Aset/Grass (4).png"));//pohon
 			tile[6].collision = true;
 			tile[7].image = ImageIO.read(getClass().getResource("/latar/road14.png"));
 			tile[8].image = ImageIO.read(getClass().getResource("/latar/road01.png"));
 			tile[9].image = ImageIO.read(getClass().getResource("/latar/road02.png"));
-			tile[10].image = ImageIO.read(getClass().getResource("/Aset/Fruit_tree1.png"));
+			tile[10].image = ImageIO.read(getClass().getResource("/latar/road16.png"));
 			tile[11].image = ImageIO.read(getClass().getResource("/Aset/4.png"));
 			tile[12].image = ImageIO.read(getClass().getResource("/Aset/Snowybush.png"));
 			tile[13].image = ImageIO.read(getClass().getResource("/Aset/Tile2_02.png"));
