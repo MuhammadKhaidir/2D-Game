@@ -132,7 +132,7 @@ public TileM(GamePanel gp) {
 			tile[60] = new Tile();tile[61] = new Tile();tile[62] = new Tile();tile[63] = new Tile();tile[64] = new Tile();tile[65] = new Tile();
 			tile[66] = new Tile();tile[67] = new Tile();tile[68] = new Tile();tile[69] = new Tile();tile[70] = new Tile();
 			tile[71] = new Tile();tile[72] = new Tile();
-			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/latar/grass00.png"));//tile rumput
+			tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Aset/GrassGiff.gif"));//tile rumput
 			tile[0].collision = true;
 			tile[1].image = ImageIO.read(getClass().getResourceAsStream("/latar/water01.png"));//
 			tile[1].collision = true;
@@ -140,7 +140,7 @@ public TileM(GamePanel gp) {
 			tile[2].collision = true;
 			tile[3].image = ImageIO.read(getClass().getResource("/latar/road16.png"));//batu
 			tile[3].collision = true;
-			tile[4].image = ImageIO.read(getClass().getResource("/latar/grass01.png"));//reruntuhan
+			tile[4].image = ImageIO.read(getClass().getResource("/Aset/Grass03.png"));//reruntuhan
 			tile[4].collision = true;
 			tile[5].image = ImageIO.read(getClass().getResource("/Aset/Tree1.png"));//poshon
 			tile[5].collision = true;
