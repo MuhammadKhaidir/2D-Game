@@ -117,25 +117,36 @@ public class breakable {
         }
 
         // ── 2. LOGIKA ANIMASI DOWN/TUMBANG ──
-        if (isFalling && downFrames != null) {
-            if (!fadingOut) {
-                downAnimTimer++;
-                if (downAnimTimer >= 10) { // Kecepatan ambruknya pohon
-                    downAnimTimer = 0;
-                    currentDownFrameIndex++;
-                    
-                    if (currentDownFrameIndex >= downFrames.length) {
-                        currentDownFrameIndex = downFrames.length - 1;
-                        fadingOut = true;
+        // FIX: sebelumnya blok ini cuma jalan kalau downFrames != null, jadi objek
+        // yang gak dikasih downFrames (mis. batu) nyangkut isFalling=true selamanya
+        // dan gak pernah jadi destroyed=true -> gambar gak ilang, gak respawn.
+        if (isFalling) {
+            if (downFrames != null && downFrames.length > 0) {
+                if (!fadingOut) {
+                    downAnimTimer++;
+                    if (downAnimTimer >= 10) { // Kecepatan ambruknya pohon
+                        downAnimTimer = 0;
+                        currentDownFrameIndex++;
+
+                        if (currentDownFrameIndex >= downFrames.length) {
+                            currentDownFrameIndex = downFrames.length - 1;
+                            fadingOut = true;
+                        }
+                    }
+                } else {
+                    fallAlpha -= 0.025f;
+                    if (fallAlpha <= 0f) {
+                        fallAlpha = 0f;
+                        isFalling = false;
+                        destroyed = true; 
                     }
                 }
             } else {
-                fallAlpha -= 0.025f;
-                if (fallAlpha <= 0f) {
-                    fallAlpha = 0f;
-                    isFalling = false;
-                    destroyed = true; 
-                }
+                // Objek ini gak punya animasi tumbang (mis. batu) -> langsung
+                // anggap proses "jatuh" selesai supaya konsisten sama sistem
+                // destroyed/respawn di bawah.
+                isFalling = false;
+                destroyed = true;
             }
         }
 

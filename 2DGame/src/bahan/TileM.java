@@ -224,6 +224,7 @@ public TileM(GamePanel gp) {
 			tile[67].image = ImageIO.read(getClass().getResource("/Aset/snow.png"));
 			tile[69].image = ImageIO.read(getClass().getResource("/Aset/Snowybush.png"));
 			tile[70].image = ImageIO.read(getClass().getResource("/Aset/JungleHouse.png"));
+			tile[71].image = ImageIO.read(getClass().getResource("/Aset/Rock4_2.png"));
 			
 			// dst. tiap rumah baru = tile baru
 			
@@ -378,6 +379,9 @@ public TileM(GamePanel gp) {
         	            ,{860, 4250, 150, 150, 55, 500},{1020, 4230, 150, 150, 55, 500}
         	            , {900, 1800, 120, 120, 40, 800}
         	            , {1000, 1850, 120, 120, 41, 800}
+        	            
+        	            , {1350, 3500, 120, 120, 40, 800},
+        		        {1350,4000,120,120,71,0,  800}
 
         	            // === Hutan tambahan — ukuran 180-200 (persegi), jumlah dikurangi ===
         	            ,{3182, 3374, 200, 200, 55, 500},{3357, 3557, 198, 198, 55, 500},{2695, 3066, 200, 200, 55, 500},{3108, 3843, 197, 197, 55, 500}
