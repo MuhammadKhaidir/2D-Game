@@ -18,6 +18,7 @@ public class breakable {
     public boolean collisionOn = true;
     public boolean destroyed = false;
     public int dropAmount = 1;
+    public boolean hasShadow = true; // true = ada bayangan (default), false = gak ada bayangan
     
     // 🔥 KECEPATAN ANIMASI (1 FPS = 60 Ticks pada Game Loop 60 FPS)
     private int idleCounter = 0;
@@ -86,6 +87,7 @@ public class breakable {
     public void setIdleFrames(BufferedImage[] frames) { this.idleFrames = frames; }
     public void setHitFrames(BufferedImage[] frames) { this.hitFrames = frames; }
     public void setDownFrames(BufferedImage[] frames) { this.downFrames = frames; }
+    public void setHasShadow(boolean hasShadow) { this.hasShadow = hasShadow; }
 
     private void dropToInventory() {
         ItemManager.get().add(dropItem, dropAmount);

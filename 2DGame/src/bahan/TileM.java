@@ -380,8 +380,20 @@ public TileM(GamePanel gp) {
         	            , {900, 1800, 120, 120, 40, 800}
         	            , {1000, 1850, 120, 120, 41, 800}
         	            
-        	            , {1350, 3500, 120, 120, 40, 800},
-        		        {1350,4000,120,120,71,0,  800}
+        	            , {1350, 3500, 120, 120, 71, 800, 0}// === BATU BARU (tersebar, jaga jarak dari objek lain) ===
+        	            ,{834, 1557, 120, 120, 71, 800, 0},{9884, 5078, 120, 120, 71, 800, 0},{1173, 10409, 120, 120, 71, 800, 0},{8142, 3826, 120, 120, 71, 800, 0},
+        	            {3728, 3892, 120, 120, 71, 800, 0},{369, 3349, 120, 120, 71, 800, 0},{1641, 450, 120, 120, 71, 800, 0},{7666, 3648, 120, 120, 71, 800, 0},
+        	            {1375, 872, 120, 120, 71, 800, 0},{9704, 2821, 120, 120, 71, 800, 0},{1538, 1976, 120, 120, 71, 800, 0},{1536, 4489, 120, 120, 71, 800, 0},
+        	            {8756, 5242, 120, 120, 71, 800, 0},{1918, 2798, 120, 120, 71, 800, 0},{11087, 4183, 120, 120, 71, 800, 0},{583, 2402, 120, 120, 71, 800, 0},
+        	            {1729, 2392, 120, 120, 71, 800, 0},{11081, 4761, 120, 120, 71, 800, 0}// === BATU BARU BATCH 2 (30 buah, tersebar, jaga jarak dari objek lain + batch 1) ===
+        	            ,{9518, 3796, 120, 120, 71, 800, 0},{11278, 4997, 120, 120, 71, 800, 0},{7281, 5090, 120, 120, 71, 800, 0},{5095, 2844, 120, 120, 71, 800, 0},
+        	            {178, 2254, 120, 120, 71, 800, 0},{3813, 4174, 120, 120, 71, 800, 0},{144, 3733, 120, 120, 71, 800, 0},{11068, 4534, 120, 120, 71, 800, 0},
+        	            {1655, 2927, 120, 120, 71, 800, 0},{7734, 5247, 120, 120, 71, 800, 0},{3337, 2810, 120, 120, 71, 800, 0},{6272, 2884, 120, 120, 71, 800, 0},
+        	            {681, 11280, 120, 120, 71, 800, 0},{6913, 5140, 120, 120, 71, 800, 0},{1219, 525, 120, 120, 71, 800, 0},{4746, 2912, 120, 120, 71, 800, 0},
+        	            {2449, 2891, 120, 120, 71, 800, 0},{1060, 4516, 120, 120, 71, 800, 0},{593, 3236, 120, 120, 71, 800, 0},{1476, 10318, 120, 120, 71, 800, 0},
+        	            {4388, 4132, 120, 120, 71, 800, 0},{2184, 2934, 120, 120, 71, 800, 0},{1201, 1739, 120, 120, 71, 800, 0},{5617, 3071, 120, 120, 71, 800, 0},
+        	            {712, 10678, 120, 120, 71, 800, 0},{4917, 3530, 120, 120, 71, 800, 0},{570, 1529, 120, 120, 71, 800, 0},{1757, 4305, 120, 120, 71, 800, 0},
+        	            {5630, 5241, 120, 120, 71, 800, 0},{1585, 11864, 120, 120, 71, 800, 0}
 
         	            // === Hutan tambahan — ukuran 180-200 (persegi), jumlah dikurangi ===
         	            ,{3182, 3374, 200, 200, 55, 500},{3357, 3557, 198, 198, 55, 500},{2695, 3066, 200, 200, 55, 500},{3108, 3843, 197, 197, 55, 500}
@@ -485,7 +497,12 @@ public TileM(GamePanel gp) {
         for (int i = 0; i < data.length; i++) {
             int tileIndex = data[i][4];
             int hp        = data[i][5];
-            
+
+            // Kolom ke-7 (index 6) itu OPSIONAL: 1 = ada bayangan, 0 = gak ada.
+            // Kalau entry-nya cuma 6 angka (format lama), default tetap 1
+            // (ada bayangan) biar semua data pohon lama gak perlu diubah.
+            int shadowFlag = (data[i].length >= 7) ? data[i][6] : 1;
+
             BufferedImage img;
             if (tileIndex == 55 && treeIdleFrames[0] != null) {
                 img = treeIdleFrames[0];
@@ -501,11 +518,12 @@ public TileM(GamePanel gp) {
             }
 
             breakables[i] = new breakable(
-                data[i][0], data[i][1], data[i][2], data[i][3],
-                img, hp, dropItem, gp
-            );
+                    data[i][0], data[i][1], data[i][2], data[i][3],
+                    img, hp, dropItem, gp
+                );
+                breakables[i].hasShadow = (shadowFlag != 0);
 
-            if (tileIndex == 55) {
+               if (tileIndex == 55) {
                 breakables[i].setIdleFrames(treeIdleFrames);
                 breakables[i].setHitFrames(treeHitFrames);
                 breakables[i].setDownFrames(treeDownFrames); 
@@ -665,26 +683,27 @@ public TileM(GamePanel gp) {
 			    int sy = b.worldY - fCamY + gp.player.screenY;
 			    if (sx + b.width >= 0 && sx <= gp.screenWidth &&
 			        sy + b.height >= 0 && sy <= gp.screenHeight) {
-			        
-			        // 🔥 TAMBAHAN: Menggambar bayangan oval transparan di bawah pohon
-			        java.awt.Composite old = g2.getComposite();
-			        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f)); // Alpha 35%
-			        g2.setColor(Color.BLACK);
 
-			        int shadowOffsetX = 20;          // Geser sedikit ke kanan agar pas di tengah batang
-			        int shadowScaleH  = (int)(b.height * 0.25f); // Tinggi bayangan 20% dari tinggi pohon
+			        // 🔥 Bayangan sekarang ngikutin b.hasShadow (diisi dari data[] pas load)
+			        if (b.hasShadow) {
+			            java.awt.Composite old = g2.getComposite();
+			            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f));
+			            g2.setColor(Color.BLACK);
 
-			        g2.fillOval(
-			            sx + shadowOffsetX,
-			            sy + b.height - (shadowScaleH / 2) - 10, // Posisi di area kaki/bawah pohon
-			            (int)(b.width * 0.75f),                  // Lebar bayangan 75% dari lebar pohon
-			            shadowScaleH
-			        );
-			        g2.setComposite(old); // Kembalikan opacity normal graphics
+			            int shadowOffsetX = 20;
+			            int shadowScaleH  = (int)(b.height * 0.25f);
 
-			        // Gambar pohon asli di atas bayangan
+			            g2.fillOval(
+			                sx + shadowOffsetX,
+			                sy + b.height - (shadowScaleH / 2) - 10,
+			                (int)(b.width * 0.75f),
+			                shadowScaleH
+			            );
+			            g2.setComposite(old);
+			        }
+
 			        b.draw(g2, sx, sy);
-			    }
+			    } 
 			    break;
 			}
 			case 2: { // NPC
