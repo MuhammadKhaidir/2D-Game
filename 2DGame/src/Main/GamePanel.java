@@ -220,6 +220,9 @@ public class GamePanel extends JPanel implements Runnable{
         spawnGolem(6, 1300, 3000);
         spawnGolem(7, 1500, 3100);
         spawnGolem(8, 2500, 3500);
+        spawnGolemite(9,  1200, 3050);
+        spawnGolemite(10, 1400, 3200);
+        spawnGolemite(11, 2400, 3450);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -299,6 +302,24 @@ public class GamePanel extends JPanel implements Runnable{
 	    );
 
 	    monsters[index] = golem;
+	}
+	
+	private void spawnGolemite(int index, int worldX, int worldY) {
+	    Entitas.Golemite golemite = new Entitas.Golemite(this);
+	    golemite.x = worldX;
+	    golemite.y = worldY;
+	    golemite.spawnX = worldX;
+	    golemite.spawnY = worldY;
+
+	    int range = 250;
+	    golemite.wanderArea = new Rectangle(
+	        worldX - range,
+	        worldY - range,
+	        range * 2,
+	        range * 2
+	    );
+
+	    monsters[index] = golemite;
 	}
 	
 	public enum GameState {
@@ -687,13 +708,16 @@ public class GamePanel extends JPanel implements Runnable{
 		// UPDATE MONSTER (HANYA SAAT OUTSIDE)
 		if (gameState == GameState.OUTSIDE) {
 		    for (int i = 0; i < monsters.length; i++) {
-		        if (monsters[i] != null) {
-		            if (!monsters[i].isDead || monsters[i] instanceof Entitas.Golem) {
-		                monsters[i].update();
-		            }
-		        }
+		    	if (monsters[i] != null) {
+		    	    if (!monsters[i].isDead
+		    	            || monsters[i] instanceof Entitas.Golem
+		    	            || monsters[i] instanceof Entitas.Golemite) {
+		    	        monsters[i].update();
+		    	    }
+		    	}
 		    }
 		}
+
  
 		int targetAlpha = world.getTargetDarkness();
 
