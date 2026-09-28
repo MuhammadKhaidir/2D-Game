@@ -62,7 +62,9 @@ public class Golemite extends Entity {
     private boolean damageDealtThisSwing         = false;
 
     // ── Tampilan (sesuaikan dengan ukuran sprite kau) ──
-    private static final int DRAW_SIZE_MULT = 2;   // ukuran gambar = tileSize * ini
+    private static final int DRAW_SIZE_MULT = 3;   // ukuran gambar = tileSize * ini
+    
+    private static final double SPRITE_LOWER = 0.11; // fraksi dari drawSize. 0 = posisi lama, makin gede makin turun
 
     public Golemite(GamePanel gp) {
         super(gp);
@@ -73,7 +75,7 @@ public class Golemite extends Entity {
         this.solidArea = new Rectangle(14, 28, 20, 20);
         this.solidAreaDefaultX = solidArea.x;
         this.solidAreaDefaultY = solidArea.y;
-        this.getExpValue = 200;
+        this.getExpValue = 400;
         loadImages();
     }
 
@@ -489,7 +491,10 @@ public class Golemite extends Entity {
         // gambar dipusatkan di atas tile Golemite
         int offset = (drawSize - gp.tileSize) / 2;
         int drawX  = sx - offset;
-        int drawY  = sy - offset;
+        int drawY  = sy - offset;                                // patokan bayangan (posisi "tanah")
+        int spriteY = drawY + (int) (drawSize * SPRITE_LOWER);   // sprite diturunin dari sini
+        
+        
 
         float fade = 1f;
         if (state == GolemiteState.DYING) {
@@ -520,14 +525,13 @@ public class Golemite extends Entity {
 
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
         if (img != null) {
-            g2.drawImage(img, drawX, drawY, drawSize, drawSize, null);
+            g2.drawImage(img, drawX, spriteY, drawSize, drawSize, null);   // <- spriteY
         } else {
-            // placeholder kalau sprite gagal load
             g2.setColor(new Color(100, 100, 100, 200));
-            g2.fillRect(drawX, drawY, drawSize, drawSize);
+            g2.fillRect(drawX, spriteY, drawSize, drawSize);               // <- spriteY
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
-            g2.drawString("GOLEMITE", drawX + 4, drawY + drawSize / 2);
+            g2.drawString("GOLEMITE", drawX + 4, spriteY + drawSize / 2);  // <- spriteY
         }
         g2.setComposite(oldComp);
 
@@ -536,7 +540,7 @@ public class Golemite extends Entity {
             int barW   = 40, barH = 5;
             int hpFill = (int) ((double) life / maxLife * barW);
             int barX   = drawX + drawSize / 2 - barW / 2;
-            int barY   = drawY + 8; // naik/turunin sesuai tinggi sprite
+            int barY   = drawY + 12; // naik/turunin sesuai tinggi sprite
             g2.setColor(Color.DARK_GRAY);
             g2.fillRect(barX, barY, barW, barH);
             g2.setColor(new Color(200, 50, 50));

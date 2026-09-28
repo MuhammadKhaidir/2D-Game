@@ -189,11 +189,12 @@ public class GolemMinion extends Entity {
         if (!this.collisionOn && gp.monsters != null) {
             for (Entity m : gp.monsters) {
                 if (m == null || m.isDead) continue;
-                if (!(m instanceof Golem) && !(m instanceof monster)) continue;
+                if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
                 gp.colision.checkEntity(this, m, mdx, mdy);
+                if (this.collisionOn) break;
             }
         }
-
+        
         // 4. FIX: Cek collision dengan SkeletonKing (boss), biar golem gak numpuk/tembus sama boss
         if (!this.collisionOn && gp.domainManager != null && gp.domainManager.getBossSkeleton() != null) {
             SkeletonKing king = gp.domainManager.getBossSkeleton();
@@ -238,6 +239,17 @@ public class GolemMinion extends Entity {
                 if (m == null || m.isDead) continue;
                 if (m == this) continue; // jaga-jaga, jangan target diri sendiri
                 if (!(m instanceof Golem) && !(m instanceof monster)) continue;
+
+                double d = distToPlayer(m, plCX, plCY);
+                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = m; }
+            }
+        }
+        
+        if (gp.monsters != null) {
+            for (Entity m : gp.monsters) {
+                if (m == null || m.isDead) continue;
+                if (m == this) continue; // jaga-jaga, jangan target diri sendiri
+                if (!(m instanceof Golemite) && !(m instanceof monster)) continue;
 
                 double d = distToPlayer(m, plCX, plCY);
                 if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = m; }
@@ -342,11 +354,14 @@ public class GolemMinion extends Entity {
             ((Skeleton) target).takeDamage(dmg);
         } else if (target instanceof Golem) {
             ((Golem) target).takeDamage(dmg);
+        } else if (target instanceof Golemite) {
+            ((Golemite) target).takeDamage(dmg);
         } else if (target instanceof monster) {
             ((monster) target).takeDamage(dmg, this);
         } else if (target instanceof SkeletonKing) {
             ((SkeletonKing) target).takeDamage(dmg);
         }
+        
     }
 
  // ── Smash: AOE, semua musuh (Skeleton/Golem liar/monster/SkeletonKing) dalam radius kena ──
@@ -370,7 +385,7 @@ public class GolemMinion extends Entity {
         if (gp.monsters != null) {
             for (Entity m : gp.monsters) {
                 if (m == null || m.isDead) continue;
-                if (!(m instanceof Golem) && !(m instanceof monster)) continue;
+                if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
                 if (distFromPoint(m, myCX, myCY) <= SMASH_RADIUS) {
                     int lifeBefore = m.life;
                     dealDamage(m, SMASH_DAMAGE);
