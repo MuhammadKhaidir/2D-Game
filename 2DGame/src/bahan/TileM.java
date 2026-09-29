@@ -225,6 +225,7 @@ public TileM(GamePanel gp) {
 			tile[69].image = ImageIO.read(getClass().getResource("/Aset/Snowybush.png"));
 			tile[70].image = ImageIO.read(getClass().getResource("/Aset/JungleHouse.png"));
 			tile[71].image = ImageIO.read(getClass().getResource("/Aset/Rock4_2.png"));
+			tile[72].image = ImageIO.read(getClass().getResource("/latar/golemMine.png"));
 			
 			// dst. tiap rumah baru = tile baru
 			
@@ -844,6 +845,7 @@ public TileM(GamePanel gp) {
 	        {1205, 800, 200, 200, 62, 0, 0},
 	        {1680, 360, 200, 400, 63, 0, 0},
 	        {3960, 3660, 380, 360, 70, 0, 0},
+	        {4300, 4600, 300, 300, 72, 0, 0},
 
 	        // ── POHON-POHON (bayangan aktif) ──
 	        {740,780,240,240,10,0,    0},

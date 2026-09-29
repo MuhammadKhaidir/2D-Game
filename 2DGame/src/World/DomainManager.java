@@ -25,18 +25,18 @@ public class DomainManager {
     private RoomData activeRoom = null;
     private ImageIcon roomBgImage = null;
     private RoomData nearDoorRoom = null; // buat nampilin hint "[E] Masuk ..." pas deket pintu
-    
- // ── Debug: gambar kotak collision biar gampang nge-tune posisinya ──
+
+    // ── Debug: gambar kotak collision biar gampang nge-tune posisinya ──
     private boolean showCollisionDebug = true; // ganti ke false kalau udah kelar nge-tune
-    
- // ── Spawn Boss via Skeleton Key ──
+
+    // ── Spawn Boss via Skeleton Key ──
     private final Rectangle bossSpawnAltar = new Rectangle(580 - 40, 190 - 40, 80, 80);
     private boolean bossSpawnCountdownActive = false;
     private int bossSpawnCountdownTimer = 0;
     private static final int GAME_FPS = 60; // sesuaikan kalau FPS game kamu beda
     private static final int BOSS_SPAWN_COUNTDOWN_FRAMES = 10 * GAME_FPS; // countdown dari 10 detik
 
- // ── Confirmation dialog sebelum spawn boss ──
+    // ── Confirmation dialog sebelum spawn boss ──
     private boolean bossSpawnConfirmOpen = false;
     private int bossSpawnConfirmSelection = 0; // 0 = YES, 1 = NO
     private int confirmNavCooldown = 0;
@@ -54,8 +54,6 @@ public class DomainManager {
     private boolean fadeIn = false;
     private Runnable onFadeComplete;
 
-    
-    
     public DarkMerchant darkMerchant = null;
 
     // Pesan feedback pembelian (tampil sebentar di layar)
@@ -67,7 +65,7 @@ public class DomainManager {
         // Skeleton Tomb gak ditampilin pas lagi di dalam room (misal boss room)
         return activeRoom != null ? java.util.Collections.emptyList() : skeletons;
     }
-    
+
     // skeleton summon an si king skeleton / pion bisa dibilang
     private final List<Skeleton> roomSkeletons = new ArrayList<>();
 
@@ -90,11 +88,11 @@ public class DomainManager {
     /** Dipanggil SkeletonKing buat nyummon Skeleton biasa di dalam boss room. */
     public void spawnSkeletonInRoom(int wx, int wy) {
         if (activeRoom == null) return; // safety: cuma valid kalau lagi di dalam room
-        if (getAliveRoomSkeletonCount() >= MAX_ROOM_SKELETONS) return; // NEW: cegah numpuk/lag
+        if (getAliveRoomSkeletonCount() >= MAX_ROOM_SKELETONS) return; // cegah numpuk/lag
         Skeleton sk = new Skeleton(gp);
         sk.x = wx; sk.y = wy;
         sk.spawnX = wx; sk.spawnY = wy;
-        sk.noRespawn = true; // NEW: pion boss, sekali mati ya mati
+        sk.noRespawn = true; // pion boss, sekali mati ya mati
         sk.noDrop = true;
         roomSkeletons.add(sk);
     }
@@ -176,12 +174,36 @@ public class DomainManager {
             // TODO: koordinat di bawah cuma CONTOH — sesuaikan sama gambar BosSkeletonRoom.png,
             // pas gambar debug muncul, geser angkanya sampai pas nutup obstacle di background.
             .addCollision(0,   0,   1250, 250)   // dinding atas
-            .addCollision(0,   0,   80,  850)  // dinding kiri
-            .addCollision(1130, 0,   80,  850)  // dinding kanan
-            .addCollision(0,   750, 1250, 40)   // dinding bawah
+            .addCollision(0,   0,   80,  850)    // dinding kiri
+            .addCollision(1130, 0,   80,  850)   // dinding kanan
+            .addCollision(0,   750, 1250, 40)    // dinding bawah
             .addCollision(350, 250, 45, 65)
             .addCollision(820, 250, 45, 65)
         );
+
+        // ── Golem Hide ──
+        final int GH_W = 800, GH_H = 600;              // ukuran golemHide.png (digambar 2x, sama kayak Tomb)
+        final int GH_TRIG_X = 4420, GH_TRIG_Y = 4830;  // posisi bangunan golemMine di world
+
+        DomainData golemHide = new DomainData(
+            "GolemHide",
+            // FIX: sebelumnya hardcode (3000, 200, ...) jadi trigger-nya gak nempel di bangunan golemMine
+            new Rectangle(GH_TRIG_X, GH_TRIG_Y, 200, 200),  // area tekan [E] buat masuk
+            730, 330,                                     // spawn player: tengah map
+            GH_W, GH_H,
+            // FIX: huruf besar "Latar" biar sama kayak Tomb (getResource itu case-sensitive di jar).
+            // Ganti ke "/Aset/golemHide.png" kalau filenya ternyata di folder Aset.
+            "/Latar/golemHide.png")
+        // FIX: exit ikut posisi bangunan (pola sama kayak Tomb: trigger 1300,2100 -> exit 1375,2265)
+        .setExit(GH_TRIG_X + 75, GH_TRIG_Y + 165)
+        // Titik keluar DI DALAM domain: deketin koordinat 723,170 -> otomatis keluar (radius 60px)
+        .setExitPoint(723, 170, 60)
+        .addCollision(0, 0, GH_W * 2, 300)                   // dinding atas
+        .addCollision(0, GH_H * 2 - 60, GH_W * 2, 400)       // dinding bawah
+        .addCollision(0, 0, 60, GH_H * 2)                   // dinding kiri
+        .addCollision(GH_W * 2 - 60, 0, 60, GH_H * 2)       // dinding kanan
+        .addCollision(535,155,50*2,250);
+        domains.add(golemHide);
     }
 
     public void forceEnterDomain(String domainId) {
@@ -199,7 +221,7 @@ public class DomainManager {
         }
         System.out.println("[DomainManager] Domain tidak ketemu: " + domainId);
     }
-    
+
     private void drawCollisionDebug(Graphics2D g2) {
         if (!showCollisionDebug) return;
         int camX = gp.player.x, camY = gp.player.y;
@@ -215,6 +237,17 @@ public class DomainManager {
             g2.setColor(Color.RED);
             g2.drawRect(sx, sy, r.width, r.height);
         }
+
+        // Debug titik keluar domain (lingkaran hijau), cuma di interior domain utama
+        if (activeRoom == null && activeDomain != null && activeDomain.hasExitPoint) {
+            int rad = activeDomain.exitPointRadius;
+            int ex = activeDomain.exitPointX - camX + psx - rad;
+            int ey = activeDomain.exitPointY - camY + psy - rad;
+            g2.setColor(new Color(0, 255, 0, 70));
+            g2.fillOval(ex, ey, rad * 2, rad * 2);
+            g2.setColor(Color.GREEN);
+            g2.drawOval(ex, ey, rad * 2, rad * 2);
+        }
     }
 
     public void update() {
@@ -228,6 +261,7 @@ public class DomainManager {
         if (activeRoom == null) {
             // Lagi di interior domain utama (Tomb) — bisa masuk room lewat pintu
             checkEnterRoom();
+            checkExitPoint();
             for (Skeleton sk : skeletons) sk.update();
             if (darkMerchant != null) {
                 darkMerchant.update();
@@ -237,7 +271,7 @@ public class DomainManager {
         } else {
             checkBossSpawnAltar();
             checkBossSpawnConfirm();
-            
+
             if (bossSpawnCountdownActive) {
                 bossSpawnCountdownTimer--;
                 if (bossSpawnCountdownTimer <= 0) {
@@ -259,6 +293,20 @@ public class DomainManager {
         }
     }
 
+    /** Keluar otomatis kalau player deket titik keluar domain (kalau domain-nya punya). */
+    private void checkExitPoint() {
+        if (fading) return; // lagi transisi fade, jangan trigger dobel
+        if (activeDomain == null || !activeDomain.hasExitPoint) return;
+
+        double dist = Math.hypot(
+            gp.player.x - activeDomain.exitPointX,
+            gp.player.y - activeDomain.exitPointY
+        );
+        if (dist <= activeDomain.exitPointRadius) {
+            exitDomain();
+        }
+    }
+
     private void checkEnterDomain() {
         if (insideDomain) return;
         if (gp.gameState != GamePanel.GameState.OUTSIDE) return;
@@ -268,6 +316,7 @@ public class DomainManager {
         for (DomainData d : domains) {
             if (playerArea.intersects(d.triggerArea)) {
                 gp.KeyH.interactPressed = false;
+                System.out.println("[DomainManager] Masuk domain: " + d.id + " bg=" + d.backgroundPath); // debug
                 startEnter(d);
                 return;
             }
@@ -339,8 +388,8 @@ public class DomainManager {
             activeRoom = null;
             roomBgImage = null;
             bossSkeleton = null;
-            bossSpawnCountdownActive = false; // NEW
-            bossSpawnCountdownTimer = 0;      // NEW
+            bossSpawnCountdownActive = false;
+            bossSpawnCountdownTimer = 0;
             wallCollisions.clear();
             roomSkeletons.clear();
             if (activeDomain != null) {
@@ -351,7 +400,7 @@ public class DomainManager {
             startFade(true, null);
         });
     }
-    
+
     /** Render sprite skeleton hasil summon boss (dipanggil GamePanel saat Y-sort) */
     public void drawRoomSkeletons(Graphics2D g2) {
         if (activeRoom == null) return;
@@ -407,13 +456,14 @@ public class DomainManager {
         roomBgImage = null;
         nearDoorRoom = null;
         bossSkeleton = null;
-
-        // Spawn Dark Merchant
-        darkMerchant = new DarkMerchant(gp);
-        darkMerchant.x = 410;
-        darkMerchant.y = 150;
+        darkMerchant = null;
 
         if (d.id.equals("Tomb")) {
+            // FIX: Dark Merchant sekarang cuma muncul di Tomb (sebelumnya muncul di semua domain)
+            darkMerchant = new DarkMerchant(gp);
+            darkMerchant.x = 410;
+            darkMerchant.y = 150;
+
             spawnSkeleton(800,  330);
             spawnSkeleton(880,  350);
             spawnSkeleton(985,  260);
@@ -448,7 +498,6 @@ public class DomainManager {
 
     public void draw(Graphics2D g2) {
         drawBackground(g2);
-        
     }
 
     public void drawBackground(Graphics2D g2) {
@@ -463,7 +512,7 @@ public class DomainManager {
                 g2.drawImage(roomBgImage.getImage(), 0-camX+psx, 0-camY+psy,
                     activeRoom.width*2, activeRoom.height*2, gp);
             drawRoomHint(g2, activeRoom);
-            drawBossAltarHintIfNear(g2);  // NEW
+            drawBossAltarHintIfNear(g2);
             drawBossSpawnCountdown(g2);
             drawBossSpawnConfirmDialog(g2);
             drawCollisionDebug(g2);
@@ -474,7 +523,6 @@ public class DomainManager {
             drawHint(g2, activeDomain);
             drawDoorHintIfNear(g2);
             drawCollisionDebug(g2);
-            
         }
         drawFadeOverlay(g2);
     }
@@ -527,8 +575,7 @@ public class DomainManager {
             g2.drawString(shopFeedback, bx + 12, by + 17);
         }
     }
-    
-    
+
     private void checkBossSpawnAltar() {
         if (bossSpawnConfirmOpen) return; // lagi nunggu jawaban player, jangan re-trigger
 
@@ -558,7 +605,7 @@ public class DomainManager {
         bossSpawnConfirmSelection = 0; // default YES
         confirmNavCooldown = 0;
     }
-    
+
     private void checkBossSpawnConfirm() {
         if (!bossSpawnConfirmOpen) return;
 
@@ -663,9 +710,7 @@ public class DomainManager {
             gp.KeyH.interactPressed = false;
         }
     }
-    
-    
-    
+
     public void handleMerchantMouseClick(java.awt.event.MouseEvent e) {
         if (darkMerchant == null) return;
         if (!darkMerchant.isShopOpen()) return;
@@ -688,6 +733,7 @@ public class DomainManager {
 
         darkMerchant.handleMouseWheel(rotation);
     }
+
     /**
      * Cek stok Bone & Skull, kurangi jika cukup, tambahkan item ke inventory.
      */
@@ -772,7 +818,7 @@ public class DomainManager {
         String hint = "[ " + r.id + " ]  |  ESC = Keluar";
         g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - 16);
     }
-    
+
     private void drawBossSpawnCountdown(Graphics2D g2) {
         if (!bossSpawnCountdownActive) return;
         int secondsLeft = (bossSpawnCountdownTimer / GAME_FPS) + 1;
@@ -821,8 +867,6 @@ public class DomainManager {
         g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
         g2.setComposite(old);
     }
-    
-
 
     private void startFade(boolean in, Runnable onComplete) {
         fadeIn = in; fadeAlpha = in ? 255 : 0; fading = true; onFadeComplete = onComplete;

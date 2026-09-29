@@ -11,6 +11,13 @@ public class DomainData {
     public final String backgroundPath;  // path gambar background domain
     public int exitWorldX = 0;
     public int exitWorldY = 0;
+
+    // ── Titik keluar DI DALAM domain (koordinat interior). Deketin -> otomatis keluar ──
+    public boolean hasExitPoint = false;
+    public int exitPointX = 0;
+    public int exitPointY = 0;
+    public int exitPointRadius = 60;
+
     public final List<Rectangle> collisions = new ArrayList<>();
     public final List<RoomData> rooms = new ArrayList<>(); // sub-ruangan (misal boss room)
 
@@ -27,6 +34,14 @@ public class DomainData {
     public DomainData setExit(int x, int y) {
         this.exitWorldX = x;
         this.exitWorldY = y;
+        return this;
+    }
+    /** Titik di dalam interior yang bikin player keluar otomatis kalau didekati (dalam radius px). */
+    public DomainData setExitPoint(int x, int y, int radius) {
+        this.hasExitPoint = true;
+        this.exitPointX = x;
+        this.exitPointY = y;
+        this.exitPointRadius = radius;
         return this;
     }
     public DomainData addCollision(int x, int y, int w, int h) {
