@@ -96,6 +96,17 @@ public class DomainManager {
         sk.noDrop = true;
         roomSkeletons.add(sk);
     }
+    
+    public void spawnGolemiteInRoom(int wx, int wy) {
+        if (activeRoom == null) return; // safety: cuma valid kalau lagi di dalam room
+        if (getAliveRoomSkeletonCount() >= MAX_ROOM_SKELETONS) return; // cegah numpuk/lag
+        Skeleton sk = new Skeleton(gp);
+        sk.x = wx; sk.y = wy;
+        sk.spawnX = wx; sk.spawnY = wy;
+        sk.noRespawn = true; // pion boss, sekali mati ya mati
+        sk.noDrop = true;
+        roomSkeletons.add(sk);
+    }
 
     /** Boss yang lagi aktif di dalam room (null kalau gak lagi di boss room / boss udah kalah) */
     public SkeletonKing getBossSkeleton() {
@@ -486,6 +497,35 @@ public class DomainManager {
             spawnSkeleton(1370, 890);
             spawnSkeleton(1430, 980);
         }
+        
+        if (d.id.equals("GolemHide")) {
+            // FIX: Dark Merchant sekarang cuma muncul di Tomb (sebelumnya muncul di semua domain)
+            darkMerchant = new DarkMerchant(gp);
+            darkMerchant.x = 410;
+            darkMerchant.y = 150;
+
+            spawnGolemite(800,  330);
+            spawnSkeleton(880,  350);
+            spawnSkeleton(985,  260);
+            spawnSkeleton(1080, 285);
+            spawnSkeleton(1080, 380);
+            spawnSkeleton(785,  520);
+            spawnSkeleton(730,  500);
+            spawnSkeleton(700,  370);
+            spawnSkeleton(940,  600);
+            spawnSkeleton(1000, 640);
+            spawnSkeleton(110,  290);
+            spawnSkeleton(230,  290);
+            spawnSkeleton(200,  430);
+            spawnSkeleton(200,  600);
+            spawnSkeleton(270,  900);
+            spawnSkeleton(200,  970);
+            spawnSkeleton(300,  970);
+            spawnSkeleton(580, 1040);
+            spawnSkeleton(610,  990);
+            spawnSkeleton(1370, 890);
+            spawnSkeleton(1430, 980);
+        }
 
         try {
             java.net.URL url = getClass().getResource(d.backgroundPath);
@@ -495,6 +535,9 @@ public class DomainManager {
 
         for (Rectangle r : d.collisions) wallCollisions.add(r);
     }
+    
+    
+    
 
     public void draw(Graphics2D g2) {
         drawBackground(g2);
