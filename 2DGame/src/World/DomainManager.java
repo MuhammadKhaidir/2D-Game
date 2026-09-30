@@ -55,6 +55,10 @@ public class DomainManager {
     private boolean fadeIn = false;
     private Runnable onFadeComplete;
 
+    public String getActiveDomainId() {
+        return activeDomain != null ? activeDomain.id : null;
+    }
+    
     public DarkMerchant darkMerchant = null;
     
     // Pesan feedback pembelian (tampil sebentar di layar)
@@ -458,10 +462,13 @@ public class DomainManager {
 
     private void playDomainBGM(String domainId) {
         switch (domainId) {
-            case "Tomb": gp.music.play("Umbrae Surgunt.wav"); break;
-            default:     gp.music.stop();
+            case "Tomb":      gp.music.play("Umbrae Surgunt.wav"); break;
+            case "GolemHide": gp.music.play("golemHideSound.wav"); break;
+            default:          gp.music.stop();
         }
     }
+    
+
 
     private void spawnSkeleton(int wx, int wy) {
         Skeleton sk = new Skeleton(gp);

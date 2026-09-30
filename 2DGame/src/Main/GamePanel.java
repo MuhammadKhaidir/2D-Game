@@ -131,6 +131,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public KeyHandler KeyH = new KeyHandler();
 
 	TerrainMusic.land land = new TerrainMusic.land();
+	private static final String MUSIC_GOLEM_HIDE = "golemHideSound.wav";
 	Thread gameThread;
 	public Collision colision = new Collision(this);
 
@@ -505,31 +506,28 @@ public class GamePanel extends JPanel implements Runnable{
 
 	// ===== NEW: BGM state machine =====
 	// Cek state musik saat ini, kalau beda dari state terakhir, ganti track.
+	private String lastTrack = null;
+
 	private void updateMusic() {
-	    MusicState current;
+	    String track;
 
 	    if (mainMenu.active) {
-	        current = MusicState.MENU;
-	    } else if (gameState == GameState.DOMAIN
-	            && domainManager.getBossSkeleton() != null
-	            && !domainManager.getBossSkeleton().isDead) {
-	        current = MusicState.BOSS;
+	        track = MUSIC_MENU;
 	    } else if (gameState == GameState.DOMAIN) {
-	        current = MusicState.DOMAIN;
+	        if ("GolemHide".equals(domainManager.getActiveDomainId())) {
+	            track = MUSIC_GOLEM_HIDE;
+	        } else {
+	            track = MUSIC_DOMAIN; // Tomb
+	        }
 	    } else if (gameState == GameState.INSIDE) {
-	        current = MusicState.INSIDE;
+	        track = MUSIC_INSIDE;
 	    } else {
-	        current = MusicState.OUTSIDE;
+	        track = MUSIC_OUTSIDE;
 	    }
 
-	    if (current != lastMusicState) {
-	        switch (current) {
-	            case MENU:    music.play(MUSIC_MENU);    break;
-	            case OUTSIDE: music.play(MUSIC_OUTSIDE); break;
-	            case INSIDE:  music.play(MUSIC_INSIDE);  break;
-	            case DOMAIN:  music.play(MUSIC_DOMAIN);  break; 
-	        }
-	        lastMusicState = current;
+	    if (!track.equals(lastTrack)) {
+	        music.play(track);
+	        lastTrack = track;
 	    }
 	}
 	
