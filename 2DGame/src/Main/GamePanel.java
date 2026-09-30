@@ -1098,6 +1098,9 @@ public void paintComponent(Graphics g) {
         for (Entitas.Skeleton sk : domainManager.getRoomSkeletons()) {   // NEW
             if (sk != null) sortList.add(sk);
         }
+        for (Entitas.Golemite gl : domainManager.getGolemites()) {
+            if (gl != null && gl.isAlive()) sortList.add(gl);
+        }
         if (domainManager.darkMerchant != null) {
             sortList.add(domainManager.darkMerchant);
         }

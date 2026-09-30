@@ -82,6 +82,13 @@ public class Golemite extends Entity {
     public boolean isAlive() {
         return active;
     }
+    
+    @Override
+    public int getSortY() {
+        // pakai solidAreaDefaultY, bukan solidArea.y, karena solidArea.y dipindah ke -9999
+        // pas golemite mati. Kalau gak, dia loncat ke urutan paling belakang pas fade out.
+        return this.y + solidAreaDefaultY + solidArea.height;
+    }
 
     // ────────────────────────────────────────────────────────────
     //  LOAD SPRITE
@@ -304,8 +311,7 @@ public class Golemite extends Entity {
                     direction = dx > 0 ? "right" : "left";
 
                     this.collisionOn = false;
-                    gp.colision.checkTile(this);
-                    gp.colision.checkObject(this, dx, 0);
+                    checkWorldCollision(dx, 0);
                     gp.colision.checkEntity(this, gp.player, dx, 0);
                     checkEntityListCollision(dx, 0);
 
@@ -320,8 +326,7 @@ public class Golemite extends Entity {
                     direction = dy > 0 ? "down" : "up";
 
                     this.collisionOn = false;
-                    gp.colision.checkTile(this);
-                    gp.colision.checkObject(this, 0, dy);
+                    checkWorldCollision(0, dy);
                     gp.colision.checkEntity(this, gp.player, 0, dy);
                     checkEntityListCollision(0, dy);
 
@@ -545,6 +550,19 @@ public class Golemite extends Entity {
             g2.fillRect(barX, barY, barW, barH);
             g2.setColor(new Color(200, 50, 50));
             g2.fillRect(barX, barY, hpFill, barH);
+        }
+    }
+    
+    private void checkWorldCollision(int dx, int dy) {
+        if (gp.gameState == GamePanel.GameState.DOMAIN) {
+            Rectangle next = new Rectangle(x + solidArea.x + dx, y + solidArea.y + dy,
+                                           solidArea.width, solidArea.height);
+            if (gp.domainManager != null && gp.domainManager.checkCollision(next)) {
+                collisionOn = true;
+            }
+        } else {
+            gp.colision.checkTile(this);
+            gp.colision.checkObject(this, dx, dy);
         }
     }
 }

@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 
 import Entitas.DarkMerchant;
 import Entitas.Skeleton;
+import Entitas.Golemite;
 import Entitas.SkeletonKing;
 import Item.ItemManager;
 import Item.ItemStack;
@@ -55,7 +56,7 @@ public class DomainManager {
     private Runnable onFadeComplete;
 
     public DarkMerchant darkMerchant = null;
-
+    
     // Pesan feedback pembelian (tampil sebentar di layar)
     private String shopFeedback = "";
     private int shopFeedbackTimer = 0;
@@ -64,6 +65,12 @@ public class DomainManager {
     public List<Skeleton> getSkeletons() {
         // Skeleton Tomb gak ditampilin pas lagi di dalam room (misal boss room)
         return activeRoom != null ? java.util.Collections.emptyList() : skeletons;
+    }
+    
+    private final List<Golemite> golemites = new ArrayList<>();
+    public List<Golemite> getGolemites() {
+        // sama kayak skeleton: gak ditampilin pas di dalam room
+        return activeRoom != null ? java.util.Collections.emptyList() : golemites;
     }
 
     // skeleton summon an si king skeleton / pion bisa dibilang
@@ -120,6 +127,7 @@ public class DomainManager {
         registerAllDomains();
         new Thread(() -> Skeleton.preloadImages()).start();
         new Thread(() -> SkeletonKing.preloadImages()).start();
+       // new Thread(() -> Golemite.preloadImages()).start();
     }
 
     private void registerAllDomains() {
@@ -274,6 +282,7 @@ public class DomainManager {
             checkEnterRoom();
             checkExitPoint();
             for (Skeleton sk : skeletons) sk.update();
+            for (Golemite g : golemites) g.update();
             if (darkMerchant != null) {
                 darkMerchant.update();
                 checkMerchantInteract();
@@ -301,6 +310,7 @@ public class DomainManager {
                 }
             }
             for (Skeleton sk : roomSkeletons) sk.update();
+            
         }
     }
 
@@ -459,10 +469,18 @@ public class DomainManager {
         sk.spawnX = wx; sk.spawnY = wy;
         skeletons.add(sk);
     }
+    
+    private void spawnGolemite(int wx, int wy) {
+        Golemite g = new Golemite(gp);
+        g.x = wx; g.y = wy;
+        g.spawnX = wx; g.spawnY = wy;
+        golemites.add(g);
+    }
 
     private void buildInteriorFor(DomainData d) {
         wallCollisions.clear();
         skeletons.clear();
+        golemites.clear();
         activeRoom = null;
         roomBgImage = null;
         nearDoorRoom = null;
@@ -499,32 +517,15 @@ public class DomainManager {
         }
         
         if (d.id.equals("GolemHide")) {
-            // FIX: Dark Merchant sekarang cuma muncul di Tomb (sebelumnya muncul di semua domain)
-            darkMerchant = new DarkMerchant(gp);
-            darkMerchant.x = 410;
-            darkMerchant.y = 150;
-
-            spawnGolemite(800,  330);
-            spawnSkeleton(880,  350);
-            spawnSkeleton(985,  260);
-            spawnSkeleton(1080, 285);
-            spawnSkeleton(1080, 380);
-            spawnSkeleton(785,  520);
-            spawnSkeleton(730,  500);
-            spawnSkeleton(700,  370);
-            spawnSkeleton(940,  600);
-            spawnSkeleton(1000, 640);
-            spawnSkeleton(110,  290);
-            spawnSkeleton(230,  290);
-            spawnSkeleton(200,  430);
-            spawnSkeleton(200,  600);
-            spawnSkeleton(270,  900);
-            spawnSkeleton(200,  970);
-            spawnSkeleton(300,  970);
-            spawnSkeleton(580, 1040);
-            spawnSkeleton(610,  990);
-            spawnSkeleton(1370, 890);
-            spawnSkeleton(1430, 980);
+            // Cuma golemite, tanpa skeleton dan tanpa merchant
+            spawnGolemite(300,  500);
+            spawnGolemite(520,  720);
+            spawnGolemite(900,  550);
+            spawnGolemite(1100, 450);
+            spawnGolemite(1300, 720);
+            spawnGolemite(700,  920);
+            spawnGolemite(1000, 960);
+            spawnGolemite(400,  1000);
         }
 
         try {
