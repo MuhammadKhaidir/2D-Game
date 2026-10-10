@@ -427,7 +427,7 @@ public class player extends Entity {
         if (exp >= nextLevelExp) {
             level++;
             exp = exp - nextLevelExp;
-            nextLevelExp = nextLevelExp * 2;
+            nextLevelExp = nextLevelExp + 100;
             attributePoints += 3;
             System.out.println("LEVEL UP! Sekarang Level " + level);
         }
