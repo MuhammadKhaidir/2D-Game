@@ -531,15 +531,11 @@ public class TotemUI {
     //  INPUT
     // ══════════════════════════════════════════════════════════════════════════
 
-    // Kalau game pakai render scale, koordinat mouse harus dibagi scale dulu.
-    // Guard: kalau scale 0/negatif dianggap 1 biar hitbox gak pernah "lari".
-    private double renderScale() {
-        double s = gp.scale;
-        return s > 0 ? s : 1.0;
-    }
-
-    private int toGameX(int rawX) { return (int) (rawX / renderScale()); }
-    private int toGameY(int rawY) { return (int) (rawY / renderScale()); }
+    // CATATAN: gp.scale = 3 itu skala TILE (16 x 3), BUKAN skala render layar.
+    // Game digambar langsung di ukuran asli (screenWidth x screenHeight), jadi
+    // koordinat mouse dipakai apa adanya. JANGAN dibagi gp.scale.
+    private int toGameX(int rawX) { return rawX; }
+    private int toGameY(int rawY) { return rawY; }
 
     public void handleMouseClick(MouseEvent e) {
         if (!visible) return;
@@ -550,7 +546,7 @@ public class TotemUI {
         if (DEBUG_CLICK) {
             System.out.println("[TotemUI] click raw=(" + e.getX() + "," + e.getY()
                     + ") game=(" + mx + "," + my + ") panel=(" + panelX + "," + panelY
-                    + "," + PANEL_W + "," + PANEL_H + ") scale=" + renderScale()
+                    + "," + PANEL_W + "," + PANEL_H + ")"
                     + " detail=" + detailMode + " confirm=" + confirmDeleteSlot);
         }
 

@@ -228,41 +228,52 @@ public class GamePanel extends JPanel implements Runnable{
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-
+ 
+                // [DEBUG SEMENTARA — hapus kalau totem udah bisa diklik]
+                System.out.println("[GamePanel] press (" + e.getX() + "," + e.getY() + ")"
+                        + " totem=" + (totemUI != null && totemUI.visible)
+                        + " backpack=" + (backpack != null && backpack.visible));
+ 
                 // ── DEATH SCREEN ──
                 // Harus paling atas supaya klik Respawn benar-benar diterima
                 if (deathScreenUI != null && deathScreenUI.visible) {
                     deathScreenUI.handleClick(e);
                     return;
                 }
-
+ 
+                // ── DEATH TOTEM UI ── (SEBELUM UI lain)
+                if (totemUI != null && totemUI.visible) {
+                    totemUI.handleMouseClick(e);
+                    return;
+                }
+ 
                 // ── DARK MERCHANT SHOP ──
                 if (domainManager != null
                         && domainManager.darkMerchant != null
                         && domainManager.darkMerchant.isShopOpen()) {
-
+ 
                     domainManager.handleMerchantMouseClick(e);
                     return;
                 }
-
+ 
                 // ── PLAYER STAT UI ──
                 if (statUI != null && statUI.visible) {
                     statUI.handleClick(e);
                     return;
                 }
-
+ 
                 // ── MOB INDEX UI ──
                 if (mobIndexUI != null && mobIndexUI.visible) {
                     mobIndexUI.handleMouseClick(e, GamePanel.this);
                     return;
                 }
-
+ 
                 // ── BACKPACK ──
                 if (backpack != null && backpack.visible) {
                     backpack.handleMouseClick(e, GamePanel.this);
                     return;
                 }
-
+ 
                 // ── PUNCH ──
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     if (player.isNotPunching()) {
