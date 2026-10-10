@@ -83,6 +83,10 @@ public class DeathTotemManager {
     // ── RECALL / T key ────────────────────────────────────────────────────────
 
     public void trySpawn() {
+        // FIX: totem gak ada di backpack → tombol T gak ngapa-ngapain sama sekali
+        // (gak ada pesan, gak ada cooldown, gak ada recall).
+        if (!isPlayerHasTotem()) return;
+
         if (cooldownTimer > 0) {
             if (gp.speechBubble != null)
                 gp.speechBubble.show("Skill on cooldown! " + getCooldownSeconds() + "s left.");
@@ -92,7 +96,7 @@ public class DeathTotemManager {
             recallActivePawn();
             return;
         }
-        // Kalau tidak ada pion aktif dan tidak buka dari UI, spawn slot pertama yang tersedia
+        // Totem ADA di backpack tapi belum ada soul → baru munculin pesan ini
         if (totem.isEmpty()) {
             if (gp.speechBubble != null)
                 gp.speechBubble.show("Totem is empty! Defeat an enemy first.");
@@ -117,6 +121,32 @@ public class DeathTotemManager {
         if (gp.speechBubble != null)
             gp.speechBubble.show("Pawn recalled. Soul still stored.");
         cooldownTimer = COOLDOWN_MAX;
+    }
+
+    // ── DELETE SLOT (dipanggil dari TotemUI) ──────────────────────────────────
+
+    /**
+     * Hapus soul di slot tertentu secara permanen.
+     * Pion yang lagi aktif (keluar) gak boleh dihapus — harus di-recall dulu.
+     *
+     * @return true kalau berhasil dihapus
+     */
+    public boolean tryDeleteSlot(int slotIndex) {
+        List<CapturedMob> slots = totem.getSlots();
+        if (slotIndex < 0 || slotIndex >= slots.size()) return false;
+
+        if (totem.getActivePawnSlot() == slotIndex) {
+            if (gp.speechBubble != null)
+                gp.speechBubble.show("Recall this pawn first before deleting it! (T)");
+            return false;
+        }
+
+        String name = slots.get(slotIndex).getTypeName();
+        totem.removeSlot(slotIndex);
+
+        if (gp.speechBubble != null)
+            gp.speechBubble.show(name + " soul deleted.");
+        return true;
     }
 
     // ── EXP DISTRIBUTION (dipanggil saat pion kill musuh) ────────────────────
