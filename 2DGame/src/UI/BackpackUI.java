@@ -24,12 +24,8 @@ public class BackpackUI implements MouseWheelListener {
     private int scrollY = 0;
     public List<ItemStack> items; 
 
-    // NEW: item yang lagi di-hover mouse (buat tooltip info), bukan lagi "selected"
-    private ItemStack hoveredItem = null;
-    // NEW: posisi slot yang lagi di-hover, dipake buat naro tooltip di sebelahnya
-    private Rectangle hoveredSlotRect = null;
-    // NEW: bounding box tooltip yang lagi digambar, dipake buat cek klik tombol di dalamnya
-    private Rectangle tooltipRect = null;
+    // CHANGED: item yang lagi di-KLIK (bukan hover lagi). Detailnya tampil di panel kanan.
+    private ItemStack selectedItem = null;
 
     // panel dikecilin dari 860 -> 730 biar muat di screenWidth (768), sebelumnya
     // kepotong karena panelX jadi negatif
@@ -51,16 +47,17 @@ public class BackpackUI implements MouseWheelListener {
     private Color colorBorder   = new Color(220, 190, 150); 
     private Color colorAccent   = new Color(250, 180, 40);  
 
-    // ── State & hitbox delete (sekarang letaknya di tooltip, bukan panel kanan) ──
+    // ── State & hitbox delete (sekarang letaknya di panel kanan, mode detail item) ──
     private Rectangle deleteBtnRect = null;
     private Rectangle minusBtnRect = null;
     private Rectangle plusBtnRect = null;
     private Rectangle confirmBtnRect = null;
     private Rectangle cancelBtnRect = null;
+    private Rectangle closeDetailBtnRect = null; // NEW: tombol silang di kanan atas detail item
     private boolean showDeleteConfirm = false;
     private int deleteAmount = 1;
 
-    // ── NEW: State panel MENU (kanan) & Settings ──
+    // ── State panel MENU (kanan) & Settings ──
     private boolean settingsOpen = false; // false = tampilin list menu, true = tampilin isi Settings
     private int musicVolumePercent = 75;  // default match MusicManager.play() (-10dB)
     private Rectangle settingsBtnRect = null;
@@ -83,8 +80,9 @@ public class BackpackUI implements MouseWheelListener {
     }
 
     /**
-     * Hitung geometry panel MENU (kanan) — dulu ini "detail item", sekarang
-     * jadi list menu (Settings, dan nanti bisa ditambah Diary/Map/dll).
+     * Hitung geometry panel kanan. Isinya ganti-ganti:
+     * - default            -> list menu (Settings)
+     * - ada item di-klik   -> detail item (deskripsi, stat, delete)
      */
     private Rectangle getMenuBoxRect(int panelX, int panelY) {
         int contentX = panelX + 230;
@@ -97,8 +95,9 @@ public class BackpackUI implements MouseWheelListener {
     }
 
     /**
-     * Panel MENU di sebelah kanan grid inventory. Sekarang cuma ada "Settings",
-     * tapi struktur di bawah ini gampang ditambahin entry lain (Diary, Map, dll):
+     * Panel kanan. Kalau selectedItem != null -> gambar detail item.
+     * Kalau null -> gambar menu biasa (Settings). Struktur menu di bawah ini
+     * gampang ditambahin entry lain (Diary, Map, dll):
      * tinggal copy blok tombol "Settings", geser btnY += (btnH + 8), kasih nama beda.
      */
     private void drawMenuPanel(Graphics2D g2, int x, int y, int w, int h) {
@@ -106,6 +105,21 @@ public class BackpackUI implements MouseWheelListener {
         g2.fillRect(x, y, w, h);
         g2.setColor(colorBgOuter);
         g2.drawRect(x, y, w, h);
+
+        // ── Mode DETAIL ITEM ──
+        if (selectedItem != null && selectedItem.item != null) {
+            drawItemDetails(g2, x, y, w, h);
+            return;
+        }
+
+        // ── Mode MENU / SETTINGS ──
+        // reset hitbox mode detail biar klik gak nyangkut ke tombol yang gak keliatan
+        deleteBtnRect = null;
+        minusBtnRect = null;
+        plusBtnRect = null;
+        confirmBtnRect = null;
+        cancelBtnRect = null;
+        closeDetailBtnRect = null;
 
         g2.setFont(new Font("Monospaced", Font.BOLD, 12));
         g2.setColor(colorBorder);
@@ -193,356 +207,156 @@ public class BackpackUI implements MouseWheelListener {
             g2.drawString("< Back", x + 22, backY + 16);
         }
     }
-    
-    /**
-     * Hitung posisi & ukuran tooltip berdasarkan slot yang di-hover.
-     * DIPAKAI BARENG oleh draw() dan handleMouseMove(), biar hasilnya SELALU
-     * sinkron — gak ada lagi versi "basi" dari frame render sebelumnya yang
-     * bikin celah ke-detect sebagai keluar area.
-     */
-    private Rectangle calcTooltipRect(
-            Rectangle slot, int screenW, int screenH) {
-
-        int tw = 260;
-        int th = 300;
-
-        int tx = slot.x + slot.width - 2;
-
-        if (tx + tw > screenW - 5) {
-            tx = slot.x - tw + 2;
-        }
-
-        if (tx < 5) tx = 5;
-
-        int ty = slot.y;
-
-        if (ty + th > screenH - 5) {
-            ty = screenH - th - 5;
-        }
-
-        if (ty < 5) ty = 5;
-
-        return new Rectangle(tx, ty, tw, th);
-    }
 
     /**
-     * Tooltip info item — muncul nempel di sebelah slot yang lagi di-hover.
-     * Posisi dihitung via calcTooltipRect() biar konsisten sama hit-test di
-     * handleMouseMove().
+     * NEW: Detail item di panel kanan (gantiin tooltip melayang).
+     * Isinya: header (ikon + qty + nama), deskripsi, stat, tombol delete.
+     * Tombol X di kanan atas buat balik ke tampilan menu/settings.
+     * Panel kanan sempit (~144px), jadi layout dibikin vertikal.
      */
-    private void drawItemTooltip(
-            Graphics2D g2, int screenW, int screenH) {
+    private void drawItemDetails(Graphics2D g2, int x, int y, int w, int h) {
+        // reset hitbox mode menu/settings
+        settingsBtnRect = null;
+        settingsBackBtnRect = null;
+        volMinusBtnRect = null;
+        volPlusBtnRect = null;
 
-        if (hoveredItem == null
-                || hoveredItem.item == null
-                || hoveredSlotRect == null) {
+        int pad = 12;
 
-            tooltipRect = null;
-            deleteBtnRect = null;
-            minusBtnRect = null;
-            plusBtnRect = null;
-            confirmBtnRect = null;
-            cancelBtnRect = null;
-            return;
-        }
-
-        tooltipRect = calcTooltipRect(
-                hoveredSlotRect, screenW, screenH);
-
-        int tx = tooltipRect.x;
-        int ty = tooltipRect.y;
-        int tw = tooltipRect.width;
-        int th = tooltipRect.height;
-
-        // Shadow
-        g2.setColor(new Color(0, 0, 0, 120));
-        g2.fillRect(tx + 5, ty + 5, tw, th);
-
-        // Main panel
-        g2.setColor(colorSubPanel);
-        g2.fillRect(tx, ty, tw, th);
-
+        // Judul + tombol silang
+        g2.setFont(new Font("Monospaced", Font.BOLD, 12));
         g2.setColor(colorBorder);
-        g2.setStroke(new BasicStroke(2));
-        g2.drawRect(tx, ty, tw, th);
+        g2.drawString("- ITEM -", x + pad, y + 22);
 
-        // =========================
-        // HEADER ITEM
-        // =========================
+        closeDetailBtnRect = new Rectangle(x + w - 28, y + 8, 18, 18);
+        drawButton(g2, closeDetailBtnRect, "X", colorSlot);
 
-        int padding = 12;
-        int iconSize = 40;
-        int iconX = tx + padding;
-        int iconY = ty + padding;
+        // Header: ikon, qty, nama
+        int iconSize = 36;
+        int iconX = x + pad;
+        int iconY = y + 36;
 
-        g2.drawImage(
-                hoveredItem.item.icon,
-                iconX, iconY,
-                iconSize, iconSize, null);
-
-        int textX = iconX + iconSize + 12;
-
-        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
-        g2.setColor(colorAccent);
-        g2.drawString(
-                truncateText(hoveredItem.item.name, 17),
-                textX, iconY + 16);
+        g2.drawImage(selectedItem.item.icon, iconX, iconY, iconSize, iconSize, null);
 
         g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
         g2.setColor(Color.LIGHT_GRAY);
-        g2.drawString(
-                "Quantity: " + hoveredItem.amount,
-                textX, iconY + 32);
+        g2.drawString("Qty: " + selectedItem.amount, iconX + iconSize + 8, iconY + 22);
+
+        g2.setFont(new Font("Monospaced", Font.BOLD, 11));
+        g2.setColor(colorAccent);
+        g2.drawString(truncateText(selectedItem.item.name, 18), x + pad, y + 90);
 
         // Divider
-        int dividerY = ty + 68;
-
         g2.setColor(new Color(120, 100, 80));
-        g2.drawLine(
-                tx + padding,
-                dividerY,
-                tx + tw - padding,
-                dividerY);
+        g2.drawLine(x + pad, y + 100, x + w - pad, y + 100);
 
-        // =========================
-        // DESCRIPTION PANEL
-        // =========================
-
-        int descX = tx + padding;
-        int descY = dividerY + 18;
-        int descW = tw - padding * 2;
-
+        // Deskripsi
         g2.setColor(colorAccent);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 11));
-        g2.drawString("DESCRIPTION", descX, descY);
-
-        int descriptionStartY = descY + 17;
+        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+        g2.drawString("DESCRIPTION", x + pad, y + 117);
 
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
-
-        drawWrappedString(
+        int nextY = drawWrappedString(
                 g2,
-                getItemDescriptionText(hoveredItem.item.name),
-                descX,
-                descriptionStartY,
-                descW,
-                13);
+                getItemDescriptionText(selectedItem.item.name),
+                x + pad, y + 131, w - pad * 2, 12);
 
-        // =========================
-        // STATS PANEL
-        // =========================
-
-        ItemStats stats = getItemStats(hoveredItem.item.name);
-
-        int statsX = tx + padding;
-        int statsY = ty + 142;
-        int statsW = tw - padding * 2;
-
-        statsY += 8;
+        // Stat
+        ItemStats stats = getItemStats(selectedItem.item.name);
+        int statsX = x + pad;
+        int statsW = w - pad * 2;
+        int statsY = nextY + 2;
 
         if (stats != null) {
-
-            statsY += 20;
-
             if (stats.damage != null) {
-                statsY = drawStatRow(
-                        g2, "[+]", "DAMAGE",
-                        String.valueOf(stats.damage),
-                        statsX, statsY, statsW);
+                statsY = drawStatRow(g2, "DAMAGE", String.valueOf(stats.damage), statsX, statsY, statsW);
             }
-
             if (stats.defense != null) {
-                statsY = drawStatRow(
-                        g2, "[+]", "DEFENSE",
-                        String.valueOf(stats.defense),
-                        statsX, statsY, statsW);
+                statsY = drawStatRow(g2, "DEFENSE", String.valueOf(stats.defense), statsX, statsY, statsW);
             }
-
             if (stats.critChance != null) {
-                statsY = drawStatRow(
-                        g2, "[%]", "CRIT CHANCE",
-                        stats.critChance + "%",
-                        statsX, statsY, statsW);
+                statsY = drawStatRow(g2, "CRIT CHANCE", stats.critChance + "%", statsX, statsY, statsW);
             }
-
             if (stats.critDamage != null) {
-                statsY = drawStatRow(
-                        g2, "[%]", "CRIT DAMAGE",
-                        stats.critDamage + "%",
-                        statsX, statsY, statsW);
+                statsY = drawStatRow(g2, "CRIT DAMAGE", stats.critDamage + "%", statsX, statsY, statsW);
             }
-
             if (stats.damageReduction != null) {
-                statsY = drawStatRow(
-                        g2, "[%]", "DMG REDUCTION",
-                        stats.damageReduction + "%",
-                        statsX, statsY, statsW);
+                statsY = drawStatRow(g2, "DMG REDUCTION", stats.damageReduction + "%", statsX, statsY, statsW);
             }
-
-
         } else {
-
-            g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 9));
             g2.setColor(new Color(170, 170, 170));
-            g2.drawString(
-                    "No equipment stats available.",
-                    statsX, statsY + 22);
+            g2.drawString("No equipment stats.", statsX, statsY + 10);
         }
 
-        // =========================
-        // DELETE BUTTON
-        // =========================
-
-        int btnY = ty + th - 32;
+        // Tombol delete (nempel di bawah panel)
+        int bx = x + pad;
+        int bw = w - pad * 2;
 
         if (!showDeleteConfirm) {
-
-            int btnW = 84;
-            int btnH = 20;
-            int btnX = tx + padding;
-
-            deleteBtnRect = new Rectangle(
-                    btnX, btnY, btnW, btnH);
-
+            deleteBtnRect = new Rectangle(bx, y + h - 32, bw, 20);
             minusBtnRect = null;
             plusBtnRect = null;
             confirmBtnRect = null;
             cancelBtnRect = null;
 
-            g2.setColor(new Color(120, 30, 25));
-            g2.fillRect(btnX, btnY, btnW, btnH);
-
-            g2.setColor(colorBorder);
-            g2.drawRect(btnX, btnY, btnW, btnH);
-
-            g2.setFont(new Font("Monospaced", Font.BOLD, 10));
-            g2.setColor(Color.WHITE);
-            g2.drawString(
-                    "[ Delete ]",
-                    btnX + 6, btnY + 14);
-
+            drawButton(g2, deleteBtnRect, "[ Delete ]", new Color(120, 30, 25));
         } else {
-
             deleteBtnRect = null;
 
-            int btnX0 = tx + padding;
+            int row1Y = y + h - 58;
+            int row2Y = y + h - 32;
 
-            minusBtnRect = new Rectangle(
-                    btnX0, btnY, 20, 20);
-
-            g2.setColor(colorSlot);
-            g2.fillRect(btnX0, btnY, 20, 20);
-
-            g2.setColor(colorBorder);
-            g2.drawRect(btnX0, btnY, 20, 20);
-
-            g2.setFont(new Font("Monospaced", Font.BOLD, 13));
-            g2.setColor(Color.WHITE);
-            g2.drawString("-", btnX0 + 7, btnY + 15);
-
-            String qtyText = deleteAmount
-                    + "/" + hoveredItem.amount;
+            // baris 1: [-]  qty  [+]
+            minusBtnRect = new Rectangle(bx, row1Y, 20, 20);
+            plusBtnRect = new Rectangle(bx + bw - 20, row1Y, 20, 20);
+            drawButton(g2, minusBtnRect, "-", colorSlot);
+            drawButton(g2, plusBtnRect, "+", colorSlot);
 
             g2.setFont(new Font("Monospaced", Font.BOLD, 10));
             g2.setColor(colorAccent);
-            g2.drawString(qtyText, btnX0 + 26, btnY + 14);
+            drawCenteredText(g2, deleteAmount + "/" + selectedItem.amount,
+                    new Rectangle(bx + 20, row1Y, bw - 40, 20));
 
-            int plusX = btnX0 + 58;
-
-            plusBtnRect = new Rectangle(
-                    plusX, btnY, 20, 20);
-
-            g2.setColor(colorSlot);
-            g2.fillRect(plusX, btnY, 20, 20);
-
-            g2.setColor(colorBorder);
-            g2.drawRect(plusX, btnY, 20, 20);
-
-            g2.setFont(new Font("Monospaced", Font.BOLD, 13));
-            g2.setColor(Color.WHITE);
-            g2.drawString("+", plusX + 6, btnY + 15);
-
-            int confirmX = plusX + 26;
-
-            confirmBtnRect = new Rectangle(
-                    confirmX, btnY, 50, 20);
-
-            g2.setColor(new Color(120, 30, 25));
-            g2.fillRect(confirmX, btnY, 50, 20);
-
-            g2.setColor(colorBorder);
-            g2.drawRect(confirmX, btnY, 50, 20);
-
-            g2.setFont(new Font("Monospaced", Font.BOLD, 10));
-            g2.setColor(Color.WHITE);
-            g2.drawString("OK", confirmX + 17, btnY + 14);
-
-            int cancelX = confirmX + 56;
-
-            cancelBtnRect = new Rectangle(
-                    cancelX, btnY, 50, 20);
-
-            g2.setColor(colorSlot);
-            g2.fillRect(cancelX, btnY, 50, 20);
-
-            g2.setColor(colorBorder);
-            g2.drawRect(cancelX, btnY, 50, 20);
-
-            g2.setColor(Color.WHITE);
-            g2.drawString("X", cancelX + 20, btnY + 14);
+            // baris 2: OK  Cancel
+            int halfW = (bw - 4) / 2;
+            confirmBtnRect = new Rectangle(bx, row2Y, halfW, 20);
+            cancelBtnRect = new Rectangle(bx + halfW + 4, row2Y, halfW, 20);
+            drawButton(g2, confirmBtnRect, "OK", new Color(120, 30, 25));
+            drawButton(g2, cancelBtnRect, "Cancel", colorSlot);
         }
     }
 
+    // NEW: helper gambar tombol kotak + teks di tengah
+    private void drawButton(Graphics2D g2, Rectangle r, String label, Color fill) {
+        g2.setColor(fill);
+        g2.fillRect(r.x, r.y, r.width, r.height);
+
+        g2.setColor(colorBorder);
+        g2.setStroke(new BasicStroke(1));
+        g2.drawRect(r.x, r.y, r.width, r.height);
+
+        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+        g2.setColor(Color.WHITE);
+        drawCenteredText(g2, label, r);
+    }
+
+    // NEW: helper teks di tengah rectangle (pakai font & warna g2 yang lagi aktif)
+    private void drawCenteredText(Graphics2D g2, String text, Rectangle r) {
+        FontMetrics fm = g2.getFontMetrics();
+        int tx = r.x + (r.width - fm.stringWidth(text)) / 2;
+        int ty = r.y + (r.height - fm.getHeight()) / 2 + fm.getAscent();
+        g2.drawString(text, tx, ty);
+    }
+
     /**
-     * Dipanggil tiap mouse gerak selagi backpack kebuka. Update hoveredItem
-     * sesuai item yang lagi ditunjuk mouse. FIX: safe zone dihitung LANGSUNG
-     * di sini pakai calcTooltipRect() (bukan baca field tooltipRect yang
-     * di-set dari draw() frame sebelumnya), jadi gak ada lagi celah gara-gara
-     * timing render vs event mouse.
+     * CHANGED: hover tooltip dihapus (detail item sekarang muncul pas klik,
+     * di panel kanan). Method ini sengaja dikosongin tapi dipertahankan biar
+     * pemanggilnya (GamePanel / MouseHandler) gak error.
      */
     public void handleMouseMove(MouseEvent e, GamePanel gp) {
-        if (!visible) return;
-
-        int mx = e.getPoint().x;
-        int my = e.getPoint().y;
-
-        int screenW = gp.screenWidth;
-        int screenH = gp.screenHeight;
-        int panelX = screenW / 2 - panelW / 2;
-        int panelY = 60;
-
-        ItemStack found = findItemAtPosition(mx, my, panelX, panelY);
-
-        if (found != null) {
-            if (found != hoveredItem) {
-                hoveredItem = found;
-                showDeleteConfirm = false;
-                deleteAmount = 1;
-            }
-            return;
-        }
-
-        // Belum ketemu slot langsung — cek apakah mouse masih di union
-        // (slot + tooltip), dihitung fresh saat ini juga, bukan dari cache.
-        if (hoveredSlotRect != null) {
-            Rectangle liveTooltipRect = calcTooltipRect(hoveredSlotRect, screenW, screenH);
-            Rectangle safeZone = hoveredSlotRect.union(liveTooltipRect);
-            safeZone.grow(4, 4); // buffer kecil, jaga-jaga jitter mouse
-
-            if (safeZone.contains(mx, my)) {
-                return; // masih dianggap "di area hover", tooltip tetap tampil
-            }
-        }
-
-        // Beneran gak nyentuh item, slot, atau tooltip -> baru ilang
-        if (hoveredItem != null) {
-            hoveredItem = null;
-            hoveredSlotRect = null;
-            tooltipRect = null;
-            showDeleteConfirm = false;
-            deleteAmount = 1;
-        }
+        // kosong
     }
 
     private String getItemDescriptionText(String itemName) {
@@ -607,7 +421,9 @@ public class BackpackUI implements MouseWheelListener {
 
     }
 
-    private void drawWrappedString(Graphics2D g2, String text, int x, int y, int wrapWidth, int lineHeight) {
+    // CHANGED: sekarang return y baris berikutnya (setelah baris terakhir),
+    // biar stat bisa nyambung di bawah deskripsi berapa pun jumlah barisnya.
+    private int drawWrappedString(Graphics2D g2, String text, int x, int y, int wrapWidth, int lineHeight) {
         FontMetrics fm = g2.getFontMetrics();
         String[] words = text.split(" ");
         StringBuilder line = new StringBuilder();
@@ -623,11 +439,20 @@ public class BackpackUI implements MouseWheelListener {
         }
         if (line.length() > 0) {
             g2.drawString(line.toString(), x, y);
+            y += lineHeight;
         }
+        return y;
     }
 
     public void draw(Graphics2D g2, int screenW, int screenH, GamePanel gp) {
         if (!visible) return;
+
+        // kalau item yang lagi dipilih udah gak ada di inventory (kehapus/kepake), lepas pilihannya
+        if (selectedItem != null && !items.contains(selectedItem)) {
+            selectedItem = null;
+            showDeleteConfirm = false;
+            deleteAmount = 1;
+        }
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
@@ -713,7 +538,7 @@ public class BackpackUI implements MouseWheelListener {
             }
         }
 
-        // ── Panel GRID INVENTORY (tengah) & Panel MENU (kanan) ──
+        // ── Panel GRID INVENTORY (tengah) & Panel kanan (menu / detail item) ──
         Rectangle gridBox = getGridBoxRect(panelX, panelY);
         Rectangle menuBox = getMenuBoxRect(panelX, panelY);
 
@@ -769,11 +594,8 @@ public class BackpackUI implements MouseWheelListener {
 
         drawScrollbar(g2, gridBox.x, gridBox.y, gridBox.width, gridBox.height);
 
-        // Panel kanan = MENU (Settings, dst) — bukan detail item lagi
+        // Panel kanan = detail item (kalau ada yang diklik) / menu Settings (default)
         drawMenuPanel(g2, menuBox.x, menuBox.y, menuBox.width, menuBox.height);
-
-        // Tooltip item — digambar paling akhir biar selalu di atas panel lain
-        drawItemTooltip(g2, screenW, screenH);
     }
 
     private int getIconDrawSize(Item.Item item, int baseSize) {
@@ -819,37 +641,35 @@ public class BackpackUI implements MouseWheelListener {
         }
     }
     
+    // CHANGED: ikon [+] dibuang & value rata kanan, soalnya panel kanan cuma ~144px
     private int drawStatRow(
             Graphics2D g2,
-            String icon,
             String label,
             String value,
             int x,
             int y,
             int width) {
 
-        int rowH = 25;
+        int rowH = 22;
 
         // Background baris stat
         g2.setColor(new Color(45, 35, 28));
         g2.fillRect(x, y, width, rowH);
 
         g2.setColor(new Color(100, 80, 60));
+        g2.setStroke(new BasicStroke(1));
         g2.drawRect(x, y, width, rowH);
-
-        // Ikon stat
-        g2.setFont(new Font("Monospaced", Font.BOLD, 12));
-        g2.setColor(colorAccent);
-        g2.drawString(icon, x + 8, y + 17);
 
         // Nama stat
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
-        g2.drawString(label, x + 32, y + 16);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 9));
+        g2.drawString(label, x + 6, y + 15);
 
-        // Nilai stat
+        // Nilai stat (rata kanan)
         g2.setColor(colorAccent);
-        g2.drawString(value, x + width - 48, y + 16);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+        int valueW = g2.getFontMetrics().stringWidth(value);
+        g2.drawString(value, x + width - 6 - valueW, y + 15);
 
         return y + rowH + 4;
     }
@@ -935,12 +755,12 @@ public class BackpackUI implements MouseWheelListener {
     }
 
     private void performDelete(GamePanel gp, int amount) {
-        if (hoveredItem == null) return;
+        if (selectedItem == null) return;
 
-        hoveredItem.amount -= amount;
-        if (hoveredItem.amount <= 0) {
+        selectedItem.amount -= amount;
+        if (selectedItem.amount <= 0) {
             for (int i = 0; i < equippedSlots.length; i++) {
-                if (equippedSlots[i] == hoveredItem) {
+                if (equippedSlots[i] == selectedItem) {
                     if (i == 0) {
                         gp.player.isWeaponEquipped = false;
                         gp.player.currentWeapon = null;
@@ -950,23 +770,21 @@ public class BackpackUI implements MouseWheelListener {
                     equippedSlots[i] = null;
                 }
             }
-            items.remove(hoveredItem);
-            hoveredItem = null;
-            hoveredSlotRect = null;
-            tooltipRect = null;
+            items.remove(selectedItem);
+            selectedItem = null; // item abis -> panel kanan balik ke menu
         }
         showDeleteConfirm = false;
         deleteAmount = 1;
     }
 
-    // NEW: terapkan volume musik ke GamePanel.music (SFX.MusicManager)
+    // terapkan volume musik ke GamePanel.music (SFX.MusicManager)
     private void applyMusicVolume(GamePanel gp) {
         if (gp != null && gp.music != null) {
             gp.music.setVolume(percentToDb(musicVolumePercent));
         }
     }
 
-    // NEW: 0% = -40dB (nyaris hening), 100% = 0dB (paling keras)
+    // 0% = -40dB (nyaris hening), 100% = 0dB (paling keras)
     private float percentToDb(int percent) {
         return (percent / 100f) * 40f - 40f;
     }
@@ -977,6 +795,8 @@ public class BackpackUI implements MouseWheelListener {
         if (showDeleteConfirm) {
             showDeleteConfirm = false;
             deleteAmount = 1;
+        } else if (selectedItem != null) {
+            selectedItem = null; // ESC tutup detail item dulu
         } else if (settingsOpen) {
             settingsOpen = false; // ESC balik ke list menu dulu
         } else {
@@ -994,14 +814,20 @@ public class BackpackUI implements MouseWheelListener {
         int panelX = screenW / 2 - panelW / 2;
         int panelY = 60;
 
-        // ── 0. KLIK DI TOOLTIP ITEM (kalau lagi kebuka) — Delete & quantity ──
-        if (tooltipRect != null && tooltipRect.contains(mx, my)) {
-            if (hoveredItem != null) {
-                if (showDeleteConfirm) {
+        // ── 0. KLIK DI PANEL KANAN — detail item (X / Delete) atau menu (Settings / volume) ──
+        Rectangle menuBox = getMenuBoxRect(panelX, panelY);
+        if (menuBox.contains(mx, my)) {
+            if (selectedItem != null) {
+                // mode DETAIL ITEM
+                if (closeDetailBtnRect != null && closeDetailBtnRect.contains(mx, my)) {
+                    selectedItem = null; // balik ke tampilan menu/settings
+                    showDeleteConfirm = false;
+                    deleteAmount = 1;
+                } else if (showDeleteConfirm) {
                     if (minusBtnRect != null && minusBtnRect.contains(mx, my)) {
                         deleteAmount = Math.max(1, deleteAmount - 1);
                     } else if (plusBtnRect != null && plusBtnRect.contains(mx, my)) {
-                        deleteAmount = Math.min(hoveredItem.amount, deleteAmount + 1);
+                        deleteAmount = Math.min(selectedItem.amount, deleteAmount + 1);
                     } else if (confirmBtnRect != null && confirmBtnRect.contains(mx, my)) {
                         performDelete(gp, deleteAmount);
                     } else if (cancelBtnRect != null && cancelBtnRect.contains(mx, my)) {
@@ -1010,26 +836,21 @@ public class BackpackUI implements MouseWheelListener {
                     }
                 } else {
                     if (deleteBtnRect != null && deleteBtnRect.contains(mx, my)) {
-                        if (hoveredItem.amount <= 1) {
-                            performDelete(gp, hoveredItem.amount);
+                        if (selectedItem.amount <= 1) {
+                            performDelete(gp, selectedItem.amount);
                         } else {
                             showDeleteConfirm = true;
                             deleteAmount = 1;
                         }
                     }
                 }
-            }
-            return;
-        }
-
-        // ── 0b. KLIK DI PANEL MENU (kanan) — Settings / volume ──
-        Rectangle menuBox = getMenuBoxRect(panelX, panelY);
-        if (menuBox.contains(mx, my)) {
-            if (!settingsOpen) {
+            } else if (!settingsOpen) {
+                // mode MENU
                 if (settingsBtnRect != null && settingsBtnRect.contains(mx, my)) {
                     settingsOpen = true;
                 }
             } else {
+                // mode SETTINGS
                 if (volMinusBtnRect != null && volMinusBtnRect.contains(mx, my)) {
                     musicVolumePercent = Math.max(0, musicVolumePercent - 10);
                     applyMusicVolume(gp);
@@ -1062,11 +883,14 @@ public class BackpackUI implements MouseWheelListener {
                             } else if (i == 1) {
                                 gp.player.currentHelm = null;
                             }
-                            if (hoveredItem == equippedSlots[i]) {
-                                hoveredItem = null;
-                                tooltipRect = null;
-                            }
                             equippedSlots[i] = null;
+                        }
+                    } else if (e.getButton() == MouseEvent.BUTTON1) { // KLIK KIRI: lihat detail
+                        if (equippedSlots[i] != null && equippedSlots[i].item != null
+                                && equippedSlots[i] != selectedItem) {
+                            selectedItem = equippedSlots[i];
+                            showDeleteConfirm = false;
+                            deleteAmount = 1;
                         }
                     }
                     return;
@@ -1129,9 +953,19 @@ public class BackpackUI implements MouseWheelListener {
                                     }
                                 }
                             } else if (e.getButton() == MouseEvent.BUTTON1) {
-                                if (stack.item == ItemManager.get().DEATH_TOTEM
+                                // KLIK KIRI: pilih item -> detailnya tampil di panel kanan
+                                if (stack != selectedItem) {
+                                    selectedItem = stack;
+                                    showDeleteConfirm = false;
+                                    deleteAmount = 1;
+                                }
+
+                                // DOUBLE-KLIK Death Totem: buka Totem UI (dulu cukup 1x klik)
+                                if (e.getClickCount() >= 2
+                                        && stack.item == ItemManager.get().DEATH_TOTEM
                                         && gp.deathTotemManager != null
                                         && gp.totemUI != null) {
+                                    selectedItem = null;
                                     visible = false;
                                     gp.totemUI.show();
                                 }
@@ -1144,71 +978,14 @@ public class BackpackUI implements MouseWheelListener {
         }
     }
 
-    /**
-     * Dipanggil tiap mouse gerak selagi backpack kebuka. Update hoveredItem
-     * sesuai item yang lagi ditunjuk mouse, biar tooltip otomatis nongol/ganti
-     * tanpa perlu diklik, dan otomatis ilang kalau mouse gak nyentuh item
-     * ataupun tooltip-nya sendiri.
-     */
- 
-
-    /**
-     * Cari ItemStack di posisi (mx, my) — baik di panel EQUIPPED (kiri)
-     * maupun grid INVENTORY (tengah). Set hoveredSlotRect sebagai efek
-     * samping tiap ketemu item, biar tooltip tau posisi buat nempel.
-     */
-    private ItemStack findItemAtPosition(int mx, int my, int panelX, int panelY) {
-        int eqX = panelX + 24;
-        int eqY = panelY + 75;
-        int startSlotY = eqY + 35;
-        int slotXPosition = eqX + 15;
-
-        if (mx >= slotXPosition && mx <= slotXPosition + slotSize) {
-            for (int i = 0; i < equippedSlots.length; i++) {
-                int slotYPosition = startSlotY + i * (slotSize + 11);
-                if (my >= slotYPosition && my <= slotYPosition + slotSize) {
-                    if (equippedSlots[i] != null) {
-                        hoveredSlotRect = new Rectangle(slotXPosition, slotYPosition, slotSize, slotSize);
-                        return equippedSlots[i];
-                    }
-                    return null; // slot kosong
-                }
-            }
-        }
-
-        Rectangle gridBox = getGridBoxRect(panelX, panelY);
-        int gridStartX = gridBox.x + 12;
-        int gridStartY = gridBox.y + 12 - scrollY;
-
-        if (gridBox.contains(mx, my)) {
-            int totalSlots = cols * gridRows;
-            for (int i = 0; i < totalSlots; i++) {
-                int col = i % cols;
-                int row = i / cols;
-                int sx = gridStartX + col * (slotSize + slotPadding);
-                int sy = gridStartY + row * (slotSize + slotPadding);
-
-                if (mx >= sx && mx <= sx + slotSize && my >= sy && my <= sy + slotSize) {
-                    if (i < items.size() && items.get(i) != null) {
-                        hoveredSlotRect = new Rectangle(sx, sy, slotSize, slotSize);
-                        return items.get(i);
-                    }
-                    return null; // slot kosong
-                }
-            }
-        }
-
-        return null;
-    }
-
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (!visible) return;
 
         // Kalau lagi buka konfirmasi delete, scroll dipakai buat atur quantity
-        if (showDeleteConfirm && hoveredItem != null) {
+        if (showDeleteConfirm && selectedItem != null) {
             deleteAmount -= e.getWheelRotation();
-            deleteAmount = Math.max(1, Math.min(hoveredItem.amount, deleteAmount));
+            deleteAmount = Math.max(1, Math.min(selectedItem.amount, deleteAmount));
             return;
         }
 
