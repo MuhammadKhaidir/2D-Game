@@ -1,6 +1,8 @@
 package Entitas;
 
 import Main.GamePanel;
+import Tamed.GolemMinion;
+
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;

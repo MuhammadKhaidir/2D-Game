@@ -3,6 +3,9 @@ package Entitas;
 import Item.ItemManager;
 import Main.GamePanel;
 import SFX.SoundManager;
+import Tamed.GolemMinion;
+import Tamed.UndeadMinion;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -13,42 +16,42 @@ public class Skeleton extends Entity {
     //  STATIC IMAGE CACHE — dimuat SEKALI, dipakai semua instance
     //  (field static tidak private agar UndeadMinion bisa pakai cache ini)
     // ══════════════════════════════════════════════════════
-    static BufferedImage[] S_walkFront  = new BufferedImage[6];
-    static BufferedImage[] S_walkBack   = new BufferedImage[6];
-    static BufferedImage[] S_walkLeft   = new BufferedImage[6];
-    static BufferedImage[] S_walkRight  = new BufferedImage[6];
+	public static BufferedImage[] S_walkFront  = new BufferedImage[6];
+	public static BufferedImage[] S_walkBack   = new BufferedImage[6];
+	public static BufferedImage[] S_walkLeft   = new BufferedImage[6];
+	public static BufferedImage[] S_walkRight  = new BufferedImage[6];
 
-    static BufferedImage[] S_idleFront  = new BufferedImage[2];
-    static BufferedImage[] S_idleBack   = new BufferedImage[2];
-    static BufferedImage[] S_idleLeft   = new BufferedImage[2];
-    static BufferedImage[] S_idleRight  = new BufferedImage[2];
+	public static BufferedImage[] S_idleFront  = new BufferedImage[2];
+	public static BufferedImage[] S_idleBack   = new BufferedImage[2];
+	public static BufferedImage[] S_idleLeft   = new BufferedImage[2];
+	public static BufferedImage[] S_idleRight  = new BufferedImage[2];
 
-    static BufferedImage[] S_swing1Front = new BufferedImage[4];
-    static BufferedImage[] S_swing1Back  = new BufferedImage[4];
-    static BufferedImage[] S_swing1Left  = new BufferedImage[4];
-    static BufferedImage[] S_swing1Right = new BufferedImage[4];
+	public static BufferedImage[] S_swing1Front = new BufferedImage[4];
+	public static BufferedImage[] S_swing1Back  = new BufferedImage[4];
+	public static BufferedImage[] S_swing1Left  = new BufferedImage[4];
+	public static BufferedImage[] S_swing1Right = new BufferedImage[4];
 
-    static BufferedImage[] S_swing2Front = new BufferedImage[4];
-    static BufferedImage[] S_swing2Back  = new BufferedImage[4];
-    static BufferedImage[] S_swing2Left  = new BufferedImage[4];
-    static BufferedImage[] S_swing2Right = new BufferedImage[4];
+	public static BufferedImage[] S_swing2Front = new BufferedImage[4];
+	public static BufferedImage[] S_swing2Back  = new BufferedImage[4];
+	public static BufferedImage[] S_swing2Left  = new BufferedImage[4];
+	public static BufferedImage[] S_swing2Right = new BufferedImage[4];
 
-    static BufferedImage[] S_wp1Front = new BufferedImage[4];
-    static BufferedImage[] S_wp1Back  = new BufferedImage[4];
-    static BufferedImage[] S_wp1Left  = new BufferedImage[4];
-    static BufferedImage[] S_wp1Right = new BufferedImage[4];
+	public static BufferedImage[] S_wp1Front = new BufferedImage[4];
+	public static BufferedImage[] S_wp1Back  = new BufferedImage[4];
+	public static BufferedImage[] S_wp1Left  = new BufferedImage[4];
+	public static BufferedImage[] S_wp1Right = new BufferedImage[4];
 
-    static BufferedImage[] S_wp2Front = new BufferedImage[4];
-    static BufferedImage[] S_wp2Back  = new BufferedImage[4];
-    static BufferedImage[] S_wp2Left  = new BufferedImage[4];
-    static BufferedImage[] S_wp2Right = new BufferedImage[4];
+	public static BufferedImage[] S_wp2Front = new BufferedImage[4];
+	public static BufferedImage[] S_wp2Back  = new BufferedImage[4];
+	public static BufferedImage[] S_wp2Left  = new BufferedImage[4];
+	public static BufferedImage[] S_wp2Right = new BufferedImage[4];
 
-    static BufferedImage S_hurtFront, S_hurtBack, S_hurtLeft, S_hurtRight;
+	public static BufferedImage S_hurtFront, S_hurtBack, S_hurtLeft, S_hurtRight;
 
-    static BufferedImage[] S_deathFront = new BufferedImage[3];
-    static BufferedImage[] S_deathBack  = new BufferedImage[3];
-    static BufferedImage[] S_deathLeft  = new BufferedImage[3];
-    static BufferedImage[] S_deathRight = new BufferedImage[3];
+	public static BufferedImage[] S_deathFront = new BufferedImage[3];
+	public static BufferedImage[] S_deathBack  = new BufferedImage[3];
+	public static BufferedImage[] S_deathLeft  = new BufferedImage[3];
+	public static BufferedImage[] S_deathRight = new BufferedImage[3];
 
     private static boolean imagesLoaded = false;
     

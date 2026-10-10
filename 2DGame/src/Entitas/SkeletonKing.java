@@ -2,6 +2,8 @@ package Entitas;
 
 import Item.ItemManager;
 import SFX.SoundManager;
+import Tamed.GolemMinion;
+
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;

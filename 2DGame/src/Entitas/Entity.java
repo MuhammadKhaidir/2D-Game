@@ -139,7 +139,7 @@ public class Entity {
 	public Rectangle solidArea = new Rectangle(0, 0, 45, 45);
 	public int solidAreaDefaultX, solidAreaDefaultY;
 	public boolean collisionOn = false;
-	GamePanel gp;
+	public GamePanel gp;
 
 	// ===== A* PATHFINDING =====
 	private AStar aStar;

@@ -1,9 +1,10 @@
 package Item;
 
-import Entitas.GolemMinion;
-import Entitas.UndeadMinion;
 import Item.DeathTotem.CapturedType;
 import Main.GamePanel;
+import Tamed.GolemMinion;
+import Tamed.UndeadMinion;
+
 import java.util.ArrayList;
 import java.util.List;
 

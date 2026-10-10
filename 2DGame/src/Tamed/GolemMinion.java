@@ -1,9 +1,16 @@
-package Entitas;
+package Tamed;
 
 import Item.DeathTotem;
 import Main.GamePanel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import Entitas.Entity;
+import Entitas.Golem;
+import Entitas.Golemite;
+import Entitas.Skeleton;
+import Entitas.SkeletonKing;
+import Entitas.monster;
 
 public class GolemMinion extends Entity {
 

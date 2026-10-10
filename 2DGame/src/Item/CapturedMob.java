@@ -34,7 +34,7 @@ public class CapturedMob {
                 break;
             case SKELETON:
             default:
-                this.baseMaxHP    = Entitas.UndeadMinion.MAX_LIFE;
+                this.baseMaxHP    = Tamed.UndeadMinion.MAX_LIFE;
                 this.baseAttack   = 15;
                 this.expPerLevel  = 30;
                 break;

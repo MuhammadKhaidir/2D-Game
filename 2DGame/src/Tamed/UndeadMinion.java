@@ -1,4 +1,4 @@
-package Entitas;
+package Tamed;
 
 import Item.DeathTotem;
 import Item.DeathTotem.CapturedType;
@@ -6,6 +6,9 @@ import Main.GamePanel;
 import SFX.SoundManager;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import Entitas.Entity;
+import Entitas.Skeleton;
 
 public class UndeadMinion extends Entity {
 	 public static final int MAX_LIFE = 200;

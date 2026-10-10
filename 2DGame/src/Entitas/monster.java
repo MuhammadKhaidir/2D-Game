@@ -8,6 +8,7 @@ import java.util.Random;
 import java.awt.Rectangle;
 
 import Main.GamePanel;
+import Tamed.GolemMinion;
 
 public class monster extends Entity {
 

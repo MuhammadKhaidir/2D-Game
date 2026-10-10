@@ -763,7 +763,7 @@ public class player extends Entity {
                  // 🔴 FIX: Cek tabrakan dengan GolemMinion saat melompat
                     if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
                         for (Entity gm : gp.deathTotemManager.getMinions()) {
-                            if (gm instanceof Entitas.GolemMinion && gm.alive) {
+                            if (gm instanceof Tamed.GolemMinion && gm.alive) {
                                 gp.colision.checkEntity(this, gm, jdx, jdy);
                             }
                         }
@@ -810,7 +810,7 @@ public class player extends Entity {
             // 🔴 FIX: Menggunakan dx dan dy (bukan jdx/jdy) agar deteksi jalan normal berfungsi
             if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
                 for (Entity gm : gp.deathTotemManager.getMinions()) {
-                    if (gm instanceof Entitas.GolemMinion && gm.alive) {
+                    if (gm instanceof Tamed.GolemMinion && gm.alive) {
                         gp.colision.checkEntity(this, gm, dx, dy);
                     }
                 }
@@ -826,7 +826,7 @@ public class player extends Entity {
             // 🔴 FIX: Tambahkan deteksi minion saat berada di dalam rumah (INSIDE)
             if (!collisionOn && gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
                 for (Entity gm : gp.deathTotemManager.getMinions()) {
-                    if (gm instanceof Entitas.GolemMinion && gm.alive) {
+                    if (gm instanceof Tamed.GolemMinion && gm.alive) {
                         gp.colision.checkEntity(this, gm, dx, dy);
                     }
                 }
@@ -892,7 +892,7 @@ public class player extends Entity {
             // 🔴 FIX: Satukan sistem menggunakan checkEntity bawaan engine agar presisi
             if (!collisionOn && gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
                 for (Entity gm : gp.deathTotemManager.getMinions()) {
-                    if (gm instanceof Entitas.GolemMinion && gm.alive) {
+                    if (gm instanceof Tamed.GolemMinion && gm.alive) {
                         gp.colision.checkEntity(this, gm, dx, dy);
                     }
                 }
