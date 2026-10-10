@@ -14,12 +14,30 @@ public class PlayerStatUI {
     private Color colorBorder = Color.WHITE;
     private Color colorAccent = new Color(255, 200, 60);
     private Color colorPlus   = new Color(80, 220, 80);
+    private Color colorReset  = new Color(230, 80, 80);
 
     private Rectangle btnHP, btnStamina, btnDamage, btnSpeed, btnDodge, btnDef;
+    private Rectangle btnReset;
+
+    // Stat awal player, diambil sekali waktu UI dibuat (sebelum save di-load).
+    // Dipakai buat reset: poin terpakai = (stat sekarang - stat awal) / kenaikan per poin.
+    private final int startMaxLife;
+    private final int startMaxStamina;
+    private final int startPunchDamage;
+    private final double startSpeed;
+    private final int startDodge;
+    private final int startDef;
 
     public PlayerStatUI(GamePanel gp, player player) {
         this.gp = gp;
         this.player = player;
+
+        startMaxLife     = player.maxLife;
+        startMaxStamina  = player.maxStamina;
+        startPunchDamage = player.punchDamage;
+        startSpeed       = player.baseSpeed;
+        startDodge       = player.dodge;
+        startDef         = player.def;
     }
 
     public void draw(Graphics2D g2) {
@@ -57,6 +75,23 @@ public class PlayerStatUI {
             g2.setColor(new Color(100, 100, 100));
             g2.drawString("Points : 0", winX + 30, winY + 118);
         }
+
+        // Tombol RESET: selalu tampil, redup kalau stat masih di nilai awal
+        boolean canReset = totalSpent() > 0;
+        int rx = winX + winW - 130;
+        int ry = winY + 88;
+        int rw = 100;
+        int rh = 24;
+        btnReset = new Rectangle(rx, ry, rw, rh);
+
+        g2.setColor(canReset ? new Color(90, 30, 30) : new Color(40, 40, 40));
+        g2.fillRoundRect(rx, ry, rw, rh, 6, 6);
+        g2.setColor(canReset ? colorReset : new Color(100, 100, 100));
+        g2.setStroke(new BasicStroke(1));
+        g2.drawRoundRect(rx, ry, rw, rh, 6, 6);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
+        int tw = g2.getFontMetrics().stringWidth("RESET");
+        g2.drawString("RESET", rx + (rw - tw) / 2, ry + 17);
 
         g2.setColor(colorBorder);
         g2.fillRect(winX + 30, winY + 128, winW - 60, 1);
@@ -123,9 +158,16 @@ public class PlayerStatUI {
 
     public void handleClick(MouseEvent e) {
         if (!visible) return;
-        if (player.attributePoints <= 0) return;
 
         int mx = e.getX(), my = e.getY();
+
+        // Reset dicek duluan, karena harus tetap bisa diklik walau poin sudah 0
+        if (btnReset != null && btnReset.contains(mx, my)) {
+            resetStats();
+            return;
+        }
+
+        if (player.attributePoints <= 0) return;
 
         if (btnHP != null && btnHP.contains(mx, my)) {
             player.maxLife += 10;
@@ -150,6 +192,37 @@ public class PlayerStatUI {
             player.def++;
             player.attributePoints--;
         }
+    }
+
+    // ===== Hitung poin yang sudah terpakai, langsung dari stat player sekarang =====
+    private int spentHP()      { return Math.max(0, (player.maxLife - startMaxLife) / 10); }
+    private int spentStamina() { return Math.max(0, (player.maxStamina - startMaxStamina) / 10); }
+    private int spentDamage()  { return Math.max(0, (player.punchDamage - startPunchDamage) / 5); }
+    private int spentSpeed()   { return Math.max(0, (int) Math.round((player.baseSpeed - startSpeed) / 0.1)); }
+    private int spentDodge()   { return Math.max(0, player.dodge - startDodge); }
+    private int spentDef()     { return Math.max(0, player.def - startDef); }
+
+    private int totalSpent() {
+        return spentHP() + spentStamina() + spentDamage() + spentSpeed() + spentDodge() + spentDef();
+    }
+
+    // Balikin semua stat ke nilai awal, lalu kembalikan semua poin yang terpakai
+    private void resetStats() {
+        int total = totalSpent();   // hitung dulu sebelum stat diubah
+        if (total == 0) return;
+
+        player.maxLife = startMaxLife;
+        player.life = Math.min(player.life, player.maxLife);
+
+        player.maxStamina = startMaxStamina;
+        player.stamina = Math.min(player.stamina, player.maxStamina);
+
+        player.punchDamage = startPunchDamage;
+        player.baseSpeed = startSpeed;
+        player.dodge = startDodge;
+        player.def = startDef;
+
+        player.attributePoints += total;
     }
 
     private int getCenterX(Graphics2D g2, String text, int winX, int winW) {
