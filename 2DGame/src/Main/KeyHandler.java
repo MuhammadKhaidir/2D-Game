@@ -49,8 +49,11 @@ public class KeyHandler implements KeyListener {
             gp.mainMenu.handleInput(e.getKeyCode());
             return;
         }
-        if (code == KeyEvent.VK_F3 && gp != null) { // toggle mode debug
+        if (code == KeyEvent.VK_F3 && gp != null) { // toggle koordinat player
             gp.toggleDebug();
+        }
+        if (code == KeyEvent.VK_F4 && gp != null) { // toggle kotak collision + log konsol
+            gp.toggleCollisionDebug();
         }
         if (code == KeyEvent.VK_TAB) { // buat liat stat player nih
             tabPressed = true;

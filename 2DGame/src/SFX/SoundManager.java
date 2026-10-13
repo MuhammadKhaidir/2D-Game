@@ -2,7 +2,14 @@ package SFX;
 import javax.sound.sampled.*;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 public class SoundManager {
+    // Clip dimuat sekali per file lalu dipakai bersama semua SoundManager.
+    // Sebelumnya tiap Skeleton/UndeadMinion yang dibuat memuat 7 Clip baru (7 thread + memori audio)
+    // yang tidak pernah ditutup.
+    private static final Map<String, Clip> CACHE = new HashMap<>();
+
     // ===== SOUND CLIPS =====
     private Clip wooshClip;
     private Clip punchClip;
@@ -26,6 +33,15 @@ public class SoundManager {
      * Taruh file .wav kamu di: src/Sound/woosh.wav dan src/Sound/punch.wav
      */
     private Clip loadClip(String path) {
+        synchronized (CACHE) {
+            if (CACHE.containsKey(path)) return CACHE.get(path);
+            Clip c = loadClipUncached(path);
+            CACHE.put(path, c); // null juga disimpan, supaya file yang gagal tidak dicoba terus
+            return c;
+        }
+    }
+
+    private Clip loadClipUncached(String path) {
         try {
             URL url = getClass().getResource(path);
             if (url == null) {

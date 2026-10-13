@@ -55,7 +55,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.event.AncestorListener;
 
 public class GamePanel extends JPanel implements Runnable{
-	public boolean showDebug = false; // koordinat (toggle: F3)
+	public boolean showDebug = true; // koordinat player (toggle: F3)
 	public boolean dialogOn = false;
 	public String dialogText = "";
 	public Entity currentNPC = null;
@@ -117,15 +117,15 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int screenWidth = tileSize * maxScreenColumn;
 	public final int screenHeight = tileSize * maxScreenRow;
 	// interior
-	public final int maxWorldCol = 4000;
-	public final int maxWorldRow = 4000;
+	public final int maxWorldCol = 700;
+	public final int maxWorldRow = 700;
 	public final int worldWidth = tileSize * maxWorldCol;
 	public final int worldHeight = tileSize * maxWorldRow;
 
 	public boolean inspectOn = false;
 	public Entity inspectedNPC = null;
 	
-	public boolean debugCollision = false; // toggle: F3
+	public boolean debugCollision = false; // toggle: F4
 	RainDrop[] rain;
 	
 	int FPS = 40;
@@ -511,10 +511,14 @@ public class GamePanel extends JPanel implements Runnable{
 		}
 	}
 
-	/** Nyala/matikan semua mode debug sekaligus (tombol F3). */
+	/** Nyala/matikan tampilan koordinat player (tombol F3). */
 	public void toggleDebug() {
-		boolean on = !showDebug;
-		showDebug = on;
+		showDebug = !showDebug;
+	}
+
+	/** Nyala/matikan kotak collision + log di konsol (tombol F4). */
+	public void toggleCollisionDebug() {
+		boolean on = !debugCollision;
 		debugCollision = on;
 		Log.enabled = on;
 		if (domainManager != null) domainManager.showCollisionDebug = on;

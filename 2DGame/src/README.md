@@ -6,7 +6,7 @@ Game 2D top-down RPG berbasis Java Swing. Status: masih dikembangkan (sekitar 50
 
 Butuh JDK (dikembangkan dengan JDK 22, sudah dites compile dengan JDK 21).
 
-**Eclipse:** import folder `2DGame` sebagai Java Project, lalu jalankan class `Main.Main`.
+**Eclipse:** file proyek (`.project`, `.classpath`) sudah ada. Pilih File > Import > Existing Projects into Workspace, pilih folder `2DGame`, lalu jalankan class `Main.Main`.
 
 **Command line** (dari dalam folder `2DGame`):
 
@@ -42,7 +42,8 @@ Folder `src` harus ada di classpath karena gambar dan audio dimuat dari sana.
 | Z / X / C | Skill |
 | T | Memanggil minion dari Death Totem |
 | F5 | Simpan ke slot 1 (muat lewat menu Load Game) |
-| F3 | Nyalakan/matikan mode debug |
+| F3 | Tampilkan/sembunyikan koordinat player (nyala secara default) |
+| F4 | Nyalakan/matikan kotak collision dan log debug di konsol |
 | ESC | Menutup panel / keluar dari rumah atau domain |
 
 ## Catatan

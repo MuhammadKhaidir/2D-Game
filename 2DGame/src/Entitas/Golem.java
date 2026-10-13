@@ -167,6 +167,29 @@ public class Golem extends Entity {
     }
 
     private void loadImages() {
+        // Sprite sudah pernah dimuat oleh Golem lain: pakai ulang cache statis S_*
+        // (tanpa ini, tiap Golem baru membaca ulang 87 gambar dari disk, sekitar 88 MB per Golem).
+        if (imagesLoaded) {
+            System.arraycopy(S_walkFront,   0, walkFrontFrames,   0, walkFrontFrames.length);
+            System.arraycopy(S_walkBack,    0, walkBackFrames,    0, walkBackFrames.length);
+            System.arraycopy(S_walkLeft,    0, walkLeftFrames,    0, walkLeftFrames.length);
+            System.arraycopy(S_walkRight,   0, walkRightFrames,   0, walkRightFrames.length);
+            System.arraycopy(S_idleFront,   0, idleFrontFrames,   0, idleFrontFrames.length);
+            System.arraycopy(S_idleBack,    0, idleBackFrames,    0, idleBackFrames.length);
+            System.arraycopy(S_idleLeft,    0, idleLeftFrames,    0, idleLeftFrames.length);
+            System.arraycopy(S_idleRight,   0, idleRightFrames,   0, idleRightFrames.length);
+            System.arraycopy(S_attackFront, 0, attackFrontFrames, 0, attackFrontFrames.length);
+            System.arraycopy(S_attackBack,  0, attackBackFrames,  0, attackBackFrames.length);
+            System.arraycopy(S_attackLeft,  0, attackLeftFrames,  0, attackLeftFrames.length);
+            System.arraycopy(S_attackRight, 0, attackRightFrames, 0, attackRightFrames.length);
+            System.arraycopy(S_smashFront,  0, smashFrontFrames,  0, smashFrontFrames.length);
+            System.arraycopy(S_smashBack,   0, smashBackFrames,   0, smashBackFrames.length);
+            System.arraycopy(S_smashLeft,   0, smashLeftFrames,   0, smashLeftFrames.length);
+            System.arraycopy(S_smashRight,  0, smashRightFrames,  0, smashRightFrames.length);
+            System.arraycopy(S_spawn,       0, spawnFrames,       0, spawnFrames.length);
+            System.arraycopy(S_dead,        0, deadFrames,        0, deadFrames.length);
+            return;
+        }
         try {
             for (int i = 0; i < 6; i++) {
                 walkFrontFrames[i] = ImageIO.read(getClass().getResourceAsStream("/Aset/GolemFrontWalk (" + (i+1) + ").png"));

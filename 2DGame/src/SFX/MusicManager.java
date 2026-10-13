@@ -29,6 +29,7 @@ public class MusicManager {
                 gainControl.setValue(-10.0f); // Turunin dikit biar gak budek
             }
 
+            closeWhenDone(seClip); // tutup Clip setelah selesai supaya tidak bocor
             seClip.start(); // JALANKAN SEKALI SAJA (Jangan di-loop!)
             
         } catch (Exception e) {
@@ -57,6 +58,7 @@ public class MusicManager {
                 gainControl.setValue(volume); 
             }
 
+            closeWhenDone(seClip); // tutup Clip setelah selesai supaya tidak bocor
             seClip.start(); 
             
         } catch (Exception e) {
@@ -96,9 +98,24 @@ public class MusicManager {
         }
     }
 
+    /**
+     * Setiap Clip menahan satu thread "Direct Clip" dan memori audio. Tanpa close(),
+     * pemanggilan playSE() berulang (langkah Golem, pukulan, dll) menumpuk sampai memori habis.
+     */
+    private static void closeWhenDone(final Clip c) {
+        c.addLineListener(new LineListener() {
+            @Override
+            public void update(LineEvent ev) {
+                if (ev.getType() == LineEvent.Type.STOP) {
+                    c.close();
+                }
+            }
+        });
+    }
+
     public void stop() {
-        if (clip != null && clip.isRunning()) {
-            clip.stop();
+        if (clip != null) {
+            if (clip.isRunning()) clip.stop();
             clip.close();
         }
     }
