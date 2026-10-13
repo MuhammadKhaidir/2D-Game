@@ -40,6 +40,7 @@ public class SaveManager {
 
         // State
         data.gameState = gp.gameState.name();
+        data.activeDomainId = gp.domainManager.getActiveDomainId();
         // World objects
         data.removedObjectIndexes.clear();
         for (int i = 0; i < gp.obj.length; i++) {
@@ -126,7 +127,7 @@ public class SaveManager {
 
         switch (data.gameState) {
             case "DOMAIN":
-                gp.domainManager.forceEnterDomain("Tomb");
+                gp.domainManager.forceEnterDomain(data.activeDomainId != null ? data.activeDomainId : "Tomb");
                 break;
             case "INSIDE":
                 gp.gameState = GamePanel.GameState.INSIDE;
@@ -191,6 +192,8 @@ public class SaveManager {
             case "Skeleton Key": return im.SKELETON_KEY; // DROP SKELETON LANGKA
             case "Bone Sword":   return im.BONE_SWORD;   // DARK MERCHANT
             case "Gold":         return im.GOLD;          // CURRENCY
+            case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
+            case "Helm":         return im.HELM;
             default:
                 System.out.println("[SaveManager] Item tidak dikenal: " + name);
                 return null;

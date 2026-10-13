@@ -1,0 +1,9 @@
+# hasil compile
+bin/
+*.class
+
+# file save game
+saves/
+
+# log crash JVM
+hs_err_pid*.log

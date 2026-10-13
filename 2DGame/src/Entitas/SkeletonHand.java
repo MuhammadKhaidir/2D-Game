@@ -34,7 +34,7 @@ public class SkeletonHand extends Entity {
                 S_hand[i] = ImageIO.read(cls.getResourceAsStream("/Aset/SkeletonHand (" + f + ").png"));
             }
             imagesLoaded = true;
-            System.out.println("[SkeletonHand] Semua gambar berhasil di-preload.");
+            Main.Log.d("[SkeletonHand] Semua gambar berhasil di-preload.");
         } catch (Exception e) {
             System.out.println("[SkeletonHand] Gagal preload gambar: " + e.getMessage());
         }

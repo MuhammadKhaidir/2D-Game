@@ -50,10 +50,12 @@ import Main.AsetSetter;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.lang.reflect.InvocationTargetException;
 import javax.swing.event.AncestorListener;
 
 public class GamePanel extends JPanel implements Runnable{
-	public boolean showDebug = true; // koordinat
+	public boolean showDebug = false; // koordinat (toggle: F3)
 	public boolean dialogOn = false;
 	public String dialogText = "";
 	public Entity currentNPC = null;
@@ -123,7 +125,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public boolean inspectOn = false;
 	public Entity inspectedNPC = null;
 	
-	public boolean debugCollision = true;
+	public boolean debugCollision = false; // toggle: F3
 	RainDrop[] rain;
 	
 	int FPS = 40;
@@ -228,11 +230,6 @@ public class GamePanel extends JPanel implements Runnable{
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
- 
-                // [DEBUG SEMENTARA — hapus kalau totem udah bisa diklik]
-                System.out.println("[GamePanel] press (" + e.getX() + "," + e.getY() + ")"
-                        + " totem=" + (totemUI != null && totemUI.visible)
-                        + " backpack=" + (backpack != null && backpack.visible));
  
                 // ── DEATH SCREEN ──
                 // Harus paling atas supaya klik Respawn benar-benar diterima
@@ -468,37 +465,61 @@ public class GamePanel extends JPanel implements Runnable{
 		gameThread.start();
 	}
 
+	// Dipakai untuk mencegah log error yang sama tercetak 40x per detik
+	private String lastErrorKey = null;
+
 	@Override
 	public void run() {
-			
-			double drawInterval = 1000000000/FPS; 
-			double delta = 0;
-			long lastTime = System.nanoTime();
-			long currentTime;
-			long timer = 0;
-			int drawCount = 0;
-			
-			while (gameThread != null) {
-				currentTime = System.nanoTime();
+		double drawInterval = 1000000000.0 / FPS;
+		double delta = 0;
+		long lastTime = System.nanoTime();
+
+		while (gameThread != null) {
+			long currentTime = System.nanoTime();
 			delta += (currentTime - lastTime) / drawInterval;
-			timer += (currentTime - lastTime);
 			lastTime = currentTime;
-			
+
 			if (delta >= 1) {
-				update();
+				try {
+					// update() dijalankan di thread UI (EDT) supaya tidak balapan dengan
+					// paintComponent() dan event keyboard/mouse yang juga jalan di EDT.
+					SwingUtilities.invokeAndWait(this::update);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					return;
+				} catch (InvocationTargetException e) {
+					Throwable t = e.getCause() != null ? e.getCause() : e;
+					String key = t.getClass().getName() + ":" + t.getMessage();
+					if (!key.equals(lastErrorKey)) {
+						lastErrorKey = key;
+						t.printStackTrace();
+					}
+				}
 				repaint();
 				delta--;
-				drawCount++;
-				
-				if (timer >= 1000000000) {
-					drawCount = 0;
-					timer = 0;
+				// kalau sempat ketinggalan jauh (mis. layar freeze), jangan dikejar sekaligus
+				if (delta > 5) delta = 0;
+			} else {
+				// tidur sebentar supaya tidak makan 100% satu core CPU
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					return;
 				}
 			}
-			}
-			}
-				
-		
+		}
+	}
+
+	/** Nyala/matikan semua mode debug sekaligus (tombol F3). */
+	public void toggleDebug() {
+		boolean on = !showDebug;
+		showDebug = on;
+		debugCollision = on;
+		Log.enabled = on;
+		if (domainManager != null) domainManager.showCollisionDebug = on;
+	}
+
 	public void play() throws LineUnavailableException {
 	//	playMusic(0);
 		
@@ -634,16 +655,6 @@ public class GamePanel extends JPanel implements Runnable{
 	    DialogNode guardWho = new DialogNode("Aku penjaga desa ini.");
 	    DialogNode guardJob = new DialogNode("Aku jaga supaya desa tetap aman.");
 	    
-	    // weapon dealer npc nih
-	    DialogNode dealerRoot = new DialogNode(
-	    	    "Yo! Need a weapon? You've come to the right place."
-	    	);
-	    	DialogNode dealerMore = new DialogNode(
-	    	    "Come back when I have more stock, soldier."
-	    	);
-	    	dealerRoot.addOption("What do you sell?", dealerMore);
-	    	dealerRoot.addOption("Nevermind.", null);
-	    	dealerMore.addOption("Got it, thanks.", null);
 
 
 	    dialogMap.put("guard", guardRoot);
@@ -665,7 +676,8 @@ public class GamePanel extends JPanel implements Runnable{
 
 	    dialogMap.put("kid", kidRoot);
 	    
-	    DialogNode dealerRoots = new DialogNode(
+	    // weapon dealer
+	    DialogNode dealerRoot = new DialogNode(
 	            "Yo! Need a weapon? You've come to the right place."
 	        );
 	        DialogNode dealerStock = new DialogNode(
@@ -676,6 +688,7 @@ public class GamePanel extends JPanel implements Runnable{
 	        );
 	     
 	        dealerRoot.addOption("What do you sell?",  dealerStock);
+	        dealerRoot.addOption("Nevermind.",           null);
 	        dealerStock.addOption("Interesting...",    dealerBye);
 	        dealerStock.addOption("Nothing for me.",   dealerBye);
 	        dealerBye.addOption("Take care.",          null);

@@ -49,6 +49,9 @@ public class KeyHandler implements KeyListener {
             gp.mainMenu.handleInput(e.getKeyCode());
             return;
         }
+        if (code == KeyEvent.VK_F3 && gp != null) { // toggle mode debug
+            gp.toggleDebug();
+        }
         if (code == KeyEvent.VK_TAB) { // buat liat stat player nih
             tabPressed = true;
         }

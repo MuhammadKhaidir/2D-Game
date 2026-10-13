@@ -101,7 +101,7 @@ public class PlayerCloth {
 
     // ── Load semua frame ──────────────────────────────────────────────────────
     private void loadClothImages(boolean weaponEquipped) {
-        System.out.println("[PlayerCloth] Memuat baju: " + clothName
+        Main.Log.d("[PlayerCloth] Memuat baju: " + clothName
                 + " | mode: " + (weaponEquipped ? "dengan senjata" : "tanpa senjata"));
 
         // ── State 1 → BaseClothXxx2 (1)-(4) ─────────────────────────────────
@@ -158,7 +158,7 @@ public class PlayerCloth {
         }
 
         weaponStatesLoaded = true;
-        System.out.println("[PlayerCloth] State 3 & 4 berhasil dimuat untuk: " + clothName);
+        Main.Log.d("[PlayerCloth] State 3 & 4 berhasil dimuat untuk: " + clothName);
     }
     
     private void loadMovementImages() {

@@ -88,6 +88,9 @@ public class MusicManager {
             clip.loop(Clip.LOOP_CONTINUOUSLY);
             clip.start();
 
+        } catch (IllegalArgumentException e) {
+            // Tidak ada perangkat audio: lewati musik, jangan sampai game ikut crash
+            System.err.println("[MusicManager] Perangkat audio tidak tersedia, musik dilewati: " + fileName);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }

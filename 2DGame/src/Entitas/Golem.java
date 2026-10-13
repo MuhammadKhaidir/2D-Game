@@ -220,7 +220,7 @@ public class Golem extends Entity {
             }
             
             imagesLoaded = true;
-            System.out.println("[Golem] Semua sprite loaded OK!");
+            Main.Log.d("[Golem] Semua sprite loaded OK!");
         } catch (Exception e) {
             System.out.println("[Golem] Gagal load: " + e.getMessage());
         }
@@ -657,7 +657,7 @@ public class Golem extends Entity {
         damageDealtThisSwing = false;
         solidArea.x          = solidAreaDefaultX;
         solidArea.y          = solidAreaDefaultY;
-        System.out.println("[Golem] Bangkit kembali!");
+        Main.Log.d("[Golem] Bangkit kembali!");
         
         gp.playSE("GolemSpawn.wav");
     }

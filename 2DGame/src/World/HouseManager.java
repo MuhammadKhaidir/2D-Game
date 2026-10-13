@@ -204,7 +204,7 @@ public class HouseManager {
                     bgGif = new javax.swing.ImageIcon(url);
                     gifObserverLabel.setIcon(bgGif);
                     useGifBackground = true;
-                    System.out.println("[HouseManager] GIF background loaded: " + h.gifBackgroundPath);
+                    Main.Log.d("[HouseManager] GIF background loaded: " + h.gifBackgroundPath);
                 } else {
                     System.out.println("[HouseManager] PERINGATAN: GIF tidak ketemu di: " + h.gifBackgroundPath);
                 }

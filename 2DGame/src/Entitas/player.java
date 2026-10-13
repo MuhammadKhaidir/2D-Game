@@ -391,7 +391,7 @@ public class player extends Entity {
     }
 
     public void onDeath() {
-        System.out.println("PLAYER DEAD");
+        Main.Log.d("PLAYER DEAD");
         x = gp.tileSize * 13;
         y = gp.tileSize * 20;
         life = maxLife;
@@ -429,7 +429,7 @@ public class player extends Entity {
             exp = exp - nextLevelExp;
             nextLevelExp = nextLevelExp + 100;
             attributePoints += 3;
-            System.out.println("LEVEL UP! Sekarang Level " + level);
+            Main.Log.d("LEVEL UP! Sekarang Level " + level);
         }
     }
 

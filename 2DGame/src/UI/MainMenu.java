@@ -214,11 +214,11 @@ public class MainMenu {
     }
     
     private void handleMainInput(int keyCode) {
-        System.out.println("KEY: " + keyCode + " | selectedIndex: " + selectedIndex); // DEBUG
+        Main.Log.d("KEY: " + keyCode + " | selectedIndex: " + selectedIndex); // DEBUG
         if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) selectedIndex = (selectedIndex - 1 + 4) % 4;
         if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) selectedIndex = (selectedIndex + 1) % 4;
         if (keyCode == KeyEvent.VK_ENTER) {
-            System.out.println("ENTER pressed, selectedIndex: " + selectedIndex); // DEBUG
+            Main.Log.d("ENTER pressed, selectedIndex: " + selectedIndex); // DEBUG
             if (selectedIndex == 0) { gp.setupGame(); active = false; }
             if (selectedIndex == 1) { 
                 saveSlots = SaveManager.getAllSlots();

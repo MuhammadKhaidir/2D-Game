@@ -32,6 +32,7 @@ public class SaveData implements Serializable {
     public List<Integer> totemSlotBaseHP  = new ArrayList<>();
     public List<Integer> totemSlotBaseAtk = new ArrayList<>();
     public String gameState;
+    public String activeDomainId; // domain yang sedang aktif saat save (null kalau di luar domain)
 
     public List<Integer> removedObjectIndexes = new ArrayList<>();
 

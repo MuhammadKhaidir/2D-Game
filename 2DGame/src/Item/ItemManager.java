@@ -72,7 +72,7 @@ public class ItemManager {
             BONE_SWORD = new Item("Bone Sword", safeLoad("/Aset/BoneSword.png", "/Aset/BasicSword.png"));
             HELM       = new Item("Helm",       safeLoad("/Aset/IronHelmet.png",      "/Aset/IronHelmet.png"));
             GOLD       = new Item("Gold",       safeLoad("/drop/Gold.png",      "/drop/Ore.png"));
-            System.out.println("[ItemManager] Preloading weapon instances...");
+            Main.Log.d("[ItemManager] Preloading weapon instances...");
             weaponSwordInstance    = new Weapon("Basic Sword", "Sword");
             weaponAxeInstance      = new Weapon("Basic Axe",   "Axe");
             weaponBoneSwordInstance = new Weapon("Bone Sword", "BoneSword");

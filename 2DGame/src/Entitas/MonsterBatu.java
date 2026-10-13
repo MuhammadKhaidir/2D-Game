@@ -71,7 +71,7 @@ public class MonsterBatu extends Entity {
         state = MonsterState.DEAD;
         isDead = true;
 
-        System.out.println("Monster Batu Mati");
+        Main.Log.d("Monster Batu Mati");
     }
 
     // =========================

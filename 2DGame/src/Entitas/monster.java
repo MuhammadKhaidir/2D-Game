@@ -161,7 +161,7 @@ public class monster extends Entity {
             gp.drops.add(new Item.DropItem(x, y, Item.ItemManager.get().SLIME_GEL, 2));
         }
 
-        System.out.println("Drop keluar di map!");
+        Main.Log.d("Drop keluar di map!");
     }
     
     
@@ -316,7 +316,7 @@ public class monster extends Entity {
         
         gp.player.exp += this.getExpValue;
         gp.player.checkLevelUp();
-        System.out.println("Slime mati");
+        Main.Log.d("Slime mati");
     }
 
     // =====================

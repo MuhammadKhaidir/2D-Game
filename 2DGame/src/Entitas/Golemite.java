@@ -108,7 +108,7 @@ public class Golemite extends Entity {
         }
 
         imagesLoaded = true;
-        System.out.println("[Golemite] Selesai load sprite.");
+        Main.Log.d("[Golemite] Selesai load sprite.");
     }
 
     private static BufferedImage loadImage(String fileName) {

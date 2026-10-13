@@ -75,7 +75,7 @@ public class Weapon {
     }
 
     private void loadWeaponImages() {
-        System.out.println("[Weapon System] Memuat aset untuk: " + name + " (" + type + ")");
+        Main.Log.d("[Weapon System] Memuat aset untuk: " + name + " (" + type + ")");
 
         for (int i = 0; i < 4; i++) {
             int frameNum = i + 1;
@@ -148,7 +148,7 @@ public class Weapon {
                 wpState4Right[i] = readImageSafely("/Aset/SkullSwRightSwing (" + (i + 5) + ").png");
             }
         }
-        System.out.println("[Weapon System] Selesai memuat tipe: " + type);
+        Main.Log.d("[Weapon System] Selesai memuat tipe: " + type);
     }
 
     private void preloadSounds() {

@@ -110,7 +110,7 @@ public class Skeleton extends Entity {
                 S_deathRight[i] = ImageIO.read(cls.getResourceAsStream("/Aset/SkelRightDeath (" + (i+1) + ").png"));
             }
             imagesLoaded = true;
-            System.out.println("[Skeleton] Semua gambar berhasil di-preload (shared cache).");
+            Main.Log.d("[Skeleton] Semua gambar berhasil di-preload (shared cache).");
         } catch (Exception e) {
             System.out.println("[Skeleton] Gagal preload gambar: " + e.getMessage());
         }
@@ -411,7 +411,7 @@ public class Skeleton extends Entity {
         this.solidArea.x = this.solidAreaDefaultX;
         this.solidArea.y = this.solidAreaDefaultY;
         this.noDamageTimer = 0;
-        System.out.println("[Skeleton] Bangkit dari kubur di koordinat awal!");
+        Main.Log.d("[Skeleton] Bangkit dari kubur di koordinat awal!");
     }
 
     private void dropItems() {

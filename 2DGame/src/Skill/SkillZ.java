@@ -50,7 +50,7 @@ public class SkillZ extends Skill {
             trailAlpha[i] = 0f;
         }
 
-        System.out.println("[SkillZ] Activated!");
+        Main.Log.d("[SkillZ] Activated!");
     }
 
     @Override
@@ -88,7 +88,7 @@ public class SkillZ extends Skill {
     @Override
     protected void onEnd() {
         alpha = 0f;
-        System.out.println("[SkillZ] Ended.");
+        Main.Log.d("[SkillZ] Ended.");
     }
 
     @Override

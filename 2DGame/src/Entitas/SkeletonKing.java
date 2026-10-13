@@ -110,7 +110,7 @@ public class SkeletonKing extends Entity {
                 S_deadRight[i] = ImageIO.read(cls.getResourceAsStream("/Aset/SkeletonKingRightDead (" + f + ").png"));
             }
             imagesLoaded = true;
-            System.out.println("[SkeletonKing] Semua gambar berhasil di-preload.");
+            Main.Log.d("[SkeletonKing] Semua gambar berhasil di-preload.");
 
             // NEW: preload asset skill Skeleton Hand bareng-bareng juga
             SkeletonHand.preloadImages();

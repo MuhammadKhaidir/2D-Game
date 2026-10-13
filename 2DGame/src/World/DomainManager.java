@@ -28,7 +28,7 @@ public class DomainManager {
     private RoomData nearDoorRoom = null; // buat nampilin hint "[E] Masuk ..." pas deket pintu
 
     // ── Debug: gambar kotak collision biar gampang nge-tune posisinya ──
-    private boolean showCollisionDebug = true; // ganti ke false kalau udah kelar nge-tune
+    public boolean showCollisionDebug = false; // toggle: F3
 
     // ── Spawn Boss via Skeleton Key ──
     private final Rectangle bossSpawnAltar = new Rectangle(580 - 40, 190 - 40, 80, 80);
@@ -341,7 +341,7 @@ public class DomainManager {
         for (DomainData d : domains) {
             if (playerArea.intersects(d.triggerArea)) {
                 gp.KeyH.interactPressed = false;
-                System.out.println("[DomainManager] Masuk domain: " + d.id + " bg=" + d.backgroundPath); // debug
+                Main.Log.d("[DomainManager] Masuk domain: " + d.id + " bg=" + d.backgroundPath); // debug
                 startEnter(d);
                 return;
             }
@@ -830,7 +830,7 @@ public class DomainManager {
 
         shopFeedback = "✓ " + item.name + " berhasil dibeli!";
         shopFeedbackTimer = 120;
-        System.out.println("[Shop] Beli: " + item.name);
+        Main.Log.d("[Shop] Beli: " + item.name);
 
         darkMerchant.closeShop();
     }

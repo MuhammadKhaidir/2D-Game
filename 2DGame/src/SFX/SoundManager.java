@@ -36,6 +36,10 @@ public class SoundManager {
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
             return clip;
+        } catch (IllegalArgumentException e) {
+            // Tidak ada perangkat audio (audio dimatikan / remote desktop / dll): game tetap jalan tanpa suara
+            System.err.println("[SoundManager] Perangkat audio tidak tersedia, lewati: " + path);
+            return null;
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             System.err.println("[SoundManager] Gagal load: " + path);
             e.printStackTrace();

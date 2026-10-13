@@ -544,8 +544,16 @@ public TileM(GamePanel gp) {
         if (camY > worldHeight - gp.player.screenY) camY = worldHeight - gp.player.screenY;
 
         // Hanya gambar tile dasar (ground layer)
-        for (int worldRow = 0; worldRow < gp.maxWorldRow; worldRow++) {
-            for (int worldCol = 0; worldCol < gp.maxWorldCol; worldCol++) {
+        // Cuma telusuri tile yang kelihatan di layar (sekitar 17x13), bukan seluruh peta 700x700
+        int leftWorld = camX - gp.player.screenX;
+        int topWorld  = camY - gp.player.screenY;
+        int startCol = Math.max(0, leftWorld / gp.tileSize);
+        int endCol   = Math.min(gp.maxWorldCol - 1, (leftWorld + gp.screenWidth) / gp.tileSize + 1);
+        int startRow = Math.max(0, topWorld / gp.tileSize);
+        int endRow   = Math.min(gp.maxWorldRow - 1, (topWorld + gp.screenHeight) / gp.tileSize + 1);
+
+        for (int worldRow = startRow; worldRow <= endRow; worldRow++) {
+            for (int worldCol = startCol; worldCol <= endCol; worldCol++) {
                 int tileNum = mapTileNum[worldCol][worldRow];
                 
                 // 🔥 BARU: Jika tile map mendeteksi objek breakable (pohon 55, batu 40, 41)

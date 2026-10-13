@@ -327,7 +327,7 @@ public class Orc extends Entity {
         drop();
         gp.player.exp += getExpValue;
         gp.player.checkLevelUp();
-        System.out.println("Orc mati!");
+        Main.Log.d("Orc mati!");
     }
 
     // =====================
