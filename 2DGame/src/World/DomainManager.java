@@ -623,7 +623,7 @@ public class DomainManager {
             FontMetrics fm = g2.getFontMetrics();
             int tw = fm.stringWidth(shopFeedback);
             int bx = gp.screenWidth / 2 - tw / 2 - 12;
-            int by = gp.screenHeight - 80;
+            int by = gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 80;
             // warna berdasarkan isi pesan
             Color bgCol  = shopFeedback.startsWith("✓")
                 ? new Color(0, 60, 0, 200)
@@ -871,14 +871,14 @@ public class DomainManager {
         g2.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2.setColor(new Color(255, 220, 120, 200));
         String hint = "[ " + d.id + " ]  |  ESC = Keluar";
-        g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - 16);
+        g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 16);
     }
 
     private void drawRoomHint(Graphics2D g2, RoomData r) {
         g2.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2.setColor(new Color(255, 220, 120, 200));
         String hint = "[ " + r.id + " ]  |  ESC = Keluar";
-        g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - 16);
+        g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 16);
     }
 
     private void drawBossSpawnCountdown(Graphics2D g2) {
@@ -910,7 +910,7 @@ public class DomainManager {
         g2.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2.setColor(new Color(255, 255, 150, 220));
         String hint = "[E] Awake the Skeleton King (need a Skeleton Key)";
-        g2.drawString(hint, gp.screenWidth / 2 - g2.getFontMetrics().stringWidth(hint) / 2, gp.screenHeight - 60);
+        g2.drawString(hint, gp.screenWidth / 2 - g2.getFontMetrics().stringWidth(hint) / 2, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 60);
     }
 
     private void drawDoorHintIfNear(Graphics2D g2) {
@@ -918,7 +918,7 @@ public class DomainManager {
         g2.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2.setColor(new Color(255, 255, 150, 220));
         String hint = "[E] Enter " + nearDoorRoom.id;
-        g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - 40);
+        g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 40);
     }
 
     private void drawFadeOverlay(Graphics2D g2) {

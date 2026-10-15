@@ -48,6 +48,14 @@ public class SaveManager {
                 data.removedObjectIndexes.add(i);
             }
         }
+        // Hotbar
+        data.hotbarNames = new ArrayList<>();
+        if (gp.hotbar != null) {
+            for (int i = 0; i < UI.Hotbar.SLOT_COUNT; i++) {
+                Item.Item hb = gp.hotbar.getSlot(i);
+                data.hotbarNames.add(hb != null ? hb.name : "");
+            }
+        }
         // Inventory
         data.inventoryNames.clear();
         data.inventoryAmounts.clear();
@@ -152,6 +160,17 @@ public class SaveManager {
                 Item.ItemManager.inventory.add(new Item.ItemStack(item, amount));
             }
         }
+        // Restore hotbar (save lama yang belum punya hotbar → hotbarNames null → hotbar dikosongin)
+        if (gp.hotbar != null) {
+            gp.hotbar.clear();
+            if (data.hotbarNames != null) {
+                for (int i = 0; i < data.hotbarNames.size() && i < UI.Hotbar.SLOT_COUNT; i++) {
+                    String hbName = data.hotbarNames.get(i);
+                    if (hbName == null || hbName.isEmpty()) continue;
+                    gp.hotbar.setSlot(i, getItemByName(im, hbName));
+                }
+            }
+        }
      // ── DeathTotem multi-slot restore ──
         java.util.List<Item.CapturedMob> savedSlots = new java.util.ArrayList<>();
         for (int i = 0; i < data.totemSlotTypes.size(); i++) {
@@ -195,6 +214,7 @@ public class SaveManager {
             case "Gold":         return im.COIN;          // nama lama, biar save lama tetap kebaca
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
             case "Helm":         return im.HELM;
+            case "Health Potion": return im.HEALTH_POTION; // CONSUMABLE
             default:
                 System.out.println("[SaveManager] Item tidak dikenal: " + name);
                 return null;

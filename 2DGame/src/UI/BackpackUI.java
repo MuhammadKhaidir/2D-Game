@@ -57,6 +57,10 @@ public class BackpackUI implements MouseWheelListener {
     private boolean showDeleteConfirm = false;
     private int deleteAmount = 1;
 
+    // ── Tombol "ADD TO HOTBAR" (1..5) di panel detail item ──
+    private final Rectangle[] hotbarBtnRects = new Rectangle[Hotbar.SLOT_COUNT];
+    private Hotbar hotbarRef = null; // diisi tiap draw() dari gp.hotbar
+
     // ── State panel MENU (kanan) & Settings ──
     private boolean settingsOpen = false; // false = tampilin list menu, true = tampilin isi Settings
     private int musicVolumePercent = 75;  // default match MusicManager.play() (-10dB)
@@ -120,6 +124,7 @@ public class BackpackUI implements MouseWheelListener {
         confirmBtnRect = null;
         cancelBtnRect = null;
         closeDetailBtnRect = null;
+        java.util.Arrays.fill(hotbarBtnRects, null);
 
         g2.setFont(new Font("Monospaced", Font.BOLD, 12));
         g2.setColor(colorBorder);
@@ -301,9 +306,22 @@ public class BackpackUI implements MouseWheelListener {
             confirmBtnRect = null;
             cancelBtnRect = null;
 
-            drawButton(g2, deleteBtnRect, "[ Delete ]", new Color(120, 30, 25));
+            // ── Masukin ke hotbar: tombol 1..5 (yang udah dipakai item ini di-highlight) ──
+            g2.setFont(new Font("Monospaced", Font.BOLD, 9));
+            g2.setColor(colorAccent);
+            g2.drawString("ADD TO HOTBAR", bx, y + h - 62);
+            int hbGap = 3;
+            int hbW = (bw - hbGap * (Hotbar.SLOT_COUNT - 1)) / Hotbar.SLOT_COUNT;
+            for (int i = 0; i < Hotbar.SLOT_COUNT; i++) {
+                hotbarBtnRects[i] = new Rectangle(bx + i * (hbW + hbGap), y + h - 56, hbW, 20);
+                boolean assigned = hotbarRef != null && hotbarRef.getSlot(i) != null
+                        && hotbarRef.getSlot(i).name.equals(selectedItem.item.name);
+                drawButton(g2, hotbarBtnRects[i], String.valueOf(i + 1),
+                        assigned ? new Color(150, 105, 20) : colorSlot);
+            }
         } else {
             deleteBtnRect = null;
+            java.util.Arrays.fill(hotbarBtnRects, null);
 
             int row1Y = y + h - 58;
             int row2Y = y + h - 32;
@@ -417,6 +435,10 @@ public class BackpackUI implements MouseWheelListener {
                 return "A shiny coin dropped by every monster you defeat. "
                      + "Used as currency.";
 
+            case "health potion":
+                return "A vial of crimson liquid. Restores 50 HP when used. "
+                     + "Put it in the hotbar and press its number key.";
+
             default:
                 return "A mysterious artifact discovered on your journey. "
                      + "Its exact properties and uses are unknown.";
@@ -450,6 +472,7 @@ public class BackpackUI implements MouseWheelListener {
 
     public void draw(Graphics2D g2, int screenW, int screenH, GamePanel gp) {
         if (!visible) return;
+        this.hotbarRef = gp.hotbar;
 
         // kalau item yang lagi dipilih udah gak ada di inventory (kehapus/kepake), lepas pilihannya
         if (selectedItem != null && !items.contains(selectedItem)) {
@@ -742,6 +765,62 @@ public class BackpackUI implements MouseWheelListener {
         g2.drawRect(barX, thumbY, barW, thumbH);
     }
     
+    /**
+     * Item ini masuk slot equip yang mana? 0=weapon, 1=helm, 2=armor, 3=legs, 4=boots, -1 = bukan equipment.
+     * (Aturannya sama persis kayak yang dulu ada di klik kanan.)
+     */
+    public int getEquipSlotFor(Item.Item item) {
+        if (item == null || item.name == null) return -1;
+        String itemName = item.name.toLowerCase();
+        if (itemName.contains("sword") || itemName.contains("weapon") || itemName.contains("axe") || itemName.contains("kapak") || itemName.contains("bone sword")) return 0;
+        if (itemName.contains("helm") || itemName.contains("hat")) return 1;
+        if (itemName.contains("baju") || itemName.contains("armor") || itemName.contains("cloth")) return 2;
+        if (itemName.contains("legging") || itemName.contains("pants") || itemName.contains("celana")) return 3;
+        if (itemName.contains("sepatu") || itemName.contains("boots")) return 4;
+        return -1;
+    }
+
+    /** Item ini lagi dipakai (equipped)? */
+    public boolean isEquipped(Item.Item item) {
+        if (item == null) return false;
+        for (ItemStack eq : equippedSlots) {
+            if (eq != null && eq.item == item) return true;
+        }
+        return false;
+    }
+
+    /** Pasang item kalau belum dipakai, lepas kalau lagi dipakai. Dipakai klik kanan backpack & hotbar. */
+    public void toggleEquip(ItemStack stack, GamePanel gp) {
+        if (stack == null || stack.item == null) return;
+        String itemName = stack.item.name.toLowerCase();
+        int targetSlot = getEquipSlotFor(stack.item);
+        if (targetSlot == -1) return;
+
+        if (equippedSlots[targetSlot] != null && equippedSlots[targetSlot].item == stack.item) {
+            if (targetSlot == 0) {
+                gp.player.isWeaponEquipped = false;
+                gp.player.currentWeapon = null;
+            } else if (targetSlot == 1) {
+                gp.player.currentHelm = null;
+            }
+            equippedSlots[targetSlot] = null;
+        } else {
+            equippedSlots[targetSlot] = stack;
+            if (targetSlot == 0) {
+                gp.player.isWeaponEquipped = true;
+                if (itemName.contains("axe") || itemName.contains("kapak")) {
+                    gp.player.currentWeapon = ItemManager.get().weaponAxeInstance;
+                } else if (itemName.contains("bone sword")) {
+                    gp.player.currentWeapon = ItemManager.get().weaponBoneSwordInstance;
+                } else {
+                    gp.player.currentWeapon = ItemManager.get().weaponSwordInstance;
+                }
+            } else if (targetSlot == 1) {
+                gp.player.currentHelm = new PlayerArmor("IronHelm");
+            }
+        }
+    }
+
     private boolean isCurrentlyEquipped(ItemStack stack, GamePanel gp) {
         for (ItemStack eq : equippedSlots) {
             if (eq != null && eq.item == stack.item) {
@@ -839,6 +918,20 @@ public class BackpackUI implements MouseWheelListener {
                         deleteAmount = 1;
                     }
                 } else {
+                    // tombol "ADD TO HOTBAR" 1..5: klik = masukin, klik lagi di slot yang sama = lepas
+                    for (int i = 0; i < Hotbar.SLOT_COUNT; i++) {
+                        if (hotbarBtnRects[i] != null && hotbarBtnRects[i].contains(mx, my)) {
+                            if (gp.hotbar != null) {
+                                Item.Item cur = gp.hotbar.getSlot(i);
+                                if (cur != null && cur.name.equals(selectedItem.item.name)) {
+                                    gp.hotbar.clearSlot(i);
+                                } else {
+                                    gp.hotbar.assign(i, selectedItem.item);
+                                }
+                            }
+                            return;
+                        }
+                    }
                     if (deleteBtnRect != null && deleteBtnRect.contains(mx, my)) {
                         if (selectedItem.amount <= 1) {
                             performDelete(gp, selectedItem.amount);
@@ -922,46 +1015,18 @@ public class BackpackUI implements MouseWheelListener {
                         if (stack != null && stack.item != null) {
                             
                             if (e.getButton() == MouseEvent.BUTTON3) { // KLIK KANAN: Pasang/Lepas Equip
-                                String itemName = stack.item.name.toLowerCase();
-                                int targetSlot = -1;
-
-                                if (itemName.contains("sword") || itemName.contains("weapon") || itemName.contains("axe") || itemName.contains("kapak") || itemName.contains("bone sword")) targetSlot = 0;
-                                else if (itemName.contains("helm") || itemName.contains("hat")) targetSlot = 1;
-                                else if (itemName.contains("baju") || itemName.contains("armor") || itemName.contains("cloth")) targetSlot = 2;
-                                else if (itemName.contains("legging") || itemName.contains("pants") || itemName.contains("celana")) targetSlot = 3;
-                                else if (itemName.contains("sepatu") || itemName.contains("boots")) targetSlot = 4;
-
-                                if (targetSlot != -1) {
-                                    if (equippedSlots[targetSlot] != null && equippedSlots[targetSlot].item == stack.item) {
-                                        if (targetSlot == 0) {
-                                            gp.player.isWeaponEquipped = false;
-                                            gp.player.currentWeapon = null;
-                                        } else if (targetSlot == 1) {
-                                            gp.player.currentHelm = null;
-                                        }
-                                        equippedSlots[targetSlot] = null;
-                                    } else {
-                                        equippedSlots[targetSlot] = stack;
-                                        if (targetSlot == 0) {
-                                            gp.player.isWeaponEquipped = true;
-                                            if (itemName.contains("axe") || itemName.contains("kapak")) {
-                                                gp.player.currentWeapon = ItemManager.get().weaponAxeInstance;
-                                            } else if (itemName.contains("bone sword")) {
-                                                gp.player.currentWeapon = ItemManager.get().weaponBoneSwordInstance;
-                                            } else {
-                                                gp.player.currentWeapon = ItemManager.get().weaponSwordInstance;
-                                            }
-                                        } else if (targetSlot == 1) {
-                                            gp.player.currentHelm = new PlayerArmor("IronHelm");
-                                        }
-                                    }
-                                }
+                                toggleEquip(stack, gp);
                             } else if (e.getButton() == MouseEvent.BUTTON1) {
                                 // KLIK KIRI: pilih item -> detailnya tampil di panel kanan
                                 if (stack != selectedItem) {
                                     selectedItem = stack;
                                     showDeleteConfirm = false;
                                     deleteAmount = 1;
+                                }
+
+                                // calon DRAG ke hotbar (baru kebaca drag kalau mouse digeser > beberapa px)
+                                if (gp.hotbar != null) {
+                                    gp.hotbar.beginDrag(stack.item, mx, my);
                                 }
 
                                 // DOUBLE-KLIK Death Totem: buka Totem UI (dulu cukup 1x klik)

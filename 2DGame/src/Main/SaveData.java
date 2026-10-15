@@ -39,4 +39,8 @@ public class SaveData implements Serializable {
     // Inventory: simpan nama dan jumlah saja
     public List<String> inventoryNames   = new ArrayList<>();
     public List<Integer> inventoryAmounts = new ArrayList<>();
+
+    // Hotbar: nama item per slot (string kosong "" = slot kosong).
+    // Bisa null kalau save-nya dari versi sebelum ada hotbar.
+    public List<String> hotbarNames = new ArrayList<>();
 }

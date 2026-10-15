@@ -27,8 +27,17 @@ public class KeyHandler implements KeyListener {
     public boolean tabPressed;
     GamePanel gp;
     public boolean f5Pressed;
+    // buat nahan auto-repeat: nahan angka 1-5 cuma dihitung SEKALI tekan (biar potion gak keabisan)
+    private final boolean[] hotbarKeyDown = new boolean[5];
 	public boolean mPressed;
     
+    /** VK_1..VK_5 (atau numpad 1..5) → 0..4, selain itu -1. */
+    private int hotbarIndexFor(int code) {
+        if (code >= KeyEvent.VK_1 && code <= KeyEvent.VK_5) return code - KeyEvent.VK_1;
+        if (code >= KeyEvent.VK_NUMPAD1 && code <= KeyEvent.VK_NUMPAD5) return code - KeyEvent.VK_NUMPAD1;
+        return -1;
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
         typedChar = e.getKeyChar();
@@ -92,9 +101,20 @@ public class KeyHandler implements KeyListener {
                 gp.backpack.handleKeyPress(code);
             }
         }
-        if (code == KeyEvent.VK_1) onePressed = true;
-        if (code == KeyEvent.VK_2) twoPressed = true;
-        if (code == KeyEvent.VK_3) threePressed = true;
+        // Angka 1-5: HOTBAR (pakai item di slot). Tapi kalau lagi dialog / panel command NPC,
+        // angka 1-3 tetap jadi pilihan dialog kayak sebelumnya.
+        int hb = hotbarIndexFor(code);
+        if (hb != -1) {
+            boolean npcMenuOpen = gp != null && (gp.dialogOn || gp.inspectOn);
+            if (npcMenuOpen || gp == null || gp.hotbar == null) {
+                if (hb == 0) onePressed = true;
+                else if (hb == 1) twoPressed = true;
+                else if (hb == 2) threePressed = true;
+            } else if (!hotbarKeyDown[hb]) {
+                hotbarKeyDown[hb] = true;
+                gp.hotbar.onNumberKey(hb);
+            }
+        }
         
         // ◄ PERBAIKAN: Tombol T sekarang mengaktifkan tPressed untuk DeathTotem
         if (code == KeyEvent.VK_T) tPressed = true; 
@@ -114,6 +134,8 @@ public class KeyHandler implements KeyListener {
     public void keyReleased(KeyEvent e) {
 
         int code = e.getKeyCode();
+        int hbRel = hotbarIndexFor(code);
+        if (hbRel != -1) hotbarKeyDown[hbRel] = false;
         if (code == KeyEvent.VK_F5) f5Pressed = false;
         if (code == KeyEvent.VK_M) mPressed = false;
         if (code == KeyEvent.VK_Z) zPressed = false;

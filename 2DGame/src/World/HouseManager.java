@@ -368,7 +368,7 @@ public class HouseManager {
         g2.setColor(new Color(255, 220, 120, 200));
         String hint = "[ " + h.id + " ]  |  ESC = Keluar";
         int x = gp.screenWidth / 2 - g2.getFontMetrics().stringWidth(hint) / 2;
-        g2.drawString(hint, x, gp.screenHeight - 16);
+        g2.drawString(hint, x, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 16);
     }
 
     private void drawFadeOverlay(Graphics2D g2) {

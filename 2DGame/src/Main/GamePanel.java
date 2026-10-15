@@ -100,6 +100,9 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	//backpack
 	public BackpackUI backpack;
+
+	// hotbar: 5 slot akses cepat di bawah layar (tombol angka 1-5)
+	public UI.Hotbar hotbar;
 	
 	// Atmosper
 	public boolean darkMode = true;
@@ -209,6 +212,7 @@ public class GamePanel extends JPanel implements Runnable{
 
 		
 		backpack = new BackpackUI(ItemManager.inventory);
+		hotbar = new UI.Hotbar(this);
 		
 		this.addMouseWheelListener(backpack);
 
@@ -271,6 +275,11 @@ public class GamePanel extends JPanel implements Runnable{
                     domainManager.handleMerchantMouseClick(e);
                     return;
                 }
+
+                // ── HOTBAR ── (klik slot = pakai item, klik kanan = kosongin; juga biar gak nonjok)
+                if (hotbar != null && hotbar.handleMousePressed(e)) {
+                    return;
+                }
  
                 // ── PLAYER STAT UI ──
                 if (statUI != null && statUI.visible) {
@@ -297,6 +306,12 @@ public class GamePanel extends JPanel implements Runnable{
                     }
                 }
             }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // lepas klik: selesaiin drag & drop ke hotbar (kalau lagi ada)
+                if (hotbar != null) hotbar.handleMouseReleased(e);
+            }
         });
 
 		// NEW: Mouse hover — SEBELUMNYA GAK PERNAH DI-REGISTER, makanya hover buat
@@ -305,6 +320,12 @@ public class GamePanel extends JPanel implements Runnable{
 		    @Override
 		    public void mouseMoved(MouseEvent e) {
 		        GamePanel.this.mouseMoved(e);
+		    }
+
+		    @Override
+		    public void mouseDragged(MouseEvent e) {
+		        // seret item dari backpack / antar slot hotbar
+		        if (hotbar != null) hotbar.handleMouseDragged(e);
 		    }
 		});
 
@@ -828,6 +849,7 @@ public class GamePanel extends JPanel implements Runnable{
 		if (mainMenu.active) { mainMenu.update(); return; }
 
 		updateZoom(); // smooth zoom in/out
+		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
 
 		world.update();
 		// Di bagian update(), setelah world.update()
@@ -1220,6 +1242,7 @@ public void paintComponent(Graphics g) {
         
 
         // UI saat INSIDE
+        if (hotbar != null) hotbar.draw(g2);
         if (dialogOn) drawDialog(g2);
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
         if (statUI != null && statUI.visible) statUI.draw(g2);
@@ -1273,6 +1296,8 @@ public void paintComponent(Graphics g) {
         g2.setTransform(domainTx);
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
 
+        if (hotbar != null) hotbar.draw(g2);
+
         // UI merchant — setelah entity, biar overlay di atas segalanya
         DarkMerchant dm = domainManager.darkMerchant;
         if (dm != null) {
@@ -1324,6 +1349,7 @@ public void paintComponent(Graphics g) {
         drawSunsetOverlay(g2);
 
         // UI saat OUTSIDE
+        if (hotbar != null) hotbar.draw(g2);
         if (dialogOn) drawDialog(g2);
         if (inspectOn) drawInspectPanel(g2);
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
@@ -1348,6 +1374,7 @@ public void paintComponent(Graphics g) {
 
         drawZoomHint(g2);
     }
+    if (hotbar != null) hotbar.drawOverlay(g2); // tooltip + ikon yang lagi diseret, di atas semua UI
     if (deathScreenUI != null) {
         deathScreenUI.draw(g2);
     }
@@ -1380,6 +1407,9 @@ public void paintComponent(Graphics g) {
 	
 	
 	public void mouseMoved(MouseEvent e) {
+
+	    // hover hotbar (buat highlight + tooltip nama item)
+	    if (hotbar != null) hotbar.handleMouseMoved(e);
 
 	    // ── DARK MERCHANT SHOP HOVER ──
 	    if (domainManager != null
