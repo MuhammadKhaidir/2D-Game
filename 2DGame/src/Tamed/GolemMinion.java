@@ -521,8 +521,8 @@ public class GolemMinion extends Entity {
         int drawSize = gp.tileSize * DRAW_SIZE_MULT;
         int sx = x - gp.player.x + gp.player.screenX - gp.tileSize;
         int sy = y - gp.player.y + gp.player.screenY - gp.tileSize;
-        if (sx+drawSize < -drawSize || sx > gp.screenWidth+drawSize ||
-            sy+drawSize < -drawSize || sy > gp.screenHeight+drawSize) return;
+        if (sx+drawSize < gp.viewMinX()-drawSize || sx > gp.viewMaxX()+drawSize ||
+            sy+drawSize < gp.viewMinY()-drawSize || sy > gp.viewMaxY()+drawSize) return;
 
         // Shadow
         if (state != MinionState.DEATH) {

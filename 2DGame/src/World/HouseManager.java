@@ -256,6 +256,8 @@ public class HouseManager {
         int camX = gp.player.x;
         int camY = gp.player.y;
 
+        // ── BAGIAN DUNIA (ikut ke-zoom): lantai, tembok, furniture, gif ──
+        java.awt.geom.AffineTransform baseTx = gp.applyWorldZoom(g2);
         drawFloor(g2, camX, camY, psx, psy, activeHouse);
 
         if (!useGifBackground) {
@@ -264,7 +266,9 @@ public class HouseManager {
 
         drawFurniture(g2, camX, camY, psx, psy, activeHouse);
         drawGifs(g2, camX, camY, psx, psy, activeHouse);
+        g2.setTransform(baseTx);
 
+        // ── BAGIAN UI (layar normal, gak ke-zoom) ──
         drawHint(g2, activeHouse);
         drawFadeOverlay(g2);
 
@@ -290,7 +294,7 @@ public class HouseManager {
                 int tileNum = floorMap[c][r];
                 int sx = c * ts - camX + psx;
                 int sy = r * ts - camY + psy;
-                if (sx + ts < 0 || sx > gp.screenWidth || sy + ts < 0 || sy > gp.screenHeight) continue;
+                if (sx + ts < gp.viewMinX() || sx > gp.viewMaxX() || sy + ts < gp.viewMinY() || sy > gp.viewMaxY()) continue;
 
                 BufferedImage img = (gp.tileM.tile[tileNum] != null) ? gp.tileM.tile[tileNum].image : null;
                 if (img != null) {
@@ -336,7 +340,7 @@ public class HouseManager {
         for (HouseData.FurnitureEntry f : h.furnitures) {
             int sx = f.x - camX + psx;
             int sy = f.y - camY + psy;
-            if (sx + f.w < 0 || sx > gp.screenWidth || sy + f.h < 0 || sy > gp.screenHeight) continue;
+            if (sx + f.w < gp.viewMinX() || sx > gp.viewMaxX() || sy + f.h < gp.viewMinY() || sy > gp.viewMaxY()) continue;
 
             BufferedImage img = f.getImage(getClass());
             if (img != null) {
@@ -354,7 +358,7 @@ public class HouseManager {
             if (icon == null) continue;
             int sx = gif.x - camX + psx;
             int sy = gif.y - camY + psy;
-            if (sx + gif.size < 0 || sx > gp.screenWidth || sy + gif.size < 0 || sy > gp.screenHeight) continue;
+            if (sx + gif.size < gp.viewMinX() || sx > gp.viewMaxX() || sy + gif.size < gp.viewMinY() || sy > gp.viewMaxY()) continue;
             g2.drawImage(icon.getImage(), sx, sy, gif.size, gif.size, gp);  // ← ganti ke gp
         }
     }

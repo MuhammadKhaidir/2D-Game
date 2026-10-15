@@ -2,6 +2,7 @@ package Main;
 
 import java.awt.*;
 import java.awt.GradientPaint;
+import java.awt.geom.AffineTransform;
 
 import Item.DeathTotemManager;
 import Item.DropItem;
@@ -109,6 +110,16 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public WorldSystem world;
 
+	// ===================== ZOOM =====================
+	// Scroll mouse / tombol  +  -  buat zoom, tombol 0 buat reset ke 100%.
+	// Zoom berlaku di mana-mana: di luar, di dalam rumah, dan di dalam domain/dungeon.
+	public static final float ZOOM_MIN  = 0.5f;   // 50%  (zoom out maksimal)
+	public static final float ZOOM_MAX  = 2.0f;   // 200% (zoom in maksimal)
+	public static final float ZOOM_STEP = 0.1f;   // tiap 1 notch scroll / 1 tekan tombol
+	public float zoom = 1.0f;        // zoom yang dipakai buat render (bergerak halus)
+	public float targetZoom = 1.0f;  // zoom tujuan (diubah scroll / tombol)
+	private int zoomHintTimer = 0;   // tampilan "Zoom: 150%" sebentar di layar
+
 	final int originalTileSize = 16;
 	public final int scale = 3;
 	public final int tileSize = originalTileSize * scale;
@@ -200,6 +211,14 @@ public class GamePanel extends JPanel implements Runnable{
 		backpack = new BackpackUI(ItemManager.inventory);
 		
 		this.addMouseWheelListener(backpack);
+
+		// ZOOM pakai scroll mouse (scroll naik = zoom in, scroll turun = zoom out).
+		// Cuma jalan kalau gak ada UI yang kebuka, jadi gak bentrok sama scroll backpack/shop.
+		this.addMouseWheelListener(e -> {
+		    if (canZoom()) {
+		        zoomBy(-e.getWheelRotation() * ZOOM_STEP);
+		    }
+		});
 
 		this.addMouseWheelListener(e -> {
 		    if (domainManager != null) {
@@ -355,6 +374,104 @@ public class GamePanel extends JPanel implements Runnable{
 	   // domainManager.forceEnterDomain("Tomb");         // langsung masuk domain
 	}
 	
+	// ===================== ZOOM: logic =====================
+
+	/** Zoom boleh dipakai cuma pas lagi main di luar & gak ada UI/dialog yang kebuka. */
+	public boolean canZoom() {
+	    if (mainMenu != null && mainMenu.active) return false;
+	    if (chatMode || dialogOn || inspectOn) return false;
+	    if (backpack != null && backpack.visible) return false;
+	    if (statUI != null && statUI.visible) return false;
+	    if (mobIndexUI != null && mobIndexUI.visible) return false;
+	    if (totemUI != null && totemUI.visible) return false;
+	    if (deathScreenUI != null && deathScreenUI.visible) return false;
+	    // di dalam domain: jangan zoom kalau lagi buka shop / dialog merchant / konfirmasi boss
+	    if (gameState == GameState.DOMAIN && domainManager != null) {
+	        DarkMerchant dm = domainManager.darkMerchant;
+	        if (dm != null && (dm.isShopOpen() || dm.isInDialog())) return false;
+	        if (domainManager.isBossConfirmOpen()) return false;
+	    }
+	    return true;
+	}
+
+	/** Ubah zoom tujuan (delta positif = zoom in, negatif = zoom out). */
+	public void zoomBy(float delta) {
+	    setTargetZoom(targetZoom + delta);
+	}
+
+	public void setTargetZoom(float z) {
+	    z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z));
+	    targetZoom = Math.round(z * 100f) / 100f;   // rapihin biar gak ada 1.0999999
+	    zoomHintTimer = 60;                          // ~1.5 detik (FPS 40)
+	}
+
+	public void resetZoom() {
+	    setTargetZoom(1.0f);
+	}
+
+	/** Dipanggil tiap frame: zoom jalan pelan-pelan ke targetZoom (smooth). */
+	private void updateZoom() {
+	    float diff = targetZoom - zoom;
+	    if (Math.abs(diff) < 0.002f) zoom = targetZoom;
+	    else zoom += diff * 0.25f;
+	    if (zoomHintTimer > 0) zoomHintTimer--;
+	}
+
+	/** Zoom yang beneran dipakai render (sama di luar, rumah, dan domain). */
+	public float renderZoom() {
+	    return zoom;
+	}
+
+	// Batas area yang kelihatan (dalam koordinat layar SEBELUM di-zoom).
+	// Kalau zoom out (<1), area yang kelihatan lebih luas dari layar asli,
+	// jadi pengecekan "di luar layar → skip gambar" harus pakai batas ini,
+	// kalau nggak, objek di pinggir bakal ilang pas zoom out.
+	// Pas zoom in (>=1) hasilnya sama persis kayak sebelumnya (0 .. screenWidth).
+	public int viewMinX() {
+	    return Math.min(0, (int) Math.floor(screenWidth / 2.0 - screenWidth / (2.0 * renderZoom())));
+	}
+	public int viewMaxX() {
+	    return Math.max(screenWidth, (int) Math.ceil(screenWidth / 2.0 + screenWidth / (2.0 * renderZoom())));
+	}
+	public int viewMinY() {
+	    return Math.min(0, (int) Math.floor(screenHeight / 2.0 - screenHeight / (2.0 * renderZoom())));
+	}
+	public int viewMaxY() {
+	    return Math.max(screenHeight, (int) Math.ceil(screenHeight / 2.0 + screenHeight / (2.0 * renderZoom())));
+	}
+
+	/**
+	 * Pasang transform zoom (pivot = tengah layar = posisi player).
+	 * Balikin transform lama; setelah selesai gambar dunia, panggil g2.setTransform(hasilnya)
+	 * supaya UI digambar di layar normal (gak ikut ke-zoom).
+	 */
+	public AffineTransform applyWorldZoom(Graphics2D g2) {
+	    AffineTransform previous = g2.getTransform();
+	    float z = renderZoom();
+	    if (z != 1.0f) {
+	        double cx = screenWidth / 2.0;
+	        double cy = screenHeight / 2.0;
+	        g2.translate(cx, cy);
+	        g2.scale(z, z);
+	        g2.translate(-cx, -cy);
+	    }
+	    return previous;
+	}
+
+	/** Indikator "Zoom: 150%" di pojok kanan atas, muncul sebentar tiap zoom diubah. */
+	private void drawZoomHint(Graphics2D g2) {
+	    if (zoomHintTimer <= 0) return;
+	    String txt = "Zoom: " + Math.round(targetZoom * 100f) + "%";
+	    g2.setFont(new Font("Arial", Font.BOLD, 13));
+	    int w = g2.getFontMetrics().stringWidth(txt);
+	    int x = screenWidth - w - 18;
+	    int y = 100;
+	    g2.setColor(new Color(0, 0, 0, 150));
+	    g2.fillRoundRect(x - 8, y - 15, w + 16, 22, 10, 10);
+	    g2.setColor(Color.WHITE);
+	    g2.drawString(txt, x, y);
+	}
+
 	public void drawSunsetOverlay(Graphics2D g2) {
 	    if (!sunsetMode) return;
 
@@ -709,6 +826,8 @@ public class GamePanel extends JPanel implements Runnable{
 		    deathScreenUI.visible = true;
 		}
 		if (mainMenu.active) { mainMenu.update(); return; }
+
+		updateZoom(); // smooth zoom in/out
 
 		world.update();
 		// Di bagian update(), setelah world.update()
@@ -1092,9 +1211,11 @@ public void paintComponent(Graphics g) {
     if (gameState == GameState.INSIDE) {
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, screenWidth, screenHeight);
-        houseManager.draw(g2);
+        houseManager.draw(g2);   // zoom dunia rumah di-handle di dalam HouseManager.draw
+        AffineTransform insideTx = applyWorldZoom(g2);
         player.draw(g2);
         if (speechBubble != null) speechBubble.draw(g2);
+        g2.setTransform(insideTx);
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
         
 
@@ -1108,12 +1229,13 @@ public void paintComponent(Graphics g) {
         g2.setColor(Color.RED);
         g2.drawString(world.getTimeString(), 20, 40);
         g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 0, 70);
+        drawZoomHint(g2);
         
     } else if (gameState == GameState.DOMAIN) {
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, screenWidth, screenHeight);
 
-        domainManager.drawBackground(g2);
+        domainManager.drawBackground(g2);   // zoom background domain di-handle di dalam DomainManager
 
         // Y-sort semua entity
         List<Entity> sortList = new ArrayList<>();
@@ -1143,10 +1265,12 @@ public void paintComponent(Graphics g) {
         
 
         sortList.sort((a, b) -> a.getSortY() - b.getSortY());
+        AffineTransform domainTx = applyWorldZoom(g2);
         for (Entity e : sortList) {
             e.draw(g2);
         }
         if (speechBubble != null) speechBubble.draw(g2);
+        g2.setTransform(domainTx);
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
 
         // UI merchant — setelah entity, biar overlay di atas segalanya
@@ -1162,13 +1286,22 @@ public void paintComponent(Graphics g) {
         if (statUI != null && statUI.visible) statUI.draw(g2);
         if (mobIndexUI != null && mobIndexUI.visible) mobIndexUI.draw(g2, screenWidth, screenHeight, this);
         drawDebugInfo(g2);
+        drawZoomHint(g2);
     
     } else if (gameState == GameState.OUTSIDE) {
+        // Semua yang "dunia" (tile, objek, entity) digambar di dalam transform zoom.
+        // Hujan, overlay gelap/sunset, dan semua UI digambar di luar transform (layar normal).
+        AffineTransform baseTx = g2.getTransform();
+
+        applyWorldZoom(g2);
         tileM.draw(g2);
+        g2.setTransform(baseTx);
         
         if (world.isRaining) {
             for (RainDrop r : rain) r.draw(g2);
         }
+
+        applyWorldZoom(g2);
         for (int i = 0; i < obj.length; i++) {
             if (obj[i] != null) obj[i].draw(g2, this);
         }
@@ -1184,6 +1317,8 @@ public void paintComponent(Graphics g) {
         
         player.drawOverhead(g2);
         if (speechBubble != null) speechBubble.draw(g2);
+        g2.setTransform(baseTx);
+
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
         drawDarkOverlay(g2);
         drawSunsetOverlay(g2);
@@ -1196,17 +1331,22 @@ public void paintComponent(Graphics g) {
         if (mobIndexUI != null && mobIndexUI.visible) mobIndexUI.draw(g2, screenWidth, screenHeight, this);
         drawDebugInfo(g2);
 
+        AffineTransform dropsTx = g2.getTransform();
+        applyWorldZoom(g2);
         for (int i = 0; i < drops.size(); i++) {
             DropItem d = drops.get(i);
             int screenX = d.x - player.x + player.screenX;
             int screenY = d.y - player.y + player.screenY;
             g2.drawImage(d.item.icon, screenX, screenY, 32, 32, null);
         }
+        g2.setTransform(dropsTx);
 
         g2.setFont(new Font("Arial", Font.BOLD, 13));
         g2.setColor(Color.RED);
         g2.drawString(world.getTimeString(), 650, 40);
         g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 650, 70);
+
+        drawZoomHint(g2);
     }
     if (deathScreenUI != null) {
         deathScreenUI.draw(g2);

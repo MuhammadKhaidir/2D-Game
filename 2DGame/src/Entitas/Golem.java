@@ -693,8 +693,8 @@ public class Golem extends Entity {
         int sx = x - gp.player.x + gp.player.screenX;
         int sy = y - gp.player.y + gp.player.screenY;
 
-        if (sx + drawSize < -drawSize || sx > gp.screenWidth  + drawSize ||
-            sy + drawSize < -drawSize || sy > gp.screenHeight + drawSize) return;
+        if (sx + drawSize < gp.viewMinX() - drawSize || sx > gp.viewMaxX() + drawSize ||
+            sy + drawSize < gp.viewMinY() - drawSize || sy > gp.viewMaxY() + drawSize) return;
 
         int drawX = sx - gp.tileSize;
         int drawY = sy - gp.tileSize;

@@ -102,12 +102,19 @@ public class AnimatedObjectManager {
     public void draw(Graphics2D g2, int camX, int camY,
                      int playerScreenX, int playerScreenY,
                      int screenW, int screenH) {
+        draw(g2, camX, camY, playerScreenX, playerScreenY, 0, 0, screenW, screenH);
+    }
+
+    /** Versi dengan batas area kelihatan (dipakai zoom: minX/minY bisa negatif, maxX/maxY bisa > layar). */
+    public void draw(Graphics2D g2, int camX, int camY,
+                     int playerScreenX, int playerScreenY,
+                     int minX, int minY, int maxX, int maxY) {
         for (AnimatedObject obj : objects) {
             int sx = obj.worldX - camX + playerScreenX;
             int sy = obj.worldY - camY + playerScreenY;
 
-            if (sx + obj.width < 0 || sx > screenW) continue;
-            if (sy + obj.height < 0 || sy > screenH) continue;
+            if (sx + obj.width < minX || sx > maxX) continue;
+            if (sy + obj.height < minY || sy > maxY) continue;
 
             obj.draw(g2, sx, sy);
         }

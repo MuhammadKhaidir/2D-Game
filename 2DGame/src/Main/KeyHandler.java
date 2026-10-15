@@ -55,6 +55,16 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_F4 && gp != null) { // toggle kotak collision + log konsol
             gp.toggleCollisionDebug();
         }
+        // ZOOM: tombol + / = (zoom in), - (zoom out), 0 (reset 100%). Scroll mouse juga bisa.
+        if (gp != null && gp.canZoom()) {
+            if (code == KeyEvent.VK_EQUALS || code == KeyEvent.VK_PLUS || code == KeyEvent.VK_ADD) {
+                gp.zoomBy(GamePanel.ZOOM_STEP);
+            } else if (code == KeyEvent.VK_MINUS || code == KeyEvent.VK_SUBTRACT) {
+                gp.zoomBy(-GamePanel.ZOOM_STEP);
+            } else if (code == KeyEvent.VK_0 || code == KeyEvent.VK_NUMPAD0) {
+                gp.resetZoom();
+            }
+        }
         if (code == KeyEvent.VK_TAB) { // buat liat stat player nih
             tabPressed = true;
         }

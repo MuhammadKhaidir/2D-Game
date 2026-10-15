@@ -101,8 +101,8 @@ public class WeaponDealer extends Entity {
         int drawY = screenY - (drawH - gp.tileSize);      // kaki tetap di bawah
 
         // Cull
-        if (drawX + drawW < 0 || drawX > gp.screenWidth ||
-            drawY + drawH < 0 || drawY > gp.screenHeight) return;
+        if (drawX + drawW < gp.viewMinX() || drawX > gp.viewMaxX() ||
+            drawY + drawH < gp.viewMinY() || drawY > gp.viewMaxY()) return;
 
         drawShadow(g2);
 

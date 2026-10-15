@@ -318,8 +318,8 @@ public TileM(GamePanel gp) {
 	    int screenX = worldX - camX + gp.player.screenX;
 	    int screenY = worldY - camY + gp.player.screenY;
 
-	    if (screenX + width > 0 && screenX < gp.screenWidth &&
-	        screenY + height > 0 && screenY < gp.screenHeight) {
+	    if (screenX + width > gp.viewMinX() && screenX < gp.viewMaxX() &&
+	        screenY + height > gp.viewMinY() && screenY < gp.viewMaxY()) {
 
 	        // Gambar bayangan dulu sebelum objeknya
 	        if (shadow == 1) {
@@ -357,8 +357,8 @@ public TileM(GamePanel gp) {
 	    int screenX = worldX - camX + gp.player.screenX;
 	    int screenY = worldY - camY + gp.player.screenY;
 
-	    if (screenX + w > 0 && screenX < gp.screenWidth &&
-	        screenY + h > 0 && screenY < gp.screenHeight) {
+	    if (screenX + w > gp.viewMinX() && screenX < gp.viewMaxX() &&
+	        screenY + h > gp.viewMinY() && screenY < gp.viewMaxY()) {
 
 	        g2.drawImage(img, screenX, screenY, w, h, null);
 	    }
@@ -547,10 +547,11 @@ public TileM(GamePanel gp) {
         // Cuma telusuri tile yang kelihatan di layar (sekitar 17x13), bukan seluruh peta 700x700
         int leftWorld = camX - gp.player.screenX;
         int topWorld  = camY - gp.player.screenY;
-        int startCol = Math.max(0, leftWorld / gp.tileSize);
-        int endCol   = Math.min(gp.maxWorldCol - 1, (leftWorld + gp.screenWidth) / gp.tileSize + 1);
-        int startRow = Math.max(0, topWorld / gp.tileSize);
-        int endRow   = Math.min(gp.maxWorldRow - 1, (topWorld + gp.screenHeight) / gp.tileSize + 1);
+        // viewMin/viewMax melebar pas zoom out, jadi tile di pinggir tetap kegambar
+        int startCol = Math.max(0, (leftWorld + gp.viewMinX()) / gp.tileSize - 1);
+        int endCol   = Math.min(gp.maxWorldCol - 1, (leftWorld + gp.viewMaxX()) / gp.tileSize + 1);
+        int startRow = Math.max(0, (topWorld + gp.viewMinY()) / gp.tileSize - 1);
+        int endRow   = Math.min(gp.maxWorldRow - 1, (topWorld + gp.viewMaxY()) / gp.tileSize + 1);
 
         for (int worldRow = startRow; worldRow <= endRow; worldRow++) {
             for (int worldCol = startCol; worldCol <= endCol; worldCol++) {
@@ -567,8 +568,8 @@ public TileM(GamePanel gp) {
                 int screenX = worldX - camX + gp.player.screenX;
                 int screenY = worldY - camY + gp.player.screenY;
 
-                if (screenX + gp.tileSize > 0 && screenX < gp.screenWidth &&
-                    screenY + gp.tileSize > 0 && screenY < gp.screenHeight) {
+                if (screenX + gp.tileSize > gp.viewMinX() && screenX < gp.viewMaxX() &&
+                    screenY + gp.tileSize > gp.viewMinY() && screenY < gp.viewMaxY()) {
 
                     if (tileAnimImage[tileNum] != null) {
                         // tile GIF animasi -> ambil frame yang lagi "hidup" sekarang dari Toolkit
@@ -606,7 +607,8 @@ public TileM(GamePanel gp) {
 			animObjManager.update();
 			animObjManager.draw(g2, fCamX, fCamY,
 			            gp.player.screenX, gp.player.screenY,
-			            gp.screenWidth, gp.screenHeight);
+			            gp.viewMinX(), gp.viewMinY(),
+			            gp.viewMaxX(), gp.viewMaxY());
 			
 			// ── PASS 1: Gambar semua flat objects dulu (tidak ikut sort) ──
 			for (int[] obj : worldObjects) {
@@ -690,8 +692,8 @@ public TileM(GamePanel gp) {
 			    breakable b = breakables[index];
 			    int sx = b.worldX - fCamX + gp.player.screenX;
 			    int sy = b.worldY - fCamY + gp.player.screenY;
-			    if (sx + b.width >= 0 && sx <= gp.screenWidth &&
-			        sy + b.height >= 0 && sy <= gp.screenHeight) {
+			    if (sx + b.width >= gp.viewMinX() && sx <= gp.viewMaxX() &&
+			        sy + b.height >= gp.viewMinY() && sy <= gp.viewMaxY()) {
 
 			        // 🔥 Bayangan sekarang ngikutin b.hasShadow (diisi dari data[] pas load)
 			        if (b.hasShadow) {
@@ -1047,10 +1049,10 @@ public TileM(GamePanel gp) {
 	    int screenX = worldX - camX + gp.player.screenX;
 	    int screenY = worldY - camY + gp.player.screenY;
 
-	    if (screenX + w > 0 &&
-	        screenX < gp.screenWidth &&
-	        screenY + h > 0 &&
-	        screenY < gp.screenHeight) {
+	    if (screenX + w > gp.viewMinX() &&
+	        screenX < gp.viewMaxX() &&
+	        screenY + h > gp.viewMinY() &&
+	        screenY < gp.viewMaxY()) {
 
 	        g2.drawImage(gif.getImage(), screenX, screenY, w, h, null);
 	    }
@@ -1134,8 +1136,8 @@ public TileM(GamePanel gp) {
 	        int screenY = r.y - camY + gp.player.screenY;
 
 	        // 🔥 SKIP YANG DI LUAR LAYAR
-	        if (screenX + r.width < 0 || screenX > gp.screenWidth ||
-	            screenY + r.height < 0 || screenY > gp.screenHeight) {
+	        if (screenX + r.width < gp.viewMinX() || screenX > gp.viewMaxX() ||
+	            screenY + r.height < gp.viewMinY() || screenY > gp.viewMaxY()) {
 	            continue;
 	        }
 

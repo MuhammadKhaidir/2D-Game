@@ -253,7 +253,7 @@ public class DomainManager {
         for (Rectangle r : wallCollisions) {
             int sx = r.x - camX + psx;
             int sy = r.y - camY + psy;
-            if (sx + r.width < 0 || sx > gp.screenWidth || sy + r.height < 0 || sy > gp.screenHeight) continue;
+            if (sx + r.width < gp.viewMinX() || sx > gp.viewMaxX() || sy + r.height < gp.viewMinY() || sy > gp.viewMaxY()) continue;
 
             g2.setColor(new Color(255, 0, 0, 90));
             g2.fillRect(sx, sy, r.width, r.height);
@@ -434,6 +434,9 @@ public class DomainManager {
 
     public boolean isInRoom() { return activeRoom != null; }
 
+    /** True kalau dialog konfirmasi "bangunin Skeleton King" lagi kebuka (zoom dikunci). */
+    public boolean isBossConfirmOpen() { return bossSpawnConfirmOpen; }
+
     /**
      * Keluar dari konteks sekarang:
      * - Kalau lagi di dalam room (boss room) → balik ke interior domain induk.
@@ -558,22 +561,30 @@ public class DomainManager {
         int psx = gp.player.screenX, psy = gp.player.screenY;
         int camX = gp.player.x, camY = gp.player.y;
 
+        // ── BAGIAN DUNIA (ikut ke-zoom): gambar background, teks countdown boss, debug collision ──
+        java.awt.geom.AffineTransform baseTx = gp.applyWorldZoom(g2);
         if (activeRoom != null) {
             if (roomBgImage != null)
                 g2.drawImage(roomBgImage.getImage(), 0-camX+psx, 0-camY+psy,
                     activeRoom.width*2, activeRoom.height*2, gp);
-            drawRoomHint(g2, activeRoom);
-            drawBossAltarHintIfNear(g2);
             drawBossSpawnCountdown(g2);
-            drawBossSpawnConfirmDialog(g2);
             drawCollisionDebug(g2);
         } else {
             if (bgImage != null)
                 g2.drawImage(bgImage.getImage(), 0-camX+psx, 0-camY+psy,
                     activeDomain.width*2, activeDomain.height*2, gp);
+            drawCollisionDebug(g2);
+        }
+        g2.setTransform(baseTx);
+
+        // ── BAGIAN UI (layar normal, gak ke-zoom): hint, dialog konfirmasi, fade ──
+        if (activeRoom != null) {
+            drawRoomHint(g2, activeRoom);
+            drawBossAltarHintIfNear(g2);
+            drawBossSpawnConfirmDialog(g2);
+        } else {
             drawHint(g2, activeDomain);
             drawDoorHintIfNear(g2);
-            drawCollisionDebug(g2);
         }
         drawFadeOverlay(g2);
     }

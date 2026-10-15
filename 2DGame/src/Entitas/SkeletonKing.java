@@ -647,7 +647,7 @@ public class SkeletonKing extends Entity {
         int drawSize = gp.tileSize * drawScale;
         int sx = screenX0 - drawSize / 2 + gp.tileSize / 2;
         int sy = screenY0 - drawSize / 2 + gp.tileSize / 3 + gp.tileSize; // TODO: makin gede nilainya, makin turun gambarnya
-        if (sx + drawSize < 0 || sx > gp.screenWidth || sy + drawSize < 0 || sy > gp.screenHeight) return;
+        if (sx + drawSize < gp.viewMinX() || sx > gp.viewMaxX() || sy + drawSize < gp.viewMinY() || sy > gp.viewMaxY()) return;
 
         BufferedImage img = null;
 

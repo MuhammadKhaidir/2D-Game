@@ -311,7 +311,7 @@ public class UndeadMinion extends Entity {
         int drawSize = gp.tileSize * 2;
         int sx = x - gp.player.x + gp.player.screenX - gp.tileSize / 2;
         int sy = y - gp.player.y + gp.player.screenY - gp.tileSize / 3;
-        if (sx + drawSize < 0 || sx > gp.screenWidth || sy + drawSize < 0 || sy > gp.screenHeight) return;
+        if (sx + drawSize < gp.viewMinX() || sx > gp.viewMaxX() || sy + drawSize < gp.viewMinY() || sy > gp.viewMaxY()) return;
 
         BufferedImage charImg = null, wpImg = null;
 
