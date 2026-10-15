@@ -4,6 +4,7 @@ import Item.ItemManager;
 import Main.GamePanel;
 import SFX.SoundManager;
 import Tamed.GolemMinion;
+import Tamed.GolemiteMinion;
 import Tamed.UndeadMinion;
 
 import java.awt.*;
@@ -227,6 +228,7 @@ public class Skeleton extends Entity {
         	    boolean minionAlive = false;
         	    if (minion instanceof UndeadMinion) minionAlive = ((UndeadMinion) minion).alive;
         	    if (minion instanceof GolemMinion)  minionAlive = ((GolemMinion)  minion).alive;
+            if (minion instanceof GolemiteMinion) minionAlive = minion.alive;
         	    if (!minionAlive) continue;
 
         	    int mnCX = minion.x + minion.solidArea.x + minion.solidArea.width / 2;
@@ -365,6 +367,7 @@ public class Skeleton extends Entity {
             boolean minionAlive = false;
             if (minion instanceof UndeadMinion) minionAlive = ((UndeadMinion) minion).alive;
             if (minion instanceof GolemMinion)  minionAlive = ((GolemMinion)  minion).alive;
+            if (minion instanceof GolemiteMinion) minionAlive = minion.alive;
             if (!minionAlive) continue;
 
             Rectangle minionBox = new Rectangle(

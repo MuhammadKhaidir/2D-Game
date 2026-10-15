@@ -19,7 +19,7 @@ public class CapturedMob {
     public final int baseAttack;
 
     // EXP yang dibutuhkan untuk naik dari level ini ke level+1
-    // Skeleton: +30/level, Golem: +1000/level
+    // Skeleton: +30/level, Golemite: +400/level, Golem: +1000/level
     public final int expPerLevel;
 
     private static final int MAX_LEVEL = 100;
@@ -31,6 +31,11 @@ public class CapturedMob {
                 this.baseMaxHP    = 4000;
                 this.baseAttack   = 200;
                 this.expPerLevel  = 1000;
+                break;
+            case GOLEMITE:
+                this.baseMaxHP    = Tamed.GolemiteMinion.MAX_LIFE;
+                this.baseAttack   = 80;
+                this.expPerLevel  = 400;
                 break;
             case SKELETON:
             default:
@@ -80,6 +85,7 @@ public class CapturedMob {
     public String getTypeName() {
         switch (type) {
             case GOLEM:    return "Golem";
+            case GOLEMITE: return "Golemite";
             case SKELETON: return "Skeleton";
             default:       return "Unknown";
         }

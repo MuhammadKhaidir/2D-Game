@@ -3,6 +3,7 @@ package Item;
 import Item.DeathTotem.CapturedType;
 import Main.GamePanel;
 import Tamed.GolemMinion;
+import Tamed.GolemiteMinion;
 import Tamed.UndeadMinion;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class DeathTotem extends SuperItem {
 
-    public enum CapturedType { EMPTY, SKELETON, GOLEM }
+    public enum CapturedType { EMPTY, SKELETON, GOLEM, GOLEMITE }
 
     // ── Kapasitas & slot ─────────────────────────────────────────────────────
     private int capacity = 1; // default 1, bisa di-upgrade
@@ -25,6 +26,7 @@ public class DeathTotem extends SuperItem {
     private int       activePawnSlot    = -1; // index slot yang lagi di-spawn
     private UndeadMinion activePawn     = null;
     private GolemMinion  activeGolemPawn = null;
+    private GolemiteMinion activeGolemitePawn = null;
 
     // ── Biaya upgrade kapasitas per tier ─────────────────────────────────────
     // Index = kapasitas setelah upgrade (2..6)
@@ -132,6 +134,7 @@ public class DeathTotem extends SuperItem {
     public boolean hasPawnAlive() {
         if (activePawn     != null && activePawn.isAlive())     return true;
         if (activeGolemPawn != null && activeGolemPawn.isAlive()) return true;
+        if (activeGolemitePawn != null && activeGolemitePawn.isAlive()) return true;
         return false;
     }
 
@@ -159,6 +162,14 @@ public class DeathTotem extends SuperItem {
             pawn.maxLife = mob.maxHP;
             pawn.life    = mob.storedHP;
             activeGolemPawn = pawn;
+            return pawn;
+        } else if (mob.type == CapturedType.GOLEMITE) {
+            GolemiteMinion pawn = new GolemiteMinion(gp, this);
+            pawn.x = spawnX; pawn.y = spawnY;
+            pawn.spawnX = spawnX; pawn.spawnY = spawnY;
+            pawn.maxLife = mob.maxHP;
+            pawn.life    = mob.storedHP;
+            activeGolemitePawn = pawn;
             return pawn;
         } else {
             UndeadMinion pawn = new UndeadMinion(gp, mob.type, this);
@@ -202,6 +213,7 @@ public class DeathTotem extends SuperItem {
         saveActivePawnHP(currentHP);
         activePawn      = null;
         activeGolemPawn = null;
+        activeGolemitePawn = null;
         activePawnSlot  = -1;
     }
 
@@ -215,11 +227,13 @@ public class DeathTotem extends SuperItem {
         }
         activePawn      = null;
         activeGolemPawn = null;
+        activeGolemitePawn = null;
         activePawnSlot  = -1;
     }
 
     public UndeadMinion getActivePawn()     { return activePawn; }
     public GolemMinion  getActiveGolemPawn(){ return activeGolemPawn; }
+    public GolemiteMinion getActiveGolemitePawn(){ return activeGolemitePawn; }
 
     // ── Restore (load game) ───────────────────────────────────────────────────
 
@@ -229,6 +243,7 @@ public class DeathTotem extends SuperItem {
         this.capacity    = Math.max(1, Math.min(savedCapacity, MAX_CAPACITY));
         activePawn       = null;
         activeGolemPawn  = null;
+        activeGolemitePawn = null;
         activePawnSlot   = -1;
     }
     public void removeSlot(int index) {

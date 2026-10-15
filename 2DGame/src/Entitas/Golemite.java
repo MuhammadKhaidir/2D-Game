@@ -111,6 +111,20 @@ public class Golemite extends Entity {
         Main.Log.d("[Golemite] Selesai load sprite.");
     }
 
+    /** Dipanggil GolemiteMinion supaya sprite pasti sudah ke-load. */
+    public static void preloadImages() { loadImages(); }
+
+    /** dirIdx: 0 = down/front, 1 = up/back, 2 = left, 3 = right */
+    public static BufferedImage getWalkFrame(int dirIdx, int frame) {
+        loadImages();
+        return WALK[dirIdx][Math.floorMod(frame, WALK_FRAMES)];
+    }
+
+    public static BufferedImage getPunchFrame(int dirIdx, int frame) {
+        loadImages();
+        return PUNCH[dirIdx][Math.max(0, Math.min(frame, ATTACK_FRAMES - 1))];
+    }
+
     private static BufferedImage loadImage(String fileName) {
         try (InputStream is = Golemite.class.getResourceAsStream("/Aset/" + fileName)) {
             if (is == null) {

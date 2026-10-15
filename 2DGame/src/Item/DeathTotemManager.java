@@ -5,6 +5,7 @@ import Entitas.Skeleton;
 import Item.DeathTotem.CapturedType;
 import Main.GamePanel;
 import Tamed.GolemMinion;
+import Tamed.GolemiteMinion;
 import Tamed.UndeadMinion;
 
 import java.awt.Graphics2D;
@@ -42,6 +43,7 @@ public class DeathTotemManager {
         CapturedType type = null;
         if (killed instanceof Skeleton)      type = CapturedType.SKELETON;
         if (killed instanceof Entitas.Golem) type = CapturedType.GOLEM;
+        if (killed instanceof Entitas.Golemite) type = CapturedType.GOLEMITE;
 
         if (type != null) {
             boolean ok = totem.capture(type);
@@ -72,6 +74,10 @@ public class DeathTotemManager {
         if (pawn instanceof GolemMinion) {
             minions.add((GolemMinion) pawn);
             if (gp.speechBubble != null) gp.speechBubble.show("Golem revived!");
+            cooldownTimer = COOLDOWN_MAX;
+        } else if (pawn instanceof GolemiteMinion) {
+            minions.add((GolemiteMinion) pawn);
+            if (gp.speechBubble != null) gp.speechBubble.show("Golemite revived!");
             cooldownTimer = COOLDOWN_MAX;
         } else if (pawn instanceof UndeadMinion) {
             minions.add((UndeadMinion) pawn);
@@ -111,10 +117,12 @@ public class DeathTotemManager {
             if (m.alive) { currentHP = m.life; break; }
             if (m instanceof UndeadMinion) ((UndeadMinion)m).alive = false;
             if (m instanceof GolemMinion)  ((GolemMinion)m).alive  = false;
+            if (m instanceof GolemiteMinion) ((GolemiteMinion)m).alive = false;
         }
         minions.removeIf(m -> {
             if (m instanceof UndeadMinion) { ((UndeadMinion)m).alive = false; return true; }
             if (m instanceof GolemMinion)  { ((GolemMinion)m).alive  = false; return true; }
+            if (m instanceof GolemiteMinion) { ((GolemiteMinion)m).alive = false; return true; }
             return false;
         });
         totem.recallPawn(currentHP);
@@ -180,6 +188,13 @@ public class DeathTotemManager {
             if (m instanceof GolemMinion) {
                 GolemMinion gm = (GolemMinion) m;
                 if (!gm.isAlive() && gm.isDeathAnimDone()) {
+                    totem.releasePawn();
+                    return true;
+                }
+            }
+            if (m instanceof GolemiteMinion) {
+                GolemiteMinion gt = (GolemiteMinion) m;
+                if (!gt.isAlive() && gt.isDeathAnimDone()) {
                     totem.releasePawn();
                     return true;
                 }

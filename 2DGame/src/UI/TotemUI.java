@@ -95,6 +95,7 @@ public class TotemUI {
     private int panelX, panelY;
 
     private BufferedImage golemIcon    = null;
+    private BufferedImage golemiteIcon = null;
     private BufferedImage skeletonIcon = null;
 
     public TotemUI(GamePanel gp) {
@@ -105,6 +106,7 @@ public class TotemUI {
     private void loadIcons() {
         try {
             golemIcon    = ImageIO.read(getClass().getResourceAsStream("/Aset/GolemFrontWalk (1).png"));
+            golemiteIcon = ImageIO.read(getClass().getResourceAsStream("/Aset/golemiteFrontWalk (1).png"));
             skeletonIcon = ImageIO.read(getClass().getResourceAsStream("/Aset/SkeletonFrontWalk (1).png"));
         } catch (Exception e) {
             System.out.println("[TotemUI] Gagal load icon: " + e.getMessage());
@@ -141,7 +143,11 @@ public class TotemUI {
 
     // Rarity tiap tipe mob. Ubah di sini kalau mau warna detail beda.
     private String rarityOf(CapturedMob mob) {
-        return mob.type == DeathTotem.CapturedType.GOLEM ? "EPIC" : "COMMON";
+        switch (mob.type) {
+            case GOLEM:    return "EPIC";
+            case GOLEMITE: return "RARE";
+            default:       return "COMMON";
+        }
     }
 
     private Color getRarityColor(String rarity) {
@@ -1225,7 +1231,11 @@ public class TotemUI {
     }
 
     private BufferedImage iconFor(CapturedMob mob) {
-        return mob.type == DeathTotem.CapturedType.GOLEM ? golemIcon : skeletonIcon;
+        switch (mob.type) {
+            case GOLEM:    return golemIcon;
+            case GOLEMITE: return golemiteIcon;
+            default:       return skeletonIcon;
+        }
     }
 
     // =====================================================================
