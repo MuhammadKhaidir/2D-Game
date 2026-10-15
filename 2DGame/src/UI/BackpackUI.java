@@ -413,6 +413,10 @@ public class BackpackUI implements MouseWheelListener {
                 return "A faintly glowing soul torn from a fallen Skeleton King. "
                      + "Contains traces of dark energy. Can be crafted.";
 
+            case "coin":
+                return "A shiny coin dropped by every monster you defeat. "
+                     + "Used as currency.";
+
             default:
                 return "A mysterious artifact discovered on your journey. "
                      + "Its exact properties and uses are unknown.";

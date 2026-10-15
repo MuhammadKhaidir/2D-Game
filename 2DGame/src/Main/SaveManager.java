@@ -191,7 +191,8 @@ public class SaveManager {
             case "Death Totem":  return im.DEATH_TOTEM;  // DROP SKELETON LANGKA
             case "Skeleton Key": return im.SKELETON_KEY; // DROP SKELETON LANGKA
             case "Bone Sword":   return im.BONE_SWORD;   // DARK MERCHANT
-            case "Gold":         return im.GOLD;          // CURRENCY
+            case "Coin":                                  // CURRENCY
+            case "Gold":         return im.COIN;          // nama lama, biar save lama tetap kebaca
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
             case "Helm":         return im.HELM;
             default:

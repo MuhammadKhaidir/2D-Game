@@ -327,6 +327,7 @@ public class Orc extends Entity {
         drop();
         gp.player.exp += getExpValue;
         gp.player.checkLevelUp();
+        gp.player.giveCoinReward(this); // koin pasti drop
         Main.Log.d("Orc mati!");
     }
 

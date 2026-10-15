@@ -433,9 +433,24 @@ public class player extends Entity {
         }
     }
 
+    /**
+     * Koin PASTI didapat setiap kill monster, langsung masuk backpack.
+     * Jumlahnya diatur lewat Entity.coinDrop (default 1).
+     */
+    public void giveCoinReward(Entity target) {
+        // pion summonan boss (noDrop) nggak ngasih koin, biar gak bisa di-farm
+        if (target instanceof Skeleton && ((Skeleton) target).noDrop) return;
+
+        int amount = Math.max(1, target.coinDrop);
+        Item.ItemManager im = Item.ItemManager.get();
+        im.add(im.COIN, amount);
+        if (gp.speechBubble != null) gp.speechBubble.show("+" + amount + " Coin");
+    }
+
     public void killMonster(Entity target) {
         this.exp += target.getExpValue;
         checkLevelUp();
+        giveCoinReward(target);
         // ── TAMBAHAN: trigger capture Death Totem ──
         if (gp.deathTotemManager != null) {
             gp.deathTotemManager.tryCapture(target);

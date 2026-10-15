@@ -74,7 +74,7 @@ public class DeathTotem extends SuperItem {
         if (cost == null) return false; // sudah max
 
         ItemManager im = ItemManager.get();
-        int goldAmt  = getInventoryAmount(im.GOLD);
+        int goldAmt  = getInventoryAmount(im.COIN);
         int boneAmt  = getInventoryAmount(im.BONE);
         int skullAmt = getInventoryAmount(im.SKULL);
         int keyAmt   = getInventoryAmount(im.SKELETON_KEY);
@@ -84,7 +84,7 @@ public class DeathTotem extends SuperItem {
         }
 
         // Kurangi resource
-        removeFromInventory(im.GOLD,         cost[0]);
+        removeFromInventory(im.COIN,         cost[0]);
         removeFromInventory(im.BONE,         cost[1]);
         removeFromInventory(im.SKULL,        cost[2]);
         removeFromInventory(im.SKELETON_KEY, cost[3]);

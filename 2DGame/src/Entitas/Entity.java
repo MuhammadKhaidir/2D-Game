@@ -22,6 +22,7 @@ public class Entity {
 	public int nextLevelExp = 50;
 	public int attributePoints = 0;
 	public int getExpValue = 0;
+	public int coinDrop = 1; // jumlah koin yang pasti didapat player tiap monster ini mati
 
 	public int strength = 1;
 	public int dexterity = 1;

@@ -31,7 +31,7 @@ public class ItemManager {
     // EQUIPMENT
     public Item HELM;
     // CURRENCY
-    public Item GOLD;
+    public Item COIN; // drop pasti dari setiap monster yang dikill, masuk ke backpack
     // ===== PRELOAD WEAPON INSTANCES =====
     public Weapon weaponSwordInstance;
     public Weapon weaponAxeInstance;
@@ -71,7 +71,7 @@ public class ItemManager {
             SOUL_OF_SKELETON = new Item("Soul of Skeleton", safeLoad("/drop/Soul of Skeleton.png", "/drop/Ore.png"));
             BONE_SWORD = new Item("Bone Sword", safeLoad("/Aset/BoneSword.png", "/Aset/BasicSword.png"));
             HELM       = new Item("Helm",       safeLoad("/Aset/IronHelmet.png",      "/Aset/IronHelmet.png"));
-            GOLD       = new Item("Gold",       safeLoad("/drop/Gold.png",      "/drop/Ore.png"));
+            COIN       = new Item("Coin",       safeLoad("/drop/Coin.png",      "/drop/Ore.png"));
             Main.Log.d("[ItemManager] Preloading weapon instances...");
             weaponSwordInstance    = new Weapon("Basic Sword", "Sword");
             weaponAxeInstance      = new Weapon("Basic Axe",   "Axe");
