@@ -26,6 +26,14 @@ public class SkillZ extends Skill {
     private int dashSpeed = 12;
     private int dashFrames = 8; // frame bergerak cepat
 
+    // ===== COLLISION DASH =====
+    // Total jangkauan dash = dashSpeed * dashFrames (px). Dash berhenti di collision, KECUALI
+    // collision-nya cukup tipis: kalau sisa jangkauan cukup buat nyebrang sampai ke titik
+    // kosong di seberangnya, player lewat (nembus) dan mendarat di sana.
+    private int dashDx = 0, dashDy = 0;   // arah dash, dikunci pas skill diaktifin
+    private int remainingRange = 0;       // sisa jangkauan dash (px)
+    private int lastFreeX, lastFreeY;     // posisi terakhir yang gak nabrak (jaga-jaga nyangkut)
+
     public SkillZ(GamePanel gp, player owner) {
         super(gp, owner);
 
@@ -50,6 +58,19 @@ public class SkillZ extends Skill {
             trailAlpha[i] = 0f;
         }
 
+        // Kunci arah dash & jangkauan awal
+        dashDx = 0;
+        dashDy = 0;
+        switch (owner.direction) {
+            case "up":    dashDy = -1; break;
+            case "down":  dashDy =  1; break;
+            case "left":  dashDx = -1; break;
+            case "right": dashDx =  1; break;
+        }
+        remainingRange = dashSpeed * dashFrames;
+        lastFreeX = owner.x;
+        lastFreeY = owner.y;
+
         Main.Log.d("[SkillZ] Activated!");
     }
 
@@ -58,19 +79,30 @@ public class SkillZ extends Skill {
 
         // ===== DASH MOVEMENT =====
         if (activeTimer <= dashFrames) {
-            // Simpan posisi lama buat trail
-            trailX[trailIndex % TRAIL_MAX] = owner.x;
-            trailY[trailIndex % TRAIL_MAX] = owner.y;
-            trailAlpha[trailIndex % TRAIL_MAX] = 0.6f;
-            trailIndex++;
+            // Titik terjauh yang boleh dicapai dari posisi sekarang (0 = mentok collision)
+            int reach = farthestFreeDistance(remainingRange);
+            int step = Math.min(dashSpeed, reach);
 
-            // Gerak cepat ke arah yang sedang dihadap
-            switch (owner.direction) {
-                case "up":    owner.y -= dashSpeed; break;
-                case "down":  owner.y += dashSpeed; break;
-                case "left":  owner.x -= dashSpeed; break;
-                case "right": owner.x += dashSpeed; break;
+            if (step > 0) {
+                // Simpan posisi lama buat trail
+                trailX[trailIndex % TRAIL_MAX] = owner.x;
+                trailY[trailIndex % TRAIL_MAX] = owner.y;
+                trailAlpha[trailIndex % TRAIL_MAX] = 0.6f;
+                trailIndex++;
+
+                // Gerak cepat ke arah dash
+                owner.x += dashDx * step;
+                owner.y += dashDy * step;
             }
+            remainingRange -= dashSpeed;
+
+            if (!gp.colision.isBlockedByWorld(owner, owner.x, owner.y)) {
+                lastFreeX = owner.x;
+                lastFreeY = owner.y;
+            }
+
+            // Frame dash terakhir: pastiin player gak berhenti di dalam collision
+            if (activeTimer >= dashFrames) settleIfStuck();
         }
 
         // Fade out alpha gambar skill
@@ -88,7 +120,33 @@ public class SkillZ extends Skill {
     @Override
     protected void onEnd() {
         alpha = 0f;
+        settleIfStuck();
         Main.Log.d("[SkillZ] Ended.");
+    }
+
+    /**
+     * Jarak terjauh d (0..range px) di arah dash di mana hitbox player gak nabrak collision.
+     * - Gak ada collision di depan -> d = range (dash penuh).
+     * - Collision tebal (sisa jangkauan gak cukup buat nyebrang) -> d berhenti persis sebelum collision.
+     * - Collision tipis (muat dilewati dalam sisa jangkauan) -> d jatuh di seberangnya, jadi dash nembus.
+     * 0 berarti gak bisa maju sama sekali.
+     */
+    private int farthestFreeDistance(int range) {
+        if (dashDx == 0 && dashDy == 0) return 0;
+        for (int d = range; d > 0; d--) {
+            if (!gp.colision.isBlockedByWorld(owner, owner.x + dashDx * d, owner.y + dashDy * d)) {
+                return d;
+            }
+        }
+        return 0;
+    }
+
+    /** Kalau player kebetulan berhenti di dalam collision, balikin ke posisi aman terakhir. */
+    private void settleIfStuck() {
+        if (gp.colision.isBlockedByWorld(owner, owner.x, owner.y)) {
+            owner.x = lastFreeX;
+            owner.y = lastFreeY;
+        }
     }
 
     @Override

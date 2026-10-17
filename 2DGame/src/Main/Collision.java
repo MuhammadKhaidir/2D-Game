@@ -97,6 +97,33 @@ public class Collision {
     }
 
 
+    /**
+     * True kalau hitbox entity, andai berdiri di (worldX, worldY), nabrak collision DUNIA
+     * (object di luar / tembok rumah / tembok domain, sesuai gameState saat ini).
+     * Aturannya sama kayak cek jalan biasa di player.update(). Entity (monster/NPC) sengaja
+     * gak ikut dicek di sini. Dipakai buat skill gerak cepat kayak dash Z.
+     */
+    public boolean isBlockedByWorld(Entity e, int worldX, int worldY) {
+        Rectangle box = new Rectangle(
+            worldX + e.solidArea.x,
+            worldY + e.solidArea.y,
+            e.solidArea.width,
+            e.solidArea.height
+        );
+
+        switch (gp.gameState) {
+            case INSIDE:
+                return gp.houseManager != null && gp.houseManager.checkCollision(box);
+            case DOMAIN:
+                return gp.domainManager != null && gp.domainManager.checkCollision(box);
+            default: // OUTSIDE (dan DIALOG)
+                for (Rectangle obj : gp.objCol.objects) {
+                    if (box.intersects(obj)) return true;
+                }
+                return false;
+        }
+    }
+
     public void checkObject(Entity e, int dx, int dy) {
 
         Rectangle futureArea = new Rectangle(
