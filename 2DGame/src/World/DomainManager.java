@@ -470,6 +470,12 @@ public class DomainManager {
             insideDomain = false;
             activeDomain = null;
             gp.gameState = GamePanel.GameState.OUTSIDE;
+            // bersihin sisa isi domain biar gak "bocor" ke dunia luar
+            wallCollisions.clear();
+            skeletons.clear();
+            golemites.clear();
+            roomSkeletons.clear();
+            bossSkeleton = null;
             gp.player.x = exitX;
             gp.player.y = exitY;
             darkMerchant = null;
@@ -976,6 +982,7 @@ public class DomainManager {
     }
 
     public boolean checkCollision(Rectangle playerBox) {
+        if (!insideDomain) return false; // di luar domain, tembok domain gak boleh ngaruh
         for (Rectangle r : wallCollisions)
             if (playerBox.intersects(r)) return true;
         return false;

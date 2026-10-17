@@ -1029,6 +1029,7 @@ public class GamePanel extends JPanel implements Runnable{
 		}
 		//
 		// INSPECT NPC (KEY I)
+		if (KeyH.inspectPressed && gameState != GameState.OUTSIDE) KeyH.inspectPressed = false; // NPC cuma ada di dunia luar
 		if (KeyH.inspectPressed && !dialogOn) {
 
 		    Rectangle playerArea = player.getInteractArea();
@@ -1102,7 +1103,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    //
 	    // 3. INTERAKSI NPC
 	    //
-	    if (KeyH.interactPressed) {
+	    if (KeyH.interactPressed && gameState == GameState.OUTSIDE) { // NPC cuma ada di dunia luar
 
 	        Rectangle playerArea = player.getInteractArea();
 
