@@ -146,7 +146,7 @@ public class DomainManager {
             "/Latar/TombDomainPixel.png")
         .setExit(900, 1090)
         // Titik keluar di dalam Tomb: deketin -> muncul hint, tekan E buat keluar dungeon
-        .setExitPoint(990, 1090, 60)
+        .setExitPoint(900, 1090, 60)
         .addCollision(250,  650,  400, 190)
         .addCollision(400,  725,  360, 145)
         .addCollision(380,  650,  110, 320)
