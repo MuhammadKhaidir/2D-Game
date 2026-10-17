@@ -21,8 +21,9 @@ public class SaveManager {
         // Player (Lama)
         data.playerX          = gp.player.x;
         data.playerY          = gp.player.y;
-        data.playerLife       = gp.player.life;
-        data.playerMaxLife    = gp.player.maxLife;
+        // Max HP disimpan tanpa bonus Max HP Potion (buff-nya sementara, tidak ikut tersimpan)
+        data.playerMaxLife    = gp.player.getBaseMaxLife();
+        data.playerLife       = Math.min(gp.player.life, data.playerMaxLife);
         data.playerLevel      = gp.player.level;
         data.playerExp        = gp.player.exp;
         data.playerNextLevelExp = gp.player.nextLevelExp;
@@ -114,6 +115,7 @@ public class SaveManager {
     }
 
     public static void applyToGame(GamePanel gp, SaveData data) {
+        gp.player.buffs.clear(); // buff potion tidak ikut tersimpan; bersihin dulu sebelum stat di-load
         gp.player.x             = data.playerX;
         gp.player.y             = data.playerY;
         gp.player.life          = data.playerLife;
@@ -214,8 +216,10 @@ public class SaveManager {
             case "Gold":         return im.COIN;          // nama lama, biar save lama tetap kebaca
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
             case "Helm":         return im.HELM;
-            case "Health Potion": return im.HEALTH_POTION; // CONSUMABLE
+            case "Health Potion": return im.getPotion(Item.PotionType.SMALL_HP); // nama lama, biar save lama tetap kebaca
             default:
+                Item.Item potion = im.getPotionByName(name); // CONSUMABLE (semua potion di PotionType)
+                if (potion != null) return potion;
                 System.out.println("[SaveManager] Item tidak dikenal: " + name);
                 return null;
         }

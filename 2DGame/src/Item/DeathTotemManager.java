@@ -71,13 +71,13 @@ public class DeathTotemManager {
         int spawnY = gp.player.y;
 
         Object pawn = totem.spawnFromSlot(slotIndex, gp, spawnX, spawnY);
-        if (pawn instanceof GolemMinion) {
-            minions.add((GolemMinion) pawn);
-            if (gp.speechBubble != null) gp.speechBubble.show("Golem revived!");
-            cooldownTimer = COOLDOWN_MAX;
-        } else if (pawn instanceof GolemiteMinion) {
+        if (pawn instanceof GolemiteMinion) {   // harus sebelum GolemMinion (turunannya)
             minions.add((GolemiteMinion) pawn);
             if (gp.speechBubble != null) gp.speechBubble.show("Golemite revived!");
+            cooldownTimer = COOLDOWN_MAX;
+        } else if (pawn instanceof GolemMinion) {
+            minions.add((GolemMinion) pawn);
+            if (gp.speechBubble != null) gp.speechBubble.show("Golem revived!");
             cooldownTimer = COOLDOWN_MAX;
         } else if (pawn instanceof UndeadMinion) {
             minions.add((UndeadMinion) pawn);

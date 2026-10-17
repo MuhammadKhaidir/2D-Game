@@ -46,7 +46,7 @@ import Entitas.DialogNode;
 import Entitas.Entity;
 import Entitas.MonsterBatu;
 import Entitas.NPC;
-import Entitas.WeaponDealer;
+import Entitas.PotionMerchant;
 import Main.AsetSetter;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
@@ -78,7 +78,11 @@ public class GamePanel extends JPanel implements Runnable{
 	public ArrayList<DropItem> drops = new ArrayList<>();
 	
 	// npc
-	public WeaponDealer weaponDealer;
+	public PotionMerchant potionMerchant;
+
+	// toko potion + ikon buff aktif
+	public UI.PotionShopUI potionShop;
+	public UI.BuffBar buffBar;
 	
 	public HouseManager houseManager;
 	
@@ -142,7 +146,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public boolean debugCollision = false; // toggle: F4
 	RainDrop[] rain;
 	
-	int FPS = 40;
+	public final int FPS = 40;
 	public WorldObject objCol = new WorldObject();
 	public KeyHandler KeyH = new KeyHandler();
 
@@ -213,7 +217,9 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		backpack = new BackpackUI(ItemManager.inventory);
 		hotbar = new UI.Hotbar(this);
-		
+		potionShop = new UI.PotionShopUI(this);
+		buffBar = new UI.BuffBar(this);
+
 		this.addMouseWheelListener(backpack);
 
 		// ZOOM pakai scroll mouse (scroll naik = zoom in, scroll turun = zoom out).
@@ -267,11 +273,17 @@ public class GamePanel extends JPanel implements Runnable{
                     return;
                 }
  
+                // ── POTION MERCHANT SHOP ──
+                if (potionShop != null && potionShop.visible) {
+                    potionShop.handleMouseClick(e);
+                    return;
+                }
+
                 // ── DARK MERCHANT SHOP ──
                 if (domainManager != null
                         && domainManager.darkMerchant != null
                         && domainManager.darkMerchant.isShopOpen()) {
- 
+
                     domainManager.handleMerchantMouseClick(e);
                     return;
                 }
@@ -387,9 +399,9 @@ public class GamePanel extends JPanel implements Runnable{
 
 	    AS.setNPC();
 
-	    weaponDealer = new WeaponDealer(this);
-	    weaponDealer.initDialog();  
-	    npc[3] = weaponDealer;  
+	    potionMerchant = new PotionMerchant(this);
+	    potionMerchant.initDialog();
+	    npc[3] = potionMerchant;
 	    
 	    mainMenu.active = true;                        // matiin main menu
 	   // domainManager.forceEnterDomain("Tomb");         // langsung masuk domain
@@ -405,6 +417,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    if (statUI != null && statUI.visible) return false;
 	    if (mobIndexUI != null && mobIndexUI.visible) return false;
 	    if (totemUI != null && totemUI.visible) return false;
+	    if (potionShop != null && potionShop.visible) return false;
 	    if (deathScreenUI != null && deathScreenUI.visible) return false;
 	    // di dalam domain: jangan zoom kalau lagi buka shop / dialog merchant / konfirmasi boss
 	    if (gameState == GameState.DOMAIN && domainManager != null) {
@@ -818,24 +831,8 @@ public class GamePanel extends JPanel implements Runnable{
 
 	    dialogMap.put("kid", kidRoot);
 	    
-	    // weapon dealer
-	    DialogNode dealerRoot = new DialogNode(
-	            "Yo! Need a weapon? You've come to the right place."
-	        );
-	        DialogNode dealerStock = new DialogNode(
-	            "Right now I got swords, daggers, and a few bows. Take your pick."
-	        );
-	        DialogNode dealerBye = new DialogNode(
-	            "Alright, come back anytime soldier."
-	        );
-	     
-	        dealerRoot.addOption("What do you sell?",  dealerStock);
-	        dealerRoot.addOption("Nevermind.",           null);
-	        dealerStock.addOption("Interesting...",    dealerBye);
-	        dealerStock.addOption("Nothing for me.",   dealerBye);
-	        dealerBye.addOption("Take care.",          null);
-	     
-	        dialogMap.put("weapondealer", dealerRoot);  // ← key harus sama dengan dialogId
+	    // potion merchant (dialog-nya diatur di PotionMerchant)
+	    PotionMerchant.registerDialog(this);
 	}
 
 
@@ -850,6 +847,16 @@ public class GamePanel extends JPanel implements Runnable{
 
 		updateZoom(); // smooth zoom in/out
 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
+
+		// TOKO POTION KEBUKA → dunia berhenti (buff juga ikut berhenti), cuma ESC yang diproses
+		if (potionShop != null && potionShop.visible) {
+		    potionShop.update();
+		    // panel lain gak boleh kebuka bareng toko
+		    KeyH.yPressed = false;
+		    KeyH.tabPressed = false;
+		    KeyH.mPressed = false;
+		    return;
+		}
 
 		world.update();
 		// Di bagian update(), setelah world.update()
@@ -999,8 +1006,11 @@ public class GamePanel extends JPanel implements Runnable{
 		        }
 
 		        //OPSI VALID
-		        DialogNode next =
-		            currentNPC.currentDialog.options.get(choice).next;
+		        Entitas.DialogOption picked = currentNPC.currentDialog.options.get(choice);
+		        DialogNode next = picked.next;
+
+		        // aksi opsional dari opsi ini (mis. buka toko potion)
+		        if (picked.action != null) picked.action.run();
 
 		        if (next == null) {
 		            dialogOn = false;
@@ -1243,6 +1253,7 @@ public void paintComponent(Graphics g) {
 
         // UI saat INSIDE
         if (hotbar != null) hotbar.draw(g2);
+        if (buffBar != null) buffBar.draw(g2);
         if (dialogOn) drawDialog(g2);
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
         if (statUI != null && statUI.visible) statUI.draw(g2);
@@ -1297,6 +1308,7 @@ public void paintComponent(Graphics g) {
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
 
         if (hotbar != null) hotbar.draw(g2);
+        if (buffBar != null) buffBar.draw(g2);
 
         // UI merchant — setelah entity, biar overlay di atas segalanya
         DarkMerchant dm = domainManager.darkMerchant;
@@ -1350,6 +1362,7 @@ public void paintComponent(Graphics g) {
 
         // UI saat OUTSIDE
         if (hotbar != null) hotbar.draw(g2);
+        if (buffBar != null) buffBar.draw(g2);
         if (dialogOn) drawDialog(g2);
         if (inspectOn) drawInspectPanel(g2);
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
@@ -1373,6 +1386,7 @@ public void paintComponent(Graphics g) {
         g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 650, 70);
 
         drawZoomHint(g2);
+        if (potionShop != null) potionShop.draw(g2); // paling atas, nutup UI & drop di belakangnya
     }
     if (hotbar != null) hotbar.drawOverlay(g2); // tooltip + ikon yang lagi diseret, di atas semua UI
     if (deathScreenUI != null) {
@@ -1410,6 +1424,12 @@ public void paintComponent(Graphics g) {
 
 	    // hover hotbar (buat highlight + tooltip nama item)
 	    if (hotbar != null) hotbar.handleMouseMoved(e);
+
+	    // ── POTION MERCHANT SHOP HOVER ──
+	    if (potionShop != null && potionShop.visible) {
+	        potionShop.handleMouseMove(e);
+	        return;
+	    }
 
 	    // ── DARK MERCHANT SHOP HOVER ──
 	    if (domainManager != null

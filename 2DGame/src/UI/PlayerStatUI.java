@@ -32,7 +32,7 @@ public class PlayerStatUI {
         this.gp = gp;
         this.player = player;
 
-        startMaxLife     = player.maxLife;
+        startMaxLife     = player.getBaseMaxLife();
         startMaxStamina  = player.maxStamina;
         startPunchDamage = player.punchDamage;
         startSpeed       = player.baseSpeed;
@@ -195,7 +195,7 @@ public class PlayerStatUI {
     }
 
     // ===== Hitung poin yang sudah terpakai, langsung dari stat player sekarang =====
-    private int spentHP()      { return Math.max(0, (player.maxLife - startMaxLife) / 10); }
+    private int spentHP()      { return Math.max(0, (player.getBaseMaxLife() - startMaxLife) / 10); }
     private int spentStamina() { return Math.max(0, (player.maxStamina - startMaxStamina) / 10); }
     private int spentDamage()  { return Math.max(0, (player.punchDamage - startPunchDamage) / 5); }
     private int spentSpeed()   { return Math.max(0, (int) Math.round((player.baseSpeed - startSpeed) / 0.1)); }
@@ -211,7 +211,7 @@ public class PlayerStatUI {
         int total = totalSpent();   // hitung dulu sebelum stat diubah
         if (total == 0) return;
 
-        player.maxLife = startMaxLife;
+        player.maxLife = startMaxLife + player.buffs.getMaxHpBonus(); // bonus Max HP Potion (kalau lagi aktif) tetap nempel
         player.life = Math.min(player.life, player.maxLife);
 
         player.maxStamina = startMaxStamina;

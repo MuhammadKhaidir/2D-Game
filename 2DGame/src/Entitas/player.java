@@ -23,6 +23,9 @@ public class player extends Entity {
     public int life = maxLife;
     public boolean isDead = false;
 
+    // Buff sementara dari boost potion (damage, speed, attack speed, max HP)
+    public final PlayerBuffs buffs = new PlayerBuffs(this);
+
 
     private int noDamageTimer = 0;
     private int regenTickTimer = 0;
@@ -139,7 +142,12 @@ public class player extends Entity {
         if (isWeaponEquipped && currentWeapon != null) {
             total += currentWeapon.damage;
         }
-        return total;
+        return buffs.scaleDamage(total);
+    }
+
+    /** Max HP tanpa bonus dari boost potion. Ini yang disimpan ke save & dipakai stat UI. */
+    public int getBaseMaxLife() {
+        return maxLife - buffs.getMaxHpBonus();
     }
     
     public final int screenX;
@@ -370,6 +378,7 @@ public class player extends Entity {
         isDead         = true;  // dipake buat nge-root player & block update normal selama animasi mati
         deadFrameIndex = 0;
         deadAnimTimer  = 0;
+        buffs.clear();          // semua boost potion hilang kalau mati
 
         // batalin state lain biar ga numpuk/ganggu animasi mati
         attackState = AttackState.NONE;
@@ -466,6 +475,7 @@ public class player extends Entity {
     boolean isSprinting = false;
 
     public void update() {
+        buffs.update();
         this.attack = getTotalDamage();
         gp.initInspectButtons();
         if (jumpCooldown > 0) jumpCooldown--;
@@ -524,8 +534,9 @@ public class player extends Entity {
         }
 
         // ===== SPRINT + STAMINA =====
+        double currentBaseSpeed = buffs.scaleSpeed(baseSpeed); // sudah termasuk boost dari Speed Potion
         if (KeyH.shiftPressed && stamina > 0 && canSprint && (KeyH.upPressed || KeyH.downPressed || KeyH.leftPressed || KeyH.rightPressed)) {
-            speed = baseSpeed * sprintMultiplier;
+            speed = currentBaseSpeed * sprintMultiplier;
             stamina -= staminaDrain;
             showStaminaBar = true;
             if (stamina <= 0) {
@@ -533,7 +544,7 @@ public class player extends Entity {
                 canSprint = false;
             }
         } else {
-            speed = baseSpeed;
+            speed = currentBaseSpeed;
             if (stamina < maxStamina && jumpState == JumpState.NONE) stamina += staminaRegen;
             if (stamina >= maxStamina) {
                 stamina = maxStamina;
@@ -546,6 +557,10 @@ public class player extends Entity {
         if (attackState != AttackState.NONE) {
             attackTimer++;
             attackTotalTimer++;
+            if (buffs.consumeExtraAttackTick()) { // Attack Speed Potion: animasi serangan lebih cepat
+                attackTimer++;
+                attackTotalTimer++;
+            }
             attackFrameIndex = attackTotalTimer / 5;
             if (attackFrameIndex > 3) attackFrameIndex = 3;
 

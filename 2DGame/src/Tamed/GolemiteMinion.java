@@ -18,12 +18,12 @@ import Entitas.monster;
  * jadi nggak ada Smash / Spawn anim / Dead anim (mati = fade out).
  * Prioritas: serang musuh yang deket player, kalau nggak ada -> ikutin player.
  */
-public class GolemiteMinion extends Entity {
+public class GolemiteMinion extends GolemMinion {
 
     public static final int MAX_LIFE = 1200;
 
-    enum MinionState { IDLE, WALK, ATTACK, DEATH }
-    private MinionState state = MinionState.IDLE;
+    enum GState { IDLE, WALK, ATTACK, DEATH }
+    private GState state = GState.IDLE;
 
     // ── Anim ─────────────────────────────────────────────────────────────
     private static final int WALK_FRAMES           = 6;
@@ -61,7 +61,7 @@ public class GolemiteMinion extends Entity {
     private final DeathTotem ownerTotem;
 
     public GolemiteMinion(GamePanel gp, DeathTotem totem) {
-        super(gp);
+        super(gp, totem);   // GolemMinion udah mainin suara spawn
         this.ownerTotem = totem;
         this.alive      = true;
         this.maxLife    = MAX_LIFE;
@@ -74,10 +74,9 @@ public class GolemiteMinion extends Entity {
         this.getExpValue = 0; // pion nggak kasih EXP ke musuh
 
         Golemite.preloadImages();
-        gp.playSE("GolemSpawn.wav", 0f);
     }
 
-    public boolean isAlive()         { return alive; }
+    @Override
     public boolean isDeathAnimDone() { return !alive && deathDone; }
 
     @Override
@@ -90,7 +89,7 @@ public class GolemiteMinion extends Entity {
     public void update() {
         if (spawnFade < SPAWN_FADE_FRAMES) spawnFade++;
 
-        if (state == MinionState.DEATH) { updateDeath(); return; }
+        if (state == GState.DEATH) { updateDeath(); return; }
         if (!alive) return;
         if (life <= 0) { die(); return; }
 
@@ -108,31 +107,31 @@ public class GolemiteMinion extends Entity {
             int distX = tCX - myCX, distY = tCY - myCY;
             double dist = Math.sqrt(distX * distX + distY * distY);
 
-            if (state != MinionState.ATTACK) {
+            if (state != GState.ATTACK) {
                 if (Math.abs(distX) > Math.abs(distY)) direction = distX > 0 ? "right" : "left";
                 else direction = distY > 0 ? "down" : "up";
             }
 
-            if (state == MinionState.ATTACK) {
+            if (state == GState.ATTACK) {
                 actedOnEnemy = true; // lagi mukul, jangan diinterupsi
             } else if (dist <= ATTACK_RANGE && attackCooldown == 0) {
-                state = MinionState.ATTACK;
+                state = GState.ATTACK;
                 atkFrame = 0; atkTimer = 0;
                 damageDealtThisSwing = false;
                 actedOnEnemy = true;
             } else if (dist <= DETECTION_RANGE && dist > ATTACK_RANGE) {
-                state = MinionState.WALK;
+                state = GState.WALK;
                 moveToward(distX, distY);
                 actedOnEnemy = true;
             } else if (dist <= ATTACK_RANGE) {
                 // udah deket tapi masih cooldown: diem aja nungguin
-                state = MinionState.IDLE;
+                state = GState.IDLE;
                 actedOnEnemy = true;
             }
         }
 
         // 2. Prioritas kedua: ikuti player
-        if (!actedOnEnemy && state != MinionState.ATTACK) {
+        if (!actedOnEnemy && state != GState.ATTACK) {
             int plCX = gp.player.x + gp.player.solidArea.x + gp.player.solidArea.width  / 2;
             int plCY = gp.player.y + gp.player.solidArea.y + gp.player.solidArea.height / 2;
             int myCX = x + solidArea.x + solidArea.width  / 2;
@@ -144,10 +143,10 @@ public class GolemiteMinion extends Entity {
             else direction = distY > 0 ? "down" : "up";
 
             if (dist > FOLLOW_STOP_RANGE) {
-                state = MinionState.WALK;
+                state = GState.WALK;
                 moveToward(distX, distY);
             } else {
-                state = MinionState.IDLE;
+                state = GState.IDLE;
             }
         }
 
@@ -316,7 +315,7 @@ public class GolemiteMinion extends Entity {
                     if (atkFrame >= ATTACK_FRAMES) {
                         atkFrame = 0;
                         attackCooldown = ATTACK_COOLDOWN_MAX;
-                        state = MinionState.IDLE;
+                        state = GState.IDLE;
                     }
                 }
                 break;
@@ -377,7 +376,7 @@ public class GolemiteMinion extends Entity {
     // ────────────────────────────────────────────────────────────────────
     @Override
     public void takeDamage(int dmg) {
-        if (!alive || state == MinionState.DEATH) return;
+        if (!alive || state == GState.DEATH) return;
         life -= dmg;
         isHit = true;
         hitFlashTimer = 8;
@@ -385,7 +384,7 @@ public class GolemiteMinion extends Entity {
 
     private void die() {
         alive = false;
-        state = MinionState.DEATH;
+        state = GState.DEATH;
         deathTimer = 0;
         deathDone = false;
         solidArea.x = -9999;
@@ -413,8 +412,8 @@ public class GolemiteMinion extends Entity {
 
     @Override
     public void draw(Graphics2D g2) {
-        if (!alive && state != MinionState.DEATH) return;
-        if (state == MinionState.DEATH && deathDone) return;
+        if (!alive && state != GState.DEATH) return;
+        if (state == GState.DEATH && deathDone) return;
 
         int drawSize = gp.tileSize * DRAW_SIZE_MULT;
         int offset   = (drawSize - gp.tileSize) / 2;
@@ -427,7 +426,7 @@ public class GolemiteMinion extends Entity {
         int spriteY = sy + (int) (drawSize * SPRITE_LOWER);
 
         float fade = 1f;
-        if (state == MinionState.DEATH) {
+        if (state == GState.DEATH) {
             fade = Math.max(0f, 1f - (float) deathTimer / DEATH_FADE_FRAMES);
         } else if (spawnFade < SPAWN_FADE_FRAMES) {
             fade = (float) spawnFade / SPAWN_FADE_FRAMES;
@@ -446,9 +445,9 @@ public class GolemiteMinion extends Entity {
 
         // Sprite
         int d = dirIndex();
-        BufferedImage img = (state == MinionState.ATTACK)
+        BufferedImage img = (state == GState.ATTACK)
                 ? Golemite.getPunchFrame(d, atkFrame)
-                : Golemite.getWalkFrame(d, state == MinionState.WALK ? walkFrame : 0);
+                : Golemite.getWalkFrame(d, state == GState.WALK ? walkFrame : 0);
 
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
         if (img != null) {
@@ -457,7 +456,7 @@ public class GolemiteMinion extends Entity {
         g2.setComposite(old);
 
         // HP bar ungu (penanda pion tamed, sama kayak GolemMinion)
-        if (state != MinionState.DEATH && life < maxLife) {
+        if (state != GState.DEATH && life < maxLife) {
             int barW = 40, barH = 5;
             int fill = (int) ((double) life / maxLife * barW);
             int barX = sx + drawSize / 2 - barW / 2;

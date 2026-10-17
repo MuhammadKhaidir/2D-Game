@@ -19,7 +19,7 @@ import Main.GamePanel;
  *
  * Cara pakai:
  *  - Tekan angka 1..5 (atau klik slotnya) → item di slot itu langsung dipakai.
- *      * consumable (Health Potion)  → dipakai, jumlah berkurang 1
+ *      * consumable (potion)         → dipakai, jumlah berkurang 1
  *      * equipment (sword, axe, helm)→ pasang / lepas (sama kayak klik kanan di backpack)
  *      * Death Totem                 → sama kayak tombol T
  *  - Masukin item: seret item dari backpack ke slot hotbar, atau pilih item di backpack lalu
@@ -146,6 +146,7 @@ public class Hotbar {
         if (gp.player == null || gp.player.isDead) return false;
         if (gp.deathScreenUI != null && gp.deathScreenUI.visible) return false;
         if (gp.totemUI != null && gp.totemUI.visible) return false;
+        if (gp.potionShop != null && gp.potionShop.visible) return false;
         if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
             Entitas.DarkMerchant dm = gp.domainManager.darkMerchant;
             if (dm != null && (dm.isShopOpen() || dm.isInDialog())) return false;

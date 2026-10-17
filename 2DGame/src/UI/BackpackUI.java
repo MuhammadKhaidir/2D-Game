@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 import Item.ItemStack;
 import Item.ItemManager;
+import Item.PotionType;
 import Main.GamePanel;
 import Object.Weapon;
 import Object.PlayerArmor;
@@ -379,6 +380,10 @@ public class BackpackUI implements MouseWheelListener {
 
     private String getItemDescriptionText(String itemName) {
 
+        // Semua potion (HP & boost) deskripsinya diambil dari tabel PotionType
+        PotionType potion = PotionType.fromItemName(itemName);
+        if (potion != null) return potion.longDescription();
+
         switch (itemName.toLowerCase()) {
 
             case "log":
@@ -434,10 +439,6 @@ public class BackpackUI implements MouseWheelListener {
             case "coin":
                 return "A shiny coin dropped by every monster you defeat. "
                      + "Used as currency.";
-
-            case "health potion":
-                return "A vial of crimson liquid. Restores 50 HP when used. "
-                     + "Put it in the hotbar and press its number key.";
 
             default:
                 return "A mysterious artifact discovered on your journey. "
