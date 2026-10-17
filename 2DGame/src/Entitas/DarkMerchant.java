@@ -24,6 +24,7 @@ public class DarkMerchant extends Entity {
 
     // Mouse BUY button
     private Rectangle buyButtonBounds = new Rectangle();
+    private Rectangle closeBtnBounds = new Rectangle();
     private boolean buyButtonHovered = false;
 
     // Icon item yang dijual
@@ -210,6 +211,13 @@ public class DarkMerchant extends Entity {
     public boolean handleMouseClick(MouseEvent e) {
 
         if (!isShopOpen()) return false;
+
+        // Tombol silang: tutup shop
+        if (e.getButton() == MouseEvent.BUTTON1
+                && closeBtnBounds.contains(e.getPoint())) {
+            closeShop();
+            return false;
+        }
 
         if (e.getButton() == MouseEvent.BUTTON1
                 && buyButtonBounds.contains(e.getPoint())) {
@@ -673,6 +681,11 @@ public class DarkMerchant extends Entity {
         // ========================================================
         // ITEMS
         // ========================================================
+
+        // Tombol silang di pojok kanan atas panel
+        Rectangle closeRect = UI.CloseButton.rect(panelX, panelY, panelW, 12, 8);
+        closeBtnBounds.setBounds(closeRect);
+        UI.CloseButton.draw(g2, closeRect);
 
         for (int i = 0; i < shopItems.length; i++) {
 

@@ -386,6 +386,9 @@ public class TotemUI {
             drawGridView(g2, slots, capacity, totem);
         }
 
+        // tombol silang buat nutup Totem UI
+        CloseButton.draw(g2, CloseButton.rect(panelX, panelY, PANEL_W));
+
         // dialog konfirmasi selalu paling atas
         if (confirmDeleteSlot >= 0) {
             drawConfirmDialog(g2, slots);
@@ -1311,6 +1314,12 @@ public class TotemUI {
         // dialog konfirmasi itu modal: klik di luar tombolnya diabaikan
         if (confirmDeleteSlot >= 0) {
             handleConfirmClick(mx, my, slots);
+            return;
+        }
+
+        // tombol silang di pojok kanan atas panel: tutup Totem UI
+        if (CloseButton.rect(panelX, panelY, PANEL_W).contains(mx, my)) {
+            hide();
             return;
         }
 

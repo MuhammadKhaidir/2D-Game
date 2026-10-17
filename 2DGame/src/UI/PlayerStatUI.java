@@ -18,6 +18,7 @@ public class PlayerStatUI {
 
     private Rectangle btnHP, btnStamina, btnDamage, btnSpeed, btnDodge, btnDef;
     private Rectangle btnReset;
+    private Rectangle btnClose;
 
     // Stat awal player, diambil sekali waktu UI dibuat (sebelum save di-load).
     // Dipakai buat reset: poin terpakai = (stat sekarang - stat awal) / kenaikan per poin.
@@ -123,6 +124,10 @@ public class PlayerStatUI {
         g2.setColor(Color.GRAY);
         String hint = "[TAB] TO CLOSE   |   click [+] to upgrade";
         g2.drawString(hint, getCenterX(g2, hint, winX, winW), winY + winH - 14);
+
+        // Tombol silang buat nutup panel stat
+        btnClose = CloseButton.rect(winX, winY, winW);
+        CloseButton.draw(g2, btnClose);
     }
 
     private Rectangle drawStatRow(Graphics2D g2, String label, String value,
@@ -160,6 +165,12 @@ public class PlayerStatUI {
         if (!visible) return;
 
         int mx = e.getX(), my = e.getY();
+
+        // Tombol silang: tutup panel stat
+        if (btnClose != null && btnClose.contains(mx, my)) {
+            visible = false;
+            return;
+        }
 
         // Reset dicek duluan, karena harus tetap bisa diklik walau poin sudah 0
         if (btnReset != null && btnReset.contains(mx, my)) {

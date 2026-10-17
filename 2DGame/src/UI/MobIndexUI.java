@@ -321,6 +321,9 @@ public class MobIndexUI {
             drawDetailView(g2, panelX, panelY);
         }
 
+        // Tombol silang buat nutup bestiary
+        CloseButton.draw(g2, CloseButton.rect(panelX, panelY, panelW));
+
         // Restore state graphics
         g2.translate(0, -slideY);
         g2.setComposite(oldComp);
@@ -1023,6 +1026,12 @@ public class MobIndexUI {
     public void handleMouseClick(MouseEvent e, GamePanel gp) {
         if (!visible) return;
         if (e.getButton() != MouseEvent.BUTTON1) return;
+
+        // Tombol silang di pojok kanan atas panel: tutup bestiary
+        if (CloseButton.rect(gp.screenWidth / 2 - panelW / 2, PANEL_Y, panelW).contains(e.getX(), e.getY())) {
+            visible = false;
+            return;
+        }
 
         int mx = e.getX();
         int my = e.getY();

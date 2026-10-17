@@ -1169,7 +1169,7 @@ public class GamePanel extends JPanel implements Runnable{
 	        DarkMerchant dm = domainManager.darkMerchant;
 	        boolean merchantBusy = dm != null && (dm.isShopOpen() || dm.isInDialog());
 	        if (!merchantBusy) {
-	            domainManager.exitDomain();
+	            if (domainManager.isInRoom()) domainManager.exitDomain(); // ESC cuma buat keluar boss room; domain utama keluar lewat [E]
 	            KeyH.escPressed = false;
 	        }
 	    }

@@ -147,6 +147,12 @@ public class PotionShopUI {
 
     public void handleMouseClick(MouseEvent e) {
         if (!visible || e.getButton() != MouseEvent.BUTTON1) return;
+
+        // tombol silang di pojok kanan atas panel: tutup toko
+        if (CloseButton.rect(panelX(), panelY(), PANEL_W, 12, 8).contains(e.getPoint())) {
+            close();
+            return;
+        }
         for (int i = 0; i < stock.length; i++) {
             if (buyRect(i).contains(e.getPoint())) {
                 buy(stock[i]);
@@ -239,6 +245,9 @@ public class PotionShopUI {
         drawCoinIcon(g2, im, listLeft + textW + 8, py + 52, 18);
         g2.setColor(COL_ACCENT);
         g2.drawString(String.valueOf(coins), listLeft + textW + 32, py + 66);
+
+        // tombol silang buat nutup toko
+        CloseButton.draw(g2, CloseButton.rect(px, py, PANEL_W, 12, 8));
     }
 
     private void drawRow(Graphics2D g2, int index, PotionType type, ItemManager im, int coins) {

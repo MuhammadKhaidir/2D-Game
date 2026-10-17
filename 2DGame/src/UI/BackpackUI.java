@@ -624,6 +624,9 @@ public class BackpackUI implements MouseWheelListener {
 
         // Panel kanan = detail item (kalau ada yang diklik) / menu Settings (default)
         drawMenuPanel(g2, menuBox.x, menuBox.y, menuBox.width, menuBox.height);
+
+        // Tombol silang buat nutup backpack
+        CloseButton.draw(g2, CloseButton.rect(panelX, panelY, panelW));
     }
 
     private int getIconDrawSize(Item.Item item, int baseSize) {
@@ -900,6 +903,15 @@ public class BackpackUI implements MouseWheelListener {
 
         // ── 0. KLIK DI PANEL KANAN — detail item (X / Delete) atau menu (Settings / volume) ──
         Rectangle menuBox = getMenuBoxRect(panelX, panelY);
+        // ── Tombol silang di pojok kanan atas panel: tutup backpack ──
+        if (CloseButton.rect(panelX, panelY, panelW).contains(mx, my)) {
+            selectedItem = null;
+            showDeleteConfirm = false;
+            deleteAmount = 1;
+            visible = false;
+            return;
+        }
+
         if (menuBox.contains(mx, my)) {
             if (selectedItem != null) {
                 // mode DETAIL ITEM

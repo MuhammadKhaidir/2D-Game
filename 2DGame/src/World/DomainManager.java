@@ -26,6 +26,9 @@ public class DomainManager {
     private RoomData activeRoom = null;
     private ImageIcon roomBgImage = null;
     private RoomData nearDoorRoom = null; // buat nampilin hint "[E] Masuk ..." pas deket pintu
+    private boolean nearExitPoint = false; // true kalau player lagi di zona keluar domain (hint "[E] Keluar dungeon")
+    private int returnWorldX = -1; // posisi player di world pas masuk domain (buat keluar di titik yang sama)
+    private int returnWorldY = -1;
 
     // ── Debug: gambar kotak collision biar gampang nge-tune posisinya ──
     public boolean showCollisionDebug = false; // toggle: F3
@@ -141,7 +144,9 @@ public class DomainManager {
             900, 1090,
             800, 600,
             "/Latar/TombDomainPixel.png")
-        .setExit(1375, 2265)
+        .setExit(900, 1090)
+        // Titik keluar di dalam Tomb: deketin -> muncul hint, tekan E buat keluar dungeon
+        .setExitPoint(990, 1090, 60)
         .addCollision(250,  650,  400, 190)
         .addCollision(400,  725,  360, 145)
         .addCollision(380,  650,  110, 320)
@@ -318,8 +323,9 @@ public class DomainManager {
         }
     }
 
-    /** Keluar otomatis kalau player deket titik keluar domain (kalau domain-nya punya). */
+    /** Kalau player deket titik keluar domain: tampil hint, dan keluar kalau tekan E. */
     private void checkExitPoint() {
+        nearExitPoint = false;
         if (fading) return; // lagi transisi fade, jangan trigger dobel
         if (activeDomain == null || !activeDomain.hasExitPoint) return;
 
@@ -327,7 +333,11 @@ public class DomainManager {
             gp.player.x - activeDomain.exitPointX,
             gp.player.y - activeDomain.exitPointY
         );
-        if (dist <= activeDomain.exitPointRadius) {
+        if (dist > activeDomain.exitPointRadius) return;
+
+        nearExitPoint = true; // buat hint "[E] Keluar dungeon"
+        if (gp.KeyH.interactPressed) {
+            gp.KeyH.interactPressed = false;
             exitDomain();
         }
     }
@@ -349,6 +359,9 @@ public class DomainManager {
     }
 
     private void startEnter(DomainData d) {
+        // simpan posisi player pas mau masuk, biar keluarnya di titik yang sama
+        returnWorldX = gp.player.x;
+        returnWorldY = gp.player.y;
         startFade(false, () -> {
             buildInteriorFor(d);
             activeDomain = d;
@@ -449,8 +462,9 @@ public class DomainManager {
             return;
         }
         if (activeDomain == null) return;
-        final int exitX = activeDomain.exitWorldX;
-        final int exitY = activeDomain.exitWorldY;
+        // balik ke posisi pas masuk; kalau gak ada (belum pernah masuk lewat startEnter) pakai titik exit bawaan domain
+        final int exitX = returnWorldX >= 0 ? returnWorldX : activeDomain.exitWorldX;
+        final int exitY = returnWorldY >= 0 ? returnWorldY : activeDomain.exitWorldY;
         startFade(false, () -> {
             gp.music.stop();
             insideDomain = false;
@@ -585,6 +599,7 @@ public class DomainManager {
         } else {
             drawHint(g2, activeDomain);
             drawDoorHintIfNear(g2);
+            drawExitHintIfNear(g2);
         }
         drawFadeOverlay(g2);
     }
@@ -870,7 +885,7 @@ public class DomainManager {
     private void drawHint(Graphics2D g2, DomainData d) {
         g2.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2.setColor(new Color(255, 220, 120, 200));
-        String hint = "[ " + d.id + " ]  |  ESC = Keluar";
+        String hint = "[ " + d.id + " ]";
         g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 16);
     }
 
@@ -918,6 +933,14 @@ public class DomainManager {
         g2.setFont(new Font("Monospaced", Font.BOLD, 13));
         g2.setColor(new Color(255, 255, 150, 220));
         String hint = "[E] Enter " + nearDoorRoom.id;
+        g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 40);
+    }
+
+    private void drawExitHintIfNear(Graphics2D g2) {
+        if (!nearExitPoint) return;
+        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
+        g2.setColor(new Color(255, 255, 150, 220));
+        String hint = "Tekan [E] untuk keluar dungeon";
         g2.drawString(hint, gp.screenWidth/2 - g2.getFontMetrics().stringWidth(hint)/2, gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 40);
     }
 
