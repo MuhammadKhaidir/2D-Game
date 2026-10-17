@@ -1,0 +1,98 @@
+diff --git a/2DGame/src/Entitas/MonsterBatu.java b/2DGame/src/Entitas/MonsterBatu.java
+index 85a9f0c..6bcec7f 100644
+--- a/2DGame/src/Entitas/MonsterBatu.java
++++ b/2DGame/src/Entitas/MonsterBatu.java
+@@ -70,6 +70,7 @@ public class MonsterBatu extends Entity {
+ 
+         state = MonsterState.DEAD;
+         isDead = true;
++        gp.player.givePotionReward(this); // small 50% / medium 20%
+ 
+         Main.Log.d("Monster Batu Mati");
+     }
+diff --git a/2DGame/src/Entitas/Orc.java b/2DGame/src/Entitas/Orc.java
+index c141862..6190330 100644
+--- a/2DGame/src/Entitas/Orc.java
++++ b/2DGame/src/Entitas/Orc.java
+@@ -328,6 +328,7 @@ public class Orc extends Entity {
+         gp.player.exp += getExpValue;
+         gp.player.checkLevelUp();
+         gp.player.giveCoinReward(this); // koin pasti drop
++        gp.player.givePotionReward(this); // small 50% / medium 20%
+         Main.Log.d("Orc mati!");
+     }
+ 
+diff --git a/2DGame/src/Entitas/monster.java b/2DGame/src/Entitas/monster.java
+index 3570d1c..2cc907d 100644
+--- a/2DGame/src/Entitas/monster.java
++++ b/2DGame/src/Entitas/monster.java
+@@ -317,6 +317,7 @@ public class monster extends Entity {
+         gp.player.exp += this.getExpValue;
+         gp.player.checkLevelUp();
+         gp.player.giveCoinReward(this); // koin pasti drop
++        gp.player.givePotionReward(this); // small 50% / medium 20%
+         Main.Log.d("Slime mati");
+     }
+ 
+diff --git a/2DGame/src/Entitas/player.java b/2DGame/src/Entitas/player.java
+index db7c159..cb3888c 100644
+--- a/2DGame/src/Entitas/player.java
++++ b/2DGame/src/Entitas/player.java
+@@ -456,10 +456,20 @@ public class player extends Entity {
+         if (gp.speechBubble != null) gp.speechBubble.show("+" + amount + " Coin");
+     }
+ 
++    /**
++     * Roll drop Small/Medium HP Potion tiap monster mati (peluangnya di ItemManager).
++     * Pion summonan boss (noDrop) dilewati, sama kayak koin, biar gak bisa di-farm.
++     */
++    public void givePotionReward(Entity target) {
++        if (target instanceof Skeleton && ((Skeleton) target).noDrop) return;
++        Item.ItemManager.get().rollPotionDrops(gp);
++    }
++
+     public void killMonster(Entity target) {
+         this.exp += target.getExpValue;
+         checkLevelUp();
+         giveCoinReward(target);
++        givePotionReward(target);
+         // ── TAMBAHAN: trigger capture Death Totem ──
+         if (gp.deathTotemManager != null) {
+             gp.deathTotemManager.tryCapture(target);
+diff --git a/2DGame/src/Item/ItemManager.java b/2DGame/src/Item/ItemManager.java
+index 59cfe62..ace5a67 100644
+--- a/2DGame/src/Item/ItemManager.java
++++ b/2DGame/src/Item/ItemManager.java
+@@ -136,6 +136,32 @@ public class ItemManager {
+         return type != null ? potions.get(type) : null;
+     }
+ 
++    // ===================================================================
++    // DROP POTION DARI MONSTER
++    // ===================================================================
++
++    /** Peluang tiap monster yang mati ngejatuhin Small HP Potion (0.0 - 1.0). */
++    public static final double SMALL_HP_DROP_CHANCE  = 0.50; // 50%
++    /** Peluang Medium HP Potion. Dibuat lebih langka dari small karena healnya 3x lebih gede. */
++    public static final double MEDIUM_HP_DROP_CHANCE = 0.20; // 20%
++
++    private final java.util.Random potionDropRng = new java.util.Random();
++
++    /**
++     * Dipanggil sekali tiap monster mati. Small & medium di-roll terpisah, jadi keduanya
++     * bisa keluar sekaligus. Potion langsung masuk backpack (sama kayak drop Skeleton).
++     */
++    public void rollPotionDrops(Main.GamePanel gp) {
++        rollPotion(gp, PotionType.SMALL_HP,  SMALL_HP_DROP_CHANCE);
++        rollPotion(gp, PotionType.MEDIUM_HP, MEDIUM_HP_DROP_CHANCE);
++    }
++
++    private void rollPotion(Main.GamePanel gp, PotionType type, double chance) {
++        if (potionDropRng.nextDouble() >= chance) return;
++        add(getPotion(type), 1);
++        say(gp, "Obtained 1x " + type.itemName);
++    }
++
+     /** Pakai gambar src/drop/<imageFile> kalau ada; kalau belum ada, pakai ikon botol bawaan. */
+     private BufferedImage loadPotionIcon(PotionType type) {
+         try (InputStream is = getClass().getResourceAsStream("/drop/" + type.imageFile)) {

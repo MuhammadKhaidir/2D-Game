@@ -456,10 +456,20 @@ public class player extends Entity {
         if (gp.speechBubble != null) gp.speechBubble.show("+" + amount + " Coin");
     }
 
+    /**
+     * Roll drop Small/Medium HP Potion tiap monster mati (peluangnya di ItemManager).
+     * Pion summonan boss (noDrop) dilewati, sama kayak koin, biar gak bisa di-farm.
+     */
+    public void givePotionReward(Entity target) {
+        if (target instanceof Skeleton && ((Skeleton) target).noDrop) return;
+        Item.ItemManager.get().rollPotionDrops(gp);
+    }
+
     public void killMonster(Entity target) {
         this.exp += target.getExpValue;
         checkLevelUp();
         giveCoinReward(target);
+        givePotionReward(target);
         // ── TAMBAHAN: trigger capture Death Totem ──
         if (gp.deathTotemManager != null) {
             gp.deathTotemManager.tryCapture(target);

@@ -136,6 +136,32 @@ public class ItemManager {
         return type != null ? potions.get(type) : null;
     }
 
+    // ===================================================================
+    // DROP POTION DARI MONSTER
+    // ===================================================================
+
+    /** Peluang tiap monster yang mati ngejatuhin Small HP Potion (0.0 - 1.0). */
+    public static final double SMALL_HP_DROP_CHANCE  = 0.50; // 50%
+    /** Peluang Medium HP Potion. Dibuat lebih langka dari small karena healnya 3x lebih gede. */
+    public static final double MEDIUM_HP_DROP_CHANCE = 0.20; // 20%
+
+    private final java.util.Random potionDropRng = new java.util.Random();
+
+    /**
+     * Dipanggil sekali tiap monster mati. Small & medium di-roll terpisah, jadi keduanya
+     * bisa keluar sekaligus. Potion langsung masuk backpack (sama kayak drop Skeleton).
+     */
+    public void rollPotionDrops(Main.GamePanel gp) {
+        rollPotion(gp, PotionType.SMALL_HP,  SMALL_HP_DROP_CHANCE);
+        rollPotion(gp, PotionType.MEDIUM_HP, MEDIUM_HP_DROP_CHANCE);
+    }
+
+    private void rollPotion(Main.GamePanel gp, PotionType type, double chance) {
+        if (potionDropRng.nextDouble() >= chance) return;
+        add(getPotion(type), 1);
+        say(gp, "Obtained 1x " + type.itemName);
+    }
+
     /** Pakai gambar src/drop/<imageFile> kalau ada; kalau belum ada, pakai ikon botol bawaan. */
     private BufferedImage loadPotionIcon(PotionType type) {
         try (InputStream is = getClass().getResourceAsStream("/drop/" + type.imageFile)) {

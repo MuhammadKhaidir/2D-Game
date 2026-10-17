@@ -317,6 +317,7 @@ public class monster extends Entity {
         gp.player.exp += this.getExpValue;
         gp.player.checkLevelUp();
         gp.player.giveCoinReward(this); // koin pasti drop
+        gp.player.givePotionReward(this); // small 50% / medium 20%
         Main.Log.d("Slime mati");
     }
 

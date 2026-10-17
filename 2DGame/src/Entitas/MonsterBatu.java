@@ -70,6 +70,7 @@ public class MonsterBatu extends Entity {
 
         state = MonsterState.DEAD;
         isDead = true;
+        gp.player.givePotionReward(this); // small 50% / medium 20%
 
         Main.Log.d("Monster Batu Mati");
     }
