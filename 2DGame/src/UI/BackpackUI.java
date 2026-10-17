@@ -28,6 +28,9 @@ public class BackpackUI implements MouseWheelListener {
     // CHANGED: item yang lagi di-KLIK (bukan hover lagi). Detailnya tampil di panel kanan.
     private ItemStack selectedItem = null;
 
+    // ── Drag & drop antar kotak di grid inventory ──
+    private int dragFromIndex = -1; // index kotak asal yang lagi diseret (-1 = gak lagi nyeret)
+
     // panel dikecilin dari 860 -> 730 biar muat di screenWidth (768), sebelumnya
     // kepotong karena panelX jadi negatif
     private int panelW = 730;
@@ -893,6 +896,7 @@ public class BackpackUI implements MouseWheelListener {
 
     public void handleMouseClick(MouseEvent e, GamePanel gp) {
         if (!visible) return;
+        dragFromIndex = -1; // reset, nanti diisi lagi kalau klik ini kena item di grid
 
         int mx = e.getPoint().x;
         int my = e.getPoint().y;
@@ -1040,6 +1044,7 @@ public class BackpackUI implements MouseWheelListener {
                                 // calon DRAG ke hotbar (baru kebaca drag kalau mouse digeser > beberapa px)
                                 if (gp.hotbar != null) {
                                     gp.hotbar.beginDrag(stack.item, mx, my);
+                                    dragFromIndex = i; // calon drag antar kotak (dieksekusi pas mouse dilepas)
                                 }
 
                                 // DOUBLE-KLIK Death Totem: buka Totem UI (dulu cukup 1x klik)
@@ -1056,6 +1061,49 @@ public class BackpackUI implements MouseWheelListener {
                     }
                     break;
                 }
+            }
+        }
+    }
+
+    /**
+     * Mouse dilepas: kalau tadi nyeret item dari kotak grid dan dilepas di kotak grid lain,
+     * posisinya ditukar. Kalau dilepas di kotak kosong, item pindah ke kotak kosong pertama
+     * (isi inventory selalu rapat dari kiri-atas, jadi gak ada kotak "bolong").
+     * Harus dipanggil SEBELUM hotbar.handleMouseReleased() karena hotbar mereset status drag.
+     */
+    public void handleMouseReleased(MouseEvent e, GamePanel gp) {
+        int from = dragFromIndex;
+        dragFromIndex = -1;
+        if (!visible || from < 0 || e.getButton() != MouseEvent.BUTTON1) return;
+        if (gp.hotbar == null || !gp.hotbar.isDragging()) return; // cuma klik biasa, bukan seret
+        if (from >= items.size()) return;
+
+        int mx = e.getX();
+        int my = e.getY();
+        if (gp.hotbar.getBounds().contains(mx, my)) return; // dilepas di hotbar -> urusan hotbar
+
+        int panelX = gp.screenWidth / 2 - panelW / 2;
+        int panelY = 60;
+        Rectangle gridBox = getGridBoxRect(panelX, panelY);
+        if (!gridBox.contains(mx, my)) return;
+
+        int gridStartX = gridBox.x + 12;
+        int gridStartY = gridBox.y + 12 - scrollY;
+        int totalSlots = cols * gridRows;
+
+        for (int i = 0; i < totalSlots; i++) {
+            int sx = gridStartX + (i % cols) * (slotSize + slotPadding);
+            int sy = gridStartY + (i / cols) * (slotSize + slotPadding);
+
+            if (mx >= sx && mx <= sx + slotSize && my >= sy && my <= sy + slotSize) {
+                if (i == from) return;
+                if (i < items.size()) {
+                    java.util.Collections.swap(items, from, i); // kotak berisi: tukar posisi
+                } else {
+                    ItemStack moved = items.remove(from);       // kotak kosong: pindah ke kotak kosong pertama
+                    items.add(moved);
+                }
+                return;
             }
         }
     }

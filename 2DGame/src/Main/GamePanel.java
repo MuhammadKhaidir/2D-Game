@@ -322,6 +322,8 @@ public class GamePanel extends JPanel implements Runnable{
             @Override
             public void mouseReleased(MouseEvent e) {
                 // lepas klik: selesaiin drag & drop ke hotbar (kalau lagi ada)
+                // drag & drop antar kotak backpack: harus SEBELUM hotbar, soalnya hotbar mereset status drag
+                if (backpack != null) backpack.handleMouseReleased(e, GamePanel.this);
                 if (hotbar != null) hotbar.handleMouseReleased(e);
             }
         });

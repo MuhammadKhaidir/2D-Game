@@ -242,6 +242,9 @@ public class Hotbar {
             || (gp.mobIndexUI != null && gp.mobIndexUI.visible);
     }
 
+    /** True kalau lagi nyeret item (udah lewat threshold geser). Dipakai BackpackUI buat bedain klik biasa vs seret. */
+    public boolean isDragging() { return dragging; }
+
     /** Dipanggil BackpackUI pas player mulai klik item di grid inventory (calon drag). */
     public void beginDrag(Item.Item item, int mx, int my) {
         if (item == null) return;
