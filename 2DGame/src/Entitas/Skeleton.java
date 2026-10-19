@@ -175,6 +175,7 @@ public class Skeleton extends Entity {
         if (life <= 0 && alive) {
             alive = false;
             skState = SkeletonState.DEATH;
+            isKnockback = false; knockbackCounter = 0;
             deathFrameIndex = 0; deathAnimTimer = 0; deathAnimDone = false;
             this.solidArea.x = -9999; this.solidArea.y = -9999;
             dropItems();
@@ -186,6 +187,8 @@ public class Skeleton extends Entity {
             if (!noRespawn) { respawnTimer++; if (respawnTimer >= RESPAWN_DELAY) respawn(); }
             return;
         }
+
+        if (isKnockback) updateKnockback();
 
         if (skState == SkeletonState.HURT) {
             hurtTimer--;
@@ -411,6 +414,7 @@ public class Skeleton extends Entity {
         this.idleFrameIndex = 0; this.deathFrameIndex = 0;
         this.deathAnimDone = false; this.hurtTimer = 0;
         this.attackCooldown = 0; this.respawnTimer = 0; this.isHit = false;
+        this.isKnockback = false; this.knockbackCounter = 0;
         this.solidArea.x = this.solidAreaDefaultX;
         this.solidArea.y = this.solidAreaDefaultY;
         this.noDamageTimer = 0;
@@ -566,5 +570,57 @@ public class Skeleton extends Entity {
             skState = SkeletonState.HURT; hurtTimer = HURT_DURATION;
             attackFrameIndex = 0; attackTimer = 0;
         }
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  KNOCKBACK
+    //  Dipanggil SETELAH takeDamage() oleh siapa pun yang nge-hit skeleton
+    //  (player, UndeadMinion, GolemMinion, GolemiteMinion), contoh:
+    //      sk.takeDamage(dmg);
+    //      sk.knockbackFrom(this);
+    // ══════════════════════════════════════════════════════
+    private static final int KNOCKBACK_STEP   = 6;   // px per frame
+    private static final int KNOCKBACK_FRAMES = 10;  // 6 x 10 = 60px mundur
+
+    /** Dorong skeleton menjauh dari posisi attacker. Arah ditentukan dari posisi relatif, bukan arah hadap attacker. */
+    public void knockbackFrom(Entity attacker) {
+        if (attacker == null || !alive || life <= 0 || skState == SkeletonState.DEATH) return;
+
+        int aCX = attacker.x + attacker.solidArea.x + attacker.solidArea.width  / 2;
+        int aCY = attacker.y + attacker.solidArea.y + attacker.solidArea.height / 2;
+        int sCX = x + solidArea.x + solidArea.width  / 2;
+        int sCY = y + solidArea.y + solidArea.height / 2;
+        int dx = sCX - aCX;
+        int dy = sCY - aCY;
+
+        String pushDir;
+        if (dx == 0 && dy == 0) {
+            // posisi persis sama: fallback ke arah hadap attacker
+            pushDir = (attacker.direction != null) ? attacker.direction : "down";
+        } else if (Math.abs(dx) > Math.abs(dy)) {
+            pushDir = dx > 0 ? "right" : "left";
+        } else {
+            pushDir = dy > 0 ? "down" : "up";
+        }
+
+        applyKnockback(pushDir); // dari Entity: set isKnockback, counter = 0, dan arah dorong
+    }
+
+    private void updateKnockback() {
+        int dx = knockbackDirectionX * KNOCKBACK_STEP;
+        int dy = knockbackDirectionY * KNOCKBACK_STEP;
+
+        Rectangle nextBox = new Rectangle(x + solidArea.x + dx, y + solidArea.y + dy, solidArea.width, solidArea.height);
+        if (gp.domainManager != null && gp.domainManager.checkCollision(nextBox)) {
+            // mentok tembok domain: berhenti di situ
+            isKnockback = false; knockbackCounter = 0;
+            return;
+        }
+
+        x += dx;
+        y += dy;
+
+        knockbackCounter++;
+        if (knockbackCounter >= KNOCKBACK_FRAMES) { isKnockback = false; knockbackCounter = 0; }
     }
 }

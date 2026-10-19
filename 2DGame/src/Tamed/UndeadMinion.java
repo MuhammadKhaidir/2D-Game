@@ -248,6 +248,7 @@ public class UndeadMinion extends Entity {
         if (atk != null && atk.intersects(tgt)) {
             int lifeBefore = target.life;
             target.takeDamage(ATTACK_DAMAGE);
+            target.knockbackFrom(this);
             sfx.swingSound();
             // EXP hanya kalau target mati akibat hit ini
             if (lifeBefore > 0 && target.life <= 0 && gp.deathTotemManager != null) {

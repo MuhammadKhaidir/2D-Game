@@ -157,7 +157,7 @@ public class player extends Entity {
     int jumpCooldown = 0;
     final int JUMP_COOLDOWN_TIME = 40;
     public double baseSpeed = 2.5;
-    double sprintMultiplier = 15.0;
+    double sprintMultiplier = 2.0;
     
     // Stamina
     public int maxStamina = 500;
@@ -620,6 +620,7 @@ public class player extends Entity {
                                     int currentAtk = getTotalDamage();
                                     int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
                                     sk.takeDamage(damageDealt);
+                                    sk.knockbackFrom(this);
                                     hitSomething = true;
                                     attackHit = true;
                                     if (currentWeapon != null) currentWeapon.playAttackSound(attackType, isWeaponEquipped);
@@ -656,6 +657,7 @@ public class player extends Entity {
                                     int currentAtk = getTotalDamage();
                                     int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
                                     sk.takeDamage(damageDealt);
+                                    sk.knockbackFrom(this);
                                     hitSomething = true;
                                     attackHit = true;
                                     if (currentWeapon != null) currentWeapon.playAttackSound(attackType, isWeaponEquipped);
