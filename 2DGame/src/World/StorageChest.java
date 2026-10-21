@@ -43,6 +43,16 @@ public class StorageChest {
     /** Jumlah kotak di peti. */
     public static final int CAPACITY = 30;
 
+    // ── bayangan di dasar peti (biar kelihatan napak, gak ngambang) ──
+    /** Seberapa gelap bayangannya (0..1). Pohon/batu di TileM pakai 0.35. */
+    private static final float SHADOW_ALPHA  = 0.35f;
+    /** Lebar bayangan, kelipatan lebar peti. 1.0 = sama lebar sama peti. */
+    private static final float SHADOW_WIDTH  = 1.05f;
+    /** Tinggi (ketebalan) bayangan, kelipatan lebar peti. */
+    private static final float SHADOW_HEIGHT = 0.30f;
+    /** Seberapa banyak bayangan 'masuk' ke bawah peti (0 = semua kelihatan di bawah, 1 = semua ketutup). */
+    private static final float SHADOW_TUCK   = 0.60f;
+
     public enum State { CLOSED, OPENING, OPEN, CLOSING }
 
     private final GamePanel gp;
@@ -70,11 +80,11 @@ public class StorageChest {
         openAnim  = GifFrames.load(getClass(), GIF_OPEN,  gp.FPS);
         closeAnim = GifFrames.load(getClass(), GIF_CLOSE, gp.FPS);
 
-        drawW = gp.tileSize;
+        drawW = 30*2;
         if (normal != null && normal.getWidth() > 0) {
             drawH = Math.max(1, Math.round(drawW * (float) normal.getHeight() / normal.getWidth()));
         } else {
-            drawH = gp.tileSize;
+            drawH = 30 *2;
         }
 
         // Peti padat: bagian bawah sprite jadi penghalang (player gak bisa tembus).
@@ -195,6 +205,8 @@ public class StorageChest {
         if (sx + drawW < gp.viewMinX() || sx > gp.viewMaxX()) return;
         if (sy + drawH < gp.viewMinY() || sy > gp.viewMaxY()) return;
 
+        drawShadow(g2, sx, sy); // SEBELUM peti, supaya peti nutup bagian atas bayangan
+
         BufferedImage img = currentImage();
         if (img != null) {
             // lebar pas 1 tile, rata bawah (kalau GIF beda rasio sama PNG, gak gepeng)
@@ -222,6 +234,20 @@ public class StorageChest {
                 break;
         }
         return normal;
+    }
+
+    /** Bayangan elips di dasar peti. Gayanya sama kayak bayangan pohon/batu di TileM.drawYSorted. */
+    private void drawShadow(Graphics2D g2, int sx, int sy) {
+        int w = Math.round(drawW * SHADOW_WIDTH);
+        int h = Math.max(4, Math.round(drawW * SHADOW_HEIGHT));
+        int x = sx + (drawW - w) / 2;                          // rata tengah terhadap peti
+        int y = sy + drawH - Math.round(h * SHADOW_TUCK);      // sebagian masuk ke bawah peti
+
+        java.awt.Composite oc = g2.getComposite();
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, SHADOW_ALPHA));
+        g2.setColor(Color.BLACK);
+        g2.fillOval(x, y, w, h);
+        g2.setComposite(oc);
     }
 
     /** Kalau NormalChest.png hilang, peti tetap kelihatan & bisa dipakai. */
