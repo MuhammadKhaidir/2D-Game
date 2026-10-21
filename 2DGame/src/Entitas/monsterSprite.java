@@ -5,6 +5,10 @@ import Main.GamePanel;
 
 public class monsterSprite {
 
+    // ukuran kanvas sprite jalan/hit/mati/idle. Sprite serang kanvasnya 64x64 (2x lebih besar),
+    // jadi harus digambar 2x lebih besar juga biar badan slime-nya sama gedenya.
+    public static final int BASE_SIZE = 32;
+
     // jumlah frame tiap animasi (per arah)
     public static final int ATTACK_FRAMES = 12;
     public static final int WALK_FRAMES   = 6;
