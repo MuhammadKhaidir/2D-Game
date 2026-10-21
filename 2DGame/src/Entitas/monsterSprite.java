@@ -5,39 +5,48 @@ import Main.GamePanel;
 
 public class monsterSprite {
 
-    public BufferedImage
-        mfront1, mfront2,
-        mback1, mback2,
-        mleft1, mleft2,
-        mright1, mright2,
-        mstand, mattack1, mattack2, mattack3, mattack4, mattack5, mattack6, mattack7;
+    // jumlah frame tiap animasi (per arah)
+    public static final int ATTACK_FRAMES = 12;
+    public static final int WALK_FRAMES   = 6;
+    public static final int HIT_FRAMES    = 7;
+    public static final int DEATH_FRAMES  = 10;
 
-    // 🔥 ATTACK 7 FRAME
-    public BufferedImage[] mattack = new BufferedImage[7];
+    private static final String[] DIRS = { "up", "down", "left", "right" };
+
+    // [arah][frame] - static: dimuat sekali, dipakai semua slime
+    private static BufferedImage[][] attackImgs, walkImgs, hitImgs, deathImgs;
 
     public monsterSprite(GamePanel gp) {
+        if (attackImgs != null) return;
 
-        mfront1 = gp.setup("Sticklooter_carrot_walk1");
-        mfront2 = gp.setup("Sticklooter_carrot_walk2");
-
-        mback1  = gp.setup("Sticklooter_carrot_walk2");
-        mback2  = gp.setup("Sticklooter_carrot_walk1");
-
-        mleft1  = gp.setup("Sticklooter_carrot_walk1");
-        mleft2  = gp.setup("Sticklooter_carrot_walk2");
-
-        mright1 = gp.setup("Sticklooter_carrot_walk1");
-        mright2 = gp.setup("Sticklooter_carrot_walk2");
-
-        mstand  = gp.setup("Sticklooter_carrot_idle1");
-
-        // ===== ATTACK ANIMATION =====
-        mattack[0] = gp.setup("slimeatt1");
-        mattack[1] = gp.setup("slimeatt2");
-        mattack[2] = gp.setup("slimeatt3");
-        mattack[3] = gp.setup("slimeatt4");
-        mattack[4] = gp.setup("slimeatt5");
-        mattack[5] = gp.setup("slimeatt6");
-        mattack[6] = gp.setup("slimeatt7");
+        attackImgs = load(gp, "attack", ATTACK_FRAMES);
+        walkImgs   = load(gp, "walk",   WALK_FRAMES);
+        hitImgs    = load(gp, "hit",    HIT_FRAMES);
+        deathImgs  = load(gp, "death",  DEATH_FRAMES);
     }
+
+    // nama file: slime_<aksi>_<arah>_<nomor>.png, contoh slime_attack_up_1.png
+    private static BufferedImage[][] load(GamePanel gp, String action, int frames) {
+        BufferedImage[][] set = new BufferedImage[DIRS.length][frames];
+        for (int d = 0; d < DIRS.length; d++) {
+            for (int f = 0; f < frames; f++) {
+                set[d][f] = gp.setup("slime_" + action + "_" + DIRS[d] + "_" + (f + 1));
+            }
+        }
+        return set;
+    }
+
+    private static int dirIndex(String dir) {
+        switch (dir) {
+            case "up":    return 0;
+            case "left":  return 2;
+            case "right": return 3;
+            default:      return 1; // down
+        }
+    }
+
+    public BufferedImage getAttack(String dir, int frame) { return attackImgs[dirIndex(dir)][frame]; }
+    public BufferedImage getWalk(String dir, int frame)   { return walkImgs[dirIndex(dir)][frame]; }
+    public BufferedImage getHit(String dir, int frame)    { return hitImgs[dirIndex(dir)][frame]; }
+    public BufferedImage getDeath(String dir, int frame)  { return deathImgs[dirIndex(dir)][frame]; }
 }

@@ -654,7 +654,8 @@ public TileM(GamePanel gp) {
 			
 			// Monster
 			for (int i = 0; i < monsters.length; i++) {
-			if (monsters[i] != null && !monsters[i].isDead) {
+			if (monsters[i] != null && (!monsters[i].isDead
+			        || (monsters[i] instanceof Entitas.monster && ((Entitas.monster) monsters[i]).isDeathAnimPlaying()))) {
 			drawList.add(new int[]{monsters[i].y + gp.tileSize, 3, i});
 			}
 			}

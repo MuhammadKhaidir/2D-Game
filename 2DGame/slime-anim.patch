@@ -1,0 +1,381 @@
+diff --git a/2DGame/src/Entitas/monster.java b/2DGame/src/Entitas/monster.java
+index 2cc907d..c2bbd45 100644
+--- a/2DGame/src/Entitas/monster.java
++++ b/2DGame/src/Entitas/monster.java
+@@ -49,8 +49,18 @@ public class monster extends Entity {
+     private int attackCooldown = 0;
+     private final int ATTACK_COOLDOWN_MAX = 180;
+ 
+-    private int attackFreeze = 0;
+-    private final int ATTACK_FREEZE_MAX = 15;
++    // ===== ANIMASI (1 tick = 1/40 detik) =====
++    private final int WALK_FRAME_TICKS   = 6;
++    private final int ATTACK_FRAME_TICKS = 4;
++    private final int ATTACK_HIT_FRAME   = 7;  // frame ke-8: di sini damage kena
++    private final int HIT_FRAME_TICKS    = 3;
++    private final int DEATH_FRAME_TICKS  = 5;
++
++    private int walkFrame = 0,   walkTick = 0;
++    private int attackFrame = 0, attackTick = 0;
++    private int hitFrame = 0,    hitTick = 0;
++    private int deathFrame = 0,  deathTick = 0;
++    private boolean deathDone = false;
+ 
+     Random rand = new Random();
+ 
+@@ -71,17 +81,6 @@ public class monster extends Entity {
+ 
+         sprite = new monsterSprite(gp);
+ 
+-        mfront1 = sprite.mfront1;
+-        mfront2 = sprite.mfront2;
+-        mback1  = sprite.mback1;
+-        mback2  = sprite.mback2;
+-        mleft1  = sprite.mleft1;
+-        mleft2  = sprite.mleft2;
+-        mright1 = sprite.mright1;
+-        mright2 = sprite.mright2;
+-
+-        mstand = sprite.mstand;
+-
+         direction = "down";
+         getExpValue = 20;
+     }
+@@ -253,21 +252,76 @@ public class monster extends Entity {
+     // ATTACK
+     // =====================
+ 
+-    public void attack() {
++    private void startAttack() {
++        state = MonsterState.ATTACK;
++        attackFrame = 0;
++        attackTick = 0;
++        attackCooldown = ATTACK_COOLDOWN_MAX;
++    }
++
++    private void updateAttack() {
++        attackTick++;
++        if (attackTick < ATTACK_FRAME_TICKS) return;
++
++        attackTick = 0;
++        attackFrame++;
+ 
+-        if (attackCooldown > 0) return;
++        if (attackFrame == ATTACK_HIT_FRAME) dealAttackDamage();
+ 
++        if (attackFrame >= monsterSprite.ATTACK_FRAMES) {
++            attackFrame = 0;
++            state = MonsterState.CHASE;
++        }
++    }
++
++    // damage baru kena di frame ATTACK_HIT_FRAME, itu pun kalau target belum kabur
++    private void dealAttackDamage() {
+         Entity target = findNearestThreat();
++        if (distanceTo(target) > attackRange + 30) return;
++
+         if (target instanceof player) {
+             ((player) target).takeDamage(attackDamage);
+         } else if (target instanceof GolemMinion) {
+             ((GolemMinion) target).takeDamage(attackDamage);
+         }
++    }
+ 
+-        attackCooldown = ATTACK_COOLDOWN_MAX;
+-        attackFreeze = ATTACK_FREEZE_MAX;
++    private void animateWalk() {
++        walkTick++;
++        if (walkTick >= WALK_FRAME_TICKS) {
++            walkTick = 0;
++            walkFrame = (walkFrame + 1) % monsterSprite.WALK_FRAMES;
++        }
++    }
++
++    private void updateHit() {
++        hitTick++;
++        if (hitTick >= HIT_FRAME_TICKS) {
++            hitTick = 0;
++            hitFrame++;
++            if (hitFrame >= monsterSprite.HIT_FRAMES) {
++                hitFrame = 0;
++                state = MonsterState.CHASE;
++            }
++        }
++    }
++
++    private void updateDeath() {
++        if (deathDone) return;
++        deathTick++;
++        if (deathTick >= DEATH_FRAME_TICKS) {
++            deathTick = 0;
++            deathFrame++;
++            if (deathFrame >= monsterSprite.DEATH_FRAMES) {
++                deathFrame = monsterSprite.DEATH_FRAMES - 1;
++                deathDone = true;
++            }
++        }
++    }
+ 
+-        imgNum = 3;
++    /** true selama animasi mati masih jalan (dipakai GamePanel & TileM biar slime tetap di-update dan digambar). */
++    public boolean isDeathAnimPlaying() {
++        return state == MonsterState.DEAD && !deathDone;
+     }
+ 
+     /**
+@@ -300,17 +354,40 @@ public class monster extends Entity {
+         life -= dmg;
+         regenTimer = 0;
+ 
+-        state = MonsterState.HIT;
+-
+         if(life <= 0){
+             life = 0;
+             die();
++            return;
++        }
++
++        // lagi nyerang -> biarin animasi serangnya kelar dulu
++        if(state != MonsterState.ATTACK){
++            state = MonsterState.HIT;
++            hitFrame = 0;
++            hitTick = 0;
+         }
+     }
+ 
++    // Pukulan player & skill masuk lewat Entity.takeDamage(int) / (int, player),
++    // jadi dua ini harus diarahkan ke takeDamage di atas supaya anim hit/mati jalan.
++    @Override
++    public void takeDamage(int dmg) {
++        takeDamage(dmg, (Entity) null);
++    }
++
++    @Override
++    public void takeDamage(int dmg, player attacker) {
++        takeDamage(dmg, (Entity) attacker);
++    }
++
+     public void die(){
+ 
++        if(state == MonsterState.DEAD) return;
++
+         state = MonsterState.DEAD;
++        deathFrame = 0;
++        deathTick = 0;
++        deathDone = false;
+         isDead = true;
+         drop();
+         
+@@ -328,15 +405,13 @@ public class monster extends Entity {
+     @Override
+     public void update() {
+ 
+-        if(state == MonsterState.DEAD) return;
+-
+-        if (attackCooldown > 0) attackCooldown--;
+-
+-        if (attackFreeze > 0) {
+-            attackFreeze--;
++        if(state == MonsterState.DEAD){
++            updateDeath();
+             return;
+         }
+ 
++        if (attackCooldown > 0) attackCooldown--;
++
+         Entity threat = findNearestThreat();
+         double dist = distanceTo(threat);
+ 
+@@ -368,6 +443,7 @@ public class monster extends Entity {
+             case WANDER:
+ 
+                 wander();
++                animateWalk();
+ 
+                 if(dist < aggroRadius){
+                     state = MonsterState.CHASE;
+@@ -378,9 +454,10 @@ public class monster extends Entity {
+             case CHASE:
+ 
+                 chaseTarget(threat);
++                animateWalk();
+ 
+-                if(dist < attackRange){
+-                    state = MonsterState.ATTACK;
++                if(state == MonsterState.CHASE && dist < attackRange && attackCooldown == 0){
++                    startAttack();
+                 }
+ 
+                 if(dist > aggroRadius){
+@@ -391,14 +468,13 @@ public class monster extends Entity {
+ 
+             case ATTACK:
+ 
+-                attack();
+-                state = MonsterState.CHASE;
++                updateAttack();
+ 
+                 break;
+ 
+             case HIT:
+ 
+-                state = MonsterState.CHASE;
++                updateHit();
+ 
+                 break;
+ 
+@@ -450,24 +526,24 @@ public class monster extends Entity {
+     @Override
+     public void draw(Graphics2D g2) {
+ 
+-        BufferedImage image = null;
++        BufferedImage image;
+ 
+-        switch(direction){
++        switch(state){
+ 
+-            case "up":
+-                image = (imgNum == 1) ? mback1 : mback2;
++            case DEAD:
++                image = sprite.getDeath(direction, deathFrame);
+                 break;
+ 
+-            case "down":
+-                image = (imgNum == 1) ? mfront1 : mfront2;
++            case HIT:
++                image = sprite.getHit(direction, hitFrame);
+                 break;
+ 
+-            case "left":
+-                image = (imgNum == 1) ? mleft1 : mleft2;
++            case ATTACK:
++                image = sprite.getAttack(direction, attackFrame);
+                 break;
+ 
+-            case "right":
+-                image = (imgNum == 1) ? mright1 : mright2;
++            default:
++                image = sprite.getWalk(direction, walkFrame);
+                 break;
+         }
+ 
+@@ -480,6 +556,6 @@ public class monster extends Entity {
+         // gambar slime
+         g2.drawImage(image, screenX, screenY + spriteOffsetY, spriteWidth, spriteHeight, null);
+ 
+-        drawHPBar(g2, screenX, screenY);
++        if(state != MonsterState.DEAD) drawHPBar(g2, screenX, screenY);
+     }
+ }
+\ No newline at end of file
+diff --git a/2DGame/src/Entitas/monsterSprite.java b/2DGame/src/Entitas/monsterSprite.java
+index 1c63b4d..233874f 100644
+--- a/2DGame/src/Entitas/monsterSprite.java
++++ b/2DGame/src/Entitas/monsterSprite.java
+@@ -5,39 +5,48 @@ import Main.GamePanel;
+ 
+ public class monsterSprite {
+ 
+-    public BufferedImage
+-        mfront1, mfront2,
+-        mback1, mback2,
+-        mleft1, mleft2,
+-        mright1, mright2,
+-        mstand, mattack1, mattack2, mattack3, mattack4, mattack5, mattack6, mattack7;
++    // jumlah frame tiap animasi (per arah)
++    public static final int ATTACK_FRAMES = 12;
++    public static final int WALK_FRAMES   = 6;
++    public static final int HIT_FRAMES    = 7;
++    public static final int DEATH_FRAMES  = 10;
+ 
+-    // 🔥 ATTACK 7 FRAME
+-    public BufferedImage[] mattack = new BufferedImage[7];
++    private static final String[] DIRS = { "up", "down", "left", "right" };
+ 
+-    public monsterSprite(GamePanel gp) {
+-
+-        mfront1 = gp.setup("Sticklooter_carrot_walk1");
+-        mfront2 = gp.setup("Sticklooter_carrot_walk2");
++    // [arah][frame] - static: dimuat sekali, dipakai semua slime
++    private static BufferedImage[][] attackImgs, walkImgs, hitImgs, deathImgs;
+ 
+-        mback1  = gp.setup("Sticklooter_carrot_walk2");
+-        mback2  = gp.setup("Sticklooter_carrot_walk1");
+-
+-        mleft1  = gp.setup("Sticklooter_carrot_walk1");
+-        mleft2  = gp.setup("Sticklooter_carrot_walk2");
++    public monsterSprite(GamePanel gp) {
++        if (attackImgs != null) return;
+ 
+-        mright1 = gp.setup("Sticklooter_carrot_walk1");
+-        mright2 = gp.setup("Sticklooter_carrot_walk2");
++        attackImgs = load(gp, "attack", ATTACK_FRAMES);
++        walkImgs   = load(gp, "walk",   WALK_FRAMES);
++        hitImgs    = load(gp, "hit",    HIT_FRAMES);
++        deathImgs  = load(gp, "death",  DEATH_FRAMES);
++    }
+ 
+-        mstand  = gp.setup("Sticklooter_carrot_idle1");
++    // nama file: slime_<aksi>_<arah>_<nomor>.png, contoh slime_attack_up_1.png
++    private static BufferedImage[][] load(GamePanel gp, String action, int frames) {
++        BufferedImage[][] set = new BufferedImage[DIRS.length][frames];
++        for (int d = 0; d < DIRS.length; d++) {
++            for (int f = 0; f < frames; f++) {
++                set[d][f] = gp.setup("slime_" + action + "_" + DIRS[d] + "_" + (f + 1));
++            }
++        }
++        return set;
++    }
+ 
+-        // ===== ATTACK ANIMATION =====
+-        mattack[0] = gp.setup("slimeatt1");
+-        mattack[1] = gp.setup("slimeatt2");
+-        mattack[2] = gp.setup("slimeatt3");
+-        mattack[3] = gp.setup("slimeatt4");
+-        mattack[4] = gp.setup("slimeatt5");
+-        mattack[5] = gp.setup("slimeatt6");
+-        mattack[6] = gp.setup("slimeatt7");
++    private static int dirIndex(String dir) {
++        switch (dir) {
++            case "up":    return 0;
++            case "left":  return 2;
++            case "right": return 3;
++            default:      return 1; // down
++        }
+     }
+-}
+\ No newline at end of file
++
++    public BufferedImage getAttack(String dir, int frame) { return attackImgs[dirIndex(dir)][frame]; }
++    public BufferedImage getWalk(String dir, int frame)   { return walkImgs[dirIndex(dir)][frame]; }
++    public BufferedImage getHit(String dir, int frame)    { return hitImgs[dirIndex(dir)][frame]; }
++    public BufferedImage getDeath(String dir, int frame)  { return deathImgs[dirIndex(dir)][frame]; }
++}
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index 450bcbd..b9e0e23 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -911,7 +911,8 @@ public class GamePanel extends JPanel implements Runnable{
+ 		    	if (monsters[i] != null) {
+ 		    	    if (!monsters[i].isDead
+ 		    	            || monsters[i] instanceof Entitas.Golem
+-		    	            || monsters[i] instanceof Entitas.Golemite) {
++		    	            || monsters[i] instanceof Entitas.Golemite
++		    	            || (monsters[i] instanceof Entitas.monster && ((Entitas.monster) monsters[i]).isDeathAnimPlaying())) {
+ 		    	        monsters[i].update();
+ 		    	    }
+ 		    	}
+diff --git a/2DGame/src/bahan/TileM.java b/2DGame/src/bahan/TileM.java
+index bebc1c2..2fd3fa9 100644
+--- a/2DGame/src/bahan/TileM.java
++++ b/2DGame/src/bahan/TileM.java
+@@ -654,7 +654,8 @@ public TileM(GamePanel gp) {
+ 			
+ 			// Monster
+ 			for (int i = 0; i < monsters.length; i++) {
+-			if (monsters[i] != null && !monsters[i].isDead) {
++			if (monsters[i] != null && (!monsters[i].isDead
++			        || (monsters[i] instanceof Entitas.monster && ((Entitas.monster) monsters[i]).isDeathAnimPlaying()))) {
+ 			drawList.add(new int[]{monsters[i].y + gp.tileSize, 3, i});
+ 			}
+ 			}

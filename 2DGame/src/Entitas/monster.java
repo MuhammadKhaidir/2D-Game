@@ -49,8 +49,18 @@ public class monster extends Entity {
     private int attackCooldown = 0;
     private final int ATTACK_COOLDOWN_MAX = 180;
 
-    private int attackFreeze = 0;
-    private final int ATTACK_FREEZE_MAX = 15;
+    // ===== ANIMASI (1 tick = 1/40 detik) =====
+    private final int WALK_FRAME_TICKS   = 6;
+    private final int ATTACK_FRAME_TICKS = 4;
+    private final int ATTACK_HIT_FRAME   = 7;  // frame ke-8: di sini damage kena
+    private final int HIT_FRAME_TICKS    = 3;
+    private final int DEATH_FRAME_TICKS  = 5;
+
+    private int walkFrame = 0,   walkTick = 0;
+    private int attackFrame = 0, attackTick = 0;
+    private int hitFrame = 0,    hitTick = 0;
+    private int deathFrame = 0,  deathTick = 0;
+    private boolean deathDone = false;
 
     Random rand = new Random();
 
@@ -70,17 +80,6 @@ public class monster extends Entity {
         attackRange = 60;
 
         sprite = new monsterSprite(gp);
-
-        mfront1 = sprite.mfront1;
-        mfront2 = sprite.mfront2;
-        mback1  = sprite.mback1;
-        mback2  = sprite.mback2;
-        mleft1  = sprite.mleft1;
-        mleft2  = sprite.mleft2;
-        mright1 = sprite.mright1;
-        mright2 = sprite.mright2;
-
-        mstand = sprite.mstand;
 
         direction = "down";
         getExpValue = 20;
@@ -253,21 +252,76 @@ public class monster extends Entity {
     // ATTACK
     // =====================
 
-    public void attack() {
+    private void startAttack() {
+        state = MonsterState.ATTACK;
+        attackFrame = 0;
+        attackTick = 0;
+        attackCooldown = ATTACK_COOLDOWN_MAX;
+    }
 
-        if (attackCooldown > 0) return;
+    private void updateAttack() {
+        attackTick++;
+        if (attackTick < ATTACK_FRAME_TICKS) return;
 
+        attackTick = 0;
+        attackFrame++;
+
+        if (attackFrame == ATTACK_HIT_FRAME) dealAttackDamage();
+
+        if (attackFrame >= monsterSprite.ATTACK_FRAMES) {
+            attackFrame = 0;
+            state = MonsterState.CHASE;
+        }
+    }
+
+    // damage baru kena di frame ATTACK_HIT_FRAME, itu pun kalau target belum kabur
+    private void dealAttackDamage() {
         Entity target = findNearestThreat();
+        if (distanceTo(target) > attackRange + 30) return;
+
         if (target instanceof player) {
             ((player) target).takeDamage(attackDamage);
         } else if (target instanceof GolemMinion) {
             ((GolemMinion) target).takeDamage(attackDamage);
         }
+    }
 
-        attackCooldown = ATTACK_COOLDOWN_MAX;
-        attackFreeze = ATTACK_FREEZE_MAX;
+    private void animateWalk() {
+        walkTick++;
+        if (walkTick >= WALK_FRAME_TICKS) {
+            walkTick = 0;
+            walkFrame = (walkFrame + 1) % monsterSprite.WALK_FRAMES;
+        }
+    }
 
-        imgNum = 3;
+    private void updateHit() {
+        hitTick++;
+        if (hitTick >= HIT_FRAME_TICKS) {
+            hitTick = 0;
+            hitFrame++;
+            if (hitFrame >= monsterSprite.HIT_FRAMES) {
+                hitFrame = 0;
+                state = MonsterState.CHASE;
+            }
+        }
+    }
+
+    private void updateDeath() {
+        if (deathDone) return;
+        deathTick++;
+        if (deathTick >= DEATH_FRAME_TICKS) {
+            deathTick = 0;
+            deathFrame++;
+            if (deathFrame >= monsterSprite.DEATH_FRAMES) {
+                deathFrame = monsterSprite.DEATH_FRAMES - 1;
+                deathDone = true;
+            }
+        }
+    }
+
+    /** true selama animasi mati masih jalan (dipakai GamePanel & TileM biar slime tetap di-update dan digambar). */
+    public boolean isDeathAnimPlaying() {
+        return state == MonsterState.DEAD && !deathDone;
     }
 
     /**
@@ -300,17 +354,40 @@ public class monster extends Entity {
         life -= dmg;
         regenTimer = 0;
 
-        state = MonsterState.HIT;
-
         if(life <= 0){
             life = 0;
             die();
+            return;
         }
+
+        // lagi nyerang -> biarin animasi serangnya kelar dulu
+        if(state != MonsterState.ATTACK){
+            state = MonsterState.HIT;
+            hitFrame = 0;
+            hitTick = 0;
+        }
+    }
+
+    // Pukulan player & skill masuk lewat Entity.takeDamage(int) / (int, player),
+    // jadi dua ini harus diarahkan ke takeDamage di atas supaya anim hit/mati jalan.
+    @Override
+    public void takeDamage(int dmg) {
+        takeDamage(dmg, (Entity) null);
+    }
+
+    @Override
+    public void takeDamage(int dmg, player attacker) {
+        takeDamage(dmg, (Entity) attacker);
     }
 
     public void die(){
 
+        if(state == MonsterState.DEAD) return;
+
         state = MonsterState.DEAD;
+        deathFrame = 0;
+        deathTick = 0;
+        deathDone = false;
         isDead = true;
         drop();
         
@@ -328,14 +405,12 @@ public class monster extends Entity {
     @Override
     public void update() {
 
-        if(state == MonsterState.DEAD) return;
-
-        if (attackCooldown > 0) attackCooldown--;
-
-        if (attackFreeze > 0) {
-            attackFreeze--;
+        if(state == MonsterState.DEAD){
+            updateDeath();
             return;
         }
+
+        if (attackCooldown > 0) attackCooldown--;
 
         Entity threat = findNearestThreat();
         double dist = distanceTo(threat);
@@ -368,6 +443,7 @@ public class monster extends Entity {
             case WANDER:
 
                 wander();
+                animateWalk();
 
                 if(dist < aggroRadius){
                     state = MonsterState.CHASE;
@@ -378,9 +454,10 @@ public class monster extends Entity {
             case CHASE:
 
                 chaseTarget(threat);
+                animateWalk();
 
-                if(dist < attackRange){
-                    state = MonsterState.ATTACK;
+                if(state == MonsterState.CHASE && dist < attackRange && attackCooldown == 0){
+                    startAttack();
                 }
 
                 if(dist > aggroRadius){
@@ -391,14 +468,13 @@ public class monster extends Entity {
 
             case ATTACK:
 
-                attack();
-                state = MonsterState.CHASE;
+                updateAttack();
 
                 break;
 
             case HIT:
 
-                state = MonsterState.CHASE;
+                updateHit();
 
                 break;
 
@@ -450,24 +526,24 @@ public class monster extends Entity {
     @Override
     public void draw(Graphics2D g2) {
 
-        BufferedImage image = null;
+        BufferedImage image;
 
-        switch(direction){
+        switch(state){
 
-            case "up":
-                image = (imgNum == 1) ? mback1 : mback2;
+            case DEAD:
+                image = sprite.getDeath(direction, deathFrame);
                 break;
 
-            case "down":
-                image = (imgNum == 1) ? mfront1 : mfront2;
+            case HIT:
+                image = sprite.getHit(direction, hitFrame);
                 break;
 
-            case "left":
-                image = (imgNum == 1) ? mleft1 : mleft2;
+            case ATTACK:
+                image = sprite.getAttack(direction, attackFrame);
                 break;
 
-            case "right":
-                image = (imgNum == 1) ? mright1 : mright2;
+            default:
+                image = sprite.getWalk(direction, walkFrame);
                 break;
         }
 
@@ -480,6 +556,6 @@ public class monster extends Entity {
         // gambar slime
         g2.drawImage(image, screenX, screenY + spriteOffsetY, spriteWidth, spriteHeight, null);
 
-        drawHPBar(g2, screenX, screenY);
+        if(state != MonsterState.DEAD) drawHPBar(g2, screenX, screenY);
     }
 }

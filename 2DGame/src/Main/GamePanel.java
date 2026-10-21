@@ -911,7 +911,8 @@ public class GamePanel extends JPanel implements Runnable{
 		    	if (monsters[i] != null) {
 		    	    if (!monsters[i].isDead
 		    	            || monsters[i] instanceof Entitas.Golem
-		    	            || monsters[i] instanceof Entitas.Golemite) {
+		    	            || monsters[i] instanceof Entitas.Golemite
+		    	            || (monsters[i] instanceof Entitas.monster && ((Entitas.monster) monsters[i]).isDeathAnimPlaying())) {
 		    	        monsters[i].update();
 		    	    }
 		    	}
