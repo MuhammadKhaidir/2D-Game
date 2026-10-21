@@ -1,0 +1,30 @@
+diff --git a/2DGame/src/World/StorageChest.java b/2DGame/src/World/StorageChest.java
+index 579d317..89f2f3d 100644
+--- a/2DGame/src/World/StorageChest.java
++++ b/2DGame/src/World/StorageChest.java
+@@ -40,6 +40,9 @@ public class StorageChest {
+     public static final String GIF_OPEN   = "/Aset/OpenChest.gif";
+     public static final String GIF_CLOSE  = "/Aset/CloseChest.gif";
+ 
++    /** Suara buka & tutup peti (file di src/SFX). */
++    public static final String SFX_CHEST  = "ChestInteraction (1).wav";
++
+     /** Jumlah kotak di peti. */
+     public static final int CAPACITY = 30;
+ 
+@@ -132,6 +135,7 @@ public class StorageChest {
+         if (state != State.CLOSED && state != State.CLOSING) return false;
+ 
+         state = State.OPENING;
++        gp.playSE(SFX_CHEST); // suara buka
+         frameIndex = 0;
+         frameTick = 0;
+         uiPending = true;
+@@ -145,6 +149,7 @@ public class StorageChest {
+         if (state == State.CLOSED || state == State.CLOSING) return;
+ 
+         state = State.CLOSING;
++        gp.playSE(SFX_CHEST); // suara tutup
+         frameIndex = 0;
+         frameTick = 0;
+         if (closeAnim == null) state = State.CLOSED; // gak ada GIF -> langsung tertutup

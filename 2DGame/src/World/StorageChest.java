@@ -40,6 +40,11 @@ public class StorageChest {
     public static final String GIF_OPEN   = "/Aset/OpenChest.gif";
     public static final String GIF_CLOSE  = "/Aset/CloseChest.gif";
 
+    /** Suara buka & tutup peti (file di src/SFX). */
+    public static final String SFX_CHEST  = "ChestInteraction (1).wav";
+    /** Volume suara peti dalam dB (maks 6.0 = paling keras; turunin kalau kekencengan). */
+    public static final float  SFX_CHEST_VOL = 6.0f;
+
     /** Jumlah kotak di peti. */
     public static final int CAPACITY = 30;
 
@@ -132,6 +137,7 @@ public class StorageChest {
         if (state != State.CLOSED && state != State.CLOSING) return false;
 
         state = State.OPENING;
+        gp.playSE(SFX_CHEST, SFX_CHEST_VOL); // suara buka
         frameIndex = 0;
         frameTick = 0;
         uiPending = true;
@@ -145,6 +151,7 @@ public class StorageChest {
         if (state == State.CLOSED || state == State.CLOSING) return;
 
         state = State.CLOSING;
+        gp.playSE(SFX_CHEST, SFX_CHEST_VOL); // suara tutup
         frameIndex = 0;
         frameTick = 0;
         if (closeAnim == null) state = State.CLOSED; // gak ada GIF -> langsung tertutup
@@ -173,14 +180,14 @@ public class StorageChest {
     /** Maju satu tick. Return true kalau animasi sudah lewat frame terakhir. */
     private boolean advance(GifFrames anim) {
         if (anim == null) return true;
+        // Frame terakhir GIF punya delay 1 detik (pose "ditahan"). Gak usah ditunggu:
+        // begitu frame terakhir muncul, animasi dianggap selesai.
+        if (frameIndex >= anim.size() - 1) return true;
         frameTick++;
         if (frameTick >= anim.delayTicks[frameIndex]) {
             frameTick = 0;
             frameIndex++;
-            if (frameIndex >= anim.size()) {
-                frameIndex = anim.size() - 1; // tahan di frame terakhir
-                return true;
-            }
+            if (frameIndex >= anim.size() - 1) return true; // sampai frame terakhir -> langsung selesai
         }
         return false;
     }
