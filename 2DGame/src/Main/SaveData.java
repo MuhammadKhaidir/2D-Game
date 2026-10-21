@@ -43,4 +43,9 @@ public class SaveData implements Serializable {
     // Hotbar: nama item per slot (string kosong "" = slot kosong).
     // Bisa null kalau save-nya dari versi sebelum ada hotbar.
     public List<String> hotbarNames = new ArrayList<>();
+
+    // Isi peti penyimpanan: nama + jumlah per kotak, urut sesuai nomor kotak.
+    // Bisa null kalau save-nya dari versi sebelum ada peti.
+    public List<String> chestNames   = new ArrayList<>();
+    public List<Integer> chestAmounts = new ArrayList<>();
 }

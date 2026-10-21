@@ -671,6 +671,11 @@ public TileM(GamePanel gp) {
 			}
 			
 			
+			// Peti penyimpanan
+			if (gp.chest != null) {
+			    drawList.add(new int[]{gp.chest.getSortY(), 6, 0});
+			}
+			
 			// Player
 			drawList.add(new int[]{p.y + gp.tileSize, 4, 0});
 			
@@ -731,6 +736,10 @@ public TileM(GamePanel gp) {
 			}
 			case 5: { // minion (golem/skeleton pion)
 			    minionList.get(index).draw(g2);
+			    break;
+			}
+			case 6: { // peti penyimpanan
+			    gp.chest.draw(g2, fCamX, fCamY);
 			    break;
 			}
 			}

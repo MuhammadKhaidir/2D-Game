@@ -82,6 +82,8 @@ public class GamePanel extends JPanel implements Runnable{
 
 	// toko potion + ikon buff aktif
 	public UI.PotionShopUI potionShop;
+	public World.StorageChest chest;   // peti penyimpanan di (800, 1110)
+	public UI.ChestUI chestUI;
 	public UI.BuffBar buffBar;
 	
 	public HouseManager houseManager;
@@ -218,9 +220,14 @@ public class GamePanel extends JPanel implements Runnable{
 		backpack = new BackpackUI(ItemManager.inventory);
 		hotbar = new UI.Hotbar(this);
 		potionShop = new UI.PotionShopUI(this);
+		chest = new World.StorageChest(this);
+		chestUI = new UI.ChestUI(this, chest);
 		buffBar = new UI.BuffBar(this);
 
 		this.addMouseWheelListener(backpack);
+		this.addMouseWheelListener(e -> {
+		    if (chestUI != null && chestUI.visible) chestUI.handleMouseWheel(e.getWheelRotation());
+		});
 
 		// ZOOM pakai scroll mouse (scroll naik = zoom in, scroll turun = zoom out).
 		// Cuma jalan kalau gak ada UI yang kebuka, jadi gak bentrok sama scroll backpack/shop.
@@ -273,6 +280,12 @@ public class GamePanel extends JPanel implements Runnable{
                     return;
                 }
  
+                // ── PETI PENYIMPANAN ──
+                if (chestUI != null && chestUI.visible) {
+                    chestUI.handleMouseClick(e);
+                    return;
+                }
+
                 // ── POTION MERCHANT SHOP ──
                 if (potionShop != null && potionShop.visible) {
                     potionShop.handleMouseClick(e);
@@ -420,6 +433,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    if (mobIndexUI != null && mobIndexUI.visible) return false;
 	    if (totemUI != null && totemUI.visible) return false;
 	    if (potionShop != null && potionShop.visible) return false;
+	    if (chestUI != null && chestUI.visible) return false;
 	    if (deathScreenUI != null && deathScreenUI.visible) return false;
 	    // di dalam domain: jangan zoom kalau lagi buka shop / dialog merchant / konfirmasi boss
 	    if (gameState == GameState.DOMAIN && domainManager != null) {
@@ -860,6 +874,16 @@ public class GamePanel extends JPanel implements Runnable{
 		    return;
 		}
 
+		// PETI KEBUKA → dunia berhenti, cuma ESC / klik yang diproses
+		if (chestUI != null && chestUI.visible) {
+		    chest.update();
+		    chestUI.update();
+		    KeyH.yPressed = false;
+		    KeyH.tabPressed = false;
+		    KeyH.mPressed = false;
+		    return;
+		}
+
 		world.update();
 		// Di bagian update(), setelah world.update()
 		int hour = world.hour;
@@ -1100,6 +1124,19 @@ public class GamePanel extends JPanel implements Runnable{
 	        if (npc[i] != null) {
 	            npc[i].update();
 	        }
+	    }
+
+	    //
+	    // 2b. PETI PENYIMPANAN: animasi + interaksi [E]
+	    //
+	    if (gameState == GameState.OUTSIDE && chest != null) {
+		    chest.update();
+		    if (chest.consumeOpenedEvent()) chestUI.open(); // animasi buka selesai -> tampilkan panel
+		    if (KeyH.interactPressed && !player.isDead
+		            && !backpack.visible && !statUI.visible && !mobIndexUI.visible
+		            && chest.tryOpen(player)) {
+		        KeyH.interactPressed = false;
+		    }
 	    }
 
 	    //
@@ -1389,6 +1426,7 @@ public void paintComponent(Graphics g) {
         g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 650, 70);
 
         drawZoomHint(g2);
+        if (chestUI != null) chestUI.draw(g2);       // panel peti
         if (potionShop != null) potionShop.draw(g2); // paling atas, nutup UI & drop di belakangnya
     }
     if (hotbar != null) hotbar.drawOverlay(g2); // tooltip + ikon yang lagi diseret, di atas semua UI
@@ -1427,6 +1465,12 @@ public void paintComponent(Graphics g) {
 
 	    // hover hotbar (buat highlight + tooltip nama item)
 	    if (hotbar != null) hotbar.handleMouseMoved(e);
+
+	    // ── PETI PENYIMPANAN HOVER ──
+	    if (chestUI != null && chestUI.visible) {
+	        chestUI.handleMouseMove(e);
+	        return;
+	    }
 
 	    // ── POTION MERCHANT SHOP HOVER ──
 	    if (potionShop != null && potionShop.visible) {

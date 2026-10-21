@@ -1,0 +1,1109 @@
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index be137b4..450bcbd 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -82,6 +82,8 @@ public class GamePanel extends JPanel implements Runnable{
+ 
+ 	// toko potion + ikon buff aktif
+ 	public UI.PotionShopUI potionShop;
++	public World.StorageChest chest;   // peti penyimpanan di (800, 1110)
++	public UI.ChestUI chestUI;
+ 	public UI.BuffBar buffBar;
+ 	
+ 	public HouseManager houseManager;
+@@ -218,9 +220,14 @@ public class GamePanel extends JPanel implements Runnable{
+ 		backpack = new BackpackUI(ItemManager.inventory);
+ 		hotbar = new UI.Hotbar(this);
+ 		potionShop = new UI.PotionShopUI(this);
++		chest = new World.StorageChest(this);
++		chestUI = new UI.ChestUI(this, chest);
+ 		buffBar = new UI.BuffBar(this);
+ 
+ 		this.addMouseWheelListener(backpack);
++		this.addMouseWheelListener(e -> {
++		    if (chestUI != null && chestUI.visible) chestUI.handleMouseWheel(e.getWheelRotation());
++		});
+ 
+ 		// ZOOM pakai scroll mouse (scroll naik = zoom in, scroll turun = zoom out).
+ 		// Cuma jalan kalau gak ada UI yang kebuka, jadi gak bentrok sama scroll backpack/shop.
+@@ -273,6 +280,12 @@ public class GamePanel extends JPanel implements Runnable{
+                     return;
+                 }
+  
++                // ── PETI PENYIMPANAN ──
++                if (chestUI != null && chestUI.visible) {
++                    chestUI.handleMouseClick(e);
++                    return;
++                }
++
+                 // ── POTION MERCHANT SHOP ──
+                 if (potionShop != null && potionShop.visible) {
+                     potionShop.handleMouseClick(e);
+@@ -420,6 +433,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 	    if (mobIndexUI != null && mobIndexUI.visible) return false;
+ 	    if (totemUI != null && totemUI.visible) return false;
+ 	    if (potionShop != null && potionShop.visible) return false;
++	    if (chestUI != null && chestUI.visible) return false;
+ 	    if (deathScreenUI != null && deathScreenUI.visible) return false;
+ 	    // di dalam domain: jangan zoom kalau lagi buka shop / dialog merchant / konfirmasi boss
+ 	    if (gameState == GameState.DOMAIN && domainManager != null) {
+@@ -860,6 +874,16 @@ public class GamePanel extends JPanel implements Runnable{
+ 		    return;
+ 		}
+ 
++		// PETI KEBUKA → dunia berhenti, cuma ESC / klik yang diproses
++		if (chestUI != null && chestUI.visible) {
++		    chest.update();
++		    chestUI.update();
++		    KeyH.yPressed = false;
++		    KeyH.tabPressed = false;
++		    KeyH.mPressed = false;
++		    return;
++		}
++
+ 		world.update();
+ 		// Di bagian update(), setelah world.update()
+ 		int hour = world.hour;
+@@ -1102,6 +1126,19 @@ public class GamePanel extends JPanel implements Runnable{
+ 	        }
+ 	    }
+ 
++	    //
++	    // 2b. PETI PENYIMPANAN: animasi + interaksi [E]
++	    //
++	    if (gameState == GameState.OUTSIDE && chest != null) {
++		    chest.update();
++		    if (chest.consumeOpenedEvent()) chestUI.open(); // animasi buka selesai -> tampilkan panel
++		    if (KeyH.interactPressed && !player.isDead
++		            && !backpack.visible && !statUI.visible && !mobIndexUI.visible
++		            && chest.tryOpen(player)) {
++		        KeyH.interactPressed = false;
++		    }
++	    }
++
+ 	    //
+ 	    // 3. INTERAKSI NPC
+ 	    //
+@@ -1389,6 +1426,7 @@ public void paintComponent(Graphics g) {
+         g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 650, 70);
+ 
+         drawZoomHint(g2);
++        if (chestUI != null) chestUI.draw(g2);       // panel peti
+         if (potionShop != null) potionShop.draw(g2); // paling atas, nutup UI & drop di belakangnya
+     }
+     if (hotbar != null) hotbar.drawOverlay(g2); // tooltip + ikon yang lagi diseret, di atas semua UI
+@@ -1428,6 +1466,12 @@ public void paintComponent(Graphics g) {
+ 	    // hover hotbar (buat highlight + tooltip nama item)
+ 	    if (hotbar != null) hotbar.handleMouseMoved(e);
+ 
++	    // ── PETI PENYIMPANAN HOVER ──
++	    if (chestUI != null && chestUI.visible) {
++	        chestUI.handleMouseMove(e);
++	        return;
++	    }
++
+ 	    // ── POTION MERCHANT SHOP HOVER ──
+ 	    if (potionShop != null && potionShop.visible) {
+ 	        potionShop.handleMouseMove(e);
+diff --git a/2DGame/src/Main/SaveData.java b/2DGame/src/Main/SaveData.java
+index 4fdef43..ef51661 100644
+--- a/2DGame/src/Main/SaveData.java
++++ b/2DGame/src/Main/SaveData.java
+@@ -43,4 +43,9 @@ public class SaveData implements Serializable {
+     // Hotbar: nama item per slot (string kosong "" = slot kosong).
+     // Bisa null kalau save-nya dari versi sebelum ada hotbar.
+     public List<String> hotbarNames = new ArrayList<>();
++
++    // Isi peti penyimpanan: nama + jumlah per kotak, urut sesuai nomor kotak.
++    // Bisa null kalau save-nya dari versi sebelum ada peti.
++    public List<String> chestNames   = new ArrayList<>();
++    public List<Integer> chestAmounts = new ArrayList<>();
+ }
+\ No newline at end of file
+diff --git a/2DGame/src/Main/SaveManager.java b/2DGame/src/Main/SaveManager.java
+index e745a81..f9f828f 100644
+--- a/2DGame/src/Main/SaveManager.java
++++ b/2DGame/src/Main/SaveManager.java
+@@ -57,6 +57,17 @@ public class SaveManager {
+                 data.hotbarNames.add(hb != null ? hb.name : "");
+             }
+         }
++        // Isi peti penyimpanan
++        data.chestNames = new ArrayList<>();
++        data.chestAmounts = new ArrayList<>();
++        if (gp.chest != null) {
++            for (Item.ItemStack stack : gp.chest.getContents()) {
++                if (stack != null && stack.item != null) {
++                    data.chestNames.add(stack.item.name);
++                    data.chestAmounts.add(stack.amount);
++                }
++            }
++        }
+         // Inventory
+         data.inventoryNames.clear();
+         data.inventoryAmounts.clear();
+@@ -162,6 +173,16 @@ public class SaveManager {
+                 Item.ItemManager.inventory.add(new Item.ItemStack(item, amount));
+             }
+         }
++        // Restore peti penyimpanan (save lama yang belum punya peti → chestNames null → peti dikosongin)
++        if (gp.chest != null) {
++            gp.chest.clearContents();
++            if (data.chestNames != null && data.chestAmounts != null) {
++                for (int i = 0; i < data.chestNames.size() && i < data.chestAmounts.size(); i++) {
++                    Item.Item chestItem = getItemByName(im, data.chestNames.get(i));
++                    if (chestItem != null) gp.chest.restore(chestItem, data.chestAmounts.get(i));
++                }
++            }
++        }
+         // Restore hotbar (save lama yang belum punya hotbar → hotbarNames null → hotbar dikosongin)
+         if (gp.hotbar != null) {
+             gp.hotbar.clear();
+diff --git a/2DGame/src/UI/ChestUI.java b/2DGame/src/UI/ChestUI.java
+new file mode 100644
+index 0000000..02731dc
+--- /dev/null
++++ b/2DGame/src/UI/ChestUI.java
+@@ -0,0 +1,398 @@
++package UI;
++
++import java.awt.BasicStroke;
++import java.awt.Color;
++import java.awt.Font;
++import java.awt.FontMetrics;
++import java.awt.Graphics2D;
++import java.awt.Polygon;
++import java.awt.Rectangle;
++import java.awt.Stroke;
++import java.awt.event.MouseEvent;
++import java.util.List;
++
++import Item.Item;
++import Item.ItemManager;
++import Item.ItemStack;
++import Main.GamePanel;
++import World.StorageChest;
++
++/**
++ * Panel peti penyimpanan. Kiri = isi peti, kanan = backpack.
++ *
++ * Kontrol:
++ *   klik kiri  : pindahkan SEMUA item di kotak itu ke sisi sebelahnya
++ *   klik kanan : pindahkan 1 item
++ *   scroll     : geser daftar backpack (kalau lebih dari 30 kotak)
++ *   ESC / [X]  : tutup peti
++ *
++ * Selama panel terbuka dunia game berhenti (lihat GamePanel.update), sama kayak toko potion.
++ */
++public class ChestUI {
++
++    public boolean visible = false;
++
++    // ── ukuran ──
++    private static final int COLS = 6;
++    private static final int ROWS = 5;
++    private static final int SLOT = 46;
++    private static final int GAP  = 4;
++    private static final int GRID_W = COLS * SLOT + (COLS - 1) * GAP;
++    private static final int GRID_H = ROWS * SLOT + (ROWS - 1) * GAP;
++    private static final int MARGIN = 24;
++    private static final int PANEL_W = MARGIN * 2 + GRID_W * 2 + 64;   // 64 = jarak tengah buat panah
++    private static final int PANEL_H = 396;
++    private static final int GRID_TOP = 66;                             // dari atas panel
++    private static final int PAGE_SLOTS = COLS * ROWS;
++
++    // ── warna (senada sama PotionShopUI / Hotbar) ──
++    private static final Color COL_DIM        = new Color(0, 0, 0, 130);
++    private static final Color COL_PANEL      = new Color(30, 22, 16, 245);
++    private static final Color COL_BORDER     = new Color(220, 190, 150);
++    private static final Color COL_ACCENT     = new Color(250, 180, 40);
++    private static final Color COL_SLOT       = new Color(45, 34, 25);
++    private static final Color COL_SLOT_HOVER = new Color(80, 60, 40);
++    private static final Color COL_SLOT_EDGE  = new Color(95, 75, 55);
++    private static final Color COL_TEXT       = new Color(255, 235, 200);
++    private static final Color COL_TEXT_DIM   = new Color(190, 170, 140);
++    private static final Color COL_GOOD       = new Color(130, 220, 130);
++    private static final Color COL_BAD        = new Color(235, 100, 90);
++
++    private static final Font FONT_TITLE = new Font("Monospaced", Font.BOLD, 18);
++    private static final Font FONT_HEAD  = new Font("Monospaced", Font.BOLD, 13);
++    private static final Font FONT_AMT   = new Font("Monospaced", Font.BOLD, 11);
++    private static final Font FONT_SMALL = new Font("Monospaced", Font.PLAIN, 10);
++
++    private static final int FEEDBACK_FRAMES = 100;
++
++    private final GamePanel gp;
++    private final StorageChest chest;
++
++    private int scrollRow = 0;          // baris pertama backpack yang kelihatan
++
++    // hover: sisi (0 = peti, 1 = backpack) + index absolut di list sisi itu
++    private int hoverSide = -1;
++    private int hoverIndex = -1;
++
++    private String feedback = "";
++    private boolean feedbackGood = true;
++    private int feedbackTimer = 0;
++
++    public ChestUI(GamePanel gp, StorageChest chest) {
++        this.gp = gp;
++        this.chest = chest;
++    }
++
++    // ===================================================================
++    // BUKA / TUTUP / UPDATE
++    // ===================================================================
++
++    public void open() {
++        visible = true;
++        scrollRow = 0;
++        hoverSide = -1;
++        hoverIndex = -1;
++        feedback = "";
++        feedbackTimer = 0;
++        gp.KeyH.escPressed = false;
++        gp.KeyH.interactPressed = false;
++    }
++
++    public void close() {
++        if (!visible) return;
++        visible = false;
++        hoverSide = -1;
++        hoverIndex = -1;
++        chest.close(); // animasi tutup peti
++    }
++
++    /** Dipanggil GamePanel.update() tiap frame selama panel terbuka. */
++    public void update() {
++        if (!visible) return;
++
++        if (gp.KeyH.escPressed) {
++            close();
++            gp.KeyH.escPressed = false;
++            return;
++        }
++        if (feedbackTimer > 0) feedbackTimer--;
++    }
++
++    // ===================================================================
++    // GEOMETRI
++    // ===================================================================
++
++    private int panelX() { return (gp.screenWidth - PANEL_W) / 2; }
++    private int panelY() { return (gp.screenHeight - PANEL_H) / 2 - 10; }
++
++    private int gridX(int side) {
++        return side == 0 ? panelX() + MARGIN : panelX() + PANEL_W - MARGIN - GRID_W;
++    }
++    private int gridY() { return panelY() + GRID_TOP; }
++
++    /** Kotak ke-n (0..29) di grid yang kelihatan. */
++    private Rectangle slotRect(int side, int n) {
++        int col = n % COLS;
++        int row = n / COLS;
++        return new Rectangle(gridX(side) + col * (SLOT + GAP), gridY() + row * (SLOT + GAP), SLOT, SLOT);
++    }
++
++    private List<ItemStack> backpackList() { return ItemManager.inventory; }
++
++    private int maxScrollRow() {
++        int rows = (backpackList().size() + COLS - 1) / COLS;
++        return Math.max(0, rows - ROWS);
++    }
++
++    /** Index absolut di list sisi tsb untuk titik mouse, atau -1. Hasil tulis ke out[0]=side. */
++    private int hitTest(java.awt.Point p, int[] outSide) {
++        for (int side = 0; side < 2; side++) {
++            for (int n = 0; n < PAGE_SLOTS; n++) {
++                if (slotRect(side, n).contains(p)) {
++                    outSide[0] = side;
++                    return side == 0 ? n : n + scrollRow * COLS;
++                }
++            }
++        }
++        return -1;
++    }
++
++    // ===================================================================
++    // MOUSE
++    // ===================================================================
++
++    public void handleMouseMove(MouseEvent e) {
++        if (!visible) return;
++        int[] side = {-1};
++        int idx = hitTest(e.getPoint(), side);
++        hoverSide = idx >= 0 ? side[0] : -1;
++        hoverIndex = idx;
++    }
++
++    public void handleMouseWheel(int rotation) {
++        if (!visible) return;
++        scrollRow = Math.max(0, Math.min(maxScrollRow(), scrollRow + rotation));
++    }
++
++    public void handleMouseClick(MouseEvent e) {
++        if (!visible) return;
++        boolean left = e.getButton() == MouseEvent.BUTTON1;
++        boolean right = e.getButton() == MouseEvent.BUTTON3;
++        if (!left && !right) return;
++
++        if (left && CloseButton.rect(panelX(), panelY(), PANEL_W, 12, 8).contains(e.getPoint())) {
++            close();
++            return;
++        }
++
++        int[] side = {-1};
++        int idx = hitTest(e.getPoint(), side);
++        if (idx < 0) return;
++
++        if (side[0] == 0) takeFromChest(idx, left);
++        else              storeFromBackpack(idx, left);
++    }
++
++    // ===================================================================
++    // PINDAH BARANG
++    // ===================================================================
++
++    private void takeFromChest(int index, boolean all) {
++        List<ItemStack> list = chest.getContents();
++        if (index >= list.size()) return;
++        ItemStack s = list.get(index);
++        String name = s.item.name;
++        int moved = chest.withdraw(index, all ? s.amount : 1);
++        if (moved > 0) showFeedback("Took " + moved + "x " + name, true);
++    }
++
++    private void storeFromBackpack(int index, boolean all) {
++        List<ItemStack> list = backpackList();
++        if (index >= list.size()) return;
++        ItemStack s = list.get(index);
++        if (s == null || s.item == null) return;
++        Item item = s.item;
++
++        // item yang lagi dipakai gak boleh masuk peti (nanti player masih "pegang" item yang sudah hilang)
++        if (gp.backpack != null && gp.backpack.isEquipped(item)) {
++            showFeedback("Unequip " + item.name + " first.", false);
++            return;
++        }
++        if (chest.room(item) <= 0) {
++            showFeedback("The chest is full.", false);
++            return;
++        }
++
++        int want = all ? s.amount : 1;
++        String name = item.name;
++        int moved = chest.deposit(item, want);
++        if (moved <= 0) {
++            showFeedback("The chest is full.", false);
++        } else if (moved < want) {
++            showFeedback("Stored " + moved + "x " + name + " (chest full)", true);
++        } else {
++            showFeedback("Stored " + moved + "x " + name, true);
++        }
++        scrollRow = Math.min(scrollRow, maxScrollRow()); // list backpack bisa memendek
++    }
++
++    private void showFeedback(String message, boolean good) {
++        feedback = message;
++        feedbackGood = good;
++        feedbackTimer = FEEDBACK_FRAMES;
++    }
++
++    // ===================================================================
++    // GAMBAR
++    // ===================================================================
++
++    public void draw(Graphics2D g2) {
++        if (!visible) return;
++
++        Font oldFont = g2.getFont();
++        Stroke oldStroke = g2.getStroke();
++
++        g2.setColor(COL_DIM);
++        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
++
++        drawPanel(g2);
++        drawChestGrid(g2);
++        drawBackpackGrid(g2);
++        drawHoverInfo(g2);
++        drawFooter(g2);
++
++        g2.setFont(oldFont);
++        g2.setStroke(oldStroke);
++    }
++
++    private void drawPanel(Graphics2D g2) {
++        int px = panelX();
++        int py = panelY();
++
++        g2.setColor(COL_PANEL);
++        g2.fillRoundRect(px, py, PANEL_W, PANEL_H, 20, 20);
++        g2.setColor(COL_BORDER);
++        g2.setStroke(new BasicStroke(3));
++        g2.drawRoundRect(px, py, PANEL_W, PANEL_H, 20, 20);
++        g2.setStroke(new BasicStroke(1));
++
++        g2.setFont(FONT_TITLE);
++        g2.setColor(COL_ACCENT);
++        drawCentered(g2, "Storage Chest", px + PANEL_W / 2, py + 32);
++
++        g2.setColor(new Color(COL_BORDER.getRed(), COL_BORDER.getGreen(), COL_BORDER.getBlue(), 120));
++        g2.drawLine(px + 20, py + 44, px + PANEL_W - 20, py + 44);
++
++        // judul tiap grid
++        g2.setFont(FONT_HEAD);
++        g2.setColor(COL_TEXT);
++        g2.drawString("Chest  " + chest.usedSlots() + "/" + StorageChest.CAPACITY, gridX(0), py + 60);
++        g2.drawString("Backpack", gridX(1), py + 60);
++
++        // panah dua arah di tengah
++        int cx = px + PANEL_W / 2;
++        int cy = gridY() + GRID_H / 2;
++        g2.setColor(COL_BORDER);
++        g2.fillPolygon(new Polygon(new int[]{cx - 14, cx - 14, cx - 26}, new int[]{cy - 24, cy - 8, cy - 16}, 3));
++        g2.fillPolygon(new Polygon(new int[]{cx + 14, cx + 14, cx + 26}, new int[]{cy + 8, cy + 24, cy + 16}, 3));
++        g2.drawLine(cx - 14, cy - 16, cx + 20, cy - 16);
++        g2.drawLine(cx - 20, cy + 16, cx + 14, cy + 16);
++
++        CloseButton.draw(g2, CloseButton.rect(px, py, PANEL_W, 12, 8));
++    }
++
++    private void drawChestGrid(Graphics2D g2) {
++        List<ItemStack> list = chest.getContents();
++        for (int n = 0; n < PAGE_SLOTS; n++) {
++            ItemStack s = n < list.size() ? list.get(n) : null;
++            drawSlot(g2, slotRect(0, n), s, hoverSide == 0 && hoverIndex == n, false);
++        }
++    }
++
++    private void drawBackpackGrid(Graphics2D g2) {
++        List<ItemStack> list = backpackList();
++        for (int n = 0; n < PAGE_SLOTS; n++) {
++            int abs = n + scrollRow * COLS;
++            ItemStack s = abs < list.size() ? list.get(abs) : null;
++            boolean equipped = s != null && s.item != null && gp.backpack != null && gp.backpack.isEquipped(s.item);
++            drawSlot(g2, slotRect(1, n), s, hoverSide == 1 && hoverIndex == abs, equipped);
++        }
++
++        // scrollbar tipis kalau isi backpack lebih dari satu halaman
++        int max = maxScrollRow();
++        if (max > 0) {
++            int trackX = gridX(1) + GRID_W + 5;
++            int trackY = gridY();
++            g2.setColor(COL_SLOT_EDGE);
++            g2.fillRect(trackX, trackY, 4, GRID_H);
++            int thumbH = Math.max(18, GRID_H * ROWS / (ROWS + max));
++            int thumbY = trackY + (GRID_H - thumbH) * scrollRow / max;
++            g2.setColor(COL_ACCENT);
++            g2.fillRect(trackX, thumbY, 4, thumbH);
++        }
++    }
++
++    private void drawSlot(Graphics2D g2, Rectangle r, ItemStack s, boolean hover, boolean equipped) {
++        g2.setColor(hover && s != null ? COL_SLOT_HOVER : COL_SLOT);
++        g2.fillRoundRect(r.x, r.y, r.width, r.height, 8, 8);
++        g2.setColor(COL_SLOT_EDGE);
++        g2.drawRoundRect(r.x, r.y, r.width, r.height, 8, 8);
++
++        if (s == null || s.item == null) return;
++
++        if (s.item.icon != null) {
++            g2.drawImage(s.item.icon, r.x + 5, r.y + 5, r.width - 10, r.height - 10, null);
++        }
++        if (s.amount > 1) {
++            g2.setFont(FONT_AMT);
++            String t = String.valueOf(s.amount);
++            FontMetrics fm = g2.getFontMetrics();
++            int tx = r.x + r.width - fm.stringWidth(t) - 3;
++            int ty = r.y + r.height - 4;
++            g2.setColor(Color.BLACK);
++            g2.drawString(t, tx + 1, ty + 1);
++            g2.setColor(COL_TEXT);
++            g2.drawString(t, tx, ty);
++        }
++        if (equipped) {
++            g2.setFont(FONT_AMT);
++            g2.setColor(COL_ACCENT);
++            g2.drawString("E", r.x + 4, r.y + 13);
++        }
++    }
++
++    /** Nama item di bawah kursor (di tengah bawah grid). */
++    private void drawHoverInfo(Graphics2D g2) {
++        if (hoverSide < 0 || hoverIndex < 0) return;
++        List<ItemStack> list = hoverSide == 0 ? chest.getContents() : backpackList();
++        if (hoverIndex >= list.size()) return;
++        ItemStack s = list.get(hoverIndex);
++        if (s == null || s.item == null) return;
++
++        g2.setFont(FONT_HEAD);
++        g2.setColor(COL_TEXT);
++        String label = s.item.name + "  x" + s.amount;
++        drawCentered(g2, label, panelX() + PANEL_W / 2, gridY() + GRID_H + 24);
++    }
++
++    private void drawFooter(Graphics2D g2) {
++        int px = panelX();
++        int py = panelY();
++        int cx = px + PANEL_W / 2;
++
++        if (feedbackTimer > 0 && !feedback.isEmpty()) {
++            g2.setFont(FONT_HEAD);
++            g2.setColor(feedbackGood ? COL_GOOD : COL_BAD);
++            drawCentered(g2, feedback, cx, py + PANEL_H - 40);
++        }
++
++        g2.setFont(FONT_SMALL);
++        g2.setColor(COL_TEXT_DIM);
++        drawCentered(g2, "Left-click: move all    Right-click: move 1    ESC: close", cx, py + PANEL_H - 16);
++    }
++
++    private void drawCentered(Graphics2D g2, String text, int centerX, int baselineY) {
++        FontMetrics fm = g2.getFontMetrics();
++        g2.drawString(text, centerX - fm.stringWidth(text) / 2, baselineY);
++    }
++}
+diff --git a/2DGame/src/World/GifFrames.java b/2DGame/src/World/GifFrames.java
+new file mode 100644
+index 0000000..50192c3
+--- /dev/null
++++ b/2DGame/src/World/GifFrames.java
+@@ -0,0 +1,160 @@
++package World;
++
++import java.awt.Graphics2D;
++import java.awt.image.BufferedImage;
++import java.io.InputStream;
++import java.net.URL;
++import java.util.ArrayList;
++import java.util.Iterator;
++import java.util.List;
++
++import javax.imageio.ImageIO;
++import javax.imageio.ImageReader;
++import javax.imageio.metadata.IIOMetadata;
++import javax.imageio.stream.ImageInputStream;
++
++import org.w3c.dom.Node;
++
++/**
++ * Decoder GIF yang hasilnya berupa frame-frame utuh (sudah di-composite) + lama tiap frame.
++ *
++ * Kenapa gak pakai ImageIcon kayak GIF lain di proyek ini? ImageIcon selalu looping tanpa henti,
++ * sedangkan animasi peti harus diputar SEKALI lalu berhenti di frame terakhir (peti terbuka tetap
++ * terbuka sampai ditutup). Dengan frame manual, GamePanel yang pegang kendali kapan mulai/berhenti.
++ */
++public final class GifFrames {
++
++    /** Frame utuh (ukuran = canvas GIF), urutan sesuai animasi. */
++    public final BufferedImage[] frames;
++    /** Lama tiap frame dalam satuan tick game (minimal 1). */
++    public final int[] delayTicks;
++
++    private GifFrames(BufferedImage[] frames, int[] delayTicks) {
++        this.frames = frames;
++        this.delayTicks = delayTicks;
++    }
++
++    public int size() { return frames.length; }
++
++    /** Total tick dari awal sampai akhir animasi. */
++    public int totalTicks() {
++        int t = 0;
++        for (int d : delayTicks) t += d;
++        return t;
++    }
++
++    /**
++     * Baca GIF dari classpath (mis. "/Aset/OpenChest.gif").
++     * @param fps FPS game, buat ngubah delay GIF (1/100 detik) jadi jumlah tick
++     * @return null kalau file gak ada / gak bisa dibaca (pemanggil harus siap pakai fallback)
++     */
++    public static GifFrames load(Class<?> loader, String resourcePath, int fps) {
++        URL url = loader.getResource(resourcePath);
++        if (url == null) {
++            System.err.println("[GifFrames] WARNING: " + resourcePath + " tidak ditemukan.");
++            return null;
++        }
++        try (InputStream is = url.openStream();
++             ImageInputStream in = ImageIO.createImageInputStream(is)) {
++
++            Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
++            if (!readers.hasNext()) return null;
++            ImageReader reader = readers.next();
++            try {
++                reader.setInput(in, false, false);
++                int count = reader.getNumImages(true);
++                if (count <= 0) return null;
++
++                // ukuran canvas = logical screen (kalau gak ada, pakai ukuran frame pertama)
++                int canvasW = 0, canvasH = 0;
++                IIOMetadata streamMeta = reader.getStreamMetadata();
++                if (streamMeta != null) {
++                    Node lsd = findChild(streamMeta.getAsTree("javax_imageio_gif_stream_1.0"),
++                                         "LogicalScreenDescriptor");
++                    if (lsd != null) {
++                        canvasW = intAttr(lsd, "logicalScreenWidth", 0);
++                        canvasH = intAttr(lsd, "logicalScreenHeight", 0);
++                    }
++                }
++                BufferedImage first = reader.read(0);
++                if (canvasW <= 0) canvasW = first.getWidth();
++                if (canvasH <= 0) canvasH = first.getHeight();
++
++                BufferedImage canvas = new BufferedImage(canvasW, canvasH, BufferedImage.TYPE_INT_ARGB);
++                List<BufferedImage> out = new ArrayList<>();
++                int[] ticks = new int[count];
++
++                for (int i = 0; i < count; i++) {
++                    BufferedImage fr = (i == 0) ? first : reader.read(i);
++                    Node tree = reader.getImageMetadata(i).getAsTree("javax_imageio_gif_image_1.0");
++                    Node desc = findChild(tree, "ImageDescriptor");
++                    Node gce  = findChild(tree, "GraphicControlExtension");
++
++                    int left = desc != null ? intAttr(desc, "imageLeftPosition", 0) : 0;
++                    int top  = desc != null ? intAttr(desc, "imageTopPosition", 0) : 0;
++                    String disposal = gce != null ? strAttr(gce, "disposalMethod", "none") : "none";
++                    int delayCs = gce != null ? intAttr(gce, "delayTime", 10) : 10;
++                    if (delayCs <= 1) delayCs = 10; // GIF dengan delay 0/1 diputar ~10cs sama browser
++
++                    // simpan canvas kalau frame ini harus "dibatalin" setelah ditampilkan
++                    BufferedImage backup = null;
++                    if ("restoreToPrevious".equals(disposal)) backup = copy(canvas);
++
++                    Graphics2D g = canvas.createGraphics();
++                    g.drawImage(fr, left, top, null);
++                    g.dispose();
++                    out.add(copy(canvas)); // snapshot frame utuh
++
++                    // disposal: apa yang terjadi di canvas SETELAH frame ini
++                    if ("restoreToBackgroundColor".equals(disposal)) {
++                        Graphics2D cg = canvas.createGraphics();
++                        cg.setComposite(java.awt.AlphaComposite.Clear);
++                        cg.fillRect(left, top, fr.getWidth(), fr.getHeight());
++                        cg.dispose();
++                    } else if (backup != null) {
++                        canvas = backup;
++                    }
++
++                    ticks[i] = Math.max(1, (int) Math.round(delayCs * fps / 100.0));
++                }
++                return new GifFrames(out.toArray(new BufferedImage[0]), ticks);
++            } finally {
++                reader.dispose();
++            }
++        } catch (Exception e) {
++            System.err.println("[GifFrames] Gagal membaca " + resourcePath + ": " + e);
++            return null;
++        }
++    }
++
++    // ── helper ──
++
++    private static BufferedImage copy(BufferedImage src) {
++        BufferedImage c = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
++        Graphics2D g = c.createGraphics();
++        g.drawImage(src, 0, 0, null);
++        g.dispose();
++        return c;
++    }
++
++    private static Node findChild(Node parent, String name) {
++        if (parent == null) return null;
++        for (Node n = parent.getFirstChild(); n != null; n = n.getNextSibling()) {
++            if (name.equals(n.getNodeName())) return n;
++        }
++        return null;
++    }
++
++    private static String strAttr(Node n, String attr, String def) {
++        Node a = n.getAttributes() != null ? n.getAttributes().getNamedItem(attr) : null;
++        return a != null ? a.getNodeValue() : def;
++    }
++
++    private static int intAttr(Node n, String attr, int def) {
++        try {
++            return Integer.parseInt(strAttr(n, attr, String.valueOf(def)));
++        } catch (NumberFormatException e) {
++            return def;
++        }
++    }
++}
+diff --git a/2DGame/src/World/StorageChest.java b/2DGame/src/World/StorageChest.java
+new file mode 100644
+index 0000000..718b4fd
+--- /dev/null
++++ b/2DGame/src/World/StorageChest.java
+@@ -0,0 +1,345 @@
++package World;
++
++import java.awt.AlphaComposite;
++import java.awt.Color;
++import java.awt.Font;
++import java.awt.FontMetrics;
++import java.awt.Graphics2D;
++import java.awt.Rectangle;
++import java.awt.image.BufferedImage;
++import java.io.InputStream;
++import java.util.ArrayList;
++import java.util.List;
++
++import javax.imageio.ImageIO;
++
++import Entitas.player;
++import Item.Item;
++import Item.ItemManager;
++import Item.ItemStack;
++import Main.GamePanel;
++
++/**
++ * Peti penyimpanan di dunia luar.
++ *
++ * - Gambar tertutup : NormalChest.png
++ * - Animasi buka    : OpenChest.gif  (diputar sekali, berhenti di frame terakhir)
++ * - Animasi tutup   : CloseChest.gif (diputar sekali, lalu balik ke NormalChest.png)
++ *
++ * Alur: player dekat peti + tekan [E] -> animasi buka -> setelah selesai ChestUI kebuka.
++ * Pas ChestUI ditutup -> animasi tutup. Isi peti ikut tersimpan lewat SaveManager (F5).
++ */
++public class StorageChest {
++
++    // ── posisi & aset (ubah di sini kalau perlu) ──
++    /** Koordinat dunia (pojok kiri-atas sprite), sama kayak worldX/worldY objek lain. */
++    public static final int WORLD_X = 800;
++    public static final int WORLD_Y = 1110;
++
++    public static final String IMG_NORMAL = "/Aset/NormalChest.png";
++    public static final String GIF_OPEN   = "/Aset/OpenChest.gif";
++    public static final String GIF_CLOSE  = "/Aset/CloseChest.gif";
++
++    /** Jumlah kotak di peti. */
++    public static final int CAPACITY = 30;
++
++    public enum State { CLOSED, OPENING, OPEN, CLOSING }
++
++    private final GamePanel gp;
++
++    private BufferedImage normal;      // NormalChest.png (bisa null kalau file gak ada)
++    private GifFrames openAnim;        // bisa null
++    private GifFrames closeAnim;       // bisa null
++
++    /** Ukuran gambar peti di dunia (lebar = 1 tile, tinggi ngikutin rasio NormalChest.png). */
++    private final int drawW, drawH;
++
++    private State state = State.CLOSED;
++    private int frameIndex = 0;
++    private int frameTick = 0;
++    private boolean uiPending = false;   // true = begitu animasi buka selesai, UI harus muncul
++    private boolean openedEvent = false; // dibaca GamePanel lewat consumeOpenedEvent()
++
++    /** Isi peti. Index list = nomor kotak. */
++    private final List<ItemStack> contents = new ArrayList<>();
++
++    public StorageChest(GamePanel gp) {
++        this.gp = gp;
++
++        normal    = loadImage(IMG_NORMAL);
++        openAnim  = GifFrames.load(getClass(), GIF_OPEN,  gp.FPS);
++        closeAnim = GifFrames.load(getClass(), GIF_CLOSE, gp.FPS);
++
++        drawW = gp.tileSize;
++        if (normal != null && normal.getWidth() > 0) {
++            drawH = Math.max(1, Math.round(drawW * (float) normal.getHeight() / normal.getWidth()));
++        } else {
++            drawH = gp.tileSize;
++        }
++
++        // Peti padat: bagian bawah sprite jadi penghalang (player gak bisa tembus).
++        gp.objCol.add(WORLD_X + 2, WORLD_Y + drawH / 2, drawW - 4, drawH - drawH / 2);
++    }
++
++    private BufferedImage loadImage(String path) {
++        try (InputStream is = getClass().getResourceAsStream(path)) {
++            if (is == null) {
++                System.err.println("[StorageChest] WARNING: " + path + " tidak ditemukan.");
++                return null;
++            }
++            return ImageIO.read(is);
++        } catch (Exception e) {
++            System.err.println("[StorageChest] Gagal membaca " + path + ": " + e);
++            return null;
++        }
++    }
++
++    // ===================================================================
++    // POSISI & INTERAKSI
++    // ===================================================================
++
++    public Rectangle getInteractArea() {
++        return new Rectangle(WORLD_X - 12, WORLD_Y - 12, drawW + 24, drawH + 24);
++    }
++
++    /** Dipakai buat Y-sort (urutan gambar terhadap player/NPC/monster). */
++    public int getSortY() {
++        return WORLD_Y + drawH;
++    }
++
++    public boolean isPlayerNear(player p) {
++        return p != null && p.getInteractArea().intersects(getInteractArea());
++    }
++
++    public State getState() { return state; }
++
++    /**
++     * Player menekan [E]. Return true kalau interaksi diterima (peti mulai membuka),
++     * artinya tombol E sebaiknya dianggap sudah dipakai.
++     */
++    public boolean tryOpen(player p) {
++        if (!isPlayerNear(p)) return false;
++        if (state != State.CLOSED && state != State.CLOSING) return false;
++
++        state = State.OPENING;
++        frameIndex = 0;
++        frameTick = 0;
++        uiPending = true;
++        if (openAnim == null) finishOpening(); // gak ada GIF -> langsung terbuka
++        return true;
++    }
++
++    /** Dipanggil ChestUI pas ditutup: mulai animasi tutup. */
++    public void close() {
++        uiPending = false;
++        if (state == State.CLOSED || state == State.CLOSING) return;
++
++        state = State.CLOSING;
++        frameIndex = 0;
++        frameTick = 0;
++        if (closeAnim == null) state = State.CLOSED; // gak ada GIF -> langsung tertutup
++    }
++
++    /** True sekali saja, tepat saat peti selesai terbuka dan UI harus ditampilkan. */
++    public boolean consumeOpenedEvent() {
++        boolean e = openedEvent;
++        openedEvent = false;
++        return e;
++    }
++
++    // ===================================================================
++    // UPDATE & DRAW
++    // ===================================================================
++
++    /** Dipanggil GamePanel.update() tiap frame. */
++    public void update() {
++        if (state == State.OPENING) {
++            if (advance(openAnim)) finishOpening();
++        } else if (state == State.CLOSING) {
++            if (advance(closeAnim)) state = State.CLOSED;
++        }
++    }
++
++    /** Maju satu tick. Return true kalau animasi sudah lewat frame terakhir. */
++    private boolean advance(GifFrames anim) {
++        if (anim == null) return true;
++        frameTick++;
++        if (frameTick >= anim.delayTicks[frameIndex]) {
++            frameTick = 0;
++            frameIndex++;
++            if (frameIndex >= anim.size()) {
++                frameIndex = anim.size() - 1; // tahan di frame terakhir
++                return true;
++            }
++        }
++        return false;
++    }
++
++    private void finishOpening() {
++        state = State.OPEN;
++        if (uiPending) {
++            uiPending = false;
++            if (isPlayerNear(gp.player)) {
++                openedEvent = true;   // UI boleh muncul
++            } else {
++                close();              // player keburu pergi -> tutup lagi
++            }
++        }
++    }
++
++    /** Gambar peti. Dipanggil dari TileM.drawYSorted (di dalam transform zoom dunia). */
++    public void draw(Graphics2D g2, int camX, int camY) {
++        int sx = WORLD_X - camX + gp.player.screenX;
++        int sy = WORLD_Y - camY + gp.player.screenY;
++
++        if (sx + drawW < gp.viewMinX() || sx > gp.viewMaxX()) return;
++        if (sy + drawH < gp.viewMinY() || sy > gp.viewMaxY()) return;
++
++        BufferedImage img = currentImage();
++        if (img != null) {
++            // lebar pas 1 tile, rata bawah (kalau GIF beda rasio sama PNG, gak gepeng)
++            int h = Math.max(1, Math.round(drawW * (float) img.getHeight() / img.getWidth()));
++            g2.drawImage(img, sx, sy + drawH - h, drawW, h, null);
++        } else {
++            drawPlaceholder(g2, sx, sy);
++        }
++
++        if (state == State.CLOSED && !(gp.chestUI != null && gp.chestUI.visible) && isPlayerNear(gp.player)) {
++            drawPrompt(g2, sx + drawW / 2, sy - 6);
++        }
++    }
++
++    private BufferedImage currentImage() {
++        switch (state) {
++            case OPENING:
++            case OPEN:
++                if (openAnim != null) return openAnim.frames[Math.min(frameIndex, openAnim.size() - 1)];
++                break;
++            case CLOSING:
++                if (closeAnim != null) return closeAnim.frames[Math.min(frameIndex, closeAnim.size() - 1)];
++                break;
++            default:
++                break;
++        }
++        return normal;
++    }
++
++    /** Kalau NormalChest.png hilang, peti tetap kelihatan & bisa dipakai. */
++    private void drawPlaceholder(Graphics2D g2, int sx, int sy) {
++        g2.setColor(new Color(120, 78, 40));
++        g2.fillRect(sx, sy, drawW, drawH);
++        g2.setColor(new Color(60, 38, 18));
++        g2.drawRect(sx, sy, drawW - 1, drawH - 1);
++        g2.setColor(new Color(250, 180, 40));
++        g2.fillRect(sx + drawW / 2 - 4, sy + drawH / 2 - 4, 8, 8);
++    }
++
++    private void drawPrompt(Graphics2D g2, int centerX, int bottomY) {
++        Font old = g2.getFont();
++        g2.setFont(new Font("Monospaced", Font.BOLD, 11));
++        FontMetrics fm = g2.getFontMetrics();
++        String text = "[E] Open";
++        int w = fm.stringWidth(text) + 12;
++        int h = fm.getHeight() + 2;
++        int x = centerX - w / 2;
++        int y = bottomY - h;
++
++        java.awt.Composite oc = g2.getComposite();
++        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.85f));
++        g2.setColor(new Color(30, 22, 16));
++        g2.fillRoundRect(x, y, w, h, 8, 8);
++        g2.setComposite(oc);
++        g2.setColor(new Color(220, 190, 150));
++        g2.drawRoundRect(x, y, w, h, 8, 8);
++        g2.setColor(new Color(255, 235, 200));
++        g2.drawString(text, x + 6, y + h - 5);
++        g2.setFont(old);
++    }
++
++    // ===================================================================
++    // ISI PETI
++    // ===================================================================
++
++    /** Daftar isi (read-only buat UI & save). Jangan dimodifikasi langsung dari luar. */
++    public List<ItemStack> getContents() {
++        return contents;
++    }
++
++    /** Kosongkan peti (dipakai saat load save). */
++    public void clearContents() {
++        contents.clear();
++    }
++
++    /** Masukkan item langsung ke peti tanpa nyentuh backpack (dipakai saat load save). Return jumlah yang muat. */
++    public int restore(Item item, int amount) {
++        int fit = Math.min(amount, room(item));
++        if (fit > 0) addToChest(item, fit);
++        return fit;
++    }
++
++    public int usedSlots() {
++        return contents.size();
++    }
++
++    /** Berapa banyak item ini yang masih muat di peti (isi kotak yang sama dulu, baru kotak kosong). */
++    public int room(Item item) {
++        if (item == null) return 0;
++        int max = Math.max(1, item.maxStack);
++        int room = 0;
++        for (ItemStack s : contents) {
++            if (s.isSame(item)) room += Math.max(0, max - s.amount);
++        }
++        room += (CAPACITY - contents.size()) * max;
++        return room;
++    }
++
++    /**
++     * Pindahkan item dari backpack ke peti.
++     * @return jumlah yang benar-benar dipindah (0 kalau peti penuh)
++     */
++    public int deposit(Item item, int amount) {
++        if (item == null || amount <= 0) return 0;
++        int fit = Math.min(amount, room(item));
++        if (fit <= 0) return 0;
++
++        ItemManager im = ItemManager.get();
++        fit = Math.min(fit, im.count(item));            // jangan lebih dari yang dimiliki
++        if (fit <= 0 || !im.remove(item, fit)) return 0;
++
++        addToChest(item, fit);
++        return fit;
++    }
++
++    /**
++     * Pindahkan item dari kotak peti ke backpack.
++     * @return jumlah yang dipindah (0 kalau kotak kosong / index salah)
++     */
++    public int withdraw(int slotIndex, int amount) {
++        if (slotIndex < 0 || slotIndex >= contents.size() || amount <= 0) return 0;
++        ItemStack stack = contents.get(slotIndex);
++        int n = Math.min(amount, stack.amount);
++        if (n <= 0) return 0;
++
++        ItemManager.get().add(stack.item, n);
++        stack.amount -= n;
++        if (stack.amount <= 0) contents.remove(slotIndex);
++        return n;
++    }
++
++    private void addToChest(Item item, int amount) {
++        int max = Math.max(1, item.maxStack);
++        int left = amount;
++        for (ItemStack s : contents) {                   // 1. genapkan kotak yang sudah ada
++            if (left <= 0) break;
++            if (!s.isSame(item) || s.amount >= max) continue;
++            int add = Math.min(max - s.amount, left);
++            s.amount += add;
++            left -= add;
++        }
++        while (left > 0 && contents.size() < CAPACITY) { // 2. sisanya ke kotak baru
++            int add = Math.min(max, left);
++            contents.add(new ItemStack(item, add));
++            left -= add;
++        }
++    }
++}
+diff --git a/2DGame/src/bahan/TileM.java b/2DGame/src/bahan/TileM.java
+index 1004682..bebc1c2 100644
+--- a/2DGame/src/bahan/TileM.java
++++ b/2DGame/src/bahan/TileM.java
+@@ -671,6 +671,11 @@ public TileM(GamePanel gp) {
+ 			}
+ 			
+ 			
++			// Peti penyimpanan
++			if (gp.chest != null) {
++			    drawList.add(new int[]{gp.chest.getSortY(), 6, 0});
++			}
++			
+ 			// Player
+ 			drawList.add(new int[]{p.y + gp.tileSize, 4, 0});
+ 			
+@@ -733,6 +738,10 @@ public TileM(GamePanel gp) {
+ 			    minionList.get(index).draw(g2);
+ 			    break;
+ 			}
++			case 6: { // peti penyimpanan
++			    gp.chest.draw(g2, fCamX, fCamY);
++			    break;
++			}
+ 			}
+ 			}
+ 			

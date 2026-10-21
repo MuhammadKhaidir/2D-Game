@@ -57,6 +57,17 @@ public class SaveManager {
                 data.hotbarNames.add(hb != null ? hb.name : "");
             }
         }
+        // Isi peti penyimpanan
+        data.chestNames = new ArrayList<>();
+        data.chestAmounts = new ArrayList<>();
+        if (gp.chest != null) {
+            for (Item.ItemStack stack : gp.chest.getContents()) {
+                if (stack != null && stack.item != null) {
+                    data.chestNames.add(stack.item.name);
+                    data.chestAmounts.add(stack.amount);
+                }
+            }
+        }
         // Inventory
         data.inventoryNames.clear();
         data.inventoryAmounts.clear();
@@ -160,6 +171,16 @@ public class SaveManager {
             Item.Item item = getItemByName(im, name);
             if (item != null) {
                 Item.ItemManager.inventory.add(new Item.ItemStack(item, amount));
+            }
+        }
+        // Restore peti penyimpanan (save lama yang belum punya peti → chestNames null → peti dikosongin)
+        if (gp.chest != null) {
+            gp.chest.clearContents();
+            if (data.chestNames != null && data.chestAmounts != null) {
+                for (int i = 0; i < data.chestNames.size() && i < data.chestAmounts.size(); i++) {
+                    Item.Item chestItem = getItemByName(im, data.chestNames.get(i));
+                    if (chestItem != null) gp.chest.restore(chestItem, data.chestAmounts.get(i));
+                }
             }
         }
         // Restore hotbar (save lama yang belum punya hotbar → hotbarNames null → hotbar dikosongin)
