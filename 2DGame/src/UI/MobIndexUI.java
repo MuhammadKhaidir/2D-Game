@@ -100,7 +100,7 @@ public class MobIndexUI {
 
     public MobIndexUI(GamePanel gp) {
         mobList.add(new MobData("SKELETON", "COMMON", "A reanimated undead warrior bound by dark residual magic. It wanders dark tomb dungeons clutching brittle weapons, can be tamed.", 400, 15, 1.5, "Bone (15%), Skull (5%), Skeleton Key (0,5%), Death Totem (0,1%), Coin (100%)", gp.setup("SkeletonFrontWalk (1)")));
-        mobList.add(new MobData("SLIME", "COMMON", "A bouncy, gelatinous creature. Mildly aggressive but dangerously sticky. Drops chemically reactive gel.", 50, 5, 2, "Coin (100%)", gp.setup("Sticklooter_carrot_idle3")));
+        mobList.add(new MobData("SLIME", "COMMON", "A bouncy, gelatinous creature. Mildly aggressive but dangerously sticky. Drops chemically reactive gel.", 50, 5, 2, "Coin (100%)", gp.setup("slime_idle_down_1")));
         mobList.add(new MobData("GOLEMITE", "RARE", "A small offshoot of the Stone Golem, chipped off its parent's body. Fast on its feet and hits harder than it looks. Nests in the Golem Hide, can be tamed.", 1500, 80, 1, "Coin (100%)", gp.setup("golemiteFrontWalk (1)")));
         mobList.add(new MobData("STONE GOLEM", "EPIC", "A massive, powerful construct carved from living solid stone. Awakens from deep underground to crush intruders, can be tamed.", 5000, 200, 1, "Coin (100%)", gp.setup("GolemFrontWalk (6)")));
     }
