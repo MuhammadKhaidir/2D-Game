@@ -109,7 +109,10 @@ public class GamePanel extends JPanel implements Runnable{
 
 	// hotbar: 5 slot akses cepat di bawah layar (tombol angka 1-5)
 	public UI.Hotbar hotbar;
-	
+
+	// minimap di pojok kanan atas (cuma tampil di dunia luar)
+	public UI.MiniMap miniMap;
+
 	// Atmosper
 	public boolean darkMode = true;
 	public int darknessAlpha = 80; // 0–255 (semakin gede = makin gelap)
@@ -219,6 +222,7 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		backpack = new BackpackUI(ItemManager.inventory);
 		hotbar = new UI.Hotbar(this);
+		miniMap = new UI.MiniMap(this);
 		potionShop = new UI.PotionShopUI(this);
 		chest = new World.StorageChest(this);
 		chestUI = new UI.ChestUI(this, chest);
@@ -511,14 +515,14 @@ public class GamePanel extends JPanel implements Runnable{
 	    return previous;
 	}
 
-	/** Indikator "Zoom: 150%" di pojok kanan atas, muncul sebentar tiap zoom diubah. */
+	/** Indikator "Zoom: 150%" di sisi kiri (di bawah HUD kiri), muncul sebentar tiap zoom diubah. */
 	private void drawZoomHint(Graphics2D g2) {
 	    if (zoomHintTimer <= 0) return;
 	    String txt = "Zoom: " + Math.round(targetZoom * 100f) + "%";
 	    g2.setFont(new Font("Arial", Font.BOLD, 13));
 	    int w = g2.getFontMetrics().stringWidth(txt);
-	    int x = screenWidth - w - 18;
-	    int y = 100;
+	    int x = LEFT_HUD_X;
+	    int y = leftHudBottom + 8;
 	    g2.setColor(new Color(0, 0, 0, 150));
 	    g2.fillRoundRect(x - 8, y - 15, w + 16, 22, 10, 10);
 	    g2.setColor(Color.WHITE);
@@ -644,23 +648,45 @@ public class GamePanel extends JPanel implements Runnable{
 	        monsters[index] = orc;
 	    }
 	
-	public void drawDebugInfo(Graphics2D g2) {
+	// ===== HUD KIRI =====
+	// Semua teks info ditaruh di kiri atas supaya sisi kanan bebas buat minimap.
+	// Urutan (atas -> bawah): koordinat player (F3), jam, cuaca, lalu indikator zoom.
+	private static final int LEFT_HUD_X = 20;
+	private int leftHudBottom = 30; // batas bawah HUD kiri frame ini (dipakai drawZoomHint)
 
-	    if (!showDebug) return;
-
-	    g2.setFont(new Font("Consolas", Font.PLAIN, 14));
-	    g2.setColor(Color.WHITE);
-
-	    int x = 20;
+	/**
+	 * @param showClock true = ikut gambar jam & cuaca (dunia luar & dalam rumah)
+	 */
+	public void drawLeftHud(Graphics2D g2, boolean showClock) {
+	    int x = LEFT_HUD_X;
 	    int y = 30;
 
-	    g2.drawString("PLAYER WORLD COORD", x, y);
-	    y += 18;
+	    if (showDebug) {
+	        g2.setFont(new Font("Consolas", Font.PLAIN, 14));
+	        g2.setColor(Color.WHITE);
+	        g2.drawString("PLAYER WORLD COORD", x, y);
+	        y += 18;
+	        g2.drawString("X : " + player.x, x, y);
+	        y += 18;
+	        g2.drawString("Y : " + player.y, x, y);
+	        y += 24; // jarak ke blok jam
+	    }
 
-	    g2.drawString("X : " + player.x, x, y);
-	    y += 18;
+	    if (showClock) {
+	        g2.setFont(new Font("Arial", Font.BOLD, 13));
+	        g2.setColor(Color.RED);
+	        g2.drawString(world.getTimeString(), x, y);
+	        y += 18;
+	        g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), x, y);
+	        y += 18;
+	    }
 
-	    g2.drawString("Y : " + player.y, x, y);
+	    leftHudBottom = y;
+	}
+
+	/** Kompatibilitas: koordinat debug saja (tanpa jam/cuaca). */
+	public void drawDebugInfo(Graphics2D g2) {
+	    drawLeftHud(g2, false);
 	}
 	
 	
@@ -1350,13 +1376,9 @@ public void paintComponent(Graphics g) {
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
         if (statUI != null && statUI.visible) statUI.draw(g2);
         if (mobIndexUI != null && mobIndexUI.visible) mobIndexUI.draw(g2, screenWidth, screenHeight, this);
-        drawDebugInfo(g2);
-        g2.setFont(new Font("Arial", Font.BOLD, 13));
-        g2.setColor(Color.RED);
-        g2.drawString(world.getTimeString(), 20, 40);
-        g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 0, 70);
+        drawLeftHud(g2, true);   // koordinat + jam + cuaca, semuanya di kiri
         drawZoomHint(g2);
-        
+
     } else if (gameState == GameState.DOMAIN) {
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, screenWidth, screenHeight);
@@ -1460,7 +1482,6 @@ public void paintComponent(Graphics g) {
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
         if (statUI != null && statUI.visible) statUI.draw(g2);
         if (mobIndexUI != null && mobIndexUI.visible) mobIndexUI.draw(g2, screenWidth, screenHeight, this);
-        drawDebugInfo(g2);
 
         AffineTransform dropsTx = g2.getTransform();
         applyWorldZoom(g2);
@@ -1472,11 +1493,11 @@ public void paintComponent(Graphics g) {
         }
         g2.setTransform(dropsTx);
 
-        g2.setFont(new Font("Arial", Font.BOLD, 13));
-        g2.setColor(Color.RED);
-        g2.drawString(world.getTimeString(), 650, 40);
-        g2.drawString("Weather: " + (world.isRaining ? "RAIN" : "CLEAR"), 650, 70);
+        // Minimap di kanan atas. Digambar SETELAH drop item supaya tidak tertimpa,
+        // dan disembunyikan saat panel besar (tas, stat, mob index, totem) terbuka.
+        if (miniMap != null && !isMinimapHidden()) miniMap.draw(g2);
 
+        drawLeftHud(g2, true);   // koordinat + jam + cuaca, semuanya di kiri (kanan khusus minimap)
         drawZoomHint(g2);
         if (chestUI != null) chestUI.draw(g2);       // panel peti
         if (potionShop != null) potionShop.draw(g2); // paling atas, nutup UI & drop di belakangnya
@@ -1487,6 +1508,14 @@ public void paintComponent(Graphics g) {
     }
     g2.dispose();
 }
+	/** Minimap disembunyikan selagi panel besar terbuka (panelnya sudah menutupi sisi kanan layar). */
+	private boolean isMinimapHidden() {
+	    return (backpack != null && backpack.visible)
+	        || (statUI != null && statUI.visible)
+	        || (mobIndexUI != null && mobIndexUI.visible)
+	        || (totemUI != null && totemUI.visible);
+	}
+
 	public void drawInspectPanel(Graphics2D g2) {
 
 	    int width = 260;

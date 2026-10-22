@@ -57,6 +57,14 @@ public int interiorFloorTile = 12; // bebas, sesuaiin index tile lantai
 //INTERIOR COLLISION
 public Rectangle [] interiorCollision;
 public breakable[] breakables;
+// index tile tiap breakable (sejajar dengan breakables[]): 55 = pohon, 40/41/71 = batu. Dipakai MiniMap.
+public int[] breakableTile;
+
+// Ukuran peta yang BENAR-BENAR terisi di map01.txt (bukan 700x700 yang cuma kapasitas array):
+// loadedCols = panjang baris yang paling umum, loadedRows = jumlah baris.
+// Dipakai MiniMap supaya yang ditampilkan cuma area dunia yang nyata.
+public int loadedCols = 0;
+public int loadedRows = 0;
 
 ImageIcon interiorBg; // background ruangan interior
 
@@ -247,6 +255,7 @@ public TileM(GamePanel gp) {
 	        BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 	        int row = 0;
+	        java.util.Map<Integer, Integer> rowLengths = new java.util.HashMap<>();
 
 	        while (row < gp.maxWorldRow) {
 	            String line = br.readLine();
@@ -258,9 +267,23 @@ public TileM(GamePanel gp) {
 	                mapTileNum[col][row] = Integer.parseInt(numbers[col]);
 	            }
 
+	            int len = Math.min(numbers.length, gp.maxWorldCol);
+	            rowLengths.merge(len, 1, Integer::sum);
 
 	            row++;
 	        }
+	        loadedRows = row;
+
+	        // Lebar peta = panjang baris yang paling umum. Beberapa baris di map01.txt kelebihan kolom
+	        // (ada yang sampai 480), jadi memakai "yang terpanjang" bikin minimap melebar dan setengahnya kosong.
+	        int bestLen = 0, bestCount = -1;
+	        for (java.util.Map.Entry<Integer, Integer> e : rowLengths.entrySet()) {
+	            if (e.getValue() > bestCount || (e.getValue() == bestCount && e.getKey() > bestLen)) {
+	                bestLen = e.getKey();
+	                bestCount = e.getValue();
+	            }
+	        }
+	        loadedCols = bestLen;
 
 	        br.close();
 
@@ -470,6 +493,8 @@ public TileM(GamePanel gp) {
         	        };
 
         breakables = new breakable[data.length];
+        breakableTile = new int[data.length];
+        for (int i = 0; i < data.length; i++) breakableTile[i] = data[i][4];
 
         BufferedImage[] treeIdleFrames = new BufferedImage[2];
         BufferedImage[] treeHitFrames = new BufferedImage[4];
@@ -1022,6 +1047,11 @@ public TileM(GamePanel gp) {
 	        //{550,2280,30,40,64,0,     0},
 	        //{470,1300,30,40,64,0,     0},
 	    };
+	}
+
+	/** Data objek dunia {x, y, w, h, tileIndex, isFlat, shadow} — dibaca MiniMap (read-only). */
+	public int[][] getWorldObjects() {
+	    return worldObjects;
 	}
 
 	public void checkHouseInteraction() {
