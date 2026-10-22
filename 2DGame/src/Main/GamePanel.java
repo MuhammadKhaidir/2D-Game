@@ -163,7 +163,7 @@ public class GamePanel extends JPanel implements Runnable{
 
 	public Barang obj[]= new Barang[10];
 	public Entity npc [] = new Entity[10];
-	public Entity monsters [] = new Entity[20];
+	public Entity monsters [] = new Entity[50];
 	
 	//UI Field Death totem aka sung jin woo
 	public UI.TotemUI totemUI;
@@ -262,6 +262,9 @@ public class GamePanel extends JPanel implements Runnable{
         spawnGolemite(9,  1200, 3050);
         spawnGolemite(10, 1400, 3200);
         spawnGolemite(11, 2400, 3450);
+
+        // 30 slime acak di area (700,2500)-(5000,5000), di luar collision
+        spawnSlimesRandom(12, 30, 700, 2500, 5000, 5000);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -576,6 +579,54 @@ public class GamePanel extends JPanel implements Runnable{
 	    monsters[index] = slime;
 	}
 	
+	// Spawn 'count' slime di posisi acak dalam area (minX,minY)-(maxX,maxY), mulai dari monsters[startIndex].
+	// Posisi ditolak kalau hitbox slime (+ jarak aman) nabrak collision dunia (objCol) atau monster lain.
+	private void spawnSlimesRandom(int startIndex, int count, int minX, int minY, int maxX, int maxY) {
+	    java.util.Random rnd = new java.util.Random();
+	    Entitas.monster probe = new Entitas.monster(this); // cuma buat ambil ukuran hitbox slime
+	    int margin = tileSize / 2; // jarak aman dari collision & monster lain
+
+	    int spawned = 0;
+	    int attempts = 0;
+	    while (spawned < count && attempts < count * 200) {
+	        attempts++;
+
+	        int x = minX + rnd.nextInt(maxX - minX + 1);
+	        int y = minY + rnd.nextInt(maxY - minY + 1);
+
+	        Rectangle box = new Rectangle(
+	            x + probe.solidArea.x - margin,
+	            y + probe.solidArea.y - margin,
+	            probe.solidArea.width + margin * 2,
+	            probe.solidArea.height + margin * 2
+	        );
+
+	        boolean blocked = false;
+
+	        for (Rectangle r : objCol.objects) {
+	            if (box.intersects(r)) { blocked = true; break; }
+	        }
+
+	        if (!blocked) {
+	            for (Entity e : monsters) {
+	                if (e == null || e.solidArea == null) continue;
+	                Rectangle other = new Rectangle(
+	                    e.x + e.solidArea.x,
+	                    e.y + e.solidArea.y,
+	                    e.solidArea.width,
+	                    e.solidArea.height
+	                );
+	                if (box.intersects(other)) { blocked = true; break; }
+	            }
+	        }
+
+	        if (blocked) continue;
+
+	        spawnSlime(startIndex + spawned, x, y);
+	        spawned++;
+	    }
+	}
+
 	 private void spawnOrc(int index, int worldX, int worldY) {
 	        Entitas.Orc orc = new Entitas.Orc(this);
 	 
