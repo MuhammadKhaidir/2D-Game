@@ -281,7 +281,8 @@ public class MiniMap {
                 return K_BUILDING;
             case 49: case 50: case 52:
                 return K_RUINS;
-            case 25: case 26: case 27:
+            case 25: case 26: case 27:          // jembatan vertikal
+            case 73: case 74: case 75:          // jembatan horizontal
                 return K_BRIDGE;
             case 5: case 10:
                 return K_TREE;
