@@ -1,0 +1,986 @@
+diff --git a/2DGame/src/Aset/fish_jump_a.png b/2DGame/src/Aset/fish_jump_a.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..5d2561f13569ba4d5db9410640d690c0b634e0f1
+GIT binary patch
+literal 18467
+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
+RyNl2bXLSs<3$?D^|8KQL#hU;C
+
+literal 0
+HcmV?d00001
+
+diff --git a/2DGame/src/Aset/fish_jump_b.png b/2DGame/src/Aset/fish_jump_b.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..38f8dfe2c84de624cc668e616ee30d5851f300b7
+GIT binary patch
+literal 19087
+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
+R)y<mj{8=NN(lhpV{|6(yJ^=s#
+
+literal 0
+HcmV?d00001
+
+diff --git a/2DGame/src/bahan/FishJumpManager.java b/2DGame/src/bahan/FishJumpManager.java
+new file mode 100644
+index 0000000..84fdc87
+--- /dev/null
++++ b/2DGame/src/bahan/FishJumpManager.java
+@@ -0,0 +1,121 @@
++package bahan;
++
++import java.awt.Graphics2D;
++import java.awt.image.BufferedImage;
++import java.io.IOException;
++import java.io.InputStream;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Random;
++
++import javax.imageio.ImageIO;
++
++/**
++ * Ikan kuning yang sesekali meloncat keluar dari air, melengkung di udara, lalu masuk lagi.
++ *
++ * Animasinya satu sprite sheet per jenis loncatan (Aset/fish_jump_a.png = loncatan pendek,
++ * Aset/fish_jump_b.png = loncatan jauh). Satu sheet = 36 frame (6 kolom x 6 baris), tiap frame 240x168 piksel:
++ * ikan berenang di bawah permukaan -> muncrat keluar -> melengkung -> masuk lagi + percikan -> riak melebar.
++ * Latarnya transparan, jadi air animasi di bawahnya tetap kelihatan.
++ *
++ * Tiap titik loncat punya timer sendiri (acak 5-13 detik) dan arah acak (kiri/kanan, cermin horizontal).
++ * Waktu dihitung pakai jam sistem, jadi kecepatan animasi tidak tergantung FPS game.
++ *
++ * Titik loncat = tengah-tengah busur loncatan di garis permukaan air. Pastikan area sekitar titiknya air semua
++ * (kira-kira 270px lebar, 130px ke atas, 40px ke bawah), supaya ikan tidak "meloncat" di atas daratan.
++ */
++public final class FishJumpManager {
++
++    public static final int CELL_W = 240, CELL_H = 168;
++    public static final int COLS = 6, FRAMES = 36;
++    /** y garis permukaan air di dalam frame (piksel dari atas frame) */
++    public static final int WATER_LINE = 126;
++    /** lama satu frame (ms): satu loncatan = 36 x 70 ms = 2,5 detik */
++    public static final int FRAME_MS = 70;
++    /** x titik tengah busur di dalam frame, per jenis loncatan (a, b) */
++    private static final int[] CHORD_MID = {105, 123};
++    private static final String[] SHEETS = {"/Aset/fish_jump_a.png", "/Aset/fish_jump_b.png"};
++
++    private static final int MIN_WAIT_MS = 5000, MAX_WAIT_MS = 13000;
++
++    private static final class Spot {
++        final int x, y, variant;
++        final Random rnd;
++        long nextAt;
++        long startedAt = -1;
++        boolean flip;
++
++        Spot(int x, int y, int variant, long seed) {
++            this.x = x;
++            this.y = y;
++            this.variant = variant;
++            this.rnd = new Random(seed);
++        }
++    }
++
++    private final BufferedImage[][] cells = new BufferedImage[SHEETS.length][FRAMES];
++    private final List<Spot> spots = new ArrayList<>();
++    private boolean ready = false;
++
++    /**
++     * @param loader   class untuk mencari resource (pakai getClass() dari pemanggil)
++     * @param spotData tiap baris {x, y, jenis}: titik di dunia (piksel) dan jenis loncatan 0/1
++     */
++    public FishJumpManager(Class<?> loader, int[][] spotData) {
++        try {
++            for (int v = 0; v < SHEETS.length; v++) {
++                try (InputStream in = loader.getResourceAsStream(SHEETS[v])) {
++                    if (in == null) {
++                        System.out.println("FISH SHEET NOT FOUND: " + SHEETS[v]);
++                        return;
++                    }
++                    BufferedImage sheet = ImageIO.read(in);
++                    for (int f = 0; f < FRAMES; f++) {
++                        cells[v][f] = sheet.getSubimage((f % COLS) * CELL_W, (f / COLS) * CELL_H, CELL_W, CELL_H);
++                    }
++                }
++            }
++        } catch (IOException | RuntimeException e) {
++            e.printStackTrace();
++            return;
++        }
++        long now = System.currentTimeMillis();
++        for (int i = 0; i < spotData.length; i++) {
++            int[] d = spotData[i];
++            Spot s = new Spot(d[0], d[1], Math.max(0, Math.min(SHEETS.length - 1, d[2])), 7919L * (i + 1) + d[0] * 31L + d[1]);
++            s.nextAt = now + 1500 + s.rnd.nextInt(8000);
++            spots.add(s);
++        }
++        ready = true;
++    }
++
++    /** Menggambar semua ikan yang sedang loncat dan kelihatan di layar. Panggil sekali per frame, di atas air. */
++    public void draw(Graphics2D g2, int camX, int camY, int playerScreenX, int playerScreenY,
++                     int minX, int minY, int maxX, int maxY) {
++        if (!ready) return;
++        long now = System.currentTimeMillis();
++        for (Spot s : spots) {
++            if (s.startedAt < 0) {
++                if (now < s.nextAt) continue;
++                s.startedAt = now;
++                s.flip = s.rnd.nextBoolean();
++            }
++            int f = (int) ((now - s.startedAt) / FRAME_MS);
++            if (f >= FRAMES) {
++                s.startedAt = -1;
++                s.nextAt = now + MIN_WAIT_MS + s.rnd.nextInt(MAX_WAIT_MS - MIN_WAIT_MS);
++                continue;
++            }
++            int chord = CHORD_MID[s.variant];
++            int worldX = s.flip ? s.x - (CELL_W - chord) : s.x - chord;
++            int worldY = s.y - WATER_LINE;
++            int sx = worldX - camX + playerScreenX;
++            int sy = worldY - camY + playerScreenY;
++            if (sx + CELL_W < minX || sx > maxX || sy + CELL_H < minY || sy > maxY) continue;
++
++            BufferedImage img = cells[s.variant][f];
++            if (s.flip) g2.drawImage(img, sx + CELL_W, sy, -CELL_W, CELL_H, null);   // lebar negatif = cermin horizontal
++            else        g2.drawImage(img, sx, sy, CELL_W, CELL_H, null);
++        }
++    }
++}
+diff --git a/2DGame/src/bahan/TileM.java b/2DGame/src/bahan/TileM.java
+index 7663263..6b59837 100644
+--- a/2DGame/src/bahan/TileM.java
++++ b/2DGame/src/bahan/TileM.java
+@@ -69,6 +69,8 @@ public int loadedRows = 0;
+ ImageIcon interiorBg; // background ruangan interior
+ 
+ public AnimatedObjectManager animObjManager;
++public WaterAnimator waterAnim;          // gelombang air + buih pantai (lihat WaterAnimator.java)
++public FishJumpManager fishManager;      // ikan kuning yang sesekali meloncat (lihat FishJumpManager.java)
+ 
+ public BufferedImage setup(String imageName) {
+     BufferedImage image = null;
+@@ -125,6 +127,30 @@ public TileM(GamePanel gp) {
+     loadBreakableObjects();
+     
+     animObjManager = new AnimatedObjectManager(getClass());
++
++    // Animasi air: semua tile air + tepi pantainya digambar oleh WaterAnimator (gambar tile aslinya tetap dipakai
++    // sebagai bentuk pantai, cuma airnya yang bergerak). Harus SETELAH getTileImage().
++    BufferedImage[] tileImgs = new BufferedImage[tile.length];
++    for (int i = 0; i < tile.length; i++) if (tile[i] != null) tileImgs[i] = tile[i].image;
++    waterAnim = new WaterAnimator(tileImgs, gp.tileSize);
++
++    // Ikan kuning loncat. Tiap baris = {x, y, jenis}: titik tengah busur loncatan di permukaan air (piksel dunia),
++    // jenis 0 = loncatan pendek, 1 = loncatan jauh. Titik-titiknya dipilih di tengah danau/laut yang cukup luas.
++    // Mau nambah ikan? Tambah baris baru, pastikan sekitar titiknya air semua (270px lebar, 130px atas, 40px bawah).
++    fishManager = new FishJumpManager(getClass(), new int[][] {
++        {2208, 1440, 0},
++        {1440, 1488, 1},
++        {7344, 2016, 0},
++        {6960, 2064, 1},
++        {2496, 144, 0},
++        {6144, 144, 1},
++        {10464, 144, 0},
++        {9888, 7296, 1},
++        {9504, 7296, 0},
++        {2592, 8688, 1},
++        {7008, 12816, 0},
++        {7392, 12816, 1}
++    });
+ }
+ 
+ 	public void getTileImage() {
+@@ -718,6 +744,8 @@ public TileM(GamePanel gp) {
+         int startRow = Math.max(0, (topWorld + gp.viewMinY()) / gp.tileSize - 1);
+         int endRow   = Math.min(gp.maxWorldRow - 1, (topWorld + gp.viewMaxY()) / gp.tileSize + 1);
+ 
++        if (waterAnim != null) waterAnim.beginFrame();   // semua tile air frame ini pakai frame animasi yang sama
++
+         for (int worldRow = startRow; worldRow <= endRow; worldRow++) {
+             for (int worldCol = startCol; worldCol <= endCol; worldCol++) {
+                 int tileNum = mapTileNum[worldCol][worldRow];
+@@ -736,7 +764,10 @@ public TileM(GamePanel gp) {
+                 if (screenX + gp.tileSize > gp.viewMinX() && screenX < gp.viewMaxX() &&
+                     screenY + gp.tileSize > gp.viewMinY() && screenY < gp.viewMaxY()) {
+ 
+-                    if (tileAnimImage[tileNum] != null) {
++                    if (waterAnim != null && waterAnim.handles(tileNum)) {
++                        // air: gelombang animasi + buih pantai
++                        waterAnim.drawTile(g2, tileNum, worldCol, worldRow, screenX, screenY, gp.tileSize);
++                    } else if (tileAnimImage[tileNum] != null) {
+                         // tile GIF animasi -> ambil frame yang lagi "hidup" sekarang dari Toolkit
+                         g2.drawImage(tileAnimImage[tileNum], screenX, screenY,
+                                      gp.tileSize, gp.tileSize, null);
+@@ -782,6 +813,12 @@ public TileM(GamePanel gp) {
+ 				drawObject(g2, obj[0], obj[1], obj[2], obj[3], obj[4], fCamX, fCamY, obj[6]);}
+ 			}
+ 			
++			// ── Ikan kuning loncat: di atas air, di bawah objek berdiri / player ──
++			if (fishManager != null) {
++			    fishManager.draw(g2, fCamX, fCamY, gp.player.screenX, gp.player.screenY,
++			                     gp.viewMinX(), gp.viewMinY(), gp.viewMaxX(), gp.viewMaxY());
++			}
++
+ 			// ── PASS 2: Kumpulkan semua standing objects ke drawList ──
+ 			java.util.List<int[]> drawList = new java.util.ArrayList<>();
+ 			
+diff --git a/2DGame/src/bahan/WaterAnimator.java b/2DGame/src/bahan/WaterAnimator.java
+new file mode 100644
+index 0000000..9bc3999
+--- /dev/null
++++ b/2DGame/src/bahan/WaterAnimator.java
+@@ -0,0 +1,253 @@
++package bahan;
++
++import java.awt.Graphics2D;
++import java.awt.image.BufferedImage;
++import java.util.IdentityHashMap;
++import java.util.Map;
++
++/**
++ * Animasi gelombang air untuk semua tile air (dan tepi pantainya), tanpa aset gambar baru.
++ *
++ * Cara kerja:
++ *  1. Satu tekstur air "dunia" berukuran 6x6 tile dibuat sekali pas load, sebanyak F frame.
++ *     Teksturnya nyambung mulus ke segala arah (seamless) dan nyambung dari frame terakhir ke frame
++ *     pertama (loop), karena semua gelombangnya pakai bilangan gelombang bulat.
++ *     Isinya: ayunan lebar (swell) pelan, garis-garis riak putus-putus yang geser ke samping,
++ *     garis kilau yang lebih jarang, dan kilatan kecil.
++ *  2. Tile air penuh (1, 2) cukup menggambar potongan 48x48 dari tekstur itu. Posisi potongan ditentukan
++ *     dari kolom/baris tile, jadi danau yang luas kelihatan satu permukaan air yang sama, bukan tile berulang.
++ *  3. Tile tepi pantai: air animasi digambar dulu, lalu "lapisan darat" di atasnya. Lapisan darat = gambar tile
++ *     aslinya dengan piksel airnya dilubangi, ditambah buih putih yang maju-mundur di sepanjang garis pantai.
++ *     Jadi bentuk pantai (rumput, tebing coklat, dst.) tidak berubah sama sekali, hanya airnya yang bergerak.
++ *
++ * Semua dihitung dalam "piksel seni" (1 tile = 16x16 piksel seni, 1 piksel seni = 3 piksel layar) supaya
++ * gayanya sama dengan tile aslinya.
++ *
++ * Ubah angka-angka di bawah (kecepatan, warna, kepadatan riak) untuk menyetel tampilannya.
++ */
++public final class WaterAnimator {
++
++    /** piksel seni per sisi tile */
++    public static final int ART = 16;
++    /** sisi tekstur dalam piksel seni (6 tile) */
++    public static final int N = 96;
++    /** jumlah frame satu putaran loop */
++    public static final int F = 24;
++    /** lama satu frame (ms). Satu putaran = F * FRAME_MS = 2,6 detik. Makin kecil = ombak makin cepat. */
++    public static final int FRAME_MS = 110;
++
++    private static final double TAU = Math.PI * 2.0;
++
++    // warna (RGB). BASE harus sama dengan warna air di tile aslinya (59,143,202).
++    static final int BASE    = 0x3B8FCA;
++    static final int DEEP    = 0x2F80BE;
++    static final int LIGHT   = 0x60AADC;
++    static final int CREST   = 0x9CD4F2;
++    static final int SPARK   = 0xEEF9FF;
++    static final int SWELL_L = 0x4195CE;
++    static final int SWELL_D = 0x3689C5;
++
++    private final int tile;      // sisi tile dalam piksel layar (48)
++    private final int px;        // piksel layar per piksel seni (3)
++    private final int period;    // sisi tekstur dalam tile (6)
++    private final BufferedImage[] frames = new BufferedImage[F];
++    private final BufferedImage[][] overlayOf;           // per index tile; null = air penuh
++    private final boolean[] handled;
++    private int cur = 0;
++
++    public WaterAnimator(BufferedImage[] tileImages, int tileSize) {
++        this.px = Math.max(1, tileSize / ART);
++        this.tile = px * ART;
++        this.period = N / ART;
++        this.handled = new boolean[tileImages.length];
++        this.overlayOf = new BufferedImage[tileImages.length][];
++
++        for (int t = 0; t < F; t++) frames[t] = renderTexture(t, px);
++
++        Map<BufferedImage, BufferedImage[]> cache = new IdentityHashMap<>();
++        for (int i = 0; i < tileImages.length; i++) {
++            if (tileImages[i] == null || !WaterCollision.isWaterTile(i)) continue;
++            handled[i] = true;
++            BufferedImage src = tileImages[i];
++            if (!cache.containsKey(src)) cache.put(src, buildOverlay(src, px));
++            overlayOf[i] = cache.get(src);
++        }
++    }
++
++    /** true kalau tile index ini digambar oleh WaterAnimator */
++    public boolean handles(int tileIndex) {
++        return tileIndex >= 0 && tileIndex < handled.length && handled[tileIndex];
++    }
++
++    /** Panggil sekali per frame gambar (sebelum menggambar tile), supaya semua tile pakai frame yang sama. */
++    public void beginFrame() {
++        cur = (int) ((System.nanoTime() / 1_000_000L / FRAME_MS) % F);
++    }
++
++    /** Untuk tes: paksa frame tertentu. */
++    public void setFrame(int f) {
++        cur = ((f % F) + F) % F;
++    }
++
++    public int getFrame() {
++        return cur;
++    }
++
++    /**
++     * Gambar satu tile air.
++     * @param col,row kolom/baris tile di peta (menentukan potongan tekstur dan fase buih)
++     * @param sx,sy   posisi kiri-atas di layar
++     * @param size    ukuran tile di layar
++     */
++    public void drawTile(Graphics2D g2, int tileIndex, int col, int row, int sx, int sy, int size) {
++        int tx = Math.floorMod(col, period) * tile;
++        int ty = Math.floorMod(row, period) * tile;
++        g2.drawImage(frames[cur], sx, sy, sx + size, sy + size, tx, ty, tx + tile, ty + tile, null);
++
++        BufferedImage[] ov = overlayOf[tileIndex];
++        if (ov != null) {
++            // fase buih bergeser per tile -> buih bergelombang menyusuri pantai, bukan kedip serentak
++            int f = Math.floorMod(cur + 2 * (col + row), F);
++            g2.drawImage(ov[f], sx, sy, size, size, null);
++        }
++    }
++
++    // ------------------------------------------------------------------ tekstur air
++
++    /** Satu frame tekstur air, N*px x N*px piksel layar. */
++    static BufferedImage renderTexture(int t, int px) {
++        int[] art = new int[N * N];
++        for (int y = 0; y < N; y++) {
++            for (int x = 0; x < N; x++) art[y * N + x] = artPixel(x, y, t);
++        }
++        int size = N * px;
++        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
++        int[] data = new int[size * size];
++        for (int y = 0; y < size; y++) {
++            int ay = y / px;
++            for (int x = 0; x < size; x++) data[y * size + x] = art[ay * N + x / px];
++        }
++        img.setRGB(0, 0, size, size, data, 0, size);
++        return img;
++    }
++
++    /** Warna satu piksel seni (x,y) pada frame t. Rumusnya sengaja dibuat periodik di x, y (N) dan t (F). */
++    static int artPixel(int xi, int yi, int ti) {
++        double x = xi, y = yi, t = ti;
++        int c = BASE;
++
++        // ayunan lebar & pelan (dua warna tipis)
++        double sw = Math.sin(TAU * (1 * x / N + 2 * y / N - t / F) + 0.4)
++                  + 0.8 * Math.sin(TAU * (-2 * x / N + 1 * y / N - t / F) + 2.0)
++                  + 0.5 * Math.sin(TAU * (3 * x / N - 1 * y / N + 2 * t / F));
++        if (sw > 1.05) c = SWELL_L;
++        if (sw < -1.15) c = SWELL_D;
++
++        // garis riak putus-putus: baris bergelombang yang geser ke samping
++        double wob = 0.55 * Math.sin(TAU * (2 * x / N - t / F))
++                   + 0.35 * Math.sin(TAU * (5 * x / N + 1.0 * t / F) + 1.3)
++                   + 0.25 * Math.sin(TAU * (3 * y / N));
++        double s = 10 * y / N + wob / 8.0;
++        double fr = s - Math.floor(s);
++        double dash = Math.sin(TAU * (3 * x / N - t / F) + 2.2 * Math.sin(TAU * (y / N)))
++                    + 0.6 * Math.sin(TAU * (7 * x / N + 2 * t / F) + 0.7 * Math.sin(TAU * 2 * y / N));
++        boolean on = dash > 0.30;
++        if (on && fr >= 0.105 && fr < 0.21) c = DEEP;     // bayangan tipis di bawah riak
++        if (on && fr > 0.0 && fr < 0.105) c = LIGHT;       // riak
++
++        // garis kilau lebih terang, lebih jarang, geser ke arah lain
++        double wob2 = 0.5 * Math.sin(TAU * (3 * x / N + t / F) + 0.8)
++                    + 0.3 * Math.sin(TAU * (4 * x / N - 2 * t / F));
++        double s2 = 7 * y / N + wob2 / 8.0 + 0.37;
++        double fr2 = s2 - Math.floor(s2);
++        double dash2 = Math.sin(TAU * (2 * x / N + t / F) + 1.0 + 1.5 * Math.sin(TAU * (2 * y / N)));
++        if (dash2 > 0.88 && fr2 > 0.0 && fr2 < 0.145) c = CREST;
++
++        // kilatan kecil
++        double sp = Math.sin(TAU * (11 * x / N + 7 * y / N - 3 * t / F))
++                  + Math.sin(TAU * (-9 * x / N + 13 * y / N + 2 * t / F) + 1.0);
++        if (sp > 1.985) c = SPARK;
++        return c;
++    }
++
++    // ------------------------------------------------------------------ lapisan darat + buih
++
++    /**
++     * Bikin F frame lapisan darat untuk satu gambar tile tepi pantai.
++     * Piksel yang warnanya persis warna air dilubangi (transparan), sisanya (rumput, tebing, dll.) tetap.
++     * Piksel air yang dekat darat diwarnai buih, lebarnya naik-turun mengikuti frame.
++     * @return null kalau gambarnya air penuh (tidak ada darat), tidak perlu lapisan.
++     */
++    static BufferedImage[] buildOverlay(BufferedImage src, int px) {
++        int w = src.getWidth(), h = src.getHeight();
++        int bw = Math.max(1, w / ART), bh = Math.max(1, h / ART);
++        int[] rgb = new int[ART * ART];
++        boolean[] land = new boolean[ART * ART];
++        int landCount = 0;
++        for (int ay = 0; ay < ART; ay++) {
++            for (int ax = 0; ax < ART; ax++) {
++                int p = src.getRGB(Math.min(w - 1, ax * bw + bw / 2), Math.min(h - 1, ay * bh + bh / 2));
++                rgb[ay * ART + ax] = p & 0xFFFFFF;
++                boolean transparent = ((p >>> 24) & 0xFF) < 128;
++                boolean water = !transparent && (p & 0xFFFFFF) == BASE;
++                land[ay * ART + ax] = !water && !transparent;
++                if (land[ay * ART + ax]) landCount++;
++            }
++        }
++        if (landCount == 0) return null;
++
++        // jarak tiap piksel ke piksel darat terdekat (satuan piksel seni)
++        double[] dist = new double[ART * ART];
++        for (int ay = 0; ay < ART; ay++) {
++            for (int ax = 0; ax < ART; ax++) {
++                double best = 99;
++                for (int by = 0; by < ART; by++) {
++                    for (int bx = 0; bx < ART; bx++) {
++                        if (!land[by * ART + bx]) continue;
++                        double dx = ax - bx, dy = ay - by;
++                        double d = Math.sqrt(dx * dx + dy * dy);
++                        if (d < best) best = d;
++                    }
++                }
++                dist[ay * ART + ax] = best;
++            }
++        }
++
++        int size = ART * px;
++        BufferedImage[] out = new BufferedImage[F];
++        for (int f = 0; f < F; f++) {
++            double phi = (double) f / F;
++            double swell = 0.5 - 0.5 * Math.cos(TAU * phi);       // 0..1, ombak maju lalu mundur
++            double limit = 1.05 + 1.5 * swell;                     // lebar buih (piksel seni)
++            int[] data = new int[size * size];
++            for (int ay = 0; ay < ART; ay++) {
++                for (int ax = 0; ax < ART; ax++) {
++                    int i = ay * ART + ax;
++                    int argb;
++                    if (land[i]) {
++                        argb = 0xFF000000 | rgb[i];
++                    } else if (dist[i] <= limit) {
++                        double brk = Math.sin(TAU * ((2.0 * ax + 3.0 * ay) / ART - 2.0 * phi));
++                        if (dist[i] <= 1.05) {
++                            // bibir buih: putus-putus kalau ombak lagi surut, nyaris penuh kalau lagi pasang
++                            argb = (brk > 0.9 - 1.5 * swell) ? (0xFF000000 | SPARK) : 0;
++                        } else {
++                            argb = (brk > -0.2) ? (0xFF000000 | CREST) : 0;
++                        }
++                    } else {
++                        argb = 0;
++                    }
++                    if (argb == 0) continue;
++                    for (int yy = 0; yy < px; yy++) {
++                        int row = (ay * px + yy) * size + ax * px;
++                        for (int xx = 0; xx < px; xx++) data[row + xx] = argb;
++                    }
++                }
++            }
++            BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
++            img.setRGB(0, 0, size, size, data, 0, size);
++            out[f] = img;
++        }
++        return out;
++    }
++}

@@ -69,6 +69,8 @@ public int loadedRows = 0;
 ImageIcon interiorBg; // background ruangan interior
 
 public AnimatedObjectManager animObjManager;
+public WaterAnimator waterAnim;          // gelombang air + buih pantai (lihat WaterAnimator.java)
+public FishJumpManager fishManager;      // ikan kuning yang sesekali meloncat (lihat FishJumpManager.java)
 
 public BufferedImage setup(String imageName) {
     BufferedImage image = null;
@@ -125,6 +127,30 @@ public TileM(GamePanel gp) {
     loadBreakableObjects();
     
     animObjManager = new AnimatedObjectManager(getClass());
+
+    // Animasi air: semua tile air + tepi pantainya digambar oleh WaterAnimator (gambar tile aslinya tetap dipakai
+    // sebagai bentuk pantai, cuma airnya yang bergerak). Harus SETELAH getTileImage().
+    BufferedImage[] tileImgs = new BufferedImage[tile.length];
+    for (int i = 0; i < tile.length; i++) if (tile[i] != null) tileImgs[i] = tile[i].image;
+    waterAnim = new WaterAnimator(tileImgs, gp.tileSize);
+
+    // Ikan kuning loncat. Tiap baris = {x, y, jenis}: titik tengah busur loncatan di permukaan air (piksel dunia),
+    // jenis 0 = loncatan pendek, 1 = loncatan jauh. Titik-titiknya dipilih di tengah danau/laut yang cukup luas.
+    // Mau nambah ikan? Tambah baris baru, pastikan sekitar titiknya air semua (270px lebar, 130px atas, 40px bawah).
+    fishManager = new FishJumpManager(getClass(), new int[][] {
+        {2208, 1440, 0},
+        {1440, 1488, 1},
+        {7344, 2016, 0},
+        {6960, 2064, 1},
+        {2496, 144, 0},
+        {6144, 144, 1},
+        {10464, 144, 0},
+        {9888, 7296, 1},
+        {9504, 7296, 0},
+        {2592, 8688, 1},
+        {7008, 12816, 0},
+        {7392, 12816, 1}
+    });
 }
 
 	public void getTileImage() {
@@ -718,6 +744,8 @@ public TileM(GamePanel gp) {
         int startRow = Math.max(0, (topWorld + gp.viewMinY()) / gp.tileSize - 1);
         int endRow   = Math.min(gp.maxWorldRow - 1, (topWorld + gp.viewMaxY()) / gp.tileSize + 1);
 
+        if (waterAnim != null) waterAnim.beginFrame();   // semua tile air frame ini pakai frame animasi yang sama
+
         for (int worldRow = startRow; worldRow <= endRow; worldRow++) {
             for (int worldCol = startCol; worldCol <= endCol; worldCol++) {
                 int tileNum = mapTileNum[worldCol][worldRow];
@@ -736,7 +764,10 @@ public TileM(GamePanel gp) {
                 if (screenX + gp.tileSize > gp.viewMinX() && screenX < gp.viewMaxX() &&
                     screenY + gp.tileSize > gp.viewMinY() && screenY < gp.viewMaxY()) {
 
-                    if (tileAnimImage[tileNum] != null) {
+                    if (waterAnim != null && waterAnim.handles(tileNum)) {
+                        // air: gelombang animasi + buih pantai
+                        waterAnim.drawTile(g2, tileNum, worldCol, worldRow, screenX, screenY, gp.tileSize);
+                    } else if (tileAnimImage[tileNum] != null) {
                         // tile GIF animasi -> ambil frame yang lagi "hidup" sekarang dari Toolkit
                         g2.drawImage(tileAnimImage[tileNum], screenX, screenY,
                                      gp.tileSize, gp.tileSize, null);
@@ -782,6 +813,12 @@ public TileM(GamePanel gp) {
 				drawObject(g2, obj[0], obj[1], obj[2], obj[3], obj[4], fCamX, fCamY, obj[6]);}
 			}
 			
+			// ── Ikan kuning loncat: di atas air, di bawah objek berdiri / player ──
+			if (fishManager != null) {
+			    fishManager.draw(g2, fCamX, fCamY, gp.player.screenX, gp.player.screenY,
+			                     gp.viewMinX(), gp.viewMinY(), gp.viewMaxX(), gp.viewMaxY());
+			}
+
 			// ── PASS 2: Kumpulkan semua standing objects ke drawList ──
 			java.util.List<int[]> drawList = new java.util.ArrayList<>();
 			
