@@ -79,7 +79,6 @@ public class SkillV extends Skill {
     private static final float HIT_DAMAGE_MULT       = 0.5f; // damage tiap pukulan = totalDamage player * ini (min 1)
     private static final float FINISHER_DAMAGE_MULT  = 4f;   // damage pukulan terakhir
     private static final float KNOCKBACK_START_SPEED = 22f;  // px/tick di awal, turun linear sampai 0
-    private static final int   SFX_EVERY_N_HITS      = 2;    // suara punch tiap N pukulan (biar gak bising)
 
     // ----- AFTERIMAGE -----
     private static final int   GHOST_MAX             = 60;
@@ -324,6 +323,7 @@ public class SkillV extends Skill {
         punchFrame = PUNCH_FRAME_SEQUENCE[0];
 
         changePhase(Phase.FREEZE_ZOOM);
+        sound.playUltimateStart(); // pembukaan ultimate
         Main.Log.d("[SkillV] Activated! Total pukulan: " + totalHits);
     }
 
@@ -356,6 +356,7 @@ public class SkillV extends Skill {
     @Override
     protected void onEnd() {
         // Cuma kepanggil kalau batas aman kelewat
+        sound.stopSkillVSounds();
         cleanup();
         cooldown = cooldownMax;
         Main.Log.d("[SkillV] Ended (batas aman).");
@@ -391,6 +392,7 @@ public class SkillV extends Skill {
 
         teleportTo(p);
         triggerFlash(FIRST_FLASH_TICKS, FIRST_FLASH_STRENGTH);
+        sound.playMultiplePunch(); // sampai di tempat mukul yang pertama
 
         hitsDone = 0;
         segmentHitsLeft = randInt(SEGMENT_HITS_MIN, SEGMENT_HITS_MAX);
@@ -427,7 +429,6 @@ public class SkillV extends Skill {
 
         spawnSpark(false);
         triggerFlash(HIT_FLASH_TICKS, HIT_FLASH_STRENGTH);
-        if (hitsDone % SFX_EVERY_N_HITS == 0) sound.playPunch();
 
         // Pukulan terakhir (yang kuat) dipisah, ini masih pukulan biasa
         if (hitsDone >= totalHits - 1) {
@@ -439,7 +440,10 @@ public class SkillV extends Skill {
         segmentHitsLeft--;
         if (segmentHitsLeft <= 0) {
             Placement p = chooseNextSide(false);
-            if (p != null) teleportTo(p);
+            if (p != null) {
+                teleportTo(p);
+                sound.playMultiplePunch(); // pindah ke tempat mukul yang baru
+            }
             segmentHitsLeft = randInt(SEGMENT_HITS_MIN, SEGMENT_HITS_MAX);
         }
     }
@@ -487,7 +491,7 @@ public class SkillV extends Skill {
     private void bigImpactFx() {
         spawnSpark(true);
         triggerFlash(FINISH_FLASH_TICKS, FINISH_FLASH_STRENGTH);
-        sound.playPunch();
+        sound.playLastPunch();
 
         if (target != null) {
             shockX = target.x + target.solidArea.x + target.solidArea.width / 2;
@@ -551,6 +555,7 @@ public class SkillV extends Skill {
     }
 
     private void abort() {
+        sound.stopSkillVSounds();
         cleanup();
         cooldown = cooldownMax;
         isActive = false;
