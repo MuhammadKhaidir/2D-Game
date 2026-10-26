@@ -263,6 +263,7 @@ public class GamePanel extends JPanel implements Runnable{
         spawnGolem(6, 1300, 3000);
         spawnGolem(7, 1500, 3100);
         spawnGolem(8, 2500, 3500);
+        spawnGolem(13, 6700, 2500);
         spawnGolemite(9,  1200, 3050);
         spawnGolemite(10, 1400, 3200);
         spawnGolemite(11, 2400, 3450);
