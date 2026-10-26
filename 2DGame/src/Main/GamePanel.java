@@ -264,6 +264,7 @@ public class GamePanel extends JPanel implements Runnable{
         spawnGolem(7, 1500, 3100);
         spawnGolem(8, 2500, 3500);
         spawnGolem(13, 6700, 2500);
+        spawnGolem(14, 6700, 2600);
         spawnGolemite(9,  1200, 3050);
         spawnGolemite(10, 1400, 3200);
         spawnGolemite(11, 2400, 3450);
@@ -272,7 +273,7 @@ public class GamePanel extends JPanel implements Runnable{
         // PENTING: mulai dari index 14, bukan 12. Golem #13 ada di atas, dan kalau slime
         // mulai dari 12 maka slime ke-2 menimpa monsters[13] (golem-nya hilang).
         // Slime sekarang pakai index 14..43 (array monsters ukurannya 50).
-        spawnSlimesRandom(14, 30, 700, 2500, 5000, 5000);
+        spawnSlimesRandom(15, 30, 700, 2500, 5000, 5000);
 
         addMouseListener(new MouseAdapter() {
             @Override
