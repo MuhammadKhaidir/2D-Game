@@ -324,6 +324,7 @@ public class player extends Entity {
     }
     public void startPunch() {
         if (jumpState != JumpState.NONE) return;
+        if (skillManager != null && skillManager.skillV.isActive) return; // SkillV: input dikunci
 
         if (attackState == AttackState.NONE) {
             if (comboWindowTimer > 0) {
@@ -359,6 +360,7 @@ public class player extends Entity {
 
     public void takeDamage(int dmg) {
         if (isDead) return;
+        if (skillManager != null && skillManager.skillV.isActive) return; // SkillV: player kebal selama skill
         if (dodge > 0) {
             int chance = Math.min(dodge, 50);
             if ((int)(Math.random() * 100) < chance) return;
@@ -510,6 +512,20 @@ public class player extends Entity {
         }
 
         skillManager.update();
+        if (KeyH.vPressed) {
+            skillManager.activateV();
+            KeyH.vPressed = false;
+        }
+
+        // SkillV lagi jalan: input dikunci (gerak, serang, lompat, skill lain dilewati)
+        if (skillManager.skillV.isActive) {
+            KeyH.zPressed = false;
+            KeyH.xPressed = false;
+            KeyH.cPressed = false;
+            isMoving = false;
+            return;
+        }
+
         if (KeyH.zPressed) {
             skillManager.activateZ();
             KeyH.zPressed = false;
@@ -1035,8 +1051,16 @@ public class player extends Entity {
             }
             return;
         }
-        
-        
+
+        // SkillV: frame attack di-loop oleh skill (frame-nya diatur SkillV, kita tinggal gambar)
+        if (skillManager.skillV.isPunching()) {
+            skillManager.draw(g2); // afterimage di belakang player
+            drawShadow(g2);
+            drawPunchFrame(g2, skillManager.skillV.getPunchFrame(), direction, screenX, screenY, 1f, null);
+            return;
+        }
+
+
         if (attackState != AttackState.NONE) {
             if (attackType == 1) {
                 switch (direction) {
@@ -1252,6 +1276,91 @@ public class player extends Entity {
     
     public boolean isNotPunching() {
         return attackState == AttackState.NONE;
+    }
+
+    // ===== SKILL V (pukulan bertubi-tubi) =====
+    private final java.util.HashMap<String, BufferedImage> punchTintCache = new java.util.HashMap<>();
+
+    /** SkillV cuma boleh mulai kalau player hidup & lagi gak lompat. */
+    public boolean canUseSkill() {
+        return !isDead && jumpState == JumpState.NONE;
+    }
+
+    /** Batalin serangan/combo yang lagi jalan biar skill mulai dari pose bersih. */
+    public void cancelAttack() {
+        attackState = AttackState.NONE;
+        attackTimer = 0;
+        attackTotalTimer = 0;
+        attackFrameIndex = 0;
+        attackType = 0;
+        comboWindowTimer = 0;
+        hasComboInput = false;
+        attackHit = false;
+        wooshPlayed = false;
+    }
+
+    /**
+     * Gambar satu frame pukulan tangan kosong (attackUp/Down/Left/RightFrames, index 0-3) beserta baju & helm.
+     * (drawX, drawY) = pojok kiri-atas sel player di layar, sama kayak (screenX, screenY).
+     * alpha < 1 buat bayangan; ghostTint != null mewarnai siluetnya (afterimage).
+     */
+    public void drawPunchFrame(Graphics2D g2, int frameIndex, String dir, int drawX, int drawY, float alpha, Color ghostTint) {
+        if (alpha <= 0f) return;
+        BufferedImage[] frames = punchFramesFor(dir);
+        int idx = Math.max(0, Math.min(frames.length - 1, frameIndex));
+        int size = gp.tileSize * 2;
+        int px = drawX - gp.tileSize / 2;
+        int py = drawY - (gp.tileSize / 3);
+
+        java.awt.Composite old = g2.getComposite();
+        if (alpha < 1f) g2.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, Math.min(1f, alpha)));
+
+        if (ghostTint == null) {
+            drawPunchLayers(g2, frames, idx, dir, px, py, size);
+        } else {
+            g2.drawImage(getTintedPunchFrame(frames, idx, dir, ghostTint, size), px, py, null);
+        }
+        g2.setComposite(old);
+    }
+
+    private BufferedImage[] punchFramesFor(String dir) {
+        if ("up".equals(dir))    return attackUpFrames;
+        if ("left".equals(dir))  return attackLeftFrames;
+        if ("right".equals(dir)) return attackRightFrames;
+        return attackDownFrames;
+    }
+
+    // Urutan layer sama kayak serangan biasa: badan -> baju -> helm (senjata sengaja gak ikut, ini pukulan tangan kosong)
+    private void drawPunchLayers(Graphics2D g, BufferedImage[] frames, int idx, String dir, int px, int py, int size) {
+        if (frames[idx] != null) g.drawImage(frames[idx], px, py, size, size, null);
+        if (currentCloth != null) {
+            BufferedImage cloth = currentCloth.getFrame(1, idx, dir);
+            if (cloth != null) g.drawImage(cloth, px, py, size, size, null);
+        }
+        if (currentHelm != null) {
+            BufferedImage helm = currentHelm.getAttackFrame(1, idx, dir);
+            if (helm != null) g.drawImage(helm, px, py, size, size, null);
+        }
+    }
+
+    // Siluet berwarna untuk afterimage. Di-cache per (arah, frame, baju, helm, warna) biar gak bikin gambar baru tiap frame.
+    private BufferedImage getTintedPunchFrame(BufferedImage[] frames, int idx, String dir, Color tint, int size) {
+        String key = dir + ":" + idx + ":" + System.identityHashCode(currentCloth) + ":"
+                + System.identityHashCode(currentHelm) + ":" + tint.getRGB();
+        BufferedImage cached = punchTintCache.get(key);
+        if (cached != null) return cached;
+
+        BufferedImage buf = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gb = buf.createGraphics();
+        drawPunchLayers(gb, frames, idx, dir, 0, 0, size);
+        gb.setComposite(java.awt.AlphaComposite.SrcAtop); // warnai cuma bagian yang ada gambarnya
+        gb.setColor(tint);
+        gb.fillRect(0, 0, size, size);
+        gb.dispose();
+
+        if (punchTintCache.size() > 64) punchTintCache.clear();
+        punchTintCache.put(key, buf);
+        return buf;
     }
 
     public void drawStaminaBar(Graphics2D g2) {

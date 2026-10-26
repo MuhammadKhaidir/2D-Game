@@ -18,6 +18,7 @@ public class SkillManager {
     public SkillZ skillZ;
     public SkillX skillX;
     public SkillC skillC;
+    public SkillV skillV;
 
     public SkillManager(GamePanel gp, player owner) {
         this.gp = gp;
@@ -26,10 +27,12 @@ public class SkillManager {
         skillZ = new SkillZ(gp, owner);
         skillX = new SkillX(gp, owner);
         skillC = new SkillC(gp, owner);
+        skillV = new SkillV(gp, owner);
 
         skills.add(skillZ);
         skills.add(skillX);
         skills.add(skillC);
+        skills.add(skillV);
     }
 
     // ===== UPDATE SEMUA SKILL =====
@@ -37,6 +40,7 @@ public class SkillManager {
         skillZ.update();
         skillX.update();
         skillC.update(); // SkillC punya update sendiri (toggle logic)
+        skillV.update();
     }
 
     // ===== DRAW SEMUA SKILL =====
@@ -46,7 +50,19 @@ public class SkillManager {
         }
     }
 
+    // ===== OVERLAY LAYAR PENUH (dipanggil GamePanel.paintComponent, dekat drawDarkOverlay) =====
+    public void drawOverlay(Graphics2D g2) {
+        skillV.drawOverlay(g2);
+    }
+
+    // SkillV lagi jalan? (input & interaksi dikunci)
+    public boolean isSkillVActive() { return skillV.isActive; }
+
+    // SkillV lagi nge-freeze dunia? (monster, NPC, minion berhenti)
+    public boolean isWorldFrozen()  { return skillV.isWorldFrozen(); }
+
     public void activateZ() { skillZ.activate(); }
     public void activateX() { skillX.activate(); }
     public void toggleC()   { skillC.toggle(); }
+    public void activateV() { skillV.activate(); }
 }

@@ -434,6 +434,7 @@ public class GamePanel extends JPanel implements Runnable{
 	/** Zoom boleh dipakai cuma pas lagi main di luar & gak ada UI/dialog yang kebuka. */
 	public boolean canZoom() {
 	    if (mainMenu != null && mainMenu.active) return false;
+	    if (isSkillVActive()) return false; // zoom lagi dikendalikan skill
 	    if (chatMode || dialogOn || inspectOn) return false;
 	    if (backpack != null && backpack.visible) return false;
 	    if (statUI != null && statUI.visible) return false;
@@ -464,6 +465,22 @@ public class GamePanel extends JPanel implements Runnable{
 
 	public void resetZoom() {
 	    setTargetZoom(1.0f);
+	}
+
+	/** Sama kayak setTargetZoom, tapi tanpa munculin hint "Zoom: x%" (dipakai skill sinematik, mis. SkillV). */
+	public void setTargetZoomSilent(float z) {
+	    setTargetZoom(z);
+	    zoomHintTimer = 0;
+	}
+
+	/** SkillV lagi jalan (input & interaksi dikunci). */
+	public boolean isSkillVActive() {
+	    return player != null && player.skillManager != null && player.skillManager.isSkillVActive();
+	}
+
+	/** SkillV lagi nge-freeze dunia: monster, NPC, dan minion berhenti update. */
+	public boolean isWorldFrozen() {
+	    return player != null && player.skillManager != null && player.skillManager.isWorldFrozen();
 	}
 
 	/** Dipanggil tiap frame: zoom jalan pelan-pelan ke targetZoom (smooth). */
@@ -941,6 +958,13 @@ public class GamePanel extends JPanel implements Runnable{
 		updateZoom(); // smooth zoom in/out
 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
 
+		// SkillV lagi jalan: dialog / inspect NPC / buka peti / pintu & keluar domain (E, ESC) dikunci biar skill gak ke-pause
+		if (isSkillVActive()) {
+		    KeyH.interactPressed = false;
+		    KeyH.inspectPressed = false;
+		    KeyH.escPressed = false;
+		}
+
 		// TOKO POTION KEBUKA → dunia berhenti (buff juga ikut berhenti), cuma ESC yang diproses
 		if (potionShop != null && potionShop.visible) {
 		    potionShop.update();
@@ -982,8 +1006,8 @@ public class GamePanel extends JPanel implements Runnable{
 
 		sunsetMode = sunsetIntensity > 0.01f;
 		
-		// UPDATE MONSTER (HANYA SAAT OUTSIDE)
-		if (gameState == GameState.OUTSIDE) {
+		// UPDATE MONSTER (HANYA SAAT OUTSIDE, dan gak lagi di-freeze SkillV)
+		if (gameState == GameState.OUTSIDE && !isWorldFrozen()) {
 		    for (int i = 0; i < monsters.length; i++) {
 		    	if (monsters[i] != null) {
 		    	    if (!monsters[i].isDead
@@ -1198,9 +1222,11 @@ public class GamePanel extends JPanel implements Runnable{
 	    // 2. UPDATE NORMAL
 	    player.update();
 
-	    for (int i = 0; i < npc.length; i++) {
-	        if (npc[i] != null) {
-	            npc[i].update();
+	    if (!isWorldFrozen()) { // SkillV nge-freeze NPC juga
+	        for (int i = 0; i < npc.length; i++) {
+	            if (npc[i] != null) {
+	                npc[i].update();
+	            }
 	        }
 	    }
 
@@ -1267,7 +1293,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    houseManager.update();
 	    domainManager.update(); 
 	    
-	    if (deathTotemManager != null) {
+	    if (deathTotemManager != null && !isWorldFrozen()) { // minion ikut berhenti pas SkillV nge-freeze dunia
             deathTotemManager.update();
         }
 	    if (speechBubble != null) {
@@ -1420,6 +1446,7 @@ public void paintComponent(Graphics g) {
         if (speechBubble != null) speechBubble.draw(g2);
         g2.setTransform(domainTx);
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
+        if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
 
         if (hotbar != null) hotbar.draw(g2);
         if (buffBar != null) buffBar.draw(g2);
@@ -1473,6 +1500,7 @@ public void paintComponent(Graphics g) {
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
         drawDarkOverlay(g2);
         drawSunsetOverlay(g2);
+        if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
 
         // UI saat OUTSIDE
         if (hotbar != null) hotbar.draw(g2);

@@ -58,6 +58,9 @@ public class DomainManager {
     private boolean fadeIn = false;
     private Runnable onFadeComplete;
 
+    /** True selama transisi fade masuk/keluar domain atau room lagi jalan (SkillV gak boleh mulai di sini). */
+    public boolean isFading() { return fading; }
+
     public String getActiveDomainId() {
         return activeDomain != null ? activeDomain.id : null;
     }
@@ -286,12 +289,17 @@ public class DomainManager {
             return;
         }
 
+        // SkillV nge-freeze musuh domain (fade, pintu, merchant tetap jalan seperti biasa)
+        boolean frozen = gp.isWorldFrozen();
+
         if (activeRoom == null) {
             // Lagi di interior domain utama (Tomb) — bisa masuk room lewat pintu
             checkEnterRoom();
             checkExitPoint();
-            for (Skeleton sk : skeletons) sk.update();
-            for (Golemite g : golemites) g.update();
+            if (!frozen) {
+                for (Skeleton sk : skeletons) sk.update();
+                for (Golemite g : golemites) g.update();
+            }
             if (darkMerchant != null) {
                 darkMerchant.update();
                 checkMerchantInteract();
@@ -301,7 +309,7 @@ public class DomainManager {
             checkBossSpawnAltar();
             checkBossSpawnConfirm();
 
-            if (bossSpawnCountdownActive) {
+            if (bossSpawnCountdownActive && !frozen) {
                 bossSpawnCountdownTimer--;
                 if (bossSpawnCountdownTimer <= 0) {
                     bossSpawnCountdownActive = false;
@@ -312,14 +320,16 @@ public class DomainManager {
                 }
             }
 
-            if (bossSkeleton != null) {
+            if (bossSkeleton != null && !frozen) {
                 bossSkeleton.update();
                 if (!bossSkeleton.alive && bossSkeleton.isDeathAnimDone()) {
                     bossSkeleton = null; // altar otomatis kepake lagi setelah ini
                 }
             }
-            for (Skeleton sk : roomSkeletons) sk.update();
-            
+            if (!frozen) {
+                for (Skeleton sk : roomSkeletons) sk.update();
+            }
+
         }
     }
 

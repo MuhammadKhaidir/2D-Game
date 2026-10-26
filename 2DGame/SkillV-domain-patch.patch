@@ -1,0 +1,88 @@
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index e642743..81549bc 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -958,10 +958,11 @@ public class GamePanel extends JPanel implements Runnable{
+ 		updateZoom(); // smooth zoom in/out
+ 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
+ 
+-		// SkillV lagi jalan: dialog / inspect NPC / buka peti dikunci biar skill gak ke-pause
++		// SkillV lagi jalan: dialog / inspect NPC / buka peti / pintu & keluar domain (E, ESC) dikunci biar skill gak ke-pause
+ 		if (isSkillVActive()) {
+ 		    KeyH.interactPressed = false;
+ 		    KeyH.inspectPressed = false;
++		    KeyH.escPressed = false;
+ 		}
+ 
+ 		// TOKO POTION KEBUKA → dunia berhenti (buff juga ikut berhenti), cuma ESC yang diproses
+@@ -1445,6 +1446,7 @@ public void paintComponent(Graphics g) {
+         if (speechBubble != null) speechBubble.draw(g2);
+         g2.setTransform(domainTx);
+         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
++        if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
+ 
+         if (hotbar != null) hotbar.draw(g2);
+         if (buffBar != null) buffBar.draw(g2);
+diff --git a/2DGame/src/World/DomainManager.java b/2DGame/src/World/DomainManager.java
+index b57db7a..df8d3f7 100644
+--- a/2DGame/src/World/DomainManager.java
++++ b/2DGame/src/World/DomainManager.java
+@@ -58,6 +58,9 @@ public class DomainManager {
+     private boolean fadeIn = false;
+     private Runnable onFadeComplete;
+ 
++    /** True selama transisi fade masuk/keluar domain atau room lagi jalan (SkillV gak boleh mulai di sini). */
++    public boolean isFading() { return fading; }
++
+     public String getActiveDomainId() {
+         return activeDomain != null ? activeDomain.id : null;
+     }
+@@ -286,12 +289,17 @@ public class DomainManager {
+             return;
+         }
+ 
++        // SkillV nge-freeze musuh domain (fade, pintu, merchant tetap jalan seperti biasa)
++        boolean frozen = gp.isWorldFrozen();
++
+         if (activeRoom == null) {
+             // Lagi di interior domain utama (Tomb) — bisa masuk room lewat pintu
+             checkEnterRoom();
+             checkExitPoint();
+-            for (Skeleton sk : skeletons) sk.update();
+-            for (Golemite g : golemites) g.update();
++            if (!frozen) {
++                for (Skeleton sk : skeletons) sk.update();
++                for (Golemite g : golemites) g.update();
++            }
+             if (darkMerchant != null) {
+                 darkMerchant.update();
+                 checkMerchantInteract();
+@@ -301,7 +309,7 @@ public class DomainManager {
+             checkBossSpawnAltar();
+             checkBossSpawnConfirm();
+ 
+-            if (bossSpawnCountdownActive) {
++            if (bossSpawnCountdownActive && !frozen) {
+                 bossSpawnCountdownTimer--;
+                 if (bossSpawnCountdownTimer <= 0) {
+                     bossSpawnCountdownActive = false;
+@@ -312,14 +320,16 @@ public class DomainManager {
+                 }
+             }
+ 
+-            if (bossSkeleton != null) {
++            if (bossSkeleton != null && !frozen) {
+                 bossSkeleton.update();
+                 if (!bossSkeleton.alive && bossSkeleton.isDeathAnimDone()) {
+                     bossSkeleton = null; // altar otomatis kepake lagi setelah ini
+                 }
+             }
+-            for (Skeleton sk : roomSkeletons) sk.update();
+-            
++            if (!frozen) {
++                for (Skeleton sk : roomSkeletons) sk.update();
++            }
++
+         }
+     }
+ 
