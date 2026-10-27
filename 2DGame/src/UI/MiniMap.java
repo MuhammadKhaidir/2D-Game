@@ -190,7 +190,7 @@ public class MiniMap {
         for (int col = 0; col < cols; col++) {
             int tx = Math.min(mapW - 1, col * mapW / cols);
             for (int row = 0; row < rows; row++) {
-                int t = tm.mapTileNum[col][row];
+                int t = tm.minimapTile(col, row); // salju / es dihitung dari generator, tidak tergantung chunk yang termuat
                 if (t == 55 || t == 40 || t == 41) t = 0; // sama kayak TileM.draw: objek breakable di atas rumput
                 if (t < 0 || t >= tileColor.length) t = 0;
                 int ty = Math.min(mapH - 1, row * mapH / rows);

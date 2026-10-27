@@ -38,6 +38,11 @@ public class breakable {
     private GamePanel gp;
     private Rectangle registeredCollision;
 
+    // Posisi & ukuran rectangle collision batang/pangkal = lebar (atau tinggi) gambar dibagi angka ini.
+    // Default = rumus lama (pohon bulat): x = w/3, y = h/1.6, lebar = w/3.5, tinggi = h/6.5.
+    // Pohon cemara, batu, kristal dll mengaturnya sendiri lewat setCollisionFractions().
+    private double divX = 3.0, divY = 1.6, divW = 3.5, divH = 6.5;
+
     // Hit flash
     public boolean isHit = false;
     public int hitFlashTimer = 0;
@@ -52,6 +57,7 @@ public class breakable {
     // ===== ANIMASI POHON HANCUR/TUMBANG =====
     public boolean isFalling = false; 
     private BufferedImage[] downFrames;
+    private volatile boolean retired = false;   // true setelah unregister(): objek buangan chunk
     private int downAnimTimer = 0;
     private int currentDownFrameIndex = 0;
     private float fallAlpha = 1.0f;
@@ -75,13 +81,36 @@ public class breakable {
 
         solidArea = new Rectangle(worldX, worldY, width, height);
 
-        double cx = worldX + (double) width  / 3.0;
-        double cy = worldY + (double) height / 1.6;
-        double cw = (double) width  / 3.5;
-        double ch = (double) height / 6.5;
-
-        registeredCollision = new Rectangle((int) cx, (int) cy, (int) cw, (int) ch);
+        registeredCollision = makeCollision(worldX, worldY, width, height);
         gp.objCol.objects.add(registeredCollision);
+    }
+
+    private Rectangle makeCollision(int wx, int wy, int w, int h) {
+        double cx = wx + (double) w / divX;
+        double cy = wy + (double) h / divY;
+        double cw = (double) w / divW;
+        double ch = (double) h / divH;
+        return new Rectangle((int) cx, (int) cy, (int) cw, (int) ch);
+    }
+
+    /**
+     * Atur collision pangkal (pecahan dari lebar/tinggi gambar): x, y = pojok kiri-atas, w, h = ukuran.
+     * Boleh dipanggil sesudah konstruktor; rectangle yang lama diganti.
+     */
+    public void setCollisionFractions(double x, double y, double w, double h) {
+        divX = 1.0 / x; divY = 1.0 / y; divW = 1.0 / w; divH = 1.0 / h;
+        boolean active = registeredCollision != null && gp.objCol.objects.remove(registeredCollision);
+        registeredCollision = makeCollision(initWorldX, initWorldY, initWidth, initHeight);
+        if (active) gp.objCol.objects.add(registeredCollision);
+    }
+
+    /** Lepas collision objek ini dari dunia (dipakai waktu chunk dibuang). Objek tidak boleh dipakai lagi sesudahnya. */
+    public synchronized void unregister() {
+        retired = true;                       // update() / respawn() tidak boleh menghidupkan objek ini lagi (update() dipanggil dari thread gambar)
+        if (registeredCollision != null) gp.objCol.objects.remove(registeredCollision);
+        registeredCollision = null;
+        destroyed = true;
+        solidArea = new Rectangle(0, 0, 0, 0);
     }
 
     public void setIdleFrames(BufferedImage[] frames) { this.idleFrames = frames; }
@@ -98,6 +127,7 @@ public class breakable {
     }
 
     public void update() {
+        if (retired) return;                  // sudah dilepas dari dunia (chunk dibuang)
         // Logika timer flash bawaan
         if (isHit) {
             hitFlashTimer--;
@@ -175,7 +205,7 @@ public class breakable {
     }
 
     public void takeDamage(int dmg, GamePanel gp) {
-        if (destroyed || isFalling) return;
+        if (retired || destroyed || isFalling) return;
 
         hp -= dmg;
         isHit = true;
@@ -229,7 +259,8 @@ public class breakable {
         }
     }
 
-    private void respawn() {
+    private synchronized void respawn() {
+        if (retired) return;
         hp                   = maxHp;
         destroyed            = false;
         waitingRespawn       = false;
@@ -249,12 +280,7 @@ public class breakable {
 
         solidArea = new Rectangle(initWorldX, initWorldY, initWidth, initHeight);
 
-        double cx = initWorldX + (double) initWidth  / 3.0;
-        double cy = initWorldY + (double) initHeight / 1.6;
-        double cw = (double) initWidth  / 3.5;
-        double ch = (double) initHeight / 6.5;
-
-        registeredCollision = new Rectangle((int) cx, (int) cy, (int) cw, (int) ch);
+        registeredCollision = makeCollision(initWorldX, initWorldY, initWidth, initHeight);
         gp.objCol.objects.add(registeredCollision);
     }
 }

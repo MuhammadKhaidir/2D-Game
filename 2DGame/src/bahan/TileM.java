@@ -18,6 +18,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -72,6 +74,17 @@ public AnimatedObjectManager animObjManager;
 public WaterAnimator waterAnim;          // gelombang air + buih pantai (lihat WaterAnimator.java)
 public FishJumpManager fishManager;      // ikan kuning yang sesekali meloncat (lihat FishJumpManager.java)
 
+// ==== DUNIA YANG DIPERLUAS + BIOME ES ====
+// Peta lama (map01.txt, 243 x 321 tile) tetap utuh. Di luarnya dunia disambung sampai WorldGen.WORLD_COLS x WORLD_ROWS tile
+// oleh generator (WorldGen), dan chunk-nya dimuat / dibuang mengikuti player oleh ChunkManager.
+public WorldGen gen;                     // generator dunia: area baru, kekuatan salju (ice), danau beku, sebaran objek
+public ChunkManager chunks;              // peta dinamis (lihat ChunkManager.java)
+private IceSprites iceSprites;           // sprite cemara / pohon mati / batu es / kristal
+private int poolBase;                    // slot pertama di breakables[] yang dipinjamkan ke ChunkManager
+private static final int BREAKABLE_POOL = 1500;
+// gambar pohon bulat + versi bekunya (dipakai pohon hutan lama di pinggiran salju dan pohon hutan area baru)
+private BufferedImage[] oakIdle, oakHit, oakDown, frostIdle, frostHit, frostDown;
+
 public BufferedImage setup(String imageName) {
     BufferedImage image = null;
     try {
@@ -122,8 +135,11 @@ public TileM(GamePanel gp) {
     loadAnimatedTile(62, "/Aset/GrassGiff.gif");
 
     loadMap("/Aset/map01.txt");
+    prepareWorld();            // peta lama -> dunia yang diperluas (lihat WorldGen)
     loadObjectCollision();
+    releaseGeneratedArea();    // sel area baru dikosongkan lagi; ChunkManager mengisinya waktu chunk dimuat
 
+    iceSprites = new IceSprites(getClass());
     loadBreakableObjects();
     
     animObjManager = new AnimatedObjectManager(getClass());
@@ -151,6 +167,9 @@ public TileM(GamePanel gp) {
         {7008, 12816, 0},
         {7392, 12816, 1}
     });
+
+    chunks = new ChunkManager(gp, this, gen, iceSprites, poolBase, BREAKABLE_POOL,
+            oakIdle, oakHit, oakDown, frostIdle, frostHit, frostDown);
 }
 
 	public void getTileImage() {
@@ -271,10 +290,79 @@ public TileM(GamePanel gp) {
 			
 			tile[14].collision = true;
 			tile[10].collision = true;	
+
+			addIceTiles();
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 		}}
+	/**
+	 * Tile baru untuk dunia yang diperluas:
+	 *  76-78  = rumput (gambar sama dengan tile 4 / 6 / 10, tapi TIDAK collision) untuk area baru dan bekas tanah salju lama
+	 *  100    = salju, 131 = es (polos; cuma dipakai minimap)
+	 *  140-151 = tile tepi pantai versi salju (urutan sama dengan WorldGen.SHORE_BASE)
+	 */
+	private void addIceTiles() {
+		int[] grassSrc = {4, 6, 10};
+		for (int i = 0; i < 3; i++) {
+			tile[WorldGen.GRASS[i]] = new Tile();
+			tile[WorldGen.GRASS[i]].image = tile[grassSrc[i]].image;
+		}
+		tile[WorldGen.TILE_SNOW] = new Tile();
+		tile[WorldGen.TILE_SNOW].image = IceSprites.flat(0xE8F1FA);
+		tile[WorldGen.TILE_ICE] = new Tile();
+		tile[WorldGen.TILE_ICE].image = IceSprites.flat(0x9ACFEF);
+		for (int i = 0; i < WorldGen.SHORE_BASE.length; i++) {
+			Tile base = tile[WorldGen.SHORE_BASE[i]];
+			Tile t = new Tile();
+			t.image = IceSprites.snowShore(base.image);
+			t.collision = base.collision;
+			tile[WorldGen.SNOW_SHORE_FIRST + i] = t;
+		}
+	}
+
+	/**
+	 * Sambungkan peta lama ke dunia yang diperluas:
+	 *  - tanah salju lama (tile 67 / 68, putih polos) diganti rumput; salju & esnya sekarang digambar generator (IceGround)
+	 *  - ujung timur laut utara dibereskan supaya nyambung ke laut area baru
+	 *  - tile area baru diisi SEMENTARA supaya collision air laut pembatas ikut terhitung
+	 */
+	private void prepareWorld() {
+		int coreC = loadedCols, coreR = loadedRows;
+		for (int c = 0; c < coreC; c++) {
+			for (int r = 0; r < coreR; r++) {
+				int t = mapTileNum[c][r];
+				if (t == 67 || t == 68) mapTileNum[c][r] = WorldGen.GRASS[(WorldGen.h2(c, r, 7) >>> 4) % 3];
+			}
+		}
+		if (coreC == 243) { // kolom terakhir peta lama: tile 14 (air, darat di timur) -> air penuh, sambung ke laut baru
+			for (int r = 0; r < 6; r++) mapTileNum[coreC - 1][r] = 2;
+			mapTileNum[coreC - 1][6] = 17;
+		}
+		gen = new WorldGen(mapTileNum, coreC, coreR);
+		for (int c = 0; c < WorldGen.WORLD_COLS; c++) {
+			for (int r = 0; r < WorldGen.WORLD_ROWS; r++) {
+				if (!gen.inCore(c, r)) mapTileNum[c][r] = gen.groundTile(c, r);
+			}
+		}
+		loadedCols = WorldGen.WORLD_COLS;
+		loadedRows = WorldGen.WORLD_ROWS;
+	}
+
+	/** Kosongkan lagi sel di luar peta lama (jadi "air" yang belum dimuat); ChunkManager mengisinya waktu chunk aktif. */
+	private void releaseGeneratedArea() {
+		for (int c = 0; c < gp.maxWorldCol; c++) {
+			for (int r = 0; r < gp.maxWorldRow; r++) {
+				if (!gen.inCore(c, r)) mapTileNum[c][r] = 2;
+			}
+		}
+	}
+
+	/** Peta tile untuk minimap: tidak tergantung chunk sudah dimuat atau belum. */
+	public int minimapTile(int col, int row) {
+		return gen.surfaceTile(col, row);
+	}
+
 	/** Putar gambar 90 derajat searah jarum jam (lebar dan tinggi tertukar). */
 	static BufferedImage rotateCW(BufferedImage srcImg) {
 	    int w = srcImg.getWidth(), h = srcImg.getHeight();
@@ -658,8 +746,10 @@ public TileM(GamePanel gp) {
         	            ,{11281, 14894, 190, 190, 55, 500}
         	        };
 
-        breakables = new breakable[data.length];
-        breakableTile = new int[data.length];
+        data = keepOutsideIce(data);
+        poolBase = data.length;                       // slot sesudah ini dipinjamkan ke ChunkManager (objek hasil generator)
+        breakables = new breakable[data.length + BREAKABLE_POOL];
+        breakableTile = new int[data.length + BREAKABLE_POOL];
         for (int i = 0; i < data.length; i++) breakableTile[i] = data[i][4];
 
         BufferedImage[] treeIdleFrames = new BufferedImage[2];
@@ -685,6 +775,8 @@ public TileM(GamePanel gp) {
             System.out.println("Gagal me-load gambar aset Pohon! Periksa folder res/Aset/");
             e.printStackTrace();
         }
+        oakIdle = treeIdleFrames; oakHit = treeHitFrames; oakDown = treeDownFrames;
+        frostIdle = frostAll(treeIdleFrames); frostHit = frostAll(treeHitFrames); frostDown = frostAll(treeDownFrames);
 
         for (int i = 0; i < data.length; i++) {
             int tileIndex = data[i][4];
@@ -695,9 +787,16 @@ public TileM(GamePanel gp) {
             // (ada bayangan) biar semua data pohon lama gak perlu diubah.
             int shadowFlag = (data[i].length >= 7) ? data[i][6] : 1;
 
+            // pohon di pinggiran salju: versi "kena embun beku" (puncak daun bersalju)
+            boolean frosty = tileIndex == 55 && gen.ice((data[i][0] + data[i][2] / 2f) / gp.tileSize,
+                    (data[i][1] + data[i][3]) / (float) gp.tileSize) > WorldGen.FROST_ICE;
+            BufferedImage[] idleSet = frosty ? frostIdle : treeIdleFrames;
+            BufferedImage[] hitSet  = frosty ? frostHit  : treeHitFrames;
+            BufferedImage[] downSet = frosty ? frostDown : treeDownFrames;
+
             BufferedImage img;
-            if (tileIndex == 55 && treeIdleFrames[0] != null) {
-                img = treeIdleFrames[0];
+            if (tileIndex == 55 && idleSet[0] != null) {
+                img = idleSet[0];
             } else {
                 img = tile[tileIndex].image;
             }
@@ -716,14 +815,20 @@ public TileM(GamePanel gp) {
                 breakables[i].hasShadow = (shadowFlag != 0);
 
                if (tileIndex == 55) {
-                breakables[i].setIdleFrames(treeIdleFrames);
-                breakables[i].setHitFrames(treeHitFrames);
-                breakables[i].setDownFrames(treeDownFrames); 
+                breakables[i].setIdleFrames(idleSet);
+                breakables[i].setHitFrames(hitSet);
+                breakables[i].setDownFrames(downSet); 
             }
         }
     }
 	
 	
+	private static BufferedImage[] frostAll(BufferedImage[] in) {
+		BufferedImage[] out = new BufferedImage[in.length];
+		for (int i = 0; i < in.length; i++) out[i] = in[i] == null ? null : IceSprites.frost(in[i]);
+		return out;
+	}
+
 	public void draw(Graphics2D g2) {
         int worldWidth  = gp.maxWorldCol * gp.tileSize;
         int worldHeight = gp.maxWorldRow * gp.tileSize;
@@ -748,6 +853,9 @@ public TileM(GamePanel gp) {
 
         for (int worldRow = startRow; worldRow <= endRow; worldRow++) {
             for (int worldCol = startCol; worldCol <= endCol; worldCol++) {
+                // tile rumput yang tertutup penuh salju / es tidak perlu digambar (lihat ChunkManager.isCovered)
+                if (chunks != null && chunks.isCovered(worldCol, worldRow)) continue;
+
                 int tileNum = mapTileNum[worldCol][worldRow];
                 
                 // 🔥 BARU: Jika tile map mendeteksi objek breakable (pohon 55, batu 40, 41)
@@ -778,6 +886,9 @@ public TileM(GamePanel gp) {
                 }
             }
         }
+
+        // Peta dinamis: gambar kulit salju / es di atas tile dasar
+        if (chunks != null) chunks.drawGround(g2, camX, camY);
     }
 	
 	
@@ -834,21 +945,25 @@ public TileM(GamePanel gp) {
 			// Breakables (pohon tebang, batu)
 			if (breakables != null) {
 			    for (int i = 0; i < breakables.length; i++) {
-			        if (breakables[i] == null) continue;
+			        breakable bk = breakables[i];   // satu kali baca: slot kolam bisa dikosongkan thread game kapan saja
+			        if (bk == null) continue;
 			        
 			        // UPDATE selalu dipanggil, termasuk saat destroyed (biar timer respawn jalan)
-			        breakables[i].update();
+			        bk.update();
 			        
 			        // Tapi hanya masuk drawList kalau belum destroyed
-			        if (breakables[i].destroyed) continue;
+			        if (bk.destroyed) continue;
 			        // pohon sekarang lebih banyak: yang jauh di luar layar tidak usah ikut di-sort
-			        if (!nearView(breakables[i].worldX, breakables[i].worldY, breakables[i].width, breakables[i].height, fCamX, fCamY)) continue;
+			        if (!nearView(bk.worldX, bk.worldY, bk.width, bk.height, fCamX, fCamY)) continue;
 			        
-			        int sortY = breakables[i].worldY + breakables[i].height - 10;
+			        int sortY = bk.worldY + bk.height - 10;
 			        drawList.add(new int[]{sortY, 1, i});
 			    }
 			}
 			
+			
+			// Hiasan hasil generator (semak dll) di chunk yang aktif
+			if (chunks != null) chunks.collectDecor(drawList, fCamX, fCamY, 150);
 			
 			// NPC
 			for (int i = 0; i < npcs.length; i++) {
@@ -901,6 +1016,7 @@ public TileM(GamePanel gp) {
 			}
 			case 1: { // breakable
 			    breakable b = breakables[index];
+			    if (b == null) break;   // chunk-nya keburu dibuang
 			    int sx = b.worldX - fCamX + gp.player.screenX;
 			    int sy = b.worldY - fCamY + gp.player.screenY;
 			    if (sx + b.width >= gp.viewMinX() && sx <= gp.viewMaxX() &&
@@ -946,6 +1062,10 @@ public TileM(GamePanel gp) {
 			}
 			case 6: { // peti penyimpanan
 			    gp.chest.draw(g2, fCamX, fCamY);
+			    break;
+			}
+			case 7: { // hiasan chunk (semak hutan / semak salju)
+			    chunks.drawDecor(g2, index, fCamX, fCamY);
 			    break;
 			}
 			}
@@ -1011,6 +1131,9 @@ public TileM(GamePanel gp) {
 	    //AIR-LAMA gp.objCol.add(520,1450,30,20);
 	    //AIR-LAMA gp.objCol.add(350,1490,255,265);
 	    gp.objCol.add(350,1490,45,9065);
+	    // lanjutan tembok barat, hanya untuk bagian dunia yang BARU (di bawah peta lama): area peta lama dibiarkan persis seperti sebelumnya
+	    int westWallTop = (gen != null ? gen.coreRows() : 321) * gp.tileSize;
+	    gp.objCol.add(350, westWallTop, 45, WorldGen.WORLD_ROWS * gp.tileSize - westWallTop);
 	    //AIR-LAMA gp.objCol.add(695,1520,110,220);
 	    //AIR-LAMA gp.objCol.add(900,1520,105,220);
 	    //AIR-LAMA gp.objCol.add(1095,1530,5000,210);
@@ -1294,6 +1417,8 @@ public TileM(GamePanel gp) {
 	        //{470,1300,30,40,64,0,     0},
 	    };
 
+	    worldObjects = adaptWorldObjectsToIce(worldObjects);
+
 	    // ── COLLISION AIR OTOMATIS (dari tile peta, lihat WaterCollision.java) ──
 	    // Dek jembatan (objek flat tile 25/26/27 = vertikal, 73/74/75 = horizontal) boleh diinjak walau tile di
 	    // bawahnya air. Dek-nya ngikut posisi objek jembatan di worldObjects, jadi kalau jembatan dipindah ya ikut.
@@ -1306,6 +1431,34 @@ public TileM(GamePanel gp) {
 	    for (Rectangle r : WaterCollision.build(mapTileNum, loadedCols, loadedRows, gp.tileSize, deckJembatan)) {
 	        gp.objCol.add(r.x, r.y, r.width, r.height);
 	    }
+	}
+
+	/**
+	 * Semak (tile 66) yang tumbuh di dalam area salju dibuang (diganti sebaran generator), dan yang di pinggiran salju
+	 * diganti semak bersalju (tile 69). Objek lain tidak disentuh.
+	 */
+	private int[][] adaptWorldObjectsToIce(int[][] src) {
+		List<int[]> out = new ArrayList<>(src.length);
+		for (int[] o : src) {
+			if (o[4] == 66 && o[5] == 0) {
+				float ice = gen.ice((o[0] + o[2] / 2f) / gp.tileSize, (o[1] + o[3]) / (float) gp.tileSize);
+				if (ice > WorldGen.OWN_ICE) continue;
+				if (ice > WorldGen.FROST_ICE) { o = o.clone(); o[4] = 69; }
+			}
+			out.add(o);
+		}
+		return out.toArray(new int[0][]);
+	}
+
+	/** Pohon / batu lama yang ada di dalam area salju dibuang (diganti sebaran generator: cemara, pohon mati, batu es, kristal). */
+	private int[][] keepOutsideIce(int[][] data) {
+		List<int[]> kept = new ArrayList<>(data.length);
+		for (int[] d : data) {
+			float ice = gen.ice((d[0] + d[2] / 2f) / gp.tileSize, (d[1] + d[3]) / (float) gp.tileSize);
+			if (ice > WorldGen.OWN_ICE) continue;
+			kept.add(d);
+		}
+		return kept.toArray(new int[0][]);
 	}
 
 	/** Data objek dunia {x, y, w, h, tileIndex, isFlat, shadow} — dibaca MiniMap (read-only). */

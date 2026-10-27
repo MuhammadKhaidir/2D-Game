@@ -26,9 +26,15 @@ public final class WaterCollision {
     /** tiap tile dibagi SUB x SUB sel kecil */
     public static final int SUB = 6;
 
+    /** Tile tepi pantai versi salju (140-151) berbentuk sama dengan tile aslinya; kembalikan tile asli itu. */
+    public static int baseOf(int t) {
+        int i = t - WorldGen.SNOW_SHORE_FIRST;
+        return (i >= 0 && i < WorldGen.SHORE_BASE.length) ? WorldGen.SHORE_BASE[i] : t;
+    }
+
     /** true kalau tile index ini bagian dari air (termasuk tile tepi pantai) */
     public static boolean isWaterTile(int t) {
-        switch (t) {
+        switch (baseOf(t)) {
             case 1: case 2:                                   // air penuh
             case 14: case 15: case 17: case 18: case 19:      // tepi pantai
             case 21: case 57: case 59:
@@ -45,7 +51,7 @@ public final class WaterCollision {
      * Angka diambil dari gambar tile (bagian biru vs bagian daratan).
      */
     static int[] waterPart(int t) {
-        switch (t) {
+        switch (baseOf(t)) {
             case 14: return new int[] {0, 4, 0, 6};   // daratan di timur
             case 21: return new int[] {2, 6, 0, 6};   // daratan di barat
             case 18: return new int[] {0, 6, 3, 6};   // daratan di utara

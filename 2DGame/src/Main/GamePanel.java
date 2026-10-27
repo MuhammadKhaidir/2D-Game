@@ -171,6 +171,7 @@ public class GamePanel extends JPanel implements Runnable{
 	//UI Field Death totem aka sung jin woo
 	public UI.TotemUI totemUI;
 	public TileM tileM = new TileM(this);
+	public bahan.SnowAtmosphere snow = new bahan.SnowAtmosphere(this); // hujan salju + kabut + warna dingin di biome es
 	
 	public MobIndexUI mobIndexUI = new MobIndexUI(this);
 	
@@ -553,15 +554,17 @@ public class GamePanel extends JPanel implements Runnable{
 
 	public void drawSunsetOverlay(Graphics2D g2) {
 	    if (!sunsetMode) return;
+	    // di biome es cahaya senja oranye diredam (suasananya biru-putih, bukan oranye)
+	    float si = sunsetIntensity * (1f - 0.8f * snow.intensity());
 
 	    // Base warm amber overlay
 	    Composite old = g2.getComposite();
-	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, sunsetIntensity));
+	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, si));
 	    g2.setColor(new Color(180, 90, 10)); // amber-oranye
 	    g2.fillRect(0, 0, screenWidth, screenHeight);
 
 	    // Top sky glow (lebih oranye di atas)
-	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, sunsetIntensity * 0.6f));
+	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, si * 0.6f));
 	    GradientPaint skyGlow = new GradientPaint(
 	        0, 0, new Color(210, 100, 20, 200),
 	        0, screenHeight / 2, new Color(160, 70, 0, 0)
@@ -570,7 +573,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    g2.fillRect(0, 0, screenWidth, screenHeight / 2);
 
 	    // Bottom shadow (bawah lebih gelap coklat)
-	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, sunsetIntensity * 0.4f));
+	    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, si * 0.4f));
 	    GradientPaint groundShadow = new GradientPaint(
 	        0, screenHeight * 0.6f, new Color(80, 30, 0, 0),
 	        0, screenHeight, new Color(60, 20, 0, 180)
@@ -846,7 +849,9 @@ public class GamePanel extends JPanel implements Runnable{
 	        )
 	    );
 
-	    g2.setColor(Color.BLACK);
+	    // malam di biome es: gelapnya condong ke biru tua, bukan hitam polos
+	    float sk = snow.intensity();
+	    g2.setColor(sk < 0.01f ? Color.BLACK : new Color((int) (6 * sk), (int) (16 * sk), (int) (46 * sk)));
 	    g2.fillRect(0, 0, screenWidth, screenHeight);
 
 	    g2.setComposite(old);
@@ -961,6 +966,11 @@ public class GamePanel extends JPanel implements Runnable{
 		if (mainMenu.active) { mainMenu.update(); return; }
 
 		updateZoom(); // smooth zoom in/out
+		if (gameState == GameState.OUTSIDE) {
+		    tileM.chunks.update();                 // muat / buang chunk peta di sekitar player
+		    snow.setHeavy(world.isRaining);        // hujan di biome es = badai salju
+		    snow.update();
+		}
 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
 
 		// SkillV lagi jalan: dialog / inspect NPC / buka peti / pintu & keluar domain (E, ESC) dikunci biar skill gak ke-pause
@@ -1480,7 +1490,7 @@ public void paintComponent(Graphics g) {
         tileM.draw(g2);
         g2.setTransform(baseTx);
         
-        if (world.isRaining) {
+        if (world.isRaining && snow.intensity() < 0.5f) { // di tengah biome es hujan diganti badai salju
             for (RainDrop r : rain) r.draw(g2);
         }
 
@@ -1503,6 +1513,7 @@ public void paintComponent(Graphics g) {
         g2.setTransform(baseTx);
 
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
+        snow.draw(g2);
         drawDarkOverlay(g2);
         drawSunsetOverlay(g2);
         if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
