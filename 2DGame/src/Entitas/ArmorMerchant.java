@@ -13,8 +13,8 @@ import javax.imageio.ImageIO;
 import Main.GamePanel;
 
 /**
- * NPC penjual armor. Berdiri diam di sebelah rumah tempat spawn, animasi idle, dan kalau di-talk (E)
- * muncul dialog; pilih "Show me your armor" buat buka toko (UI.ArmorShopUI). Bayarnya pakai Coin.
+ * NPC penjual armor (dan Fishing Rod). Berdiri diam di sebelah rumah tempat spawn, animasi idle, dan kalau di-talk (E)
+ * muncul dialog; pilih "Show me your wares" buat buka toko (UI.ArmorShopUI). Bayarnya pakai Coin.
  *
  * Strukturnya sengaja sama kayak {@link PotionMerchant}.
  */
@@ -69,9 +69,10 @@ public class ArmorMerchant extends Entity {
     /** Daftarin dialog merchant ke dialogMap. Dipanggil GamePanel.setupDialogs(). */
     public static void registerDialog(GamePanel gp) {
         DialogNode root = new DialogNode(
-            "Iron plate, hammered by hand. A good set of armor saves more lives than any potion. Take a look."
+            "Iron plate, hammered by hand. A good set of armor saves more lives than any potion. "
+          + "And if you fancy a quiet afternoon by the water, I've got fishing rods too."
         );
-        root.addOption("Show me your armor.", null, () -> gp.armorShop.open());
+        root.addOption("Show me your wares.", null, () -> gp.armorShop.open());
         root.addOption("Nevermind.", null);
 
         gp.dialogMap.put(DIALOG_ID, root);

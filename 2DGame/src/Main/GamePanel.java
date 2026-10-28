@@ -5,6 +5,7 @@ import java.awt.GradientPaint;
 import java.awt.geom.AffineTransform;
 
 import Item.DeathTotemManager;
+import Item.FishingManager;
 import Item.DreadGuardian;
 import Item.DropItem;
 import java.util.ArrayList;
@@ -115,6 +116,9 @@ public class GamePanel extends JPanel implements Runnable{
 
 	// hotbar: 5 slot akses cepat di bawah layar (tombol angka 1-5)
 	public UI.Hotbar hotbar;
+
+	// mancing: tekan F menghadap air (butuh Fishing Rod dari Armor Merchant)
+	public FishingManager fishing;
 
 	// minimap di pojok kanan atas (cuma tampil di dunia luar)
 	public UI.MiniMap miniMap;
@@ -231,6 +235,7 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		backpack = new BackpackUI(ItemManager.inventory);
 		hotbar = new UI.Hotbar(this);
+		fishing = new FishingManager(this);
 		miniMap = new UI.MiniMap(this);
 		potionShop = new UI.PotionShopUI(this);
 		armorShop = new UI.ArmorShopUI(this);
@@ -995,6 +1000,7 @@ public class GamePanel extends JPanel implements Runnable{
 		    snow.update();
 		}
 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
+		if (fishing != null) fishing.handleKey(KeyH); // tombol F (mancing); selalu dikonsumsi biar gak nyangkut pas dialog / toko
 
 		// SkillV lagi jalan: dialog / inspect NPC / buka peti / pintu & keluar domain (E, ESC) dikunci biar skill gak ke-pause
 		if (isSkillVActive()) {
@@ -1267,6 +1273,7 @@ public class GamePanel extends JPanel implements Runnable{
 		    return;
 		}
 	    // 2. UPDATE NORMAL
+	    if (fishing != null) fishing.update(); // timer gigitan ikan (berhenti sendiri pas dialog / toko, karena return di atas)
 	    player.update();
 
 	    if (!isWorldFrozen()) { // SkillV nge-freeze NPC juga
@@ -1551,6 +1558,7 @@ public void paintComponent(Graphics g) {
         }
         
         player.drawOverhead(g2);
+        if (fishing != null) fishing.draw(g2); // joran + pelampung + tanda "!" pas ikan nyambar
         if (speechBubble != null) speechBubble.draw(g2);
         g2.setTransform(baseTx);
 

@@ -47,6 +47,19 @@ public final class WaterCollision {
     }
 
     /**
+     * true kalau titik (fx, fy) di dalam tile t memang berair. fx/fy = posisi di dalam tile, 0.0 - 1.0.
+     * Beda sama {@link #isWaterTile}: tile tepi pantai cuma sebagian yang berair, jadi titik di bagian
+     * daratannya dianggap BUKAN air. Dipakai buat mancing (Item.FishingManager).
+     */
+    public static boolean isWaterAt(int t, float fx, float fy) {
+        if (!isWaterTile(t)) return false;
+        int[] p = waterPart(t);
+        int sx = Math.min(SUB - 1, Math.max(0, (int) (fx * SUB)));
+        int sy = Math.min(SUB - 1, Math.max(0, (int) (fy * SUB)));
+        return sx >= p[0] && sx < p[1] && sy >= p[2] && sy < p[3];
+    }
+
+    /**
      * Bagian tile yang berair: {xMulai, xAkhir, yMulai, yAkhir} dalam satuan 1/6 tile (akhir eksklusif).
      * Angka diambil dari gambar tile (bagian biru vs bagian daratan).
      */

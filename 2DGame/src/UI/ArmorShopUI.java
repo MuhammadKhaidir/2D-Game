@@ -18,32 +18,45 @@ import Main.GamePanel;
 /**
  * Toko Armor Merchant.
  *
- * Dibuka dari dialog ArmorMerchant (opsi "Show me your armor"). Selama toko terbuka dunia game
- * berhenti (lihat GamePanel.update). Tiap armor di STOCK jadi satu baris: ikon, nama, stat, harga dalam Coin,
- * dan tombol BUY. Armor itu satu set utuh & gak numpuk, jadi kalau sudah punya (di backpack / lagi dipakai)
- * tombolnya berubah jadi OWNED. Armor yang dibeli masuk backpack; dipasang lewat klik kanan di backpack.
+ * Dibuka dari dialog ArmorMerchant (opsi "Show me your wares"). Selama toko terbuka dunia game
+ * berhenti (lihat GamePanel.update). Tiap dagangan di STOCK jadi satu baris: ikon, nama, stat, harga dalam Coin,
+ * dan tombol BUY. Dagangan itu barang tunggal & gak numpuk (armor satu set utuh, Fishing Rod), jadi kalau sudah
+ * punya (di backpack / lagi dipakai) tombolnya berubah jadi OWNED. Yang dibeli masuk backpack; armor dipasang
+ * lewat klik kanan di backpack, Fishing Rod dipakai dengan tombol F (lihat Item.FishingManager).
  *
  * Kontrol: klik BUY buat beli, ESC buat keluar.
- * Nambah armor dagangan: tambah satu baris di konstruktor (set + item + harga).
+ * Nambah dagangan: tambah satu baris di konstruktor (armor() atau item() + item + harga).
  */
 public class ArmorShopUI {
 
     public boolean visible = false;
 
-    /** Satu dagangan: set armor, item-nya di inventory, dan harga dalam Coin. */
+    /** Satu dagangan: nama + baris stat yang tampil di toko, item-nya di inventory, harga dalam Coin, dan petunjuk setelah beli. */
     private static final class Stock {
-        final ArmorSet set;
+        final String name;
+        final String stat;
         final Item item;
         final int price;
-        Stock(ArmorSet set, Item item, int price) {
-            this.set = set;
+        final String boughtHint;
+        Stock(String name, String stat, Item item, int price, String boughtHint) {
+            this.name = name;
+            this.stat = stat;
             this.item = item;
             this.price = price;
+            this.boughtHint = boughtHint;
+        }
+
+        /** Dagangan armor: nama & stat diambil dari ArmorSet. */
+        static Stock armor(ArmorSet set, Item item, int price) {
+            return new Stock(set.itemName, "DEF +" + set.defense + "   -" + set.damageReduction + "% damage",
+                             item, price, "Equip it from your backpack.");
         }
     }
 
     /** Harga Iron Armor dalam Coin (1 monster = 1 Coin). */
     public static final int IRON_ARMOR_PRICE = 60;
+    /** Harga Fishing Rod dalam Coin. */
+    public static final int FISHING_ROD_PRICE = 25;
 
     // ── ukuran ──
     private static final int PANEL_W = 540;
@@ -97,7 +110,9 @@ public class ArmorShopUI {
         this.gp = gp;
         ItemManager im = ItemManager.get();
         this.stock = new Stock[] {
-            new Stock(ArmorSet.IRON, im.IRON_ARMOR, IRON_ARMOR_PRICE),
+            Stock.armor(ArmorSet.IRON, im.IRON_ARMOR, IRON_ARMOR_PRICE),
+            new Stock("Fishing Rod", "Face water, press F to fish", im.FISHING_ROD, FISHING_ROD_PRICE,
+                      "Face the water and press F to fish."),
         };
         this.panelH = LIST_TOP + stock.length * (ROW_H + ROW_GAP) + FOOTER_H;
     }
@@ -197,7 +212,7 @@ public class ArmorShopUI {
         ItemManager im = ItemManager.get();
 
         if (owned(s)) {
-            showFeedback("You already own " + s.set.itemName + ".", false);
+            showFeedback("You already own " + s.name + ".", false);
             return;
         }
         if (!im.remove(im.COIN, s.price)) {
@@ -206,7 +221,7 @@ public class ArmorShopUI {
         }
 
         im.add(s.item, 1);
-        showFeedback("Bought " + s.set.itemName + " (-" + s.price + " coins). Equip it from your backpack.", true);
+        showFeedback("Bought " + s.name + " (-" + s.price + " coins). " + s.boughtHint, true);
     }
 
     private void showFeedback(String message, boolean good) {
@@ -307,10 +322,10 @@ public class ArmorShopUI {
         int textX = iconX + iconBox + 10;
         g2.setFont(FONT_NAME);
         g2.setColor(COL_TEXT);
-        g2.drawString(s.set.itemName, textX, row.y + 24);
+        g2.drawString(s.name, textX, row.y + 24);
         g2.setFont(FONT_DESC);
         g2.setColor(COL_TEXT_DIM);
-        g2.drawString("DEF +" + s.set.defense + "   -" + s.set.damageReduction + "% damage", textX, row.y + 42);
+        g2.drawString(s.stat, textX, row.y + 42);
 
         // harga + status kepemilikan
         int priceX = row.x + 296;

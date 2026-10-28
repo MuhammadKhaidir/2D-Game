@@ -442,6 +442,24 @@ public class BackpackUI implements MouseWheelListener {
                 return "A faintly glowing soul torn from a fallen Skeleton King. "
                      + "Contains traces of dark energy. Can be crafted.";
 
+            case "fishing rod":
+                return "A sturdy wooden rod with a red-and-white float. "
+                     + "Face the water and press F to cast, then press F "
+                     + "again the moment you see the '!'. "
+                     + "Can also be put on the hotbar. Not consumed.";
+
+            case "small fish":
+                return "A small, silvery fish. Not much of a meal, but it "
+                     + "will do. Use it to restore " + ItemManager.FISH_SMALL_HEAL + " HP.";
+
+            case "big fish":
+                return "A plump blue fish with firm flesh. "
+                     + "Use it to restore " + ItemManager.FISH_BIG_HEAL + " HP.";
+
+            case "golden fish":
+                return "A rare fish with shimmering golden scales. "
+                     + "Use it to restore " + ItemManager.FISH_GOLDEN_HEAL + " HP.";
+
             case "coin":
                 return "A shiny coin dropped by every monster you defeat. "
                      + "Used as currency.";

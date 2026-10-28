@@ -189,6 +189,7 @@ public class SaveManager {
                 }
             }
         }
+        if (gp.fishing != null) gp.fishing.reset(); // pancingan yang lagi dilempar sebelum load jangan kebawa
         // Restore hotbar (save lama yang belum punya hotbar → hotbarNames null → hotbar dikosongin)
         if (gp.hotbar != null) {
             gp.hotbar.clear();
@@ -244,6 +245,10 @@ public class SaveManager {
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
             case "Dread Armor":  return im.DREAD_ARMOR;   // DARK MERCHANT (set armor utuh)
             case "Iron Armor":   return im.IRON_ARMOR;    // ARMOR MERCHANT (set armor utuh)
+            case "Fishing Rod":  return im.FISHING_ROD;   // ARMOR MERCHANT (mancing)
+            case "Small Fish":   return im.FISH_SMALL;    // HASIL MANCING
+            case "Big Fish":     return im.FISH_BIG;      // HASIL MANCING
+            case "Golden Fish":  return im.FISH_GOLDEN;   // HASIL MANCING (langka)
             case "Helm":         return null;             // item uji coba lama (sistem armor sekarang satu set utuh) -> dibuang dari save lama
             case "Health Potion": return im.getPotion(Item.PotionType.SMALL_HP); // nama lama, biar save lama tetap kebaca
             default:
