@@ -117,7 +117,7 @@ public class SkeletonHand extends Entity {
             gp.player.solidArea.height
         );
         if (atk.intersects(pBox)) {
-            gp.player.takeDamage(damage);
+            gp.player.takeDamageFrom(damage, this);
         }
 
         // Kena GolemMinion yang kebetulan lagi di titik itu juga

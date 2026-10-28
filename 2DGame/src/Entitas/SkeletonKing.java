@@ -564,7 +564,7 @@ public class SkeletonKing extends Entity {
         );
         if (atk != null && atk.intersects(tgt)) {
             if (currentTarget instanceof player) {
-                ((player) currentTarget).takeDamage(attackDamage);
+                ((player) currentTarget).takeDamageFrom(attackDamage, this);
             } else if (currentTarget instanceof GolemMinion) {
                 ((GolemMinion) currentTarget).takeDamage(attackDamage);
             }

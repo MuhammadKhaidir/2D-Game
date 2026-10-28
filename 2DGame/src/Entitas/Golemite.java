@@ -387,7 +387,7 @@ public class Golemite extends Entity {
 
     private void dealDamage(Entity target, int dmg) {
         if (target instanceof player) {
-            ((player) target).takeDamage(dmg);
+            ((player) target).takeDamageFrom(dmg, this);
         } else if (target instanceof GolemMinion) {
             ((GolemMinion) target).takeDamage(dmg);
         }

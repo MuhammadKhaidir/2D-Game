@@ -462,7 +462,8 @@ public class Skeleton extends Entity {
         );
         
         if (atk != null && atk.intersects(tgt)) {
-            target.takeDamage(this.attackDamage); 
+            if (target instanceof player) ((player) target).takeDamageFrom(this.attackDamage, this);
+            else target.takeDamage(this.attackDamage);
         }
     }
 

@@ -140,7 +140,7 @@ public class MonsterBatu extends Entity {
 
     public void attackPlayer(){
 
-        gp.player.takeDamage(attackDamage);
+        gp.player.takeDamageFrom(attackDamage, this);
     }
 
     // =========================

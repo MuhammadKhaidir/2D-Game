@@ -272,7 +272,7 @@ public class Orc extends Entity {
             if (attackFrame == DAMAGE_FRAME && !damageDealt) {
                 double dist = distanceTo(gp.player);
                 if (dist <= ATTACK_RANGE + 10) {          // sedikit toleransi
-                    gp.player.takeDamage(ATTACK_DAMAGE);
+                    gp.player.takeDamageFrom(ATTACK_DAMAGE, this);
                 }
                 damageDealt    = true;
                 attackCooldown = ATTACK_CD_MAX;

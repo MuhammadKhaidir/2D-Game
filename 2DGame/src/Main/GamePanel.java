@@ -5,6 +5,7 @@ import java.awt.GradientPaint;
 import java.awt.geom.AffineTransform;
 
 import Item.DeathTotemManager;
+import Item.DreadGuardian;
 import Item.DropItem;
 import java.util.ArrayList;
 
@@ -67,6 +68,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public int chatTimer = 0; // durasi tampil
 	
 	public DeathTotemManager deathTotemManager;
+	public DreadGuardian dreadGuardian; // set effect Dread Armor: bayangan penyerang
 	public Entitas.PlayerSpeechBubble speechBubble;
 	
 	// grafik warna
@@ -212,6 +214,7 @@ public class GamePanel extends JPanel implements Runnable{
 		this.deathScreenUI = new UI.DeathScreenUI(this, player);
 	    this.statUI = new PlayerStatUI(this, player);
 	    this.deathTotemManager = new DeathTotemManager(this);
+	    this.dreadGuardian = new DreadGuardian(this);
 		world = new WorldSystem();
 		world.hour = 6; // sore ke malam
 		mainMenu = new UI.MainMenu(this); 
@@ -1338,6 +1341,9 @@ public class GamePanel extends JPanel implements Runnable{
 	    if (deathTotemManager != null && !isWorldFrozen()) { // minion ikut berhenti pas SkillV nge-freeze dunia
             deathTotemManager.update();
         }
+	    if (dreadGuardian != null && !isWorldFrozen()) {
+	        dreadGuardian.update();
+	    }
 	    if (speechBubble != null) {
             speechBubble.update();
         }
@@ -1485,6 +1491,7 @@ public void paintComponent(Graphics g) {
         for (Entity e : sortList) {
             e.draw(g2);
         }
+        if (dreadGuardian != null) dreadGuardian.draw(g2); // bayangan Dread Guardian (domain)
         if (speechBubble != null) speechBubble.draw(g2);
         g2.setTransform(domainTx);
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
@@ -1526,6 +1533,7 @@ public void paintComponent(Graphics g) {
             if (obj[i] != null) obj[i].draw(g2, this);
         }
         tileM.drawYSorted(g2, player, npc, monsters);
+        if (dreadGuardian != null) dreadGuardian.draw(g2); // bayangan Dread Guardian (dunia luar)
         
         if (deathTotemManager != null) {
 

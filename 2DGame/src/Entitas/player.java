@@ -398,6 +398,11 @@ public class player extends Entity {
     }
 
     public void takeDamage(int dmg) {
+        takeDamageFrom(dmg, null);
+    }
+
+    /** Sama kayak takeDamage(int), tapi tau siapa yang mukul (dipakai set effect Dread Guardian). attacker boleh null. */
+    public void takeDamageFrom(int dmg, Entity attacker) {
         if (isDead) return;
         if (skillManager != null && skillManager.skillV.isActive) return; // SkillV: player kebal selama skill
         if (dodge > 0) {
@@ -414,6 +419,8 @@ public class player extends Entity {
         if (life <= 0) {
             life = 0;
             startDying();
+        } else if (getArmorSet() == Item.ArmorSet.DREAD && gp.dreadGuardian != null) {
+            gp.dreadGuardian.onPlayerHit(attacker); // Dread Guardian: tiap kena damage muncul 1 bayangan
         }
     }
     

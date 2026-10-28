@@ -426,7 +426,7 @@ public class monster extends Entity {
         if (target == null || distanceTo(target) > attackRange + 30) return;
 
         if (target instanceof player) {
-            ((player) target).takeDamage(attackDamage);
+            ((player) target).takeDamageFrom(attackDamage, this);
         } else if (target instanceof GolemMinion) {
             ((GolemMinion) target).takeDamage(attackDamage);
         }
