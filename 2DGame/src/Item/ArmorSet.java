@@ -44,7 +44,14 @@ public final class ArmorSet {
           + "cuirass, gauntlets and greaves in one piece. "
           + "Heavy, dependable and forged for the road.");
 
-    private static final ArmorSet[] ALL = { DREAD, IRON };
+    /** Set armor ketiga: baja arang hitam, mantel + jambul merah tua, mata merah menyala. Dijual Dark Merchant di Tomb Domain. */
+    public static final ArmorSet UMBRAL = new ArmorSet(
+            "Umbral Armor", "umbral", 7, 12,
+            "A complete set of blackened steel plate: plumed helm, "
+          + "cuirass, gauntlets and greaves in one piece. Red "
+          + "embers glow behind the visor.");
+
+    private static final ArmorSet[] ALL = { DREAD, IRON, UMBRAL };
 
     /** Cari set dari nama item (tidak peka huruf besar/kecil). null kalau item itu bukan armor. */
     public static ArmorSet byItemName(String name) {

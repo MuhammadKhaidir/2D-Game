@@ -51,6 +51,7 @@ Folder `src` harus ada di classpath karena gambar dan audio dimuat dari sana.
 Armor itu **satu set utuh dalam satu item** (helm, badan, sarung tangan, celana, dan sepatu sekaligus), bukan potongan terpisah. Backpack punya 2 slot equip: WEAPON dan ARMOR.
 
 - **Dread Armor** (baja obsidian gelap, aksen ungu): dijual Dark Merchant di Tomb Domain seharga 150 Bone + 30 Skull. Defense +5 dan damage -10%. Cuma bisa dibeli sekali.
+- **Umbral Armor** (baja arang hitam, mantel dan jambul merah tua, mata merah menyala): dijual Dark Merchant di Tomb Domain seharga 250 Bone + 50 Skull. Defense +7 dan damage -12%. Cuma bisa dibeli sekali. Sprite-nya dibuat dengan `tools/generate_umbral_armor.py` (butuh `pip install pillow numpy`).
 - Pasang/lepas: klik kanan item di backpack (atau lewat hotbar). Armor yang dipakai ikut tersimpan di save dan kelihatan di preview karakter pada backpack.
 - Nambah set baru: daftarkan di `Item/ArmorSet.java`, bikin item-nya di `ItemManager`, dan jual lewat NPC. Sprite-nya dibuat dari sprite body/baju yang sudah ada dengan `tools/generate_dread_armor.py` (butuh `pip install pillow numpy scipy`); edit blok PALETTE di script itu buat ganti warna.
 

@@ -840,6 +840,11 @@ public class DomainManager {
             shopFeedbackTimer = 100;
             return;
         }
+        if (item.name.equals(Item.ArmorSet.UMBRAL.itemName) && getItemCount(im.UMBRAL_ARMOR) > 0) {
+            shopFeedback = "✗ " + item.name + " sudah dimiliki!";
+            shopFeedbackTimer = 100;
+            return;
+        }
 
         // Hitung stok Bone dan Skull yang dimiliki player
         int playerBone  = getItemCount(im.BONE);
@@ -875,6 +880,9 @@ public class DomainManager {
                 break;
             case "Dread Armor":
                 im.add(im.DREAD_ARMOR, 1); // pasang lewat backpack (klik kanan) atau hotbar
+                break;
+            case "Umbral Armor":
+                im.add(im.UMBRAL_ARMOR, 1); // pasang lewat backpack (klik kanan) atau hotbar
                 break;
             default:
                 System.out.println("[Shop] Item tidak dikenal: " + item.name);

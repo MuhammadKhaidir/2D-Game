@@ -245,6 +245,7 @@ public class SaveManager {
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
             case "Dread Armor":  return im.DREAD_ARMOR;   // DARK MERCHANT (set armor utuh)
             case "Iron Armor":   return im.IRON_ARMOR;    // ARMOR MERCHANT (set armor utuh)
+            case "Umbral Armor": return im.UMBRAL_ARMOR;  // DARK MERCHANT (set armor utuh)
             case "Fishing Rod":  return im.FISHING_ROD;   // ARMOR MERCHANT (mancing)
             case "Small Fish":   return im.FISH_SMALL;    // HASIL MANCING
             case "Big Fish":     return im.FISH_BIG;      // HASIL MANCING

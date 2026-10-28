@@ -33,6 +33,7 @@ public class ItemManager {
     // EQUIPMENT (armor = satu set utuh per item, data-nya di ArmorSet)
     public Item DREAD_ARMOR;      // dijual Dark Merchant (Tomb Domain)
     public Item IRON_ARMOR;       // dijual Armor Merchant (dekat rumah spawn), bayar Coin
+    public Item UMBRAL_ARMOR;     // dijual Dark Merchant (Tomb Domain)
     // CURRENCY
     public Item COIN; // drop pasti dari setiap monster yang dikill, masuk ke backpack
     // MANCING (lihat FishingManager)
@@ -89,6 +90,8 @@ public class ItemManager {
             DREAD_ARMOR.maxStack = 1; // armor gak numpuk
             IRON_ARMOR = new Item(ArmorSet.IRON.itemName, safeLoad("/Aset/IronArmor.png", "/drop/Ore.png"));
             IRON_ARMOR.maxStack = 1;
+            UMBRAL_ARMOR = new Item(ArmorSet.UMBRAL.itemName, safeLoad("/Aset/UmbralArmor.png", "/drop/Ore.png"));
+            UMBRAL_ARMOR.maxStack = 1;
             COIN       = new Item("Coin",       safeLoad("/drop/Coin.png",      "/drop/Ore.png"));
             // MANCING: ikonnya digambar lewat kode (gak butuh file gambar). Mau pakai gambar sendiri? ganti icon-nya di sini.
             FISHING_ROD = new Item("Fishing Rod", createRodIcon());

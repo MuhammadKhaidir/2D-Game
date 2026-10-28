@@ -31,6 +31,7 @@ public class DarkMerchant extends Entity {
     private BufferedImage iconBoneSword;
     private BufferedImage iconSkeletonKey;
     private BufferedImage iconDreadArmor;
+    private BufferedImage iconUmbralArmor;
 
     public static class ShopItem {
 
@@ -88,6 +89,16 @@ public class DarkMerchant extends Entity {
             "\"Darkness wears you well.\"",
             150,
             30
+        ),
+
+        // Set armor kedua dari Dark Merchant, lebih kuat dari Dread tapi lebih mahal. Juga cuma bisa dibeli sekali.
+        new ShopItem(
+            Item.ArmorSet.UMBRAL.itemName,
+            "Blackened steel plate: plumed great helm,\n" +
+            "crimson cuirass, gauntlets and greaves.",
+            "\"Two embers. One verdict.\"",
+            250,
+            50
         )
     };
 
@@ -191,9 +202,23 @@ public class DarkMerchant extends Entity {
             iconDreadArmor = null;
         }
 
+        try {
+
+            iconUmbralArmor = ImageIO.read(
+                getClass().getResourceAsStream(
+                    "/Aset/UmbralArmor.png"
+                )
+            );
+
+        } catch (Exception e) {
+
+            iconUmbralArmor = null;
+        }
+
         shopItems[0].icon = iconBoneSword;
         shopItems[1].icon = iconSkeletonKey;
         shopItems[2].icon = iconDreadArmor;
+        shopItems[3].icon = iconUmbralArmor;
     }
 
     // ============================================================
