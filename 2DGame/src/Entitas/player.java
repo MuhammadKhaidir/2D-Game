@@ -413,6 +413,7 @@ public class player extends Entity {
         int flat = dmg - def - getArmorDefense();
         int actualDmg = Math.max(1, (int) Math.round(flat * (1.0 - getArmorDamageReduction() / 100.0)));
         life -= actualDmg;
+        if (gp.damagePopups != null) gp.damagePopups.spawn(this, actualDmg, Main.DamagePopup.Type.PLAYER);
         isHit = true;
         hitFlashTimer = 10;
         noDamageTimer = 0; // reset regen delay tiap kali kena damage

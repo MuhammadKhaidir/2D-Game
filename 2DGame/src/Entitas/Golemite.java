@@ -483,6 +483,7 @@ public class Golemite extends Entity {
     public void takeDamage(int dmg) {
         if (!active || state == GolemiteState.DYING || state == GolemiteState.DEAD) return;
         life -= dmg;
+        if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         // Kalau lagi mukul, jangan diinterupsi — biarin animasinya selesai.
         if (state != GolemiteState.ATTACK) {
             state = GolemiteState.CHASE;

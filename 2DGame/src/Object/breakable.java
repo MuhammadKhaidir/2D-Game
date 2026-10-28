@@ -208,6 +208,8 @@ public class breakable {
         if (retired || destroyed || isFalling) return;
 
         hp -= dmg;
+        // solidArea masih utuh di titik ini (baru dikosongin kalau hp <= 0 di bawah)
+        if (gp.damagePopups != null) gp.damagePopups.spawnAt(solidArea.x + solidArea.width / 2, solidArea.y, dmg, Main.DamagePopup.Type.ENEMY);
         isHit = true;
         hitFlashTimer = 8;
 

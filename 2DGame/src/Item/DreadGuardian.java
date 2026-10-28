@@ -166,7 +166,12 @@ public class DreadGuardian {
         }
         s.possessTick++;
         if (!s.dealt && s.possessTick >= POSSESS_HIT_TICK) {
-            s.target.takeDamage(shadowDamage());      // polos: gak ada knockback / suara / efek on-hit
+            gp.damagePopups.beginSource(Main.DamagePopup.Type.SHADOW); // angka damage bayangan = ungu
+            try {
+                s.target.takeDamage(shadowDamage());  // polos: gak ada knockback / suara / efek on-hit
+            } finally {
+                gp.damagePopups.endSource();
+            }
             s.dealt = true;
         }
         return s.possessTick >= POSSESS_TICKS;

@@ -619,6 +619,7 @@ public class SkeletonKing extends Entity {
         // NEW: gak bisa kena damage selagi menghilang/lagi ngejalanin skill Skeleton Hand
         if (state == KingState.HAND_VANISH || state == KingState.HAND_HIDDEN || state == KingState.HAND_RETURN) return;
         life -= dmg;
+        if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         isHit = true;
         hitFlashTimer = 8;
     }

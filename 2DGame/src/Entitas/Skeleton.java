@@ -567,6 +567,7 @@ public class Skeleton extends Entity {
         if (!alive) return;
         if (skState == SkeletonState.DEATH) return;
         life -= dmg; isHit = true; hitFlashTimer = 8;
+        if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         if (life > 0) {
             skState = SkeletonState.HURT; hurtTimer = HURT_DURATION;
             attackFrameIndex = 0; attackTimer = 0;

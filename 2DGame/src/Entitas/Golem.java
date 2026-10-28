@@ -646,6 +646,7 @@ public class Golem extends Entity {
     public void takeDamage(int dmg) {
         if (!alive || golemState == GolemState.DEAD || golemState == GolemState.SPAWN) return;
         life -= dmg;
+        if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         isProvoked = true;
         
         // ── PERBAIKAN DI SINI ──

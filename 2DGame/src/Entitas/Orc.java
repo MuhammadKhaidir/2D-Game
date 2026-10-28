@@ -298,6 +298,7 @@ public class Orc extends Entity {
     public void takeDamage(int dmg, player attacker) {
         if (state == OrcState.DEAD) return;
         life -= dmg;
+        if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         regenTimer = 0;
 
         // Jika sedang attack, biarkan animasinya selesai dulu

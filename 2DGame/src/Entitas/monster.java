@@ -549,6 +549,7 @@ public class monster extends Entity {
         if (state == MonsterState.DEAD) return;
 
         life -= dmg;
+        if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         regenTimer = 0;
 
         if (life <= 0) {

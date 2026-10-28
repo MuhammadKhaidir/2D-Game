@@ -69,6 +69,7 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public DeathTotemManager deathTotemManager;
 	public DreadGuardian dreadGuardian; // set effect Dread Armor: bayangan penyerang
+	public DamagePopup damagePopups;    // angka damage melayang (musuh kuning, player merah, bayangan ungu)
 	public Entitas.PlayerSpeechBubble speechBubble;
 	
 	// grafik warna
@@ -215,6 +216,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    this.statUI = new PlayerStatUI(this, player);
 	    this.deathTotemManager = new DeathTotemManager(this);
 	    this.dreadGuardian = new DreadGuardian(this);
+	    this.damagePopups = new DamagePopup(this);
 		world = new WorldSystem();
 		world.hour = 6; // sore ke malam
 		mainMenu = new UI.MainMenu(this); 
@@ -1344,6 +1346,9 @@ public class GamePanel extends JPanel implements Runnable{
 	    if (dreadGuardian != null && !isWorldFrozen()) {
 	        dreadGuardian.update();
 	    }
+	    if (damagePopups != null && !isWorldFrozen()) {
+	        damagePopups.update();
+	    }
 	    if (speechBubble != null) {
             speechBubble.update();
         }
@@ -1492,6 +1497,7 @@ public void paintComponent(Graphics g) {
             e.draw(g2);
         }
         if (dreadGuardian != null) dreadGuardian.draw(g2); // bayangan Dread Guardian (domain)
+        if (damagePopups != null) damagePopups.draw(g2);   // angka damage (domain)
         if (speechBubble != null) speechBubble.draw(g2);
         g2.setTransform(domainTx);
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
@@ -1534,6 +1540,7 @@ public void paintComponent(Graphics g) {
         }
         tileM.drawYSorted(g2, player, npc, monsters);
         if (dreadGuardian != null) dreadGuardian.draw(g2); // bayangan Dread Guardian (dunia luar)
+        if (damagePopups != null) damagePopups.draw(g2);   // angka damage (dunia luar)
         
         if (deathTotemManager != null) {
 

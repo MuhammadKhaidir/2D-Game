@@ -187,6 +187,7 @@ public class Entity {
 	    if (isDead) return;
 
 	    life -= dmg;
+	    if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
 
 	    if (attacker != null) {
 	        isAngry = true;
