@@ -14,7 +14,7 @@ import Item.ItemManager;
 import Item.PotionType;
 import Main.GamePanel;
 import Object.Weapon;
-import Object.PlayerArmor;
+import Item.ArmorSet;
 
 public class BackpackUI implements MouseWheelListener {
     public boolean visible = false;
@@ -36,9 +36,12 @@ public class BackpackUI implements MouseWheelListener {
     private int panelW = 730;
     private int panelH = 460;
     
-    public ItemStack[] equippedSlots = new ItemStack[5]; 
-    private final String[] slotShortcuts = {"[W]", "[H]", "[A]", "[L]", "[B]"}; 
-    private final String[] slotLabels = {"WEAPON", "HELM", "ARMOR", "LEGS", "BOOTS"};
+    // Slot equip: 0 = weapon, 1 = armor. Armor = SATU set utuh (helm + badan + celana + sepatu dalam satu item).
+    public static final int SLOT_WEAPON = 0;
+    public static final int SLOT_ARMOR  = 1;
+    public ItemStack[] equippedSlots = new ItemStack[2]; 
+    private final String[] slotShortcuts = {"[W]", "[A]"}; 
+    private final String[] slotLabels = {"WEAPON", "ARMOR"};
 
     private int gridBoxW = 328;
     private int gapBetween = 12;
@@ -383,6 +386,10 @@ public class BackpackUI implements MouseWheelListener {
 
     private String getItemDescriptionText(String itemName) {
 
+        // Armor set: deskripsi diambil dari ArmorSet
+        ArmorSet armorSet = ArmorSet.byItemName(itemName);
+        if (armorSet != null) return armorSet.description;
+
         // Semua potion (HP & boost) deskripsinya diambil dari tabel PotionType
         PotionType potion = PotionType.fromItemName(itemName);
         if (potion != null) return potion.longDescription();
@@ -431,10 +438,6 @@ public class BackpackUI implements MouseWheelListener {
                 return "A lethal, dark-attributed sword crafted entirely "
                      + "from hardened bones. ";
 
-            case "helm":
-                return "A protective iron helmet that shields the wearer's "
-                     + "head from blunt strikes and falling debris. ";
-                
             case "soul of skeleton":
                 return "A faintly glowing soul torn from a fallen Skeleton King. "
                      + "Contains traces of dark energy. Can be crafted.";
@@ -567,6 +570,25 @@ public class BackpackUI implements MouseWheelListener {
                 g2.setColor(new Color(130, 110, 95));
                 g2.drawString(slotLabels[i], slotXPosition + slotSize + 8, slotYPosition + 30);
             }
+        }
+
+        // ── Preview karakter (armor/baju yang lagi dipakai kelihatan langsung) ──
+        int prevX = eqX + 15;
+        int prevY = startSlotY + equippedSlots.length * (slotSize + 11) + 4;
+        int prevW = eqW - 30;
+        int prevH = eqY + eqH - 12 - prevY;
+        if (prevH > 60) {
+            g2.setColor(colorSlotDark);
+            g2.fillRect(prevX, prevY, prevW, prevH);
+            g2.setColor(new Color(20, 15, 10));
+            g2.setStroke(new BasicStroke(1));
+            g2.drawRect(prevX, prevY, prevW, prevH);
+
+            Shape prevClip = g2.getClip();
+            g2.setClip(prevX + 1, prevY + 1, prevW - 1, prevH - 1);
+            int prevSize = 192; // 3x ukuran asli sprite (64x64) -> pixel art tetap tajam; kotak ini ngeklip bagian transparan
+            gp.player.drawPreview(g2, prevX + (prevW - prevSize) / 2, prevY + prevH / 2 - prevSize / 2, prevSize);
+            g2.setClip(prevClip);
         }
 
         // ── Panel GRID INVENTORY (tengah) & Panel kanan (menu / detail item) ──
@@ -736,14 +758,16 @@ public class BackpackUI implements MouseWheelListener {
                 stats.critDamage = 150;
                 break;
 
-            case "helm":
-                stats = new ItemStats("HELMET");
-                stats.defense = 10;     // TODO: Sesuaikan defense asli
-                stats.damageReduction = 5;
+            default: {
+                // Armor set: defense & damage reduction beneran dipakai di player.takeDamage()
+                ArmorSet armorSet = ArmorSet.byItemName(itemName);
+                if (armorSet != null) {
+                    stats = new ItemStats("ARMOR");
+                    stats.defense = armorSet.defense;
+                    stats.damageReduction = armorSet.damageReduction;
+                }
                 break;
-
-            default:
-                break;
+            }
         }
 
         return stats;
@@ -773,18 +797,39 @@ public class BackpackUI implements MouseWheelListener {
     }
     
     /**
-     * Item ini masuk slot equip yang mana? 0=weapon, 1=helm, 2=armor, 3=legs, 4=boots, -1 = bukan equipment.
-     * (Aturannya sama persis kayak yang dulu ada di klik kanan.)
+     * Item ini masuk slot equip yang mana? SLOT_WEAPON (0), SLOT_ARMOR (1), atau -1 = bukan equipment.
+     * Armor dikenali dari ArmorSet (satu item = satu set utuh, bukan helm/baju/celana terpisah).
      */
     public int getEquipSlotFor(Item.Item item) {
         if (item == null || item.name == null) return -1;
         String itemName = item.name.toLowerCase();
-        if (itemName.contains("sword") || itemName.contains("weapon") || itemName.contains("axe") || itemName.contains("kapak") || itemName.contains("bone sword")) return 0;
-        if (itemName.contains("helm") || itemName.contains("hat")) return 1;
-        if (itemName.contains("baju") || itemName.contains("armor") || itemName.contains("cloth")) return 2;
-        if (itemName.contains("legging") || itemName.contains("pants") || itemName.contains("celana")) return 3;
-        if (itemName.contains("sepatu") || itemName.contains("boots")) return 4;
+        if (itemName.contains("sword") || itemName.contains("weapon") || itemName.contains("axe") || itemName.contains("kapak") || itemName.contains("bone sword")) return SLOT_WEAPON;
+        if (ArmorSet.byItemName(item.name) != null) return SLOT_ARMOR;
         return -1;
+    }
+
+    /** Nama item armor yang lagi dipakai (null kalau gak ada). Dipakai SaveManager. */
+    public String getEquippedArmorName() {
+        ItemStack eq = equippedSlots[SLOT_ARMOR];
+        return (eq != null && eq.item != null) ? eq.item.name : null;
+    }
+
+    /**
+     * Pasang lagi armor dari save: cari item-nya di inventory lalu equip. Nama null / item gak ada
+     * di inventory = armor dilepas (supaya gak nyisa armor dari sesi sebelum load).
+     */
+    public void restoreEquippedArmor(String itemName, GamePanel gp) {
+        equippedSlots[SLOT_ARMOR] = null;
+        gp.player.setArmor(null);
+        ArmorSet set = ArmorSet.byItemName(itemName);
+        if (set == null) return;
+        for (ItemStack stack : items) {
+            if (stack != null && stack.item != null && set.itemName.equalsIgnoreCase(stack.item.name)) {
+                equippedSlots[SLOT_ARMOR] = stack;
+                gp.player.setArmor(set);
+                return;
+            }
+        }
     }
 
     /** Item ini lagi dipakai (equipped)? */
@@ -804,11 +849,11 @@ public class BackpackUI implements MouseWheelListener {
         if (targetSlot == -1) return;
 
         if (equippedSlots[targetSlot] != null && equippedSlots[targetSlot].item == stack.item) {
-            if (targetSlot == 0) {
+            if (targetSlot == SLOT_WEAPON) {
                 gp.player.isWeaponEquipped = false;
                 gp.player.currentWeapon = null;
-            } else if (targetSlot == 1) {
-                gp.player.currentHelm = null;
+            } else if (targetSlot == SLOT_ARMOR) {
+                gp.player.setArmor(null);
             }
             equippedSlots[targetSlot] = null;
         } else {
@@ -822,8 +867,8 @@ public class BackpackUI implements MouseWheelListener {
                 } else {
                     gp.player.currentWeapon = ItemManager.get().weaponSwordInstance;
                 }
-            } else if (targetSlot == 1) {
-                gp.player.currentHelm = new PlayerArmor("IronHelm");
+            } else if (targetSlot == SLOT_ARMOR) {
+                gp.player.setArmor(ArmorSet.byItemName(stack.item.name));
             }
         }
     }
@@ -851,11 +896,11 @@ public class BackpackUI implements MouseWheelListener {
         if (selectedItem.amount <= 0) {
             for (int i = 0; i < equippedSlots.length; i++) {
                 if (equippedSlots[i] == selectedItem) {
-                    if (i == 0) {
+                    if (i == SLOT_WEAPON) {
                         gp.player.isWeaponEquipped = false;
                         gp.player.currentWeapon = null;
-                    } else if (i == 1) {
-                        gp.player.currentHelm = null;
+                    } else if (i == SLOT_ARMOR) {
+                        gp.player.setArmor(null);
                     }
                     equippedSlots[i] = null;
                 }
@@ -991,11 +1036,11 @@ public class BackpackUI implements MouseWheelListener {
                     
                     if (e.getButton() == MouseEvent.BUTTON3) { // KLIK KANAN: Lepas Equip
                         if (equippedSlots[i] != null) {
-                            if (i == 0) {
+                            if (i == SLOT_WEAPON) {
                                 gp.player.isWeaponEquipped = false;
                                 gp.player.currentWeapon = null; 
-                            } else if (i == 1) {
-                                gp.player.currentHelm = null;
+                            } else if (i == SLOT_ARMOR) {
+                                gp.player.setArmor(null);
                             }
                             equippedSlots[i] = null;
                         }

@@ -46,6 +46,14 @@ Folder `src` harus ada di classpath karena gambar dan audio dimuat dari sana.
 | F4 | Nyalakan/matikan kotak collision dan log debug di konsol |
 | ESC | Menutup panel / keluar dari rumah atau domain |
 
+## Armor
+
+Armor itu **satu set utuh dalam satu item** (helm, badan, sarung tangan, celana, dan sepatu sekaligus), bukan potongan terpisah. Backpack punya 2 slot equip: WEAPON dan ARMOR.
+
+- **Dread Armor** (baja obsidian gelap, aksen ungu): dijual Dark Merchant di Tomb Domain seharga 150 Bone + 30 Skull. Defense +5 dan damage -10%. Cuma bisa dibeli sekali.
+- Pasang/lepas: klik kanan item di backpack (atau lewat hotbar). Armor yang dipakai ikut tersimpan di save dan kelihatan di preview karakter pada backpack.
+- Nambah set baru: daftarkan di `Item/ArmorSet.java`, bikin item-nya di `ItemManager`, dan jual lewat NPC. Sprite-nya dibuat dari sprite body/baju yang sudah ada dengan `tools/generate_dread_armor.py` (butuh `pip install pillow numpy scipy`); edit blok PALETTE di script itu buat ganti warna.
+
 ## Catatan
 
 - File save disimpan di folder `saves/` (tidak ikut git).

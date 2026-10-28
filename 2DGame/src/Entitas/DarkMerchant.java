@@ -30,6 +30,7 @@ public class DarkMerchant extends Entity {
     // Icon item yang dijual
     private BufferedImage iconBoneSword;
     private BufferedImage iconSkeletonKey;
+    private BufferedImage iconDreadArmor;
 
     public static class ShopItem {
 
@@ -77,6 +78,16 @@ public class DarkMerchant extends Entity {
             "\"Do not open this unless you are ready.\"",
             40,
             0
+        ),
+
+        // Satu set armor utuh (helm + badan + celana + sepatu). Gak numpuk: cuma bisa dibeli sekali.
+        new ShopItem(
+            Item.ArmorSet.DREAD.itemName,
+            "A full set of obsidian plate: horned helm,\n" +
+            "cuirass, gauntlets and greaves in one piece.",
+            "\"Darkness wears you well.\"",
+            150,
+            30
         )
     };
 
@@ -167,8 +178,22 @@ public class DarkMerchant extends Entity {
             iconSkeletonKey = null;
         }
 
+        try {
+
+            iconDreadArmor = ImageIO.read(
+                getClass().getResourceAsStream(
+                    "/Aset/DreadArmor.png"
+                )
+            );
+
+        } catch (Exception e) {
+
+            iconDreadArmor = null;
+        }
+
         shopItems[0].icon = iconBoneSword;
         shopItems[1].icon = iconSkeletonKey;
+        shopItems[2].icon = iconDreadArmor;
     }
 
     // ============================================================
@@ -591,8 +616,9 @@ public class DarkMerchant extends Entity {
 
         int panelW = 480;
 
-        // Dibuat lebih tinggi supaya BUY tidak menabrak item
-        int panelH = 350;
+        // Tinggi panel ngikut jumlah item (tiap baris 95px) supaya BUY tidak menabrak item
+        int buyOffsetY = 50 + shopItems.length * 95 + 10;
+        int panelH = buyOffsetY + 32 + 40;
 
         int panelX =
             gp.screenWidth / 2 - panelW / 2;
@@ -710,8 +736,8 @@ public class DarkMerchant extends Entity {
             panelW / 2 -
             buttonW / 2;
 
-        // Setelah item kedua selesai
-        int buttonY = panelY + 250;
+        // Setelah item terakhir selesai
+        int buttonY = panelY + buyOffsetY;
 
         buyButtonBounds.setBounds(
             buttonX,

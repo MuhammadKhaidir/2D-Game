@@ -29,8 +29,8 @@ public class ItemManager {
     public Item SOUL_OF_SKELETON;
     // ITEM DARI DARK MERCHANT
     public Item BONE_SWORD;
-    // EQUIPMENT
-    public Item HELM;
+    // EQUIPMENT (armor = satu set utuh per item, data-nya di ArmorSet)
+    public Item DREAD_ARMOR;      // dijual Dark Merchant (Tomb Domain)
     // CURRENCY
     public Item COIN; // drop pasti dari setiap monster yang dikill, masuk ke backpack
     // CONSUMABLE (bisa dipakai lewat hotbar) — semua potion didefinisikan di PotionType
@@ -46,7 +46,6 @@ public class ItemManager {
         // Item awal di inventory
         inventory.add(new ItemStack(SWORD, 1));
         inventory.add(new ItemStack(AXE, 1));
-        inventory.add(new ItemStack(HELM, 1)); // biar bisa langsung dites equip/unequip
         inventory.add(new ItemStack(getPotion(PotionType.SMALL_HP), STARTER_SMALL_HP_POTIONS)); // biar bisa langsung dites hotbar
     }
     private BufferedImage safeLoad(String path, String fallbackPath) {
@@ -76,7 +75,8 @@ public class ItemManager {
             // TODO: pastikan file "Soul of Skeleton.png" ada di folder /drop/ (resources)
             SOUL_OF_SKELETON = new Item("Soul of Skeleton", safeLoad("/drop/Soul of Skeleton.png", "/drop/Ore.png"));
             BONE_SWORD = new Item("Bone Sword", safeLoad("/Aset/BoneSword.png", "/Aset/BasicSword.png"));
-            HELM       = new Item("Helm",       safeLoad("/Aset/IronHelmet.png",      "/Aset/IronHelmet.png"));
+            DREAD_ARMOR = new Item(ArmorSet.DREAD.itemName, safeLoad("/Aset/DreadArmor.png", "/drop/Ore.png"));
+            DREAD_ARMOR.maxStack = 1; // armor gak numpuk
             COIN       = new Item("Coin",       safeLoad("/drop/Coin.png",      "/drop/Ore.png"));
             Main.Log.d("[ItemManager] Preloading weapon instances...");
             weaponSwordInstance    = new Weapon("Basic Sword", "Sword");

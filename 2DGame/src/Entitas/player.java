@@ -44,7 +44,9 @@ public class player extends Entity {
     public PlayerCloth currentCloth;
     
     // ===== ARMOR SYSTEM =====
-    public PlayerArmor currentHelm; // nanti nyusul: currentChest, currentBoots, dll (kelas sama, prefix beda)
+    // Armor = SATU set utuh (helm + badan + sarung tangan + celana + sepatu). null = cuma pakai baju dasar.
+    // Selama armor dipakai, layer badannya MENGGANTIKAN baju dasar (currentCloth), layer helmnya digambar paling atas.
+    public PlayerArmor currentArmor;
     
     // ===== ATTACK ANIMATION VARIABLES =====
     int attackFrameIndex = 0;
@@ -197,10 +199,47 @@ public class player extends Entity {
         this.isWeaponEquipped = true; 
         
         currentCloth = new PlayerCloth("BaseCampCloth", isWeaponEquipped);
-        currentHelm = new PlayerArmor("IronHelm");
         
         sound = new SoundManager();
         getPlayerImage();
+    }
+
+    // ===== ARMOR API =====
+
+    /** Pasang satu set armor (null = lepas, balik ke baju dasar). */
+    public void setArmor(Item.ArmorSet set) {
+        currentArmor = PlayerArmor.of(set);
+        punchTintCache.clear(); // siluet afterimage SkillV tergantung armor yang dipakai
+    }
+
+    public Item.ArmorSet getArmorSet() {
+        return currentArmor != null ? currentArmor.set : null;
+    }
+
+    /** Bonus defense flat dari armor yang dipakai (0 kalau gak pakai armor). */
+    public int getArmorDefense() {
+        return currentArmor != null ? currentArmor.set.defense : 0;
+    }
+
+    /** Pengurang damage persen dari armor yang dipakai (0 kalau gak pakai armor). */
+    public int getArmorDamageReduction() {
+        return currentArmor != null ? currentArmor.set.damageReduction : 0;
+    }
+
+    /** Gambar karakter menghadap depan (idle) lengkap dengan armor/baju, buat preview di backpack. */
+    public void drawPreview(Graphics2D g2, int x, int y, int size) {
+        BufferedImage body = idleFrontFrames[0];
+        if (body == null) return;
+        g2.drawImage(body, x, y, size, size, null);
+        if (currentArmor != null) {
+            BufferedImage layer = currentArmor.getBody("idle", 0, "down");
+            if (layer != null) g2.drawImage(layer, x, y, size, size, null);
+            layer = currentArmor.getHead("idle", 0, "down");
+            if (layer != null) g2.drawImage(layer, x, y, size, size, null);
+        } else if (currentCloth != null) {
+            BufferedImage cloth = currentCloth.getIdleFrame("down");
+            if (cloth != null) g2.drawImage(cloth, x, y, size, size, null);
+        }
     }
 
     public Rectangle getInteractArea() {
@@ -365,7 +404,9 @@ public class player extends Entity {
             int chance = Math.min(dodge, 50);
             if ((int)(Math.random() * 100) < chance) return;
         }
-        int actualDmg = Math.max(1, dmg - def);
+        // defense flat (stat DEF + armor) dulu, baru pengurang persen dari armor
+        int flat = dmg - def - getArmorDefense();
+        int actualDmg = Math.max(1, (int) Math.round(flat * (1.0 - getArmorDamageReduction() / 100.0)));
         life -= actualDmg;
         isHit = true;
         hitFlashTimer = 10;
@@ -1043,7 +1084,12 @@ public class player extends Entity {
                 g2.drawImage(image, drawX, drawY, drawSize, drawSize, null);
             }
 
-            if (currentCloth != null) {
+            if (currentArmor != null) {
+                BufferedImage armorBody = currentArmor.getBody("dead", safeIdx, direction);
+                if (armorBody != null) g2.drawImage(armorBody, drawX, drawY, drawSize, drawSize, null);
+                BufferedImage armorHead = currentArmor.getHead("dead", safeIdx, direction);
+                if (armorHead != null) g2.drawImage(armorHead, drawX, drawY, drawSize, drawSize, null);
+            } else if (currentCloth != null) {
                 BufferedImage clothImage = currentCloth.getDeadFrame(safeIdx, direction);
                 if (clothImage != null) {
                     g2.drawImage(clothImage, drawX, drawY, drawSize, drawSize, null);
@@ -1102,7 +1148,12 @@ public class player extends Entity {
                 g2.drawImage(image, attackDrawX, attackDrawY, attackDrawSize, attackDrawSize, null);
             }
  
-            if (currentCloth != null) {
+            if (currentArmor != null) {
+                BufferedImage armorBody = currentArmor.getBody(PlayerArmor.attackState(attackType), attackFrameIndex, direction);
+                if (armorBody != null) {
+                    g2.drawImage(armorBody, attackDrawX, attackDrawY, attackDrawSize, attackDrawSize, null);
+                }
+            } else if (currentCloth != null) {
                 boolean canDrawCloth = (attackType <= 2) || (isWeaponEquipped && currentCloth.hasWeaponStates());
                 if (canDrawCloth) {
                     BufferedImage clothImage = currentCloth.getFrame(attackType, attackFrameIndex, direction);
@@ -1149,10 +1200,10 @@ public class player extends Entity {
                 }
             }
 
-            if (currentHelm != null) {
-                BufferedImage helmImage = currentHelm.getAttackFrame(attackType, attackFrameIndex, direction);
-                if (helmImage != null) {
-                    g2.drawImage(helmImage, attackDrawX, attackDrawY, attackDrawSize, attackDrawSize, null);
+            if (currentArmor != null) {
+                BufferedImage armorHead = currentArmor.getHead(PlayerArmor.attackState(attackType), attackFrameIndex, direction);
+                if (armorHead != null) {
+                    g2.drawImage(armorHead, attackDrawX, attackDrawY, attackDrawSize, attackDrawSize, null);
                 }
             }
             return;
@@ -1184,7 +1235,13 @@ public class player extends Entity {
 
             g2.drawImage(image, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
 
-            if (currentCloth != null) {
+            if (currentArmor != null) {
+                // sprite armor disimpan per index frame jump BODY (beda sama baju dasar yang indexnya kebalik)
+                BufferedImage armorBody = currentArmor.getBody("jump", jumpFrameIndex, jumpDirection);
+                if (armorBody != null) g2.drawImage(armorBody, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
+                BufferedImage armorHead = currentArmor.getHead("jump", jumpFrameIndex, jumpDirection);
+                if (armorHead != null) g2.drawImage(armorHead, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
+            } else if (currentCloth != null) {
                 int clothJumpFrameIndex = (jumpFrameIndex == 0) ? 1 : 0;
                 BufferedImage clothJump = currentCloth.getJumpFrame(clothJumpFrameIndex, jumpDirection);
                 if (clothJump != null) {
@@ -1235,7 +1292,12 @@ public class player extends Entity {
 
         g2.drawImage(image, drawX, drawY, drawSize, drawSize, null);
 
-        if (currentCloth != null) {
+        if (currentArmor != null) {
+            String armorState = isSprinting ? "run" : (isMoving ? "walk" : "idle");
+            int armorFrame = isSprinting ? runFrameIndex : (isMoving ? walkFrameIndex : 0);
+            BufferedImage armorBody = currentArmor.getBody(armorState, armorFrame, direction);
+            if (armorBody != null) g2.drawImage(armorBody, drawX, drawY, drawSize, drawSize, null);
+        } else if (currentCloth != null) {
             BufferedImage clothImage = null;
             if (isSprinting) {
                 clothImage = currentCloth.getRunFrame(runFrameIndex, direction);
@@ -1248,17 +1310,11 @@ public class player extends Entity {
                 g2.drawImage(clothImage, drawX, drawY, drawSize, drawSize, null);
         }
 
-        if (currentHelm != null) {
-            BufferedImage helmImage = null;
-            if (isSprinting) {
-                helmImage = currentHelm.getRunFrame(runFrameIndex, direction);
-            } else if (isMoving) {
-                helmImage = currentHelm.getWalkFrame(walkFrameIndex, direction);
-            } else {
-                helmImage = currentHelm.getIdleFrame(idleFrameIndex, direction);
-            }
-            if (helmImage != null)
-                g2.drawImage(helmImage, drawX, drawY, drawSize, drawSize, null);
+        if (currentArmor != null) {
+            String armorState = isSprinting ? "run" : (isMoving ? "walk" : "idle");
+            int armorFrame = isSprinting ? runFrameIndex : (isMoving ? walkFrameIndex : 0);
+            BufferedImage armorHead = currentArmor.getHead(armorState, armorFrame, direction);
+            if (armorHead != null) g2.drawImage(armorHead, drawX, drawY, drawSize, drawSize, null);
         }
     }
 
@@ -1300,7 +1356,7 @@ public class player extends Entity {
     }
 
     /**
-     * Gambar satu frame pukulan tangan kosong (attackUp/Down/Left/RightFrames, index 0-3) beserta baju & helm.
+     * Gambar satu frame pukulan tangan kosong (attackUp/Down/Left/RightFrames, index 0-3) beserta baju / armor.
      * (drawX, drawY) = pojok kiri-atas sel player di layar, sama kayak (screenX, screenY).
      * alpha < 1 buat bayangan; ghostTint != null mewarnai siluetnya (afterimage).
      */
@@ -1330,23 +1386,24 @@ public class player extends Entity {
         return attackDownFrames;
     }
 
-    // Urutan layer sama kayak serangan biasa: badan -> baju -> helm (senjata sengaja gak ikut, ini pukulan tangan kosong)
+    // Urutan layer sama kayak serangan biasa: badan -> baju/armor -> helm armor (senjata sengaja gak ikut, ini pukulan tangan kosong)
     private void drawPunchLayers(Graphics2D g, BufferedImage[] frames, int idx, String dir, int px, int py, int size) {
         if (frames[idx] != null) g.drawImage(frames[idx], px, py, size, size, null);
-        if (currentCloth != null) {
+        if (currentArmor != null) {
+            BufferedImage armorBody = currentArmor.getBody("atk1", idx, dir);
+            if (armorBody != null) g.drawImage(armorBody, px, py, size, size, null);
+            BufferedImage armorHead = currentArmor.getHead("atk1", idx, dir);
+            if (armorHead != null) g.drawImage(armorHead, px, py, size, size, null);
+        } else if (currentCloth != null) {
             BufferedImage cloth = currentCloth.getFrame(1, idx, dir);
             if (cloth != null) g.drawImage(cloth, px, py, size, size, null);
         }
-        if (currentHelm != null) {
-            BufferedImage helm = currentHelm.getAttackFrame(1, idx, dir);
-            if (helm != null) g.drawImage(helm, px, py, size, size, null);
-        }
     }
 
-    // Siluet berwarna untuk afterimage. Di-cache per (arah, frame, baju, helm, warna) biar gak bikin gambar baru tiap frame.
+    // Siluet berwarna untuk afterimage. Di-cache per (arah, frame, baju, armor, warna) biar gak bikin gambar baru tiap frame.
     private BufferedImage getTintedPunchFrame(BufferedImage[] frames, int idx, String dir, Color tint, int size) {
         String key = dir + ":" + idx + ":" + System.identityHashCode(currentCloth) + ":"
-                + System.identityHashCode(currentHelm) + ":" + tint.getRGB();
+                + System.identityHashCode(currentArmor) + ":" + tint.getRGB();
         BufferedImage cached = punchTintCache.get(key);
         if (cached != null) return cached;
 

@@ -49,6 +49,8 @@ public class SaveManager {
                 data.removedObjectIndexes.add(i);
             }
         }
+        // Armor yang lagi dipakai
+        data.equippedArmor = gp.backpack != null ? gp.backpack.getEquippedArmorName() : null;
         // Hotbar
         data.hotbarNames = new ArrayList<>();
         if (gp.hotbar != null) {
@@ -173,6 +175,10 @@ public class SaveManager {
                 Item.ItemManager.inventory.add(new Item.ItemStack(item, amount));
             }
         }
+        // Restore armor yang dipakai (harus setelah inventory di-restore; save lama -> null -> armor dilepas)
+        if (gp.backpack != null) {
+            gp.backpack.restoreEquippedArmor(data.equippedArmor, gp);
+        }
         // Restore peti penyimpanan (save lama yang belum punya peti → chestNames null → peti dikosongin)
         if (gp.chest != null) {
             gp.chest.clearContents();
@@ -236,7 +242,8 @@ public class SaveManager {
             case "Coin":                                  // CURRENCY
             case "Gold":         return im.COIN;          // nama lama, biar save lama tetap kebaca
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
-            case "Helm":         return im.HELM;
+            case "Dread Armor":  return im.DREAD_ARMOR;   // DARK MERCHANT (set armor utuh)
+            case "Helm":         return null;             // item uji coba lama (sistem armor sekarang satu set utuh) -> dibuang dari save lama
             case "Health Potion": return im.getPotion(Item.PotionType.SMALL_HP); // nama lama, biar save lama tetap kebaca
             default:
                 Item.Item potion = im.getPotionByName(name); // CONSUMABLE (semua potion di PotionType)

@@ -107,7 +107,7 @@ public class PlayerStatUI {
         drawStatRow(g2, "RACE",    "HUMAN",                                             sx, sy,       winW, winX, false, null);
         // HP tampilkan life/maxLife supaya terlihat nilai sekarang
         btnHP      = drawStatRow(g2, "HP",      player.life + " / " + player.maxLife,   sx, sy+gap,   winW, winX, true,  btnHP);
-        btnDef     = drawStatRow(g2, "DEF",     player.def + "",                         sx, sy+gap*2, winW, winX, true,  btnDef);
+        btnDef     = drawStatRow(g2, "DEF",     player.def + (player.getArmorDefense() > 0 ? " (+" + player.getArmorDefense() + ")" : ""),                         sx, sy+gap*2, winW, winX, true,  btnDef);
         btnDamage  = drawStatRow(g2, "DAMAGE",  player.punchDamage + "",                 sx, sy+gap*3, winW, winX, true,  btnDamage);
         // STAMINA tampilkan stamina/maxStamina supaya terlihat nilai sekarang
         btnStamina = drawStatRow(g2, "STAMINA", (int)player.stamina + " / " + player.maxStamina, sx, sy+gap*4, winW, winX, true, btnStamina);

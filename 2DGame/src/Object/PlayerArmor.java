@@ -1,205 +1,124 @@
 package Object;
 
+import Item.ArmorSet;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 
 /**
- * PlayerArmor - kelas GENERIC buat satu armor piece (helm, chest, dll).
- * Tinggal instantiate lagi pake prefix nama beda kalau armor lain formatnya sama.
- * Contoh: new PlayerArmor("IronHelm"), nanti kalau udah ada chest: new PlayerArmor("IronChest")
+ * PlayerArmor - sprite SATU SET armor utuh (bukan lagi per bagian helm/chest/legs).
  *
- * Format asset yang dipake (X = prefix, misal "IronHelm"):
- *   Walk   : X + Front/Back/Left/RightWalk (1)-(4)
- *   Run    : X + Front/Back/Left/RightRun (1)-(3)
- *   Thrust : X + Front/Back/Left/RightThrust (1)-(4)  -> attackType 1
- *   Bash   : X + Front/Back/Left/RightBash (1)-(4)    -> attackType 2
- *   Swing1 : X + Front/Back/Left/RightSwing (1)-(4)   -> attackType 3
- *   Swing2 : X + Front/Back/Left/RightSwing (5)-(6)   -> attackType 4
- *   Idle   : X + Front/Back/Left/RightIdle (1)          -> baru 1 frame, gampang diganti kalau nambah
+ * Tiap frame animasi punya 2 layer, sama kayak urutan gambar di Player.draw():
+ *   body : badan armor. MENGGANTIKAN baju dasar (PlayerCloth) selama armor dipakai.
+ *   head : helm. Digambar paling atas, setelah senjata.
  *
- * Kalau ada asset yang belum digambar, readSafely() bakal return null dan cuma
- * nge-print warning di console (nggak bikin crash). Waktu digambar, semua getter
- * di sini juga null-safe, jadi kalau frame-nya null berarti helm nggak digambar
- * di state itu (silent skip) - dicek lagi di Player.draw().
+ * File: /Aset/armor/<assetFolder>/<layer>_<state>_<arah>_<nomor>.png  (nomor mulai dari 1)
+ *   state : idle(1) walk(6) run(3) jump(2) atk1(4) atk2(4) atk3(4) atk4(4) dead(3)   (dalam kurung = jumlah frame)
+ *   arah  : down up left right  (sama kayak player.direction)
+ *   atkN  : N = attackType di Player (1 pukulan, 2 swing tangan kosong, 3-4 combo pakai senjata)
+ *   jump  : nomor frame = index frame jump BODY (bukan index baju), jadi gak perlu dibalik lagi
+ * Sprite dibuat dari sprite body/baju yang sudah ada, jadi selalu sejajar: lihat tools/generate_dread_armor.py.
+ *
+ * Asset yang gak ketemu cuma nge-print warning (nggak crash) dan layernya dilewati pas digambar.
+ * Pakai PlayerArmor.of(set) supaya sprite satu set cuma dimuat sekali.
  */
 public class PlayerArmor {
 
-    public final String itemName;
+    public static final String BODY = "body";
+    public static final String HEAD = "head";
 
-    // ===== WALK (4 frame/arah) =====
-    private final BufferedImage[] walkFront = new BufferedImage[4];
-    private final BufferedImage[] walkBack  = new BufferedImage[4];
-    private final BufferedImage[] walkLeft  = new BufferedImage[4];
-    private final BufferedImage[] walkRight = new BufferedImage[4];
+    private static final String[] DIRECTIONS = { "down", "up", "left", "right" };
+    private static final String[] LAYERS = { BODY, HEAD };
+    private static final String[] STATES = { "idle", "walk", "run", "jump", "atk1", "atk2", "atk3", "atk4", "dead" };
+    private static final int[] FRAME_COUNT = { 1, 6, 3, 2, 4, 4, 4, 4, 3 };
 
-    // ===== RUN (3 frame/arah) =====
-    private final BufferedImage[] runFront = new BufferedImage[3];
-    private final BufferedImage[] runBack  = new BufferedImage[3];
-    private final BufferedImage[] runLeft  = new BufferedImage[3];
-    private final BufferedImage[] runRight = new BufferedImage[3];
+    private static final Map<ArmorSet, PlayerArmor> CACHE = new HashMap<>();
 
-    // ===== THRUST / attackType 1 (4 frame/arah) =====
-    private final BufferedImage[] thrustFront = new BufferedImage[4];
-    private final BufferedImage[] thrustBack  = new BufferedImage[4];
-    private final BufferedImage[] thrustLeft  = new BufferedImage[4];
-    private final BufferedImage[] thrustRight = new BufferedImage[4];
+    /** Ambil (dan cache) sprite untuk satu set. */
+    public static PlayerArmor of(ArmorSet set) {
+        if (set == null) return null;
+        PlayerArmor armor = CACHE.get(set);
+        if (armor == null) {
+            armor = new PlayerArmor(set);
+            CACHE.put(set, armor);
+        }
+        return armor;
+    }
 
-    // ===== BASH / attackType 2 (4 frame/arah) =====
-    private final BufferedImage[] bashFront = new BufferedImage[4];
-    private final BufferedImage[] bashBack  = new BufferedImage[4];
-    private final BufferedImage[] bashLeft  = new BufferedImage[4];
-    private final BufferedImage[] bashRight = new BufferedImage[4];
+    public final ArmorSet set;
 
-    // ===== SWING state 3 (frame 1-4, 4 frame) & state 4 (frame 5-6, 2 frame), 4 arah =====
-    private final BufferedImage[] swing1Front = new BufferedImage[4];
-    private final BufferedImage[] swing1Back  = new BufferedImage[4];
-    private final BufferedImage[] swing1Left  = new BufferedImage[4];
-    private final BufferedImage[] swing1Right = new BufferedImage[4];
-    private final BufferedImage[] swing2Front = new BufferedImage[2];
-    private final BufferedImage[] swing2Back  = new BufferedImage[2];
-    private final BufferedImage[] swing2Left  = new BufferedImage[2];
-    private final BufferedImage[] swing2Right = new BufferedImage[2];
+    // key: layer + "_" + state + "_" + arah  ->  array frame
+    private final Map<String, BufferedImage[]> frames = new HashMap<>();
 
-    // ===== IDLE (1 frame/arah, baru ada 1 gambar) =====
-    private final BufferedImage[] idleFront = new BufferedImage[1];
-    private final BufferedImage[] idleBack  = new BufferedImage[1];
-    private final BufferedImage[] idleLeft  = new BufferedImage[1];
-    private final BufferedImage[] idleRight = new BufferedImage[1];
-
-    public PlayerArmor(String itemName) {
-        this.itemName = itemName;
+    private PlayerArmor(ArmorSet set) {
+        this.set = set;
         loadAll();
+    }
+
+    private void loadAll() {
+        for (String layer : LAYERS) {
+            for (int s = 0; s < STATES.length; s++) {
+                for (String dir : DIRECTIONS) {
+                    BufferedImage[] arr = new BufferedImage[FRAME_COUNT[s]];
+                    for (int i = 0; i < arr.length; i++) {
+                        arr[i] = readSafely("/Aset/armor/" + set.assetFolder + "/"
+                                + layer + "_" + STATES[s] + "_" + dir + "_" + (i + 1) + ".png");
+                    }
+                    frames.put(key(layer, STATES[s], dir), arr);
+                }
+            }
+        }
     }
 
     private BufferedImage readSafely(String path) {
         InputStream is = getClass().getResourceAsStream(path);
         if (is == null) {
-            System.err.println("[PlayerArmor:" + itemName + "] Asset GA KETEMU: " + path);
+            System.err.println("[PlayerArmor:" + set.itemName + "] Asset GA KETEMU: " + path);
             return null;
         }
         try {
             return ImageIO.read(is);
         } catch (IOException e) {
-            System.err.println("[PlayerArmor:" + itemName + "] Gagal baca: " + path);
+            System.err.println("[PlayerArmor:" + set.itemName + "] Gagal baca: " + path);
             return null;
+        } finally {
+            try { is.close(); } catch (IOException ignored) { }
         }
     }
 
-    private void loadAll() {
-        // Walk
-        for (int i = 0; i < 4; i++) {
-            int f = i + 1;
-            walkFront[i] = readSafely("/Aset/" + itemName + "FrontWalk (" + f + ").png");
-            walkBack[i]  = readSafely("/Aset/" + itemName + "BackWalk ("  + f + ").png");
-            walkLeft[i]  = readSafely("/Aset/" + itemName + "LeftWalk ("  + f + ").png");
-            walkRight[i] = readSafely("/Aset/" + itemName + "RightWalk (" + f + ").png");
-        }
-
-        // Run (4 arah)
-        for (int i = 0; i < 3; i++) {
-            int f = i + 1;
-            runFront[i] = readSafely("/Aset/" + itemName + "FrontRun (" + f + ").png");
-            runBack[i]  = readSafely("/Aset/" + itemName + "BackRun ("  + f + ").png");
-            runLeft[i]  = readSafely("/Aset/" + itemName + "LeftRun ("  + f + ").png");
-            runRight[i] = readSafely("/Aset/" + itemName + "RightRun (" + f + ").png");
-        }
-
-        // Thrust (attackType 1)
-        for (int i = 0; i < 4; i++) {
-            int f = i + 1;
-            thrustFront[i] = readSafely("/Aset/" + itemName + "FrontThrust (" + f + ").png");
-            thrustBack[i]  = readSafely("/Aset/" + itemName + "BackThrust ("  + f + ").png");
-            thrustLeft[i]  = readSafely("/Aset/" + itemName + "LeftThrust ("  + f + ").png");
-            thrustRight[i] = readSafely("/Aset/" + itemName + "RightThrust (" + f + ").png");
-        }
-
-        // Bash (attackType 2)
-        for (int i = 0; i < 4; i++) {
-            int f = i + 1;
-            bashFront[i] = readSafely("/Aset/" + itemName + "FrontBash (" + f + ").png");
-            bashBack[i]  = readSafely("/Aset/" + itemName + "BackBash ("  + f + ").png");
-            bashLeft[i]  = readSafely("/Aset/" + itemName + "LeftBash ("  + f + ").png");
-            bashRight[i] = readSafely("/Aset/" + itemName + "RightBash (" + f + ").png");
-        }
-
-        // Swing state 3 -> frame (1)-(4), 4 arah
-        for (int i = 0; i < 4; i++) {
-            int f3 = i + 1;
-            swing1Front[i] = readSafely("/Aset/" + itemName + "FrontSwing (" + f3 + ").png");
-            swing1Back[i]  = readSafely("/Aset/" + itemName + "BackSwing ("  + f3 + ").png");
-            swing1Left[i]  = readSafely("/Aset/" + itemName + "LeftSwing ("  + f3 + ").png");
-            swing1Right[i] = readSafely("/Aset/" + itemName + "RightSwing (" + f3 + ").png");
-        }
-
-        // Swing state 4 -> frame (5)-(6), 4 arah
-        for (int i = 0; i < 2; i++) {
-            int f4 = i + 5;
-            swing2Front[i] = readSafely("/Aset/" + itemName + "FrontSwing (" + f4 + ").png");
-            swing2Back[i]  = readSafely("/Aset/" + itemName + "BackSwing ("  + f4 + ").png");
-            swing2Left[i]  = readSafely("/Aset/" + itemName + "LeftSwing ("  + f4 + ").png");
-            swing2Right[i] = readSafely("/Aset/" + itemName + "RightSwing (" + f4 + ").png");
-        }
-
-        // Idle (1 frame/arah, baru ada 1 gambar - tinggal ganti angka di sini kalau nambah frame lagi)
-        for (int i = 0; i < 1; i++) {
-            int f = i + 1;
-            idleFront[i] = readSafely("/Aset/" + itemName + "FrontIdle (" + f + ").png");
-            idleBack[i]  = readSafely("/Aset/" + itemName + "BackIdle ("  + f + ").png");
-            idleLeft[i]  = readSafely("/Aset/" + itemName + "LeftIdle ("  + f + ").png");
-            idleRight[i] = readSafely("/Aset/" + itemName + "RightIdle (" + f + ").png");
-        }
+    private static String key(String layer, String state, String direction) {
+        return layer + "_" + state + "_" + direction;
     }
 
     // ================= GETTERS (semua null-safe) =================
 
-    public BufferedImage getWalkFrame(int frameIndex, String direction) {
-        return safeGet(pick(walkFront, walkBack, walkLeft, walkRight, direction), frameIndex);
+    /**
+     * @param layer     BODY atau HEAD
+     * @param state     "idle" "walk" "run" "jump" "atk1".."atk4" "dead"
+     * @param frameIndex index frame (di-modulo, jadi aman kalau kebanyakan)
+     * @param direction "down" "up" "left" "right" (arah lain, mis. "emote", -> null)
+     */
+    public BufferedImage get(String layer, String state, int frameIndex, String direction) {
+        if (direction == null || frameIndex < 0) return null;
+        BufferedImage[] arr = frames.get(key(layer, state, direction));
+        if (arr == null || arr.length == 0) return null;
+        return arr[frameIndex % arr.length];
     }
 
-    public BufferedImage getRunFrame(int frameIndex, String direction) {
-        return safeGet(pick(runFront, runBack, runLeft, runRight, direction), frameIndex);
+    public BufferedImage getBody(String state, int frameIndex, String direction) {
+        return get(BODY, state, frameIndex, direction);
     }
 
-    public BufferedImage getIdleFrame(int frameIndex, String direction) {
-        return safeGet(pick(idleFront, idleBack, idleLeft, idleRight, direction), frameIndex);
+    public BufferedImage getHead(String state, int frameIndex, String direction) {
+        return get(HEAD, state, frameIndex, direction);
     }
 
-    /** attackType: 1=Thrust, 2=Bash, 3=Swing awal, 4=Swing lanjutan (sesuai attackType di player) */
-    public BufferedImage getAttackFrame(int attackType, int frameIndex, String direction) {
-        BufferedImage[] arr;
-        switch (attackType) {
-            case 1:
-                arr = pick(thrustFront, thrustBack, thrustLeft, thrustRight, direction);
-                break;
-            case 2:
-                arr = pick(bashFront, bashBack, bashLeft, bashRight, direction);
-                break;
-            case 3:
-                arr = pick(swing1Front, swing1Back, swing1Left, swing1Right, direction);
-                break;
-            case 4:
-                arr = pick(swing2Front, swing2Back, swing2Left, swing2Right, direction);
-                break;
-            default:
-                return null;
-        }
-        return safeGet(arr, frameIndex);
-    }
-
-    private BufferedImage[] pick(BufferedImage[] front, BufferedImage[] back, BufferedImage[] left, BufferedImage[] right, String direction) {
-        switch (direction) {
-            case "down":  return front;
-            case "up":    return back;
-            case "left":  return left;
-            case "right": return right;
-            default:      return front;
-        }
-    }
-
-    private BufferedImage safeGet(BufferedImage[] arr, int frameIndex) {
-        if (arr == null || arr.length == 0 || frameIndex < 0) return null;
-        return arr[frameIndex % arr.length]; // modulo biar aman kalo jumlah frame beda sama player
+    /** attackType Player (1-4) -> nama state: "atk1".."atk4". */
+    public static String attackState(int attackType) {
+        return "atk" + attackType;
     }
 }

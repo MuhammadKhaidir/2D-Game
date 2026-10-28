@@ -34,6 +34,10 @@ public class SaveData implements Serializable {
     public String gameState;
     public String activeDomainId; // domain yang sedang aktif saat save (null kalau di luar domain)
 
+    // Nama item armor (satu set utuh) yang lagi dipakai, null kalau gak pakai armor.
+    // Field baru dengan serialVersionUID yang sama: save lama tetap kebaca (nilainya null).
+    public String equippedArmor;
+
     public List<Integer> removedObjectIndexes = new ArrayList<>();
 
     // Inventory: simpan nama dan jumlah saja

@@ -834,6 +834,13 @@ public class DomainManager {
         DarkMerchant.ShopItem item = darkMerchant.shopItems[darkMerchant.selectedIndex];
         ItemManager im = ItemManager.get();
 
+        // Armor itu satu set utuh & gak numpuk: kalau sudah punya (di backpack / lagi dipakai), gak usah beli lagi
+        if (item.name.equals(Item.ArmorSet.DREAD.itemName) && getItemCount(im.DREAD_ARMOR) > 0) {
+            shopFeedback = "✗ " + item.name + " sudah dimiliki!";
+            shopFeedbackTimer = 100;
+            return;
+        }
+
         // Hitung stok Bone dan Skull yang dimiliki player
         int playerBone  = getItemCount(im.BONE);
         int playerSkull = getItemCount(im.SKULL);
@@ -865,6 +872,9 @@ public class DomainManager {
                 break;
             case "Skeleton Key":
                 im.add(im.SKELETON_KEY, 1);
+                break;
+            case "Dread Armor":
+                im.add(im.DREAD_ARMOR, 1); // pasang lewat backpack (klik kanan) atau hotbar
                 break;
             default:
                 System.out.println("[Shop] Item tidak dikenal: " + item.name);
