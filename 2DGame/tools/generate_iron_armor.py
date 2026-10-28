@@ -5,7 +5,7 @@ Generator sprite "Iron Armor" (set armor kedua: besi polos, full iron).
 Cara kerjanya SAMA kayak tools/generate_dread_armor.py (file itu dipakai buat urutan frame, segmentasi kepala
 dan helper-nya), cuma paletnya baja/besi dan helmnya polos tanpa tanduk:
   body_* : baju dasar (PlayerCloth) di-recolor jadi pelat besi; kulit yang kelihatan (tangan, leher) -> sarung tangan / gorget besi
-  head_* : helm tertutup dari siluet kepala, lengkap dengan celah visor dan jambul kecil di atas
+  head_* : helm tertutup (bentuk knight: jambul/garis tengah, pita dahi, 2 paku, celah visor bentuk T) dari siluet kepala
 
 Jalankan dari folder 2DGame:
     pip install pillow numpy scipy
@@ -78,6 +78,42 @@ def body_layer(body, cloth):
     return out, h
 
 
+def bulk_torso(out, h, state, direction):
+    """Badan harus >= kepala: baris dada yang lebih sempit dari helm (lebar kepala + outline) dilebarin pakai pelat bahu.
+    Tampak depan/belakang: bahu minimal 1 px lebih lebar dari helm; samping: dada/punggung dilebarin sampai selebar helm."""
+    if state == 'dead' or not h.any():
+        return out
+    ys, xs = np.where(h)
+    ybot = ys.max()
+    head_w = (xs.max() - xs.min() + 1) + 2
+    target = head_w + (2 if direction in ('down', 'up') else 0)
+    added = np.zeros(out.shape[:2], bool)
+    for y in range(ybot + 2, ybot + 7):
+        row = np.where(out[y, :, 3] > 0)[0]
+        if not len(row):
+            continue
+        a, b = row.min(), row.max()
+        need = target - (b - a + 1)
+        if need <= 0:
+            continue
+        kl = need // 2
+        kr = need - kl
+        for side, k, col in ((-1, kl, ARM[2]), (1, kr, ARM[0])):
+            if k <= 0:
+                continue
+            edge = a if side < 0 else b
+            if tuple(out[y, edge]) == tuple(OUTLINE):
+                out[y, edge] = ARM[1]
+            for j in range(1, k + 1):
+                x = edge + side * j
+                if 0 <= x < 64:
+                    out[y, x] = col if j == k else ARM[1]
+                    added[y, x] = True
+    ring = (_nb(added, -1, 0) | _nb(added, 1, 0) | _nb(added, 0, -1) | _nb(added, 0, 1)) & ~added & (out[..., 3] == 0)
+    out[ring] = OUTLINE
+    return out
+
+
 # ───────────── HELM ─────────────
 def helm_layer(body, cloth, direction, state, body_lay):
     B = np.array(body)
@@ -113,64 +149,86 @@ def helm_layer(body, cloth, direction, state, body_lay):
         if h[yy, xx]:
             out[yy, xx] = PLATE[3]
 
-    # ---- mata / visor ----
+    # ---- helm knight: pita dahi + visor T + paku (acuan: gambar helm baja) ----
+    cx = (x0 + x1) / 2.0
     white = (B[..., 0] == 0xf8) & (B[..., 1] == 0xf8) & (B[..., 2] == 0xf8) & h
     wy, wx = np.where(white)
     if not len(wy) and direction != 'up' and state != 'dead':
         t = _eye_template(direction)
         wy = np.array([ytop + dy for dy, dx in t])
         wx = np.array([x0 + dx for dy, dx in t])
-    if len(wy):
+
+    def paint(y, x, col):
+        if 0 <= y < 64 and 0 <= x < 64 and h[y, x]:
+            out[y, x] = col
+
+    if len(wy):                                          # tampak depan / samping (ada wajah)
         ey = int(np.round(np.median(wy)))
-        if direction == 'left':
-            xa, xb = x0, min(x1, wx.max() + 2)
-        elif direction == 'right':
-            xa, xb = max(x0, wx.min() - 2), x1
+        band, wing = ey - 3, (ey - 2, ey - 1)           # pita dahi, lalu 2 baris sayap visor
+        for y, x in zip(ys, xs):
+            if direction in ('down', 'up'):
+                d = int(abs(x - cx))                    # 0 = tengah
+                edge_l, edge_r = (x == x0), (x == x1)
+            else:
+                d = (x - x0) if direction == 'left' else (x1 - x)   # 0 = ujung depan wajah
+                edge_l = edge_r = False
+            if y == band:                                # pita dahi terang
+                out[y, x] = PLATE[2] if (x in (x0, x1)) else PLATE[3]
+            elif y > band:                               # pipi / pelindung dagu
+                t = 1
+                if direction in ('down', 'up'):
+                    t = 2 if edge_l else (0 if edge_r else 1)
+                if dn[y, x]:
+                    t = 0
+                out[y, x] = PLATE[t]
+        if direction in ('down', 'up'):
+            for y in range(band + 1, ybot + 1):          # batang hidung (tengah) + celah T
+                for x in range(x0, x1 + 1):
+                    d = int(abs(x - cx))
+                    if y in wing:
+                        if 1 <= d <= 3: paint(y, x, VISOR)
+                        elif d == 0:    paint(y, x, PLATE[2])
+                    elif y == ey:
+                        if d <= 1:      paint(y, x, VISOR)
+                    elif y > ey:
+                        if d == 0:      paint(y, x, VISOR)
+            for y in range(ytop, band):                  # garis tengah dari jambul sampai pita
+                for x in range(x0, x1 + 1):
+                    if int(abs(x - cx)) == 0:
+                        paint(y, x, PLATE[3])
+            paint(ytop + 3, x0 + 3, PLATE[3])            # 2 paku di dahi
+            paint(ytop + 3, x1 - 3, PLATE[3])
         else:
-            xa, xb = x0 + 1, x1 - 1
-        rows = (ey - 1, ey, ey + 1) if direction in ('down', 'up') else (ey - 1, ey)
-        for y in rows:
-            for x in range(xa, xb + 1):
-                if 0 <= y < 64 and h[y, x]:
-                    out[y, x] = VISOR
-        # wajah bawah: pelat pelindung dagu (tone mid) dengan garis tengah di tampak depan
-        for y in range(rows[-1] + 1, ybot + 1):
-            for x in range(x0, x1 + 1):
-                if h[y, x]:
-                    t = 0 if (y >= ybot or dn[y, x] or rt[y, x]) else 1
-                    out[y, x] = PLATE[t]
-        if direction == 'down':
-            xc = (x0 + x1) // 2
-            for y in range(rows[-1] + 2, ybot):
-                if h[y, xc]:
-                    out[y, xc] = PLATE[0]
-        for y, x in zip(wy, wx):
-            out[y, x] = GLINT
-    else:
-        xc = (x0 + x1) // 2
-        for y in range(ytop + 1, ytop + H - 3):          # tampak belakang / mati: punggung helm dengan sorot tengah
+            front = (lambda x: x - x0) if direction == 'left' else (lambda x: x1 - x)
+            for y in range(band + 1, ybot + 1):
+                for x in range(x0, x1 + 1):
+                    d = front(x)
+                    if y in wing and d <= 6:    paint(y, x, VISOR)
+                    elif y >= ey and d <= (2 if y == ey else 1): paint(y, x, VISOR)
+            for x in range(x0, x1 + 1):                  # rabung atas helm dilihat dari samping
+                paint(ytop, x, PLATE[3])
+            paint(ytop + 3, (x0 + 5) if direction == 'left' else (x1 - 5), PLATE[3])   # paku
+    else:                                                # tampak belakang / mati: punggung helm
+        xc = int(cx)
+        for y in range(ytop, ybot + 1):
             for x in (xc, xc + 1):
-                if h[y, x]:
-                    out[y, x] = PLATE[3] if y < ytop + 4 else PLATE[2]
+                paint(y, x, PLATE[3] if y < ytop + 5 else PLATE[2])
+        if ytop + 5 <= ybot:
+            for x in range(x0, x1 + 1):
+                paint(ytop + 5, x, PLATE[2] if x not in (xc, xc + 1) else PLATE[3])
         for y in range(ybot - 2, ybot + 1):              # pelindung tengkuk lebih gelap
             for x in range(x0, x1 + 1):
-                if h[y, x]:
-                    out[y, x] = PLATE[0]
+                paint(y, x, PLATE[0])
 
-    # ---- jambul kecil di atas helm (bukan tanduk, cuma tonjolan pelat) ----
+    # ---- tonjolan kecil di puncak helm (1 baris saja, tidak menambah tinggi kepala) ----
     crest = np.zeros((64, 64), bool)
     if state != 'dead':
-        def put(x, y, col):
-            if 0 <= x < 64 and 0 <= y < 64 and not h[y, x]:
-                out[y, x] = col
-                crest[y, x] = True
-        row = np.where(h[ytop])[0]
-        cl, cr = int(row.min()), int(row.max())
-        for x in range(cl + 1, cr):                      # alur dasar jambul
-            put(x, ytop - 1, PLATE[2] if x < (cl + cr) // 2 else PLATE[1])
-        xm = (cl + cr) // 2
-        for x in (xm, xm + 1) if direction in ('down', 'up') else (xm - 1, xm, xm + 1):
-            put(x, ytop - 2, PLATE[3])                   # puncak jambul + kilau
+        xm = int(cx)
+        xs_c = (xm, xm + 1) if direction in ('down', 'up') else (xm - 1, xm, xm + 1)
+        for x in xs_c:
+            if 0 <= x < 64 and not h[ytop - 1, x]:
+                out[ytop - 1, x] = PLATE[3]
+                crest[ytop - 1, x] = True
     shape |= crest
 
     # ---- ring outline ----
@@ -182,8 +240,9 @@ def helm_layer(body, cloth, direction, state, body_lay):
 
 
 def full_layers(body, cloth, direction, state):
-    bl, _ = body_layer(body, cloth)
+    bl, h = body_layer(body, cloth)
     hl = helm_layer(body, cloth, direction, state, bl)
+    bl = bulk_torso(bl, h, state, direction)
     return bl, hl
 
 

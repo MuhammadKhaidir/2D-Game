@@ -426,14 +426,14 @@ public class Skeleton extends Entity {
         ItemManager im = ItemManager.get();
         double roll;
         roll = Math.random() * 100;
-        if (roll < 15.0) {
-            int b = 1+(int)(Math.random()*3);
+        if (roll < 100) {
+            int b = 1+(int)(Math.random()*20);
             im.add(im.BONE,b);
             if (gp.speechBubble != null) gp.speechBubble.show("Obtained " + b + "x Bone");
         }
         roll = Math.random() * 100;
-        if (roll < 5.0)  {
-            im.add(im.SKULL,1);
+        if (roll < 100)  {
+            im.add(im.SKULL,10);
             if (gp.speechBubble != null) gp.speechBubble.show("Obtained 1x Skull");
         }
         roll = Math.random() * 100;
