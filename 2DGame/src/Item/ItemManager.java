@@ -31,6 +31,7 @@ public class ItemManager {
     public Item BONE_SWORD;
     // EQUIPMENT (armor = satu set utuh per item, data-nya di ArmorSet)
     public Item DREAD_ARMOR;      // dijual Dark Merchant (Tomb Domain)
+    public Item IRON_ARMOR;       // dijual Armor Merchant (dekat rumah spawn), bayar Coin
     // CURRENCY
     public Item COIN; // drop pasti dari setiap monster yang dikill, masuk ke backpack
     // CONSUMABLE (bisa dipakai lewat hotbar) — semua potion didefinisikan di PotionType
@@ -77,6 +78,8 @@ public class ItemManager {
             BONE_SWORD = new Item("Bone Sword", safeLoad("/Aset/BoneSword.png", "/Aset/BasicSword.png"));
             DREAD_ARMOR = new Item(ArmorSet.DREAD.itemName, safeLoad("/Aset/DreadArmor.png", "/drop/Ore.png"));
             DREAD_ARMOR.maxStack = 1; // armor gak numpuk
+            IRON_ARMOR = new Item(ArmorSet.IRON.itemName, safeLoad("/Aset/IronArmor.png", "/drop/Ore.png"));
+            IRON_ARMOR.maxStack = 1;
             COIN       = new Item("Coin",       safeLoad("/drop/Coin.png",      "/drop/Ore.png"));
             Main.Log.d("[ItemManager] Preloading weapon instances...");
             weaponSwordInstance    = new Weapon("Basic Sword", "Sword");

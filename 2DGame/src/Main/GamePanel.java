@@ -41,6 +41,7 @@ import UI.PlayerStatUI;
 import UI.UICommandButton;
 import bahan.KeyHandlerObj;
 import bahan.TileM;
+import Entitas.ArmorMerchant;
 import Entitas.DarkMerchant;
 import Entitas.DialogNode;
 import Entitas.Entity;
@@ -79,9 +80,11 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	// npc
 	public PotionMerchant potionMerchant;
+	public ArmorMerchant armorMerchant;
 
 	// toko potion + ikon buff aktif
 	public UI.PotionShopUI potionShop;
+	public UI.ArmorShopUI armorShop;
 	public World.StorageChest chest;   // peti penyimpanan di (800, 1110)
 	public UI.ChestUI chestUI;
 	public UI.BuffBar buffBar;
@@ -225,6 +228,7 @@ public class GamePanel extends JPanel implements Runnable{
 		hotbar = new UI.Hotbar(this);
 		miniMap = new UI.MiniMap(this);
 		potionShop = new UI.PotionShopUI(this);
+		armorShop = new UI.ArmorShopUI(this);
 		chest = new World.StorageChest(this);
 		chestUI = new UI.ChestUI(this, chest);
 		buffBar = new UI.BuffBar(this);
@@ -302,6 +306,12 @@ public class GamePanel extends JPanel implements Runnable{
                 // ── POTION MERCHANT SHOP ──
                 if (potionShop != null && potionShop.visible) {
                     potionShop.handleMouseClick(e);
+                    return;
+                }
+
+                // ── ARMOR MERCHANT SHOP ──
+                if (armorShop != null && armorShop.visible) {
+                    armorShop.handleMouseClick(e);
                     return;
                 }
 
@@ -430,7 +440,11 @@ public class GamePanel extends JPanel implements Runnable{
 	    potionMerchant = new PotionMerchant(this);
 	    potionMerchant.initDialog();
 	    npc[3] = potionMerchant;
-	    
+
+	    armorMerchant = new ArmorMerchant(this);
+	    armorMerchant.initDialog();
+	    npc[4] = armorMerchant;
+
 	    mainMenu.active = true;                        // matiin main menu
 	   // domainManager.forceEnterDomain("Tomb");         // langsung masuk domain
 	}
@@ -447,6 +461,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    if (mobIndexUI != null && mobIndexUI.visible) return false;
 	    if (totemUI != null && totemUI.visible) return false;
 	    if (potionShop != null && potionShop.visible) return false;
+	    if (armorShop != null && armorShop.visible) return false;
 	    if (chestUI != null && chestUI.visible) return false;
 	    if (deathScreenUI != null && deathScreenUI.visible) return false;
 	    // di dalam domain: jangan zoom kalau lagi buka shop / dialog merchant / konfirmasi boss
@@ -953,6 +968,9 @@ public class GamePanel extends JPanel implements Runnable{
 	    
 	    // potion merchant (dialog-nya diatur di PotionMerchant)
 	    PotionMerchant.registerDialog(this);
+
+	    // armor merchant (dialog-nya diatur di ArmorMerchant)
+	    ArmorMerchant.registerDialog(this);
 	}
 
 
@@ -984,6 +1002,15 @@ public class GamePanel extends JPanel implements Runnable{
 		if (potionShop != null && potionShop.visible) {
 		    potionShop.update();
 		    // panel lain gak boleh kebuka bareng toko
+		    KeyH.yPressed = false;
+		    KeyH.tabPressed = false;
+		    KeyH.mPressed = false;
+		    return;
+		}
+
+		// TOKO ARMOR KEBUKA → sama: dunia berhenti, cuma ESC yang diproses
+		if (armorShop != null && armorShop.visible) {
+		    armorShop.update();
 		    KeyH.yPressed = false;
 		    KeyH.tabPressed = false;
 		    KeyH.mPressed = false;
@@ -1545,6 +1572,7 @@ public void paintComponent(Graphics g) {
         drawZoomHint(g2);
         if (chestUI != null) chestUI.draw(g2);       // panel peti
         if (potionShop != null) potionShop.draw(g2); // paling atas, nutup UI & drop di belakangnya
+        if (armorShop != null) armorShop.draw(g2);
     }
     if (hotbar != null) hotbar.drawOverlay(g2); // tooltip + ikon yang lagi diseret, di atas semua UI
     if (deathScreenUI != null) {
@@ -1600,6 +1628,12 @@ public void paintComponent(Graphics g) {
 	    // ── POTION MERCHANT SHOP HOVER ──
 	    if (potionShop != null && potionShop.visible) {
 	        potionShop.handleMouseMove(e);
+	        return;
+	    }
+
+	    // ── ARMOR MERCHANT SHOP HOVER ──
+	    if (armorShop != null && armorShop.visible) {
+	        armorShop.handleMouseMove(e);
 	        return;
 	    }
 

@@ -243,6 +243,7 @@ public class SaveManager {
             case "Gold":         return im.COIN;          // nama lama, biar save lama tetap kebaca
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
             case "Dread Armor":  return im.DREAD_ARMOR;   // DARK MERCHANT (set armor utuh)
+            case "Iron Armor":   return im.IRON_ARMOR;    // ARMOR MERCHANT (set armor utuh)
             case "Helm":         return null;             // item uji coba lama (sistem armor sekarang satu set utuh) -> dibuang dari save lama
             case "Health Potion": return im.getPotion(Item.PotionType.SMALL_HP); // nama lama, biar save lama tetap kebaca
             default:

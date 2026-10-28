@@ -37,7 +37,14 @@ public final class ArmorSet {
           + "gauntlets and greaves in one piece. Violet runes glow "
           + "faintly in the dark.");
 
-    private static final ArmorSet[] ALL = { DREAD };
+    /** Set armor kedua: besi polos (full iron). Dijual Armor Merchant di dekat rumah spawn, bayar pakai Coin. */
+    public static final ArmorSet IRON = new ArmorSet(
+            "Iron Armor", "iron", 3, 5,
+            "A complete set of plain iron plate: closed helm, "
+          + "cuirass, gauntlets and greaves in one piece. "
+          + "Heavy, dependable and forged for the road.");
+
+    private static final ArmorSet[] ALL = { DREAD, IRON };
 
     /** Cari set dari nama item (tidak peka huruf besar/kecil). null kalau item itu bukan armor. */
     public static ArmorSet byItemName(String name) {
