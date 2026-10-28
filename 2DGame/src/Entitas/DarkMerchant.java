@@ -1060,6 +1060,17 @@ public class DarkMerchant extends Entity {
             py + 30
         );
 
+        // Armor: tier + nama set effect, rata kanan di baris nama (baris deskripsi & harga gak keganggu)
+        Item.ArmorSet armorSet = Item.ArmorSet.byItemName(item.name);
+        if (armorSet != null) {
+            g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+            g2.setColor(armorSet.rarity == Item.ArmorSet.Rarity.RARE
+                    ? new Color(110, 175, 255)
+                    : new Color(190, 190, 190));
+            String tag = armorSet.rarity.label + " - " + armorSet.effectName;
+            g2.drawString(tag, rx + rowW - 14 - g2.getFontMetrics().stringWidth(tag), py + 22);
+        }
+
         // ========================================================
         // DESCRIPTION
         // ========================================================

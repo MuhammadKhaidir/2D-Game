@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import Item.DeathTotemManager;
 import Item.FishingManager;
 import Item.DreadGuardian;
+import Item.ArmorSetEffects;
 import Item.DropItem;
 import java.util.ArrayList;
 
@@ -70,6 +71,7 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public DeathTotemManager deathTotemManager;
 	public DreadGuardian dreadGuardian; // set effect Dread Armor: bayangan penyerang
+	public ArmorSetEffects armorEffects; // set effect Iron Armor (Iron Will) & Umbral Armor (Ember Verdict)
 	public DamagePopup damagePopups;    // angka damage melayang (musuh kuning, player merah, bayangan ungu)
 	public Entitas.PlayerSpeechBubble speechBubble;
 	
@@ -220,6 +222,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    this.statUI = new PlayerStatUI(this, player);
 	    this.deathTotemManager = new DeathTotemManager(this);
 	    this.dreadGuardian = new DreadGuardian(this);
+	    this.armorEffects = new ArmorSetEffects(this);
 	    this.damagePopups = new DamagePopup(this);
 		world = new WorldSystem();
 		world.hour = 6; // sore ke malam
@@ -1353,6 +1356,9 @@ public class GamePanel extends JPanel implements Runnable{
 	    if (dreadGuardian != null && !isWorldFrozen()) {
 	        dreadGuardian.update();
 	    }
+	    if (armorEffects != null && !isWorldFrozen()) {
+	        armorEffects.update();
+	    }
 	    if (damagePopups != null && !isWorldFrozen()) {
 	        damagePopups.update();
 	    }
@@ -1504,6 +1510,7 @@ public void paintComponent(Graphics g) {
             e.draw(g2);
         }
         if (dreadGuardian != null) dreadGuardian.draw(g2); // bayangan Dread Guardian (domain)
+        if (armorEffects != null) armorEffects.draw(g2);   // Ember Umbral / cincin Iron Will (domain)
         if (damagePopups != null) damagePopups.draw(g2);   // angka damage (domain)
         if (speechBubble != null) speechBubble.draw(g2);
         g2.setTransform(domainTx);
@@ -1547,6 +1554,7 @@ public void paintComponent(Graphics g) {
         }
         tileM.drawYSorted(g2, player, npc, monsters);
         if (dreadGuardian != null) dreadGuardian.draw(g2); // bayangan Dread Guardian (dunia luar)
+        if (armorEffects != null) armorEffects.draw(g2);   // Ember Umbral / cincin Iron Will (dunia luar)
         if (damagePopups != null) damagePopups.draw(g2);   // angka damage (dunia luar)
         
         if (deathTotemManager != null) {

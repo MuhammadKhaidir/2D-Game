@@ -144,7 +144,11 @@ public class player extends Entity {
         if (isWeaponEquipped && currentWeapon != null) {
             total += currentWeapon.damage;
         }
-        return buffs.scaleDamage(total);
+        int damage = buffs.scaleDamage(total);
+        if (gp != null && gp.armorEffects != null) { // set effect Umbral Armor (Ember Verdict): +damage per Ember
+            damage = (int) Math.round(damage * gp.armorEffects.getDamageMultiplier());
+        }
+        return damage;
     }
 
     /** Max HP tanpa bonus dari boost potion. Ini yang disimpan ke save & dipakai stat UI. */
@@ -411,7 +415,9 @@ public class player extends Entity {
         }
         // defense flat (stat DEF + armor) dulu, baru pengurang persen dari armor
         int flat = dmg - def - getArmorDefense();
-        int actualDmg = Math.max(1, (int) Math.round(flat * (1.0 - getArmorDamageReduction() / 100.0)));
+        double reduction = 1.0 - getArmorDamageReduction() / 100.0;
+        if (gp.armorEffects != null) reduction *= gp.armorEffects.getIncomingDamageMultiplier(); // Iron Will: HP rendah = damage -15%
+        int actualDmg = Math.max(1, (int) Math.round(flat * reduction));
         life -= actualDmg;
         if (gp.damagePopups != null) gp.damagePopups.spawn(this, actualDmg, Main.DamagePopup.Type.PLAYER);
         isHit = true;
@@ -430,6 +436,7 @@ public class player extends Entity {
         deadFrameIndex = 0;
         deadAnimTimer  = 0;
         buffs.clear();          // semua boost potion hilang kalau mati
+        if (gp.armorEffects != null) gp.armorEffects.clear(); // Ember Umbral padam kalau mati
 
         // batalin state lain biar ga numpuk/ganggu animasi mati
         attackState = AttackState.NONE;
@@ -500,6 +507,10 @@ public class player extends Entity {
     public void giveCoinReward(Entity target) {
         // pion summonan boss (noDrop) nggak ngasih koin, biar gak bisa di-farm
         if (target instanceof Skeleton && ((Skeleton) target).noDrop) return;
+
+        // set effect Umbral Armor (Ember Verdict): tiap kill beneran = +1 Ember.
+        // Dipasang di sini karena Orc & monster biasa gak lewat killMonster(), tapi semuanya lewat giveCoinReward().
+        if (gp.armorEffects != null) gp.armorEffects.onKill(target);
 
         int amount = Math.max(1, target.coinDrop);
         Item.ItemManager im = Item.ItemManager.get();
@@ -610,6 +621,7 @@ public class player extends Entity {
 
         // ===== SPRINT + STAMINA =====
         double currentBaseSpeed = buffs.scaleSpeed(baseSpeed); // sudah termasuk boost dari Speed Potion
+        if (gp.armorEffects != null) currentBaseSpeed *= gp.armorEffects.getSpeedMultiplier(); // Umbral: Ember penuh = +speed
         if (KeyH.shiftPressed && stamina > 0 && canSprint && (KeyH.upPressed || KeyH.downPressed || KeyH.leftPressed || KeyH.rightPressed)) {
             speed = currentBaseSpeed * sprintMultiplier;
             stamina -= staminaDrain;

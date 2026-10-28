@@ -254,6 +254,14 @@ public class BackpackUI implements MouseWheelListener {
         g2.setColor(Color.LIGHT_GRAY);
         g2.drawString("Qty: " + selectedItem.amount, iconX + iconSize + 8, iconY + 22);
 
+        // Armor: tier (COMMON / RARE) di atas Qty, warnanya sama kayak rarity mob
+        ArmorSet armorSet = ArmorSet.byItemName(selectedItem.item.name);
+        if (armorSet != null) {
+            g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+            g2.setColor(rarityColor(armorSet.rarity));
+            g2.drawString(armorSet.rarity.label, iconX + iconSize + 8, iconY + 9);
+        }
+
         g2.setFont(new Font("Monospaced", Font.BOLD, 11));
         g2.setColor(colorAccent);
         g2.drawString(truncateText(selectedItem.item.name, 18), x + pad, y + 90);
@@ -262,44 +270,49 @@ public class BackpackUI implements MouseWheelListener {
         g2.setColor(new Color(120, 100, 80));
         g2.drawLine(x + pad, y + 100, x + w - pad, y + 100);
 
-        // Deskripsi
-        g2.setColor(colorAccent);
-        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
-        g2.drawString("DESCRIPTION", x + pad, y + 117);
-
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
-        int nextY = drawWrappedString(
-                g2,
-                getItemDescriptionText(selectedItem.item.name),
-                x + pad, y + 131, w - pad * 2, 12);
-
-        // Stat
-        ItemStats stats = getItemStats(selectedItem.item.name);
-        int statsX = x + pad;
-        int statsW = w - pad * 2;
-        int statsY = nextY + 2;
-
-        if (stats != null) {
-            if (stats.damage != null) {
-                statsY = drawStatRow(g2, "DAMAGE", String.valueOf(stats.damage), statsX, statsY, statsW);
-            }
-            if (stats.defense != null) {
-                statsY = drawStatRow(g2, "DEFENSE", String.valueOf(stats.defense), statsX, statsY, statsW);
-            }
-            if (stats.critChance != null) {
-                statsY = drawStatRow(g2, "CRIT CHANCE", stats.critChance + "%", statsX, statsY, statsW);
-            }
-            if (stats.critDamage != null) {
-                statsY = drawStatRow(g2, "CRIT DAMAGE", stats.critDamage + "%", statsX, statsY, statsW);
-            }
-            if (stats.damageReduction != null) {
-                statsY = drawStatRow(g2, "DMG REDUCTION", stats.damageReduction + "%", statsX, statsY, statsW);
-            }
+        if (armorSet != null) {
+            // Armor (satu set utuh): deskripsi, DEF + pengurang damage, dan set effect-nya
+            drawArmorInfo(g2, armorSet, x + pad, y + 117, w - pad * 2);
         } else {
-            g2.setFont(new Font("Monospaced", Font.PLAIN, 9));
-            g2.setColor(new Color(170, 170, 170));
-            g2.drawString("No equipment stats.", statsX, statsY + 10);
+            // Deskripsi
+            g2.setColor(colorAccent);
+            g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+            g2.drawString("DESCRIPTION", x + pad, y + 117);
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Monospaced", Font.PLAIN, 10));
+            int nextY = drawWrappedString(
+                    g2,
+                    getItemDescriptionText(selectedItem.item.name),
+                    x + pad, y + 131, w - pad * 2, 12);
+
+            // Stat
+            ItemStats stats = getItemStats(selectedItem.item.name);
+            int statsX = x + pad;
+            int statsW = w - pad * 2;
+            int statsY = nextY + 2;
+
+            if (stats != null) {
+                if (stats.damage != null) {
+                    statsY = drawStatRow(g2, "DAMAGE", String.valueOf(stats.damage), statsX, statsY, statsW);
+                }
+                if (stats.defense != null) {
+                    statsY = drawStatRow(g2, "DEFENSE", String.valueOf(stats.defense), statsX, statsY, statsW);
+                }
+                if (stats.critChance != null) {
+                    statsY = drawStatRow(g2, "CRIT CHANCE", stats.critChance + "%", statsX, statsY, statsW);
+                }
+                if (stats.critDamage != null) {
+                    statsY = drawStatRow(g2, "CRIT DAMAGE", stats.critDamage + "%", statsX, statsY, statsW);
+                }
+                if (stats.damageReduction != null) {
+                    statsY = drawStatRow(g2, "DMG REDUCTION", stats.damageReduction + "%", statsX, statsY, statsW);
+                }
+            } else {
+                g2.setFont(new Font("Monospaced", Font.PLAIN, 9));
+                g2.setColor(new Color(170, 170, 170));
+                g2.drawString("No equipment stats.", statsX, statsY + 10);
+            }
         }
 
         // Tombol delete (nempel di bawah panel)
@@ -702,6 +715,57 @@ public class BackpackUI implements MouseWheelListener {
     }
 
     
+    // Warna tier armor (sama kayak rarity mob di TotemUI)
+    private static final Color RARITY_COMMON = new Color(180, 180, 180);
+    private static final Color RARITY_RARE   = new Color(90, 160, 255);
+
+    private static Color rarityColor(ArmorSet.Rarity rarity) {
+        return rarity == ArmorSet.Rarity.RARE ? RARITY_RARE : RARITY_COMMON;
+    }
+
+    /**
+     * Isi detail untuk ARMOR: deskripsi, DEF + pengurang damage (dua kotak kecil sebelahan), lalu set effect.
+     * Layout dipadatkan (font 9) karena panel kanan cuma ~144px dan di bawahnya ada tombol hotbar. Kalau nambah
+     * set baru dengan teks yang jauh lebih panjang, cek lagi supaya gak nabrak tombol ADD TO HOTBAR.
+     */
+    private void drawArmorInfo(Graphics2D g2, ArmorSet set, int x, int y, int width) {
+        g2.setColor(colorAccent);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+        g2.drawString("DESCRIPTION", x, y);
+
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Monospaced", Font.PLAIN, 9));
+        int nextY = drawWrappedString(g2, set.description, x, y + 13, width, 10);
+
+        int gap = 4;
+        int tileW = (width - gap) / 2;
+        int tileY = nextY;
+        drawArmorStatTile(g2, "DEF " + set.defense, x, tileY, tileW);
+        drawArmorStatTile(g2, "-" + set.damageReduction + "% DMG", x + tileW + gap, tileY, tileW);
+
+        int effectY = tileY + 18 + 14;
+        g2.setFont(new Font("Monospaced", Font.BOLD, 9));
+        g2.setColor(rarityColor(set.rarity));
+        g2.drawString(set.effectName, x, effectY);
+
+        g2.setColor(new Color(225, 220, 210));
+        g2.setFont(new Font("Monospaced", Font.PLAIN, 9));
+        drawWrappedString(g2, set.effectDescription, x, effectY + 11, width, 10);
+    }
+
+    private void drawArmorStatTile(Graphics2D g2, String text, int x, int y, int w) {
+        int h = 18;
+        g2.setColor(new Color(45, 35, 28));
+        g2.fillRect(x, y, w, h);
+        g2.setColor(new Color(100, 80, 60));
+        g2.setStroke(new BasicStroke(1));
+        g2.drawRect(x, y, w, h);
+        g2.setColor(colorAccent);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 9));
+        FontMetrics fm = g2.getFontMetrics();
+        g2.drawString(text, x + (w - fm.stringWidth(text)) / 2, y + 12);
+    }
+
     private static class ItemStats {
         String equipType;
         Integer damage;

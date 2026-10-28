@@ -48,7 +48,7 @@ public class ArmorShopUI {
 
         /** Dagangan armor: nama & stat diambil dari ArmorSet. */
         static Stock armor(ArmorSet set, Item item, int price) {
-            return new Stock(set.itemName, "DEF +" + set.defense + "   -" + set.damageReduction + "% damage",
+            return new Stock(set.itemName, "DEF +" + set.defense + "   -" + set.damageReduction + "% damage   " + set.effectName,
                              item, price, "Equip it from your backpack.");
         }
     }
