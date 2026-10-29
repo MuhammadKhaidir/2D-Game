@@ -44,6 +44,7 @@ public class ItemManager {
     public static final int FISH_SMALL_HEAL  = 15;
     public static final int FISH_BIG_HEAL    = 35;
     public static final int FISH_GOLDEN_HEAL = 80;
+    public FishingLoot fishingLoot;   // semua barang lain hasil mancing (dibuat di loadItems)
     // CONSUMABLE (bisa dipakai lewat hotbar) — semua potion didefinisikan di PotionType
     private final EnumMap<PotionType, Item> potions = new EnumMap<>(PotionType.class);
     public static final int STARTER_SMALL_HP_POTIONS = 5;  // jumlah potion di awal game (buat testing hotbar)
@@ -106,6 +107,7 @@ public class ItemManager {
             FISH_SMALL.onUse  = createFoodEffect(FISH_SMALL_HEAL);
             FISH_BIG.onUse    = createFoodEffect(FISH_BIG_HEAL);
             FISH_GOLDEN.onUse = createFoodEffect(FISH_GOLDEN_HEAL);
+            fishingLoot = new FishingLoot(this);   // tabel hasil mancing (sampah, makanan, buff, harta, senjata) — lihat FishingLoot
             Main.Log.d("[ItemManager] Preloading weapon instances...");
             weaponSwordInstance    = new Weapon("Basic Sword", "Sword");
             weaponAxeInstance      = new Weapon("Basic Axe",   "Axe");

@@ -61,6 +61,55 @@ public class Weapon {
         preloadSounds();
     }
     
+    /**
+     * Senjata varian (mis. hasil mancing): pakai set animasi tipe "Sword" / "Axe" / "BoneSword",
+     * tapi damage-nya sendiri dan gambarnya diwarnai (tintRgb = 0xRRGGBB).
+     */
+    public Weapon(String name, String type, int damage, int tintRgb) {
+        this(name, type);
+        this.damage = damage;
+        tintAllFrames(tintRgb);
+    }
+
+    private void tintAllFrames(int rgb) {
+        BufferedImage[][] all = {
+            wpState1Up, wpState1Down, wpState1Left, wpState1Right,
+            wpState2Up, wpState2Down, wpState2Left, wpState2Right,
+            wpState3Up, wpState3Down, wpState3Left, wpState3Right,
+            wpState4Up, wpState4Down, wpState4Left, wpState4Right
+        };
+        for (BufferedImage[] frames : all) {
+            for (int i = 0; i < frames.length; i++) frames[i] = tint(frames[i], rgb);
+        }
+    }
+
+    /**
+     * Warnai gambar: kecerahan tiap piksel dipertahankan, warnanya ditarik ke tintRgb (85%).
+     * Putih (busur tebasan) jadi warna tint penuh, abu-abu (bilah) jadi tint yang lebih gelap, outline gelap tetap gelap.
+     */
+    private static BufferedImage tint(BufferedImage src, int rgb) {
+        if (src == null) return null;
+        int w = src.getWidth(), h = src.getHeight();
+        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        final float mix = 0.85f;
+        float tr = (rgb >> 16) & 0xFF, tg = (rgb >> 8) & 0xFF, tb = rgb & 0xFF;
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int argb = src.getRGB(x, y);
+                int a = argb >>> 24;
+                if (a == 0) continue;
+                int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
+                float lum = (0.299f * r + 0.587f * g + 0.114f * b) / 255f;
+                float l = Math.min(1f, lum * 1.2f + 0.05f);
+                int nr = Math.min(255, Math.round(r * (1 - mix) + tr * l * mix));
+                int ng = Math.min(255, Math.round(g * (1 - mix) + tg * l * mix));
+                int nb = Math.min(255, Math.round(b * (1 - mix) + tb * l * mix));
+                out.setRGB(x, y, (a << 24) | (nr << 16) | (ng << 8) | nb);
+            }
+        }
+        return out;
+    }
+
     private BufferedImage readImageSafely(String path) {
         InputStream is = getClass().getResourceAsStream(path);
         if (is == null) {

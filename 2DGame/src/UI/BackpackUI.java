@@ -407,6 +407,10 @@ public class BackpackUI implements MouseWheelListener {
         PotionType potion = PotionType.fromItemName(itemName);
         if (potion != null) return potion.longDescription();
 
+        // Barang hasil mancing (sampah, makanan, buff, harta, senjata): deskripsi diambil dari Item.FishingLoot
+        String fishedText = ItemManager.get().fishingLoot.describe(itemName);
+        if (fishedText != null) return fishedText;
+
         switch (itemName.toLowerCase()) {
 
             case "log":
@@ -841,6 +845,13 @@ public class BackpackUI implements MouseWheelListener {
                 break;
 
             default: {
+                // Senjata hasil mancing: damage asli dari Item.FishingLoot
+                Integer fishedDamage = ItemManager.get().fishingLoot.weaponDamage(itemName);
+                if (fishedDamage != null) {
+                    stats = new ItemStats("WEAPON");
+                    stats.damage = fishedDamage;
+                    break;
+                }
                 // Armor set: defense & damage reduction beneran dipakai di player.takeDamage()
                 ArmorSet armorSet = ArmorSet.byItemName(itemName);
                 if (armorSet != null) {
@@ -886,6 +897,7 @@ public class BackpackUI implements MouseWheelListener {
         if (item == null || item.name == null) return -1;
         String itemName = item.name.toLowerCase();
         if (itemName.contains("sword") || itemName.contains("weapon") || itemName.contains("axe") || itemName.contains("kapak") || itemName.contains("bone sword")) return SLOT_WEAPON;
+        if (ItemManager.get().fishingLoot.isWeapon(item.name)) return SLOT_WEAPON;   // senjata hasil mancing (Rusty Cutlass, Tidebreaker, dst.)
         if (ArmorSet.byItemName(item.name) != null) return SLOT_ARMOR;
         return -1;
     }
@@ -942,7 +954,10 @@ public class BackpackUI implements MouseWheelListener {
             equippedSlots[targetSlot] = stack;
             if (targetSlot == 0) {
                 gp.player.isWeaponEquipped = true;
-                if (itemName.contains("axe") || itemName.contains("kapak")) {
+                Weapon fishedWeapon = ItemManager.get().fishingLoot.weaponFor(stack.item.name);
+                if (fishedWeapon != null) {
+                    gp.player.currentWeapon = fishedWeapon;
+                } else if (itemName.contains("axe") || itemName.contains("kapak")) {
                     gp.player.currentWeapon = ItemManager.get().weaponAxeInstance;
                 } else if (itemName.contains("bone sword")) {
                     gp.player.currentWeapon = ItemManager.get().weaponBoneSwordInstance;

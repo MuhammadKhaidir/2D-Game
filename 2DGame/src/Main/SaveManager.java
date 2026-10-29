@@ -255,6 +255,8 @@ public class SaveManager {
             default:
                 Item.Item potion = im.getPotionByName(name); // CONSUMABLE (semua potion di PotionType)
                 if (potion != null) return potion;
+                Item.Item loot = im.fishingLoot != null ? im.fishingLoot.itemByName(name) : null; // HASIL MANCING (lihat Item.FishingLoot)
+                if (loot != null) return loot;
                 System.out.println("[SaveManager] Item tidak dikenal: " + name);
                 return null;
         }
