@@ -352,6 +352,7 @@ public class GolemiteMinion extends GolemMinion {
             ((Golem) target).takeDamage(dmg);
         } else if (target instanceof Golemite) {
             ((Golemite) target).takeDamage(dmg);
+            ((Golemite) target).knockbackFrom(this);
         } else if (target instanceof monster) {
             ((monster) target).takeDamage(dmg, this);
         } else if (target instanceof SkeletonKing) {

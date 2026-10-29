@@ -68,6 +68,10 @@ public class Golemite extends Entity {
     
     private static final double SPRITE_LOWER = 0.11; // fraksi dari drawSize. 0 = posisi lama, makin gede makin turun
 
+    // ── Efek kena pukul: badan putih sekejap ──
+    private static final int HIT_FLASH_FRAMES = 5;   // 5 frame @40 FPS = 0,125 detik
+    private int whiteFlashTimer = 0;                 // > 0 = lagi putih
+
     public Golemite(GamePanel gp) {
         super(gp);
         this.maxLife   = 1500;
@@ -183,6 +187,8 @@ public class Golemite extends Entity {
     public void update() {
         if (!isSpawnSet) { spawnX = x; spawnY = y; isSpawnSet = true; }
 
+        if (whiteFlashTimer > 0) whiteFlashTimer--;
+
         // ── 1. Mati & respawn ──
         if (!active) {
             respawnCounter++;
@@ -193,6 +199,8 @@ public class Golemite extends Entity {
         if (life <= 0 && state != GolemiteState.DYING) {
             state       = GolemiteState.DYING;
             dyingTimer  = 0;
+            isKnockback = false;
+            kbReturning = false;
             solidArea.x = -9999;
             solidArea.y = -9999;
             return;
@@ -201,6 +209,13 @@ public class Golemite extends Entity {
         if (state == GolemiteState.DYING) {
             updateDying();
             return;
+        }
+
+        // Kena pukul: kedorong dikit lalu balik. Selama itu AI berhenti sebentar (biar gerakannya gak tabrakan),
+        // KECUALI lagi mukul (ATTACK): pas itu dia emang diem di tempat, jadi animasinya tetap jalan (gak diinterupsi).
+        if (isKnockback) {
+            updateKnockback();
+            if (state != GolemiteState.ATTACK) return;
         }
 
         if (attackCd > 0) attackCd--;
@@ -469,6 +484,9 @@ public class Golemite extends Entity {
         attackCd             = 0;
         respawnCounter       = 0;
         dyingTimer           = 0;
+        whiteFlashTimer      = 0;
+        isKnockback          = false;
+        kbReturning          = false;
         wanderTimer          = 0;
         wanderIdleTimer      = 0;
         damageDealtThisSwing = false;
@@ -483,6 +501,7 @@ public class Golemite extends Entity {
     public void takeDamage(int dmg) {
         if (!active || state == GolemiteState.DYING || state == GolemiteState.DEAD) return;
         life -= dmg;
+        whiteFlashTimer = HIT_FLASH_FRAMES;
         if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         // Kalau lagi mukul, jangan diinterupsi — biarin animasinya selesai.
         if (state != GolemiteState.ATTACK) {
@@ -494,6 +513,87 @@ public class Golemite extends Entity {
     @Override
     public void takeDamage(int dmg, player attacker) {
         takeDamage(dmg);
+    }
+
+    // ────────────────────────────────────────────────────────────
+    //  KNOCKBACK — kedorong dikit, terus balik ke titik tempat dia kena pukul (sama kayak Skeleton).
+    //  Dipanggil SETELAH takeDamage() oleh yang mukul:   gl.takeDamage(dmg);  gl.knockbackFrom(this);
+    //  Golem gede sengaja gak punya ini (dia berat).
+    // ────────────────────────────────────────────────────────────
+    private static final int KNOCKBACK_DISTANCE  = 8;   // px, jarak dorongan maksimal dari titik kena pukul
+    private static final int KNOCKBACK_OUT_STEP  = 4;   // px/frame pas kedorong   (8 / 4 = 2 frame)
+    private static final int KNOCKBACK_BACK_STEP = 2;   // px/frame pas balik      (8 / 2 = 4 frame)
+
+    private int kbOriginX, kbOriginY;     // titik tempat dia kena pukul = tempat balik
+    private int kbTargetX, kbTargetY;     // ujung dorongan
+    private boolean kbReturning = false;  // false = lagi kedorong, true = lagi balik ke titik asal
+
+    /** Dorong sedikit menjauh dari attacker, lalu balik ke titik awal. Arah dorong dari posisi relatif, bukan arah hadap attacker. */
+    public void knockbackFrom(Entity attacker) {
+        if (attacker == null || !active || life <= 0
+                || state == GolemiteState.DYING || state == GolemiteState.DEAD) return;
+
+        int aCX = attacker.x + attacker.solidArea.x + attacker.solidArea.width  / 2;
+        int aCY = attacker.y + attacker.solidArea.y + attacker.solidArea.height / 2;
+        int sCX = x + solidArea.x + solidArea.width  / 2;
+        int sCY = y + solidArea.y + solidArea.height / 2;
+        int dx = sCX - aCX;
+        int dy = sCY - aCY;
+
+        String pushDir;
+        if (dx == 0 && dy == 0) {
+            pushDir = (attacker.direction != null) ? attacker.direction : "down";
+        } else if (Math.abs(dx) > Math.abs(dy)) {
+            pushDir = dx > 0 ? "right" : "left";
+        } else {
+            pushDir = dy > 0 ? "down" : "up";
+        }
+
+        // Kena pukul lagi pas masih kedorong / lagi balik: titik asalnya tetap yang pertama (gak melorot).
+        if (!isKnockback) { kbOriginX = x; kbOriginY = y; }
+
+        applyKnockback(pushDir); // dari Entity: set isKnockback + arah dorong (arah hadap Golemite gak diubah)
+        kbTargetX = kbOriginX + knockbackDirectionX * KNOCKBACK_DISTANCE;
+        kbTargetY = kbOriginY + knockbackDirectionY * KNOCKBACK_DISTANCE;
+        kbReturning = false;
+    }
+
+    private void updateKnockback() {
+        int goalX = kbReturning ? kbOriginX : kbTargetX;
+        int goalY = kbReturning ? kbOriginY : kbTargetY;
+        int step  = kbReturning ? KNOCKBACK_BACK_STEP : KNOCKBACK_OUT_STEP;
+
+        // maju ke titik tujuan, gak boleh kelewatan
+        int dx = Integer.compare(goalX, x) * Math.min(step, Math.abs(goalX - x));
+        int dy = Integer.compare(goalY, y) * Math.min(step, Math.abs(goalY - y));
+
+        if (dx != 0 || dy != 0) {
+            // cek tabrakan sama persis kayak jalan biasa: dunia, player, entity lain
+            this.collisionOn = false;
+            checkWorldCollision(dx, dy);
+            gp.colision.checkEntity(this, gp.player, dx, dy);
+            checkEntityListCollision(dx, dy);
+
+            if (this.collisionOn) {
+                this.collisionOn = false;
+                // mentok: kalau lagi kedorong, langsung balik; kalau lagi balik, berhenti di situ
+                if (kbReturning) endKnockback(); else kbReturning = true;
+                return;
+            }
+            x += dx;
+            y += dy;
+        }
+
+        if (x == goalX && y == goalY) {
+            if (kbReturning) endKnockback();   // udah balik ke titik awal
+            else kbReturning = true;           // udah sampai ujung dorongan, sekarang balik
+        }
+    }
+
+    private void endKnockback() {
+        isKnockback = false;
+        knockbackCounter = 0;
+        kbReturning = false;
     }
 
     // ────────────────────────────────────────────────────────────
@@ -547,7 +647,7 @@ public class Golemite extends Entity {
 
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, fade));
         if (img != null) {
-            g2.drawImage(img, drawX, spriteY, drawSize, drawSize, null);   // <- spriteY
+            g2.drawImage(whiteFlashTimer > 0 ? HitFlash.whiteVersion(img) : img, drawX, spriteY, drawSize, drawSize, null);   // <- spriteY
         } else {
             g2.setColor(new Color(100, 100, 100, 200));
             g2.fillRect(drawX, spriteY, drawSize, drawSize);               // <- spriteY

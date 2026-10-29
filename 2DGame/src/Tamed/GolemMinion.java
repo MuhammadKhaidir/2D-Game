@@ -381,6 +381,7 @@ public class GolemMinion extends Entity {
             ((Golem) target).takeDamage(dmg);
         } else if (target instanceof Golemite) {
             ((Golemite) target).takeDamage(dmg);
+            ((Golemite) target).knockbackFrom(this);
         } else if (target instanceof monster) {
             ((monster) target).takeDamage(dmg, this);
         } else if (target instanceof SkeletonKing) {
@@ -414,6 +415,7 @@ public class GolemMinion extends Entity {
                 if (distFromPoint(gl, myCX, myCY) <= SMASH_RADIUS) {
                     int lifeBefore = gl.life;
                     gl.takeDamage(SMASH_DAMAGE);
+                    gl.knockbackFrom(this);
                     if (lifeBefore > 0 && gl.life <= 0 && gp.deathTotemManager != null) {
                         gp.deathTotemManager.onPawnKill(gl.getExpValue);
                     }

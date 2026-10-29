@@ -121,6 +121,10 @@ public class Golem extends Entity {
     // ── Ukuran gambar: 3x tileSize ──
     private final int DRAW_SIZE_MULT = 3;
 
+    // ── Efek kena pukul: badan putih sekejap. Golem gede SENGAJA gak ada knockback (dia berat), cuma flash ──
+    private static final int HIT_FLASH_FRAMES = 5;   // 5 frame @40 FPS = 0,125 detik
+    private int whiteFlashTimer = 0;                 // > 0 = lagi putih
+
     public Golem(GamePanel gp) {
         super(gp);
         this.maxLife   = 5000;
@@ -252,6 +256,8 @@ public class Golem extends Entity {
     @Override
     public void update() {
         if (!isSpawnSet) { spawnX = x; spawnY = y; isSpawnSet = true; }
+
+        if (whiteFlashTimer > 0) whiteFlashTimer--;
 
         // ── 1. Handle Mati & Respawn ──
         if (!alive) {
@@ -646,6 +652,7 @@ public class Golem extends Entity {
     public void takeDamage(int dmg) {
         if (!alive || golemState == GolemState.DEAD || golemState == GolemState.SPAWN) return;
         life -= dmg;
+        whiteFlashTimer = HIT_FLASH_FRAMES;
         if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         isProvoked = true;
         
@@ -678,6 +685,7 @@ public class Golem extends Entity {
         deadFrameIndex       = 0;
         deadAnimTimer        = 0;
         isProvoked           = false;
+        whiteFlashTimer      = 0;
         damageDealtThisSwing = false;
         solidArea.x          = solidAreaDefaultX;
         solidArea.y          = solidAreaDefaultY;
@@ -761,14 +769,15 @@ public class Golem extends Entity {
         }
 
         if (charImg != null) {
+            BufferedImage shown = (whiteFlashTimer > 0) ? HitFlash.whiteVersion(charImg) : charImg;
             if (golemState == GolemState.DYING || golemState == GolemState.DEAD) {
                 int deadDrawSize = (int) (drawSize * DEAD_DRAW_SCALE);
                 // kompensasi biar titik tengahnya tetap sama walau gambar digedein, baru ditambah offset geser
                 int deadDrawX = drawX - (deadDrawSize - drawSize) / 2 + DEAD_OFFSET_X;
                 int deadDrawY = drawY - (deadDrawSize - drawSize) / 2 + DEAD_OFFSET_Y;
-                g2.drawImage(charImg, deadDrawX, deadDrawY, deadDrawSize, deadDrawSize, null);
+                g2.drawImage(shown, deadDrawX, deadDrawY, deadDrawSize, deadDrawSize, null);
             } else {
-                g2.drawImage(charImg, drawX, drawY, drawSize, drawSize, null);
+                g2.drawImage(shown, drawX, drawY, drawSize, drawSize, null);
             }
         } else {
             g2.setColor(new Color(100, 100, 100, 200));

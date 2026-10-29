@@ -676,6 +676,7 @@ public class player extends Entity {
                                     int currentAtk = getTotalDamage();
                                     int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
                                     m.takeDamage(damageDealt);
+                                    if (m instanceof Entitas.Golemite) ((Entitas.Golemite) m).knockbackFrom(this);
                                     hitSomething = true;
                                     attackHit = true;
                                     if (currentWeapon != null) {
@@ -717,6 +718,7 @@ public class player extends Entity {
                                     int currentAtk = getTotalDamage();
                                     int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
                                     gl.takeDamage(damageDealt);
+                                    gl.knockbackFrom(this);
                                     hitSomething = true;
                                     attackHit = true;
                                     if (currentWeapon != null) currentWeapon.playAttackSound(attackType, isWeaponEquipped);
