@@ -5,6 +5,11 @@ Generator ikon + suara buat sistem mancing (Item/FishingLoot, Item/FishingManage
     python3 tools/generate_fishing_assets.py            # ikon + suara
     python3 tools/generate_fishing_assets.py icons      # ikon saja
     python3 tools/generate_fishing_assets.py sfx        # suara saja
+    python3 tools/generate_fishing_assets.py icons --force   # timpa ikon yang sudah ada (default: dibiarkan)
+
+CATATAN: ikon yang dipakai sekarang berasal dari gambar sheet pixel-art, dibuat lewat tools/import_fishing_sheet.py
+(ikon + gambar senjata di tangan). Bagian ikon di file ini tinggal jadi cadangan (ikon gambar-kode) dan gak menimpa
+ikon yang sudah ada kecuali pakai --force.
 
 Hasil:
     src/drop/fishing/<slug>.png     ikon 64x64 (digambar 16x16 lalu di-scale 4x nearest, sama kayak ikon ikan lama)
@@ -547,7 +552,11 @@ def build_icons():
     out = {}
     for slug, img in icons.items():
         big = img.resize((64, 64), Image.NEAREST)
-        big.save(os.path.join(ICON_DIR, slug + ".png"))
+        path = os.path.join(ICON_DIR, slug + ".png")
+        # ikon yang sudah ada TIDAK ditimpa (sekarang ikonnya dari gambar sheet: tools/import_fishing_sheet.py).
+        # Mau balik ke ikon gambar-kode ini: jalankan dengan --force.
+        if FORCE_ICONS or not os.path.exists(path):
+            big.save(path)
         out[slug] = big
     return out
 
@@ -690,13 +699,16 @@ def build_sfx():
     save_wav("catch_legendary", chime([523, 659, 784, 1047, 1319, 1568, 2093], 0.075, 0.7))
 
 
+FORCE_ICONS = "--force" in sys.argv
+
 if __name__ == "__main__":
-    what = sys.argv[1] if len(sys.argv) > 1 else "all"
+    argv = [a for a in sys.argv[1:] if not a.startswith("--")]
+    what = argv[0] if len(argv) > 0 else "all"
     if what in ("all", "icons"):
         ic = build_icons()
-        print("ikon:", len(ic), "->", ICON_DIR)
-        if len(sys.argv) > 2:
-            preview(ic, sys.argv[2])
+        print("ikon:", len(ic), "->", ICON_DIR, "(ikon yang sudah ada dibiarkan)" if not FORCE_ICONS else "(ditimpa)")
+        if len(argv) > 1:
+            preview(ic, argv[1])
     if what in ("all", "sfx"):
         build_sfx()
         print("sfx ->", SFX_DIR)

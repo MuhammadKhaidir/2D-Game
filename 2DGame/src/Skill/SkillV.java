@@ -594,6 +594,7 @@ public class SkillV extends Skill {
     private boolean isTargetable(Entity m) {
         if (m == null || m.isDead || m.life <= 0) return false;
         if (m instanceof Golemite)     return ((Golemite) m).isAlive();
+        if (m instanceof Entitas.Wolf) return ((Entitas.Wolf) m).isAlive();
         if (m instanceof Skeleton)     return ((Skeleton) m).alive;
         if (m instanceof SkeletonKing) return ((SkeletonKing) m).alive;
         return true;

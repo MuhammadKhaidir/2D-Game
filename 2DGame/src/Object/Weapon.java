@@ -71,6 +71,65 @@ public class Weapon {
         tintAllFrames(tintRgb);
     }
 
+    /**
+     * Senjata dengan gambar ayunan sendiri (hasil mancing). heldSheetPath = lembar frame 1024x256 dari
+     * tools/import_fishing_sheet.py: kolom = state 1..4 x frame 1..4, baris = up / down / left / right, sel 64x64.
+     * Yang diwarnai tintRgb cuma efek tebasan putihnya; gambar senjatanya dibiarkan, jadi bentuknya sama kayak ikon di backpack.
+     * Kalau lembarnya gak ketemu, jatuh ke cara lama: frame tipe "type" bawaan yang diwarnai semua.
+     */
+    public Weapon(String name, String type, int damage, int tintRgb, String heldSheetPath) {
+        this.name = name;
+        this.type = type;
+        this.damage = damage;
+        if (!loadHeldSheet(heldSheetPath, tintRgb)) {
+            loadWeaponImages();
+            tintAllFrames(tintRgb);
+        }
+        preloadSounds();
+    }
+
+    private static final int HELD_CELL = 64;
+    /** Warna efek tebasan di frame ayunan (cuma efek yang pakai warna persis ini). */
+    private static final int ARC_RGB = 0xF4F9F8;
+
+    private boolean loadHeldSheet(String path, int tintRgb) {
+        if (path == null) return false;
+        BufferedImage sheet = readImageSafely(path);
+        if (sheet == null || sheet.getWidth() < 16 * HELD_CELL || sheet.getHeight() < 4 * HELD_CELL) return false;
+
+        BufferedImage[][][] frames = {
+            { wpState1Up, wpState1Down, wpState1Left, wpState1Right },
+            { wpState2Up, wpState2Down, wpState2Left, wpState2Right },
+            { wpState3Up, wpState3Down, wpState3Left, wpState3Right },
+            { wpState4Up, wpState4Down, wpState4Left, wpState4Right }
+        };
+        for (int state = 0; state < 4; state++) {
+            for (int dir = 0; dir < 4; dir++) {          // 0 up, 1 down, 2 left, 3 right
+                for (int i = 0; i < 4; i++) {
+                    BufferedImage cell = sheet.getSubimage((state * 4 + i) * HELD_CELL, dir * HELD_CELL, HELD_CELL, HELD_CELL);
+                    frames[state][dir][i] = tintArcOnly(cell, tintRgb);
+                }
+            }
+        }
+        Main.Log.d("[Weapon System] Memuat gambar ayunan sendiri untuk: " + name);
+        return true;
+    }
+
+    /** Warnai efek tebasan saja (piksel berwarna persis ARC_RGB), sisanya disalin apa adanya. Hasilnya gambar baru (bukan potongan sheet). */
+    private static BufferedImage tintArcOnly(BufferedImage src, int rgb) {
+        int w = src.getWidth(), h = src.getHeight();
+        BufferedImage tinted = tint(src, rgb);
+        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int argb = src.getRGB(x, y);
+                boolean arc = (argb >>> 24) != 0 && (argb & 0xFFFFFF) == ARC_RGB;
+                out.setRGB(x, y, arc ? tinted.getRGB(x, y) : argb);
+            }
+        }
+        return out;
+    }
+
     private void tintAllFrames(int rgb) {
         BufferedImage[][] all = {
             wpState1Up, wpState1Down, wpState1Left, wpState1Right,

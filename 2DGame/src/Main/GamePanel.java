@@ -293,6 +293,10 @@ public class GamePanel extends JPanel implements Runnable{
         // Slime sekarang pakai index 14..43 (array monsters ukurannya 50).
         spawnSlimesRandom(15, 30, 700, 2500, 5000, 5000);
 
+        // 3 serigala (slot 45-47, slime pakai 15..44). Mereka cuma ada pas malam; posisinya dicari sendiri
+        // di dekat player tiap malam tiba, jadi gak perlu koordinat di sini.
+        spawnWolves(45, 3);
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -397,6 +401,13 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 
 	
+	// Serigala: cuma muncul pas malam (jam 18:00-05:59). Lihat Entitas/Wolf.java.
+	private void spawnWolves(int startIndex, int count) {
+	    for (int i = 0; i < count; i++) {
+	        monsters[startIndex + i] = new Entitas.Wolf(this);
+	    }
+	}
+
 	private void spawnGolem(int index, int worldX, int worldY) {
 	    Entitas.Golem golem = new Entitas.Golem(this);
 	    golem.x = worldX;
@@ -1069,6 +1080,7 @@ public class GamePanel extends JPanel implements Runnable{
 		    	    if (!monsters[i].isDead
 		    	            || monsters[i] instanceof Entitas.Golem
 		    	            || monsters[i] instanceof Entitas.Golemite
+		    	            || monsters[i] instanceof Entitas.Wolf
 		    	            || (monsters[i] instanceof Entitas.monster && ((Entitas.monster) monsters[i]).isDeathAnimPlaying())) {
 		    	        monsters[i].update();
 		    	    }

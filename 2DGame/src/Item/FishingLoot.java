@@ -23,12 +23,13 @@ import Object.Weapon;
  *   FOOD      ikan / makanan: dimakan lewat hotbar buat nambah HP
  *   BUFF      barang buff: dipakai lewat hotbar, ngasih boost sementara (sama kayak boost potion, tapi lebih singkat)
  *   TREASURE  harta: langsung kebuka pas ditangkap, isinya Coin (peti kadang bonus potion)
- *   WEAPON    senjata: dipasang lewat backpack / hotbar. Animasi serangannya pakai frame Sword / Axe / BoneSword yang diberi warna
+ *   WEAPON    senjata: dipasang lewat backpack / hotbar. Gerakan serangnya pakai set animasi Sword / Axe, gambar senjata
+ *             di tangannya sama kayak ikon (src/drop/fishing/held/&lt;slug&gt;.png), efek tebasannya diberi warna
  *
  * Kelangkaan ({@link Rarity}) dipakai buat: bayangan ikan di air, efek pas barangnya muncul, dan warna teks / efek.
  * Peluang tiap barang = bobotnya / total bobot semua barang (bobot gak harus dijumlah ke 100).
  *
- * Gambar: src/drop/fishing/&lt;slug&gt;.png (dibuat tools/generate_fishing_assets.py, boleh ditimpa gambar sendiri).
+ * Gambar: src/drop/fishing/&lt;slug&gt;.png (dibuat tools/import_fishing_sheet.py dari gambar sheet, boleh ditimpa gambar sendiri).
  */
 public final class FishingLoot {
 
@@ -75,7 +76,8 @@ public final class FishingLoot {
         // senjata
         public String weaponType;     // "Sword" / "Axe" / "BoneSword" (pilih set animasi)
         public int weaponDamage;
-        public int weaponTint;        // 0xRRGGBB, warna animasi serangan
+        public int weaponTint;        // 0xRRGGBB, warna efek tebasan (gambar senjatanya sendiri gak diwarnai)
+        public String heldSheet;      // lembar frame ayunan: /drop/fishing/held/<slug>.png (null / hilang = pakai frame bawaan yang diwarnai)
 
         // harta
         public int coinMin, coinMax;
@@ -159,7 +161,7 @@ public final class FishingLoot {
         weapon("Driftwood Hatchet", "driftwood_hatchet", Rarity.UNCOMMON,  14, "Axe",       40, 0xC9A66B, "Sea-worn wood lashed with kelp rope.");
         weapon("Coral Cutlass",     "coral_cutlass",     Rarity.RARE,       9, "Sword",     70, 0xF29BB0, "A cutlass grown from living coral.");
         weapon("Sailor's Hatchet",  "sailors_hatchet",   Rarity.RARE,       9, "Axe",       80, 0x8FB0E0, "A salt-hardened steel hatchet.");
-        weapon("Leviathan Fang",    "leviathan_fang",    Rarity.EPIC,       5, "BoneSword", 130, 0x2EC4B6, "A serrated fang from a deep sea beast.");
+        weapon("Leviathan Fang",    "leviathan_fang",    Rarity.EPIC,       5, "Sword",     130, 0x2EC4B6, "A serrated fang from a deep sea beast.");   // animasi Sword: frame BoneSword bawaan nyatu sama efek glow-nya
         weapon("Kraken Cleaver",    "kraken_cleaver",    Rarity.EPIC,       4, "Axe",       150, 0x9B63E0, "A heavy cleaver studded with sucker barbs.");
         weapon("Tidebreaker",       "tidebreaker",       Rarity.LEGENDARY,  3, "Sword",     220, 0x4FD6F0, "A blade said to part the sea itself.");
     }
@@ -209,6 +211,7 @@ public final class FishingLoot {
         e.weaponType = type;
         e.weaponDamage = damage;
         e.weaponTint = tint;
+        e.heldSheet = "/drop/fishing/held/" + slug + ".png";
         add(e);
     }
 
@@ -395,7 +398,7 @@ public final class FishingLoot {
         Entry e = entryFor(itemName);
         if (e == null || e.kind != Kind.WEAPON) return null;
         return weapons.computeIfAbsent(e.item.name,
-                n -> new Weapon(e.item.name, e.weaponType, e.weaponDamage, e.weaponTint));
+                n -> new Weapon(e.item.name, e.weaponType, e.weaponDamage, e.weaponTint, e.heldSheet));
     }
 
     public List<Entry> all() {
