@@ -409,6 +409,7 @@ public class player extends Entity {
     public void takeDamageFrom(int dmg, Entity attacker) {
         if (isDead) return;
         if (skillManager != null && skillManager.skillV.isActive) return; // SkillV: player kebal selama skill
+        if (skillManager != null && skillManager.skillMaw.absorb(dmg)) return; // Maw of the Forgotten: serangan diserap penuh, HP aman
         if (dodge > 0) {
             int chance = Math.min(dodge, 50);
             if ((int)(Math.random() * 100) < chance) return;
@@ -582,6 +583,7 @@ public class player extends Entity {
             KeyH.zPressed = false;
             KeyH.xPressed = false;
             KeyH.cPressed = false;
+            KeyH.rPressed = false;
             isMoving = false;
             return;
         }
@@ -597,6 +599,10 @@ public class player extends Entity {
         if (KeyH.cPressed) {
             skillManager.toggleC();
             KeyH.cPressed = false;
+        }
+        if (KeyH.rPressed) {
+            skillManager.activateMaw();
+            KeyH.rPressed = false;
         }
 
         // ── Tombol T untuk spawn/recall pion DeathTotem ──

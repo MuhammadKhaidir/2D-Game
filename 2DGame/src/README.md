@@ -40,6 +40,7 @@ Folder `src` harus ada di classpath karena gambar dan audio dimuat dari sana.
 | TAB | Buka/tutup statistik pemain |
 | M | Buka/tutup mob index |
 | Z / X / C | Skill |
+| R | Skill senjata Leviathan Fang: Maw of the Forgotten (serap serangan 3 detik, lalu gigitan balasan) |
 | T | Memanggil minion dari Death Totem |
 | F5 | Simpan ke slot 1 (muat lewat menu Load Game) |
 | F3 | Tampilkan/sembunyikan koordinat player (nyala secara default) |

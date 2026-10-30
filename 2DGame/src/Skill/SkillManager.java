@@ -19,6 +19,7 @@ public class SkillManager {
     public SkillX skillX;
     public SkillC skillC;
     public SkillV skillV;
+    public SkillMaw skillMaw; // Maw of the Forgotten (Leviathan Fang)
 
     public SkillManager(GamePanel gp, player owner) {
         this.gp = gp;
@@ -28,11 +29,13 @@ public class SkillManager {
         skillX = new SkillX(gp, owner);
         skillC = new SkillC(gp, owner);
         skillV = new SkillV(gp, owner);
+        skillMaw = new SkillMaw(gp, owner);
 
         skills.add(skillZ);
         skills.add(skillX);
         skills.add(skillC);
         skills.add(skillV);
+        skills.add(skillMaw);
     }
 
     // ===== UPDATE SEMUA SKILL =====
@@ -41,6 +44,7 @@ public class SkillManager {
         skillX.update();
         skillC.update(); // SkillC punya update sendiri (toggle logic)
         skillV.update();
+        skillMaw.update();
     }
 
     // ===== DRAW SEMUA SKILL =====
@@ -65,4 +69,5 @@ public class SkillManager {
     public void activateX() { skillX.activate(); }
     public void toggleC()   { skillC.toggle(); }
     public void activateV() { skillV.activate(); }
+    public void activateMaw() { skillMaw.activate(); } // cuma jalan kalau Leviathan Fang dipegang
 }

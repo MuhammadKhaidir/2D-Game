@@ -26,6 +26,7 @@ public class KeyHandler implements KeyListener {
     public boolean xPressed = false;
     public boolean cPressed = false;
     public boolean vPressed = false;
+    public boolean rPressed = false; // skill senjata Leviathan Fang (Maw of the Forgotten)
     public boolean tabPressed;
     GamePanel gp;
     public boolean f5Pressed;
@@ -89,6 +90,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_X) xPressed = true;
         if (code == KeyEvent.VK_C) cPressed = true;
         if (code == KeyEvent.VK_V) vPressed = true;
+        if (code == KeyEvent.VK_R) rPressed = true;
         
         if (code == KeyEvent.VK_I) {
             inspectPressed = true;
@@ -149,6 +151,7 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_X) xPressed = false;
         if (code == KeyEvent.VK_C) cPressed = false;
         if (code == KeyEvent.VK_V) vPressed = false;
+        if (code == KeyEvent.VK_R) rPressed = false;
         
         if(code == KeyEvent.VK_W) upPressed = false;
         if(code == KeyEvent.VK_S) downPressed = false;
