@@ -22,6 +22,7 @@ public class DomainManager {
     private DomainData activeDomain = null;
     private ImageIcon bgImage = null;
     private final List<Rectangle> wallCollisions = new ArrayList<>();
+    private WalkMask walkMask = null; // peta tembok berbasis gambar (kalau domain aktif punya), cuma berlaku di interior utama, bukan di room
 
     // ── Nested Room (misal: Boss Room di dalam domain) ──
     private RoomData activeRoom = null;
@@ -237,7 +238,7 @@ public class DomainManager {
             "GolemHide",
             // FIX: sebelumnya hardcode (3000, 200, ...) jadi trigger-nya gak nempel di bangunan golemMine
             new Rectangle(GH_TRIG_X, GH_TRIG_Y, 200, 200),  // area tekan [E] buat masuk
-            730, 330,                                     // spawn player: tengah map
+            730, 380,                                     // spawn player: tepat di bawah kereta tambang (kereta sekarang solid)
             GH_W, GH_H,
             // FIX: huruf besar "Latar" biar sama kayak Tomb (getResource itu case-sensitive di jar).
             // Ganti ke "/Aset/golemHide.png" kalau filenya ternyata di folder Aset.
@@ -246,11 +247,10 @@ public class DomainManager {
         .setExit(GH_TRIG_X + 75, GH_TRIG_Y + 165)
         // Titik keluar DI DALAM domain: deketin koordinat 723,170 -> otomatis keluar (radius 60px)
         .setExitPoint(723, 170, 60)
-        .addCollision(0, 0, GH_W * 2, 300)                   // dinding atas
-        .addCollision(0, GH_H * 2 - 60, GH_W * 2, 400)       // dinding bawah
-        .addCollision(0, 0, 60, GH_H * 2)                   // dinding kiri
-        .addCollision(GH_W * 2 - 60, 0, 60, GH_H * 2)       // dinding kanan
-        .addCollision(535,155,50*2,250);
+        // Tembok gua GolemHide bentuknya gak kotak-kotak, jadi collision-nya diambil dari gambar hitam-putih
+        // (putih = lantai, hitam = batu / rangka kayu / peti / di luar gua). Dibuat pakai tools/generate_golem_mask.py,
+        // bisa juga di-edit manual. Tekan F3 buat lihat temboknya (merah). Pakai "Latar" sama persis kayak background.
+        .setWalkMask("/Latar/golemHide_walk.png");
         domains.add(golemHide);
     }
 
@@ -274,6 +274,12 @@ public class DomainManager {
         if (!showCollisionDebug) return;
         int camX = gp.player.x, camY = gp.player.y;
         int psx = gp.player.screenX, psy = gp.player.screenY;
+
+        // Tembok dari gambar mask (GolemHide): satu overlay merah sebesar background
+        if (activeRoom == null && walkMask != null && activeDomain != null) {
+            g2.drawImage(walkMask.getDebugImage(), 0 - camX + psx, 0 - camY + psy,
+                activeDomain.width * 2, activeDomain.height * 2, null);
+        }
 
         for (Rectangle r : wallCollisions) {
             int sx = r.x - camX + psx;
@@ -500,6 +506,7 @@ public class DomainManager {
             gp.gameState = GamePanel.GameState.OUTSIDE;
             // bersihin sisa isi domain biar gak "bocor" ke dunia luar
             wallCollisions.clear();
+            walkMask = null;
             skeletons.clear();
             golemites.clear();
             golems.clear();
@@ -598,6 +605,12 @@ public class DomainManager {
         } catch (Exception e) { bgImage = null; e.printStackTrace(); }
 
         for (Rectangle r : d.collisions) wallCollisions.add(r);
+
+        walkMask = null;
+        if (d.walkMaskPath != null) {
+            walkMask = WalkMask.load(d.walkMaskPath, d.width * 2, d.height * 2);
+            if (walkMask == null) System.out.println("[DomainManager] Mask tembok tidak ketemu: " + d.walkMaskPath);
+        }
     }
     
     
@@ -1034,6 +1047,8 @@ public class DomainManager {
 
     public boolean checkCollision(Rectangle playerBox) {
         if (!insideDomain) return false; // di luar domain, tembok domain gak boleh ngaruh
+        // tembok gambar cuma buat interior utama; room (misal boss room) punya koordinat sendiri
+        if (activeRoom == null && walkMask != null && walkMask.isBlocked(playerBox)) return true;
         for (Rectangle r : wallCollisions)
             if (playerBox.intersects(r)) return true;
         return false;

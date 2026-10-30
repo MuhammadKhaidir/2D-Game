@@ -21,6 +21,9 @@ public class DomainData {
     public final List<Rectangle> collisions = new ArrayList<>();
     public final List<RoomData> rooms = new ArrayList<>(); // sub-ruangan (misal boss room)
 
+    // Peta tembok berbasis gambar (hitam-putih) buat domain yang bentuknya gak kotak. Dipakai barengan sama `collisions`.
+    public String walkMaskPath = null;
+
     public DomainData(String id, Rectangle triggerArea, int spawnX, int spawnY,
                        int width, int height, String backgroundPath) {
         this.id = id;
@@ -42,6 +45,11 @@ public class DomainData {
         this.exitPointX = x;
         this.exitPointY = y;
         this.exitPointRadius = radius;
+        return this;
+    }
+    /** Pakai gambar hitam-putih sebagai peta tembok (putih = lantai, hitam = tembok). Lihat WalkMask. */
+    public DomainData setWalkMask(String path) {
+        this.walkMaskPath = path;
         return this;
     }
     public DomainData addCollision(int x, int y, int w, int h) {
