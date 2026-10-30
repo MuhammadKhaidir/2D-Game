@@ -424,6 +424,15 @@ public class Golemite extends Entity {
     private void checkEntityListCollision(int dx, int dy) {
         if (this.collisionOn) return;
 
+        // Di dalam domain (GolemHide): jangan numpuk sama golem besar
+        if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
+            for (Golem g : gp.domainManager.getGolems()) {
+                if (!g.isAlive()) continue;
+                gp.colision.checkEntity(this, g, dx, dy);
+                if (this.collisionOn) return;
+            }
+        }
+
         if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
             for (Entity m : gp.deathTotemManager.getMinions()) {
                 if (m == null || !(m instanceof GolemMinion)) continue;

@@ -278,19 +278,10 @@ public class GamePanel extends JPanel implements Runnable{
 
 		
         spawnOrc(5,  1400, 2500);
-        spawnGolem(6, 1300, 3000);
-        spawnGolem(7, 1500, 3100);
-        spawnGolem(8, 2500, 3500);
-        spawnGolem(13, 6700, 2500);
-        spawnGolem(14, 6700, 2600);
-        spawnGolemite(9,  1200, 3050);
-        spawnGolemite(10, 1400, 3200);
-        spawnGolemite(11, 2400, 3450);
+        // Semua Golem & Golemite sekarang tinggal di domain GolemHide (lihat DomainManager.GOLEM_SPAWNS / GOLEMITE_SPAWNS)
 
         // 30 slime acak di area (700,2500)-(5000,5000), di luar collision.
-        // PENTING: mulai dari index 14, bukan 12. Golem #13 ada di atas, dan kalau slime
-        // mulai dari 12 maka slime ke-2 menimpa monsters[13] (golem-nya hilang).
-        // Slime sekarang pakai index 14..43 (array monsters ukurannya 50).
+        // Slime pakai index 15..44 (array monsters ukurannya 50).
         spawnSlimesRandom(15, 30, 700, 2500, 5000, 5000);
 
         // 3 serigala (slot 45-47, slime pakai 15..44). Mereka cuma ada pas malam; posisinya dicari sendiri
@@ -408,42 +399,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    }
 	}
 
-	private void spawnGolem(int index, int worldX, int worldY) {
-	    Entitas.Golem golem = new Entitas.Golem(this);
-	    golem.x = worldX;
-	    golem.y = worldY;
-	    golem.spawnX = worldX;
-	    golem.spawnY = worldY;
-
-	    // Tambahkan ini ↓
-	    int range = 300;
-	    golem.wanderArea = new Rectangle(
-	        worldX - range,
-	        worldY - range,
-	        range * 2,
-	        range * 2
-	    );
-
-	    monsters[index] = golem;
-	}
 	
-	private void spawnGolemite(int index, int worldX, int worldY) {
-	    Entitas.Golemite golemite = new Entitas.Golemite(this);
-	    golemite.x = worldX;
-	    golemite.y = worldY;
-	    golemite.spawnX = worldX;
-	    golemite.spawnY = worldY;
-
-	    int range = 250;
-	    golemite.wanderArea = new Rectangle(
-	        worldX - range,
-	        worldY - range,
-	        range * 2,
-	        range * 2
-	    );
-
-	    monsters[index] = golemite;
-	}
 	
 	public enum GameState {
 	    OUTSIDE,
@@ -1499,6 +1455,9 @@ public void paintComponent(Graphics g) {
             if (sk != null) sortList.add(sk);
         }
         for (Entitas.Golemite gl : domainManager.getGolemites()) {
+            if (gl != null && gl.isAlive()) sortList.add(gl);
+        }
+        for (Entitas.Golem gl : domainManager.getGolems()) {
             if (gl != null && gl.isAlive()) sortList.add(gl);
         }
         if (domainManager.darkMerchant != null) {

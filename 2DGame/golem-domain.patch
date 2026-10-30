@@ -1,0 +1,456 @@
+diff --git a/2DGame/src/Entitas/Golem.java b/2DGame/src/Entitas/Golem.java
+index 396a383..b221e2d 100644
+--- a/2DGame/src/Entitas/Golem.java
++++ b/2DGame/src/Entitas/Golem.java
+@@ -139,6 +139,9 @@ public class Golem extends Entity {
+         loadImages();
+     }
+ 
++    /** Dipakai DomainManager / skill / minion buat ngecek golem masih hidup (isDead sengaja gak di-set pas mati). */
++    public boolean isAlive() { return alive; }
++
+     @Override
+     public int getSortY() {
+         return this.y + solidArea.y + solidArea.height;
+@@ -447,8 +450,7 @@ public class Golem extends Entity {
+                     direction = dx > 0 ? "right" : "left"; 
+                     
+                     this.collisionOn = false;
+-                    gp.colision.checkTile(this);
+-                    gp.colision.checkObject(this, dx, 0);
++                    checkWorldCollision(dx, 0);
+                     gp.colision.checkEntity(this, gp.player, dx, 0);
+                     checkEntityListCollision(dx, 0);
+                     
+@@ -465,8 +467,7 @@ public class Golem extends Entity {
+                     direction = dy > 0 ? "down" : "up"; 
+                     
+                     this.collisionOn = false;
+-                    gp.colision.checkTile(this);
+-                    gp.colision.checkObject(this, 0, dy);
++                    checkWorldCollision(0, dy);
+                     gp.colision.checkEntity(this, gp.player, 0, dy);
+                     checkEntityListCollision(0, dy);
+                     
+@@ -488,6 +489,20 @@ public class Golem extends Entity {
+         }
+     }
+ 
++    /** Tabrakan sama dunia: tembok domain kalau lagi di dalam domain, tile + object kalau di luar. */
++    private void checkWorldCollision(int dx, int dy) {
++        if (gp.gameState == GamePanel.GameState.DOMAIN) {
++            Rectangle next = new Rectangle(x + solidArea.x + dx, y + solidArea.y + dy,
++                                           solidArea.width, solidArea.height);
++            if (gp.domainManager != null && gp.domainManager.checkCollision(next)) {
++                collisionOn = true;
++            }
++        } else {
++            gp.colision.checkTile(this);
++            gp.colision.checkObject(this, dx, dy);
++        }
++    }
++
+     private void pickNewWanderDirection() {
+         String[] dirs = {"up", "down", "left", "right"};
+         direction   = dirs[RNG.nextInt(4)];
+@@ -559,6 +574,20 @@ public class Golem extends Entity {
+     private void checkEntityListCollision(int dx, int dy) {
+         if (this.collisionOn) return;
+ 
++        // Di dalam domain (GolemHide): jangan numpuk sama golem / golemite lain
++        if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
++            for (Golem g : gp.domainManager.getGolems()) {
++                if (g == this || !g.alive) continue;
++                gp.colision.checkEntity(this, g, dx, dy);
++                if (this.collisionOn) return;
++            }
++            for (Golemite gl : gp.domainManager.getGolemites()) {
++                if (!gl.isAlive()) continue;
++                gp.colision.checkEntity(this, gl, dx, dy);
++                if (this.collisionOn) return;
++            }
++        }
++
+         if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
+             for (Entity m : gp.deathTotemManager.getMinions()) {
+                 if (m == null || !(m instanceof GolemMinion)) continue;
+diff --git a/2DGame/src/Entitas/Golemite.java b/2DGame/src/Entitas/Golemite.java
+index 9e964ff..6bfabd8 100644
+--- a/2DGame/src/Entitas/Golemite.java
++++ b/2DGame/src/Entitas/Golemite.java
+@@ -424,6 +424,15 @@ public class Golemite extends Entity {
+     private void checkEntityListCollision(int dx, int dy) {
+         if (this.collisionOn) return;
+ 
++        // Di dalam domain (GolemHide): jangan numpuk sama golem besar
++        if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
++            for (Golem g : gp.domainManager.getGolems()) {
++                if (!g.isAlive()) continue;
++                gp.colision.checkEntity(this, g, dx, dy);
++                if (this.collisionOn) return;
++            }
++        }
++
+         if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
+             for (Entity m : gp.deathTotemManager.getMinions()) {
+                 if (m == null || !(m instanceof GolemMinion)) continue;
+diff --git a/2DGame/src/Entitas/player.java b/2DGame/src/Entitas/player.java
+index 09df641..be05fc0 100644
+--- a/2DGame/src/Entitas/player.java
++++ b/2DGame/src/Entitas/player.java
+@@ -733,6 +733,22 @@ public class player extends Entity {
+                                 }
+                             }
+                         }
++                        if (!attackHit && gp.domainManager != null) {
++                            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
++                                if (gl == null || !gl.isAlive()) continue;
++                                Rectangle glBox = new Rectangle(gl.x + gl.solidArea.x, gl.y + gl.solidArea.y, gl.solidArea.width, gl.solidArea.height);
++                                if (attackBox.intersects(glBox)) {
++                                    int currentAtk = getTotalDamage();
++                                    int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
++                                    gl.takeDamage(damageDealt);
++                                    hitSomething = true;
++                                    attackHit = true;
++                                    if (currentWeapon != null) currentWeapon.playAttackSound(attackType, isWeaponEquipped);
++                                    else sound.playPunch();
++                                    break;
++                                }
++                            }
++                        }
+                      // HIT SKELETON SUMMONAN BOSS (di dalam boss room) — NEW
+                         if (!attackHit && gp.domainManager != null) {
+                             for (Entitas.Skeleton sk : gp.domainManager.getRoomSkeletons()) {
+@@ -992,6 +1008,16 @@ public class player extends Entity {
+                     }
+                 }
+             }
++            if (!collisionOn && gp.domainManager != null) {
++                for (Entitas.Golem gl : gp.domainManager.getGolems()) {
++                    if (gl == null || !gl.isAlive()) continue;
++                    Rectangle glBox = new Rectangle(gl.x + gl.solidArea.x, gl.y + gl.solidArea.y, gl.solidArea.width, gl.solidArea.height);
++                    if (nextPlayerBox.intersects(glBox)) {
++                        collisionOn = true;
++                        break;
++                    }
++                }
++            }
+             
+             if (!collisionOn && gp.monsters != null) {
+                 for (Entity m : gp.monsters) {
+diff --git a/2DGame/src/Item/DreadGuardian.java b/2DGame/src/Item/DreadGuardian.java
+index 8ea054d..c4a698b 100644
+--- a/2DGame/src/Item/DreadGuardian.java
++++ b/2DGame/src/Item/DreadGuardian.java
+@@ -219,6 +219,7 @@ public class DreadGuardian {
+             if (gp.domainManager.getSkeletons() != null) list.addAll(gp.domainManager.getSkeletons());
+             if (gp.domainManager.getRoomSkeletons() != null) list.addAll(gp.domainManager.getRoomSkeletons());
+             if (gp.domainManager.getGolemites() != null) list.addAll(gp.domainManager.getGolemites());
++            if (gp.domainManager.getGolems() != null) list.addAll(gp.domainManager.getGolems());
+             if (gp.domainManager.getBossSkeleton() != null) list.add(gp.domainManager.getBossSkeleton());
+         }
+         return list;
+@@ -234,6 +235,7 @@ public class DreadGuardian {
+         if (e instanceof Skeleton)     return ((Skeleton) e).alive;
+         if (e instanceof SkeletonKing) return ((SkeletonKing) e).alive;
+         if (e instanceof Golemite)     return ((Golemite) e).isAlive() && e.life > 0;
++        if (e instanceof Entitas.Golem) return ((Entitas.Golem) e).isAlive() && e.life > 0;
+         return true;
+     }
+ 
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index f1d51ed..a202a2f 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -278,19 +278,10 @@ public class GamePanel extends JPanel implements Runnable{
+ 
+ 		
+         spawnOrc(5,  1400, 2500);
+-        spawnGolem(6, 1300, 3000);
+-        spawnGolem(7, 1500, 3100);
+-        spawnGolem(8, 2500, 3500);
+-        spawnGolem(13, 6700, 2500);
+-        spawnGolem(14, 6700, 2600);
+-        spawnGolemite(9,  1200, 3050);
+-        spawnGolemite(10, 1400, 3200);
+-        spawnGolemite(11, 2400, 3450);
++        // Semua Golem & Golemite sekarang tinggal di domain GolemHide (lihat DomainManager.GOLEM_SPAWNS / GOLEMITE_SPAWNS)
+ 
+         // 30 slime acak di area (700,2500)-(5000,5000), di luar collision.
+-        // PENTING: mulai dari index 14, bukan 12. Golem #13 ada di atas, dan kalau slime
+-        // mulai dari 12 maka slime ke-2 menimpa monsters[13] (golem-nya hilang).
+-        // Slime sekarang pakai index 14..43 (array monsters ukurannya 50).
++        // Slime pakai index 15..44 (array monsters ukurannya 50).
+         spawnSlimesRandom(15, 30, 700, 2500, 5000, 5000);
+ 
+         // 3 serigala (slot 45-47, slime pakai 15..44). Mereka cuma ada pas malam; posisinya dicari sendiri
+@@ -408,42 +399,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 	    }
+ 	}
+ 
+-	private void spawnGolem(int index, int worldX, int worldY) {
+-	    Entitas.Golem golem = new Entitas.Golem(this);
+-	    golem.x = worldX;
+-	    golem.y = worldY;
+-	    golem.spawnX = worldX;
+-	    golem.spawnY = worldY;
+-
+-	    // Tambahkan ini ↓
+-	    int range = 300;
+-	    golem.wanderArea = new Rectangle(
+-	        worldX - range,
+-	        worldY - range,
+-	        range * 2,
+-	        range * 2
+-	    );
+-
+-	    monsters[index] = golem;
+-	}
+ 	
+-	private void spawnGolemite(int index, int worldX, int worldY) {
+-	    Entitas.Golemite golemite = new Entitas.Golemite(this);
+-	    golemite.x = worldX;
+-	    golemite.y = worldY;
+-	    golemite.spawnX = worldX;
+-	    golemite.spawnY = worldY;
+-
+-	    int range = 250;
+-	    golemite.wanderArea = new Rectangle(
+-	        worldX - range,
+-	        worldY - range,
+-	        range * 2,
+-	        range * 2
+-	    );
+-
+-	    monsters[index] = golemite;
+-	}
+ 	
+ 	public enum GameState {
+ 	    OUTSIDE,
+@@ -1501,6 +1457,9 @@ public void paintComponent(Graphics g) {
+         for (Entitas.Golemite gl : domainManager.getGolemites()) {
+             if (gl != null && gl.isAlive()) sortList.add(gl);
+         }
++        for (Entitas.Golem gl : domainManager.getGolems()) {
++            if (gl != null && gl.isAlive()) sortList.add(gl);
++        }
+         if (domainManager.darkMerchant != null) {
+             sortList.add(domainManager.darkMerchant);
+         }
+diff --git a/2DGame/src/Skill/SkillMaw.java b/2DGame/src/Skill/SkillMaw.java
+index ebe4350..26a327d 100644
+--- a/2DGame/src/Skill/SkillMaw.java
++++ b/2DGame/src/Skill/SkillMaw.java
+@@ -239,6 +239,7 @@ public class SkillMaw extends Skill {
+     // Aturan target sama kayak SkillV: monster yang lagi muncul/hilang/mati gak ikut kena
+     private boolean isTargetable(Entity m) {
+         if (m instanceof Entitas.Golemite)     return ((Entitas.Golemite) m).isAlive();
++        if (m instanceof Entitas.Golem)        return ((Entitas.Golem) m).isAlive();
+         if (m instanceof Entitas.Wolf)         return ((Entitas.Wolf) m).isAlive();
+         if (m instanceof Entitas.Skeleton)     return ((Entitas.Skeleton) m).alive;
+         if (m instanceof Entitas.SkeletonKing) return ((Entitas.SkeletonKing) m).alive;
+diff --git a/2DGame/src/Skill/SkillV.java b/2DGame/src/Skill/SkillV.java
+index 635baad..0975335 100644
+--- a/2DGame/src/Skill/SkillV.java
++++ b/2DGame/src/Skill/SkillV.java
+@@ -594,6 +594,7 @@ public class SkillV extends Skill {
+     private boolean isTargetable(Entity m) {
+         if (m == null || m.isDead || m.life <= 0) return false;
+         if (m instanceof Golemite)     return ((Golemite) m).isAlive();
++        if (m instanceof Entitas.Golem) return ((Entitas.Golem) m).isAlive();
+         if (m instanceof Entitas.Wolf) return ((Entitas.Wolf) m).isAlive();
+         if (m instanceof Skeleton)     return ((Skeleton) m).alive;
+         if (m instanceof SkeletonKing) return ((SkeletonKing) m).alive;
+@@ -614,6 +615,7 @@ public class SkillV extends Skill {
+         } else if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
+             list.addAll(gp.domainManager.getSkeletons());      // kosong kalau lagi di dalam room
+             list.addAll(gp.domainManager.getGolemites());      // kosong kalau lagi di dalam room
++            list.addAll(gp.domainManager.getGolems());         // kosong kalau lagi di dalam room
+             list.addAll(gp.domainManager.getRoomSkeletons());  // cuma ada di dalam room
+             if (gp.domainManager.getBossSkeleton() != null) list.add(gp.domainManager.getBossSkeleton());
+         }
+diff --git a/2DGame/src/Tamed/GolemMinion.java b/2DGame/src/Tamed/GolemMinion.java
+index 88e1d70..f3986e2 100644
+--- a/2DGame/src/Tamed/GolemMinion.java
++++ b/2DGame/src/Tamed/GolemMinion.java
+@@ -200,6 +200,13 @@ public class GolemMinion extends Entity {
+                 if (this.collisionOn) break;
+             }
+         }
++        if (!this.collisionOn && gp.domainManager != null && gp.domainManager.getGolems() != null) {
++            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
++                if (gl == null || !gl.isAlive()) continue;
++                gp.colision.checkEntity(this, gl, mdx, mdy);
++                if (this.collisionOn) break;
++            }
++        }
+         
+         if (!this.collisionOn && gp.monsters != null) {
+             for (Entity m : gp.monsters) {
+@@ -256,6 +263,13 @@ public class GolemMinion extends Entity {
+                 if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
+             }
+         }
++        if (gp.domainManager != null && gp.domainManager.getGolems() != null) {
++            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
++                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
++                double d = distToPlayer(gl, plCX, plCY);
++                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
++            }
++        }
+ 
+         // 2. Golem liar & monster (slime) — sama-sama di gp.monsters
+         if (gp.monsters != null) {
+@@ -422,6 +436,18 @@ public class GolemMinion extends Entity {
+                 }
+             }
+         }
++        if (gp.domainManager != null && gp.domainManager.getGolems() != null) {
++            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
++                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
++                if (distFromPoint(gl, myCX, myCY) <= SMASH_RADIUS) {
++                    int lifeBefore = gl.life;
++                    gl.takeDamage(SMASH_DAMAGE);
++                    if (lifeBefore > 0 && gl.life <= 0 && gp.deathTotemManager != null) {
++                        gp.deathTotemManager.onPawnKill(gl.getExpValue);
++                    }
++                }
++            }
++        }
+ 
+         if (gp.monsters != null) {
+             for (Entity m : gp.monsters) {
+diff --git a/2DGame/src/Tamed/GolemiteMinion.java b/2DGame/src/Tamed/GolemiteMinion.java
+index d5f67c8..81d3d32 100644
+--- a/2DGame/src/Tamed/GolemiteMinion.java
++++ b/2DGame/src/Tamed/GolemiteMinion.java
+@@ -216,6 +216,13 @@ public class GolemiteMinion extends GolemMinion {
+                     if (collisionOn) return;
+                 }
+             }
++            if (gp.domainManager.getGolems() != null) {
++                for (Entitas.Golem gl : gp.domainManager.getGolems()) {
++                    if (!isValidTarget(gl)) continue;
++                    gp.colision.checkEntity(this, gl, dx, dy);
++                    if (collisionOn) return;
++                }
++            }
+             SkeletonKing king = gp.domainManager.getBossSkeleton();
+             if (king != null && king.alive) {
+                 gp.colision.checkEntity(this, king, dx, dy);
+@@ -238,6 +245,7 @@ public class GolemiteMinion extends GolemMinion {
+     private boolean isValidTarget(Entity e) {
+         if (e == null || e == this || e.isDead || e.life <= 0) return false;
+         if (e instanceof Golemite && !((Golemite) e).isAlive()) return false;
++        if (e instanceof Entitas.Golem && !((Entitas.Golem) e).isAlive()) return false;
+         return true;
+     }
+ 
+@@ -263,6 +271,13 @@ public class GolemiteMinion extends GolemMinion {
+                     if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
+                 }
+             }
++            if (gp.domainManager.getGolems() != null) {
++                for (Entitas.Golem gl : gp.domainManager.getGolems()) {
++                    if (!isValidTarget(gl)) continue;
++                    double d = distToPoint(gl, plCX, plCY);
++                    if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
++                }
++            }
+             SkeletonKing king = gp.domainManager.getBossSkeleton();
+             if (king != null && king.alive) {
+                 double d = distToPoint(king, plCX, plCY);
+diff --git a/2DGame/src/World/DomainManager.java b/2DGame/src/World/DomainManager.java
+index 748677c..48fbb70 100644
+--- a/2DGame/src/World/DomainManager.java
++++ b/2DGame/src/World/DomainManager.java
+@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
+ 
+ import Entitas.DarkMerchant;
+ import Entitas.Skeleton;
++import Entitas.Golem;
+ import Entitas.Golemite;
+ import Entitas.SkeletonKing;
+ import Item.ItemManager;
+@@ -83,6 +84,22 @@ public class DomainManager {
+         return activeRoom != null ? java.util.Collections.emptyList() : golemites;
+     }
+ 
++    private final List<Golem> golems = new ArrayList<>();
++    public List<Golem> getGolems() {
++        return activeRoom != null ? java.util.Collections.emptyList() : golems;
++    }
++
++    // ── Isi GolemHide: SEMUA golem ada di sini (koordinat interior, px) ──
++    // Posisinya sudah dicek ada di lantai gua (bukan di tebing / di luar peta), jarak antar mob >= ~100 px,
++    // dan jauh dari titik spawn player (730,330) biar gak langsung dikeroyok pas masuk.
++    private static final int[][] GOLEM_SPAWNS = {
++        {1400, 480}, {730, 970}, {1000, 630}, {1290, 800}, {770, 730}
++    };
++    private static final int[][] GOLEMITE_SPAWNS = {
++        {380, 490}, {1330, 560}, {550, 650}, {1210, 580}, {940, 800}, {1400, 660},
++        {1120, 760}, {850, 610}, {680, 630}, {500, 530}, {850, 1010}
++    };
++
+     // skeleton summon an si king skeleton / pion bisa dibilang
+     private final List<Skeleton> roomSkeletons = new ArrayList<>();
+ 
+@@ -299,6 +316,7 @@ public class DomainManager {
+             if (!frozen) {
+                 for (Skeleton sk : skeletons) sk.update();
+                 for (Golemite g : golemites) g.update();
++                for (Golem g : golems) g.update();
+             }
+             if (darkMerchant != null) {
+                 darkMerchant.update();
+@@ -484,6 +502,7 @@ public class DomainManager {
+             wallCollisions.clear();
+             skeletons.clear();
+             golemites.clear();
++            golems.clear();
+             roomSkeletons.clear();
+             bossSkeleton = null;
+             gp.player.x = exitX;
+@@ -510,6 +529,15 @@ public class DomainManager {
+         skeletons.add(sk);
+     }
+     
++    private void spawnGolem(int wx, int wy) {
++        Golem g = new Golem(gp);
++        g.x = wx; g.y = wy;
++        g.spawnX = wx; g.spawnY = wy;
++        int range = 200; // area keluyuran dibatasi biar gak nyasar ke tebing
++        g.wanderArea = new Rectangle(wx - range, wy - range, range * 2, range * 2);
++        golems.add(g);
++    }
++
+     private void spawnGolemite(int wx, int wy) {
+         Golemite g = new Golemite(gp);
+         g.x = wx; g.y = wy;
+@@ -521,6 +549,7 @@ public class DomainManager {
+         wallCollisions.clear();
+         skeletons.clear();
+         golemites.clear();
++        golems.clear();
+         activeRoom = null;
+         roomBgImage = null;
+         nearDoorRoom = null;
+@@ -557,15 +586,9 @@ public class DomainManager {
+         }
+         
+         if (d.id.equals("GolemHide")) {
+-            // Cuma golemite, tanpa skeleton dan tanpa merchant
+-            spawnGolemite(300,  500);
+-            spawnGolemite(520,  720);
+-            spawnGolemite(900,  550);
+-            spawnGolemite(1100, 450);
+-            spawnGolemite(1300, 720);
+-            spawnGolemite(700,  920);
+-            spawnGolemite(1000, 960);
+-            spawnGolemite(400,  1000);
++            // Semua golem (Golem besar + Golemite) tinggal di sini, tanpa skeleton dan tanpa merchant
++            for (int[] p : GOLEM_SPAWNS)    spawnGolem(p[0], p[1]);
++            for (int[] p : GOLEMITE_SPAWNS) spawnGolemite(p[0], p[1]);
+         }
+ 
+         try {

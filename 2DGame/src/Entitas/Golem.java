@@ -139,6 +139,9 @@ public class Golem extends Entity {
         loadImages();
     }
 
+    /** Dipakai DomainManager / skill / minion buat ngecek golem masih hidup (isDead sengaja gak di-set pas mati). */
+    public boolean isAlive() { return alive; }
+
     @Override
     public int getSortY() {
         return this.y + solidArea.y + solidArea.height;
@@ -447,8 +450,7 @@ public class Golem extends Entity {
                     direction = dx > 0 ? "right" : "left"; 
                     
                     this.collisionOn = false;
-                    gp.colision.checkTile(this);
-                    gp.colision.checkObject(this, dx, 0);
+                    checkWorldCollision(dx, 0);
                     gp.colision.checkEntity(this, gp.player, dx, 0);
                     checkEntityListCollision(dx, 0);
                     
@@ -465,8 +467,7 @@ public class Golem extends Entity {
                     direction = dy > 0 ? "down" : "up"; 
                     
                     this.collisionOn = false;
-                    gp.colision.checkTile(this);
-                    gp.colision.checkObject(this, 0, dy);
+                    checkWorldCollision(0, dy);
                     gp.colision.checkEntity(this, gp.player, 0, dy);
                     checkEntityListCollision(0, dy);
                     
@@ -485,6 +486,20 @@ public class Golem extends Entity {
                     walkAnimTimer = 0;
                 }
             }
+        }
+    }
+
+    /** Tabrakan sama dunia: tembok domain kalau lagi di dalam domain, tile + object kalau di luar. */
+    private void checkWorldCollision(int dx, int dy) {
+        if (gp.gameState == GamePanel.GameState.DOMAIN) {
+            Rectangle next = new Rectangle(x + solidArea.x + dx, y + solidArea.y + dy,
+                                           solidArea.width, solidArea.height);
+            if (gp.domainManager != null && gp.domainManager.checkCollision(next)) {
+                collisionOn = true;
+            }
+        } else {
+            gp.colision.checkTile(this);
+            gp.colision.checkObject(this, dx, dy);
         }
     }
 
@@ -558,6 +573,20 @@ public class Golem extends Entity {
 
     private void checkEntityListCollision(int dx, int dy) {
         if (this.collisionOn) return;
+
+        // Di dalam domain (GolemHide): jangan numpuk sama golem / golemite lain
+        if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
+            for (Golem g : gp.domainManager.getGolems()) {
+                if (g == this || !g.alive) continue;
+                gp.colision.checkEntity(this, g, dx, dy);
+                if (this.collisionOn) return;
+            }
+            for (Golemite gl : gp.domainManager.getGolemites()) {
+                if (!gl.isAlive()) continue;
+                gp.colision.checkEntity(this, gl, dx, dy);
+                if (this.collisionOn) return;
+            }
+        }
 
         if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
             for (Entity m : gp.deathTotemManager.getMinions()) {

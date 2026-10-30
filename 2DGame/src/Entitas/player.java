@@ -733,6 +733,22 @@ public class player extends Entity {
                                 }
                             }
                         }
+                        if (!attackHit && gp.domainManager != null) {
+                            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
+                                if (gl == null || !gl.isAlive()) continue;
+                                Rectangle glBox = new Rectangle(gl.x + gl.solidArea.x, gl.y + gl.solidArea.y, gl.solidArea.width, gl.solidArea.height);
+                                if (attackBox.intersects(glBox)) {
+                                    int currentAtk = getTotalDamage();
+                                    int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
+                                    gl.takeDamage(damageDealt);
+                                    hitSomething = true;
+                                    attackHit = true;
+                                    if (currentWeapon != null) currentWeapon.playAttackSound(attackType, isWeaponEquipped);
+                                    else sound.playPunch();
+                                    break;
+                                }
+                            }
+                        }
                      // HIT SKELETON SUMMONAN BOSS (di dalam boss room) — NEW
                         if (!attackHit && gp.domainManager != null) {
                             for (Entitas.Skeleton sk : gp.domainManager.getRoomSkeletons()) {
@@ -984,6 +1000,16 @@ public class player extends Entity {
             
             if (!collisionOn && gp.domainManager != null) {
                 for (Entitas.Golemite gl : gp.domainManager.getGolemites()) {
+                    if (gl == null || !gl.isAlive()) continue;
+                    Rectangle glBox = new Rectangle(gl.x + gl.solidArea.x, gl.y + gl.solidArea.y, gl.solidArea.width, gl.solidArea.height);
+                    if (nextPlayerBox.intersects(glBox)) {
+                        collisionOn = true;
+                        break;
+                    }
+                }
+            }
+            if (!collisionOn && gp.domainManager != null) {
+                for (Entitas.Golem gl : gp.domainManager.getGolems()) {
                     if (gl == null || !gl.isAlive()) continue;
                     Rectangle glBox = new Rectangle(gl.x + gl.solidArea.x, gl.y + gl.solidArea.y, gl.solidArea.width, gl.solidArea.height);
                     if (nextPlayerBox.intersects(glBox)) {

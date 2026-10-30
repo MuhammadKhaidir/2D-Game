@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 
 import Entitas.DarkMerchant;
 import Entitas.Skeleton;
+import Entitas.Golem;
 import Entitas.Golemite;
 import Entitas.SkeletonKing;
 import Item.ItemManager;
@@ -82,6 +83,22 @@ public class DomainManager {
         // sama kayak skeleton: gak ditampilin pas di dalam room
         return activeRoom != null ? java.util.Collections.emptyList() : golemites;
     }
+
+    private final List<Golem> golems = new ArrayList<>();
+    public List<Golem> getGolems() {
+        return activeRoom != null ? java.util.Collections.emptyList() : golems;
+    }
+
+    // ── Isi GolemHide: SEMUA golem ada di sini (koordinat interior, px) ──
+    // Posisinya sudah dicek ada di lantai gua (bukan di tebing / di luar peta), jarak antar mob >= ~100 px,
+    // dan jauh dari titik spawn player (730,330) biar gak langsung dikeroyok pas masuk.
+    private static final int[][] GOLEM_SPAWNS = {
+        {1400, 480}, {730, 970}, {1000, 630}, {1290, 800}, {770, 730}
+    };
+    private static final int[][] GOLEMITE_SPAWNS = {
+        {380, 490}, {1330, 560}, {550, 650}, {1210, 580}, {940, 800}, {1400, 660},
+        {1120, 760}, {850, 610}, {680, 630}, {500, 530}, {850, 1010}
+    };
 
     // skeleton summon an si king skeleton / pion bisa dibilang
     private final List<Skeleton> roomSkeletons = new ArrayList<>();
@@ -299,6 +316,7 @@ public class DomainManager {
             if (!frozen) {
                 for (Skeleton sk : skeletons) sk.update();
                 for (Golemite g : golemites) g.update();
+                for (Golem g : golems) g.update();
             }
             if (darkMerchant != null) {
                 darkMerchant.update();
@@ -484,6 +502,7 @@ public class DomainManager {
             wallCollisions.clear();
             skeletons.clear();
             golemites.clear();
+            golems.clear();
             roomSkeletons.clear();
             bossSkeleton = null;
             gp.player.x = exitX;
@@ -510,6 +529,15 @@ public class DomainManager {
         skeletons.add(sk);
     }
     
+    private void spawnGolem(int wx, int wy) {
+        Golem g = new Golem(gp);
+        g.x = wx; g.y = wy;
+        g.spawnX = wx; g.spawnY = wy;
+        int range = 200; // area keluyuran dibatasi biar gak nyasar ke tebing
+        g.wanderArea = new Rectangle(wx - range, wy - range, range * 2, range * 2);
+        golems.add(g);
+    }
+
     private void spawnGolemite(int wx, int wy) {
         Golemite g = new Golemite(gp);
         g.x = wx; g.y = wy;
@@ -521,6 +549,7 @@ public class DomainManager {
         wallCollisions.clear();
         skeletons.clear();
         golemites.clear();
+        golems.clear();
         activeRoom = null;
         roomBgImage = null;
         nearDoorRoom = null;
@@ -557,15 +586,9 @@ public class DomainManager {
         }
         
         if (d.id.equals("GolemHide")) {
-            // Cuma golemite, tanpa skeleton dan tanpa merchant
-            spawnGolemite(300,  500);
-            spawnGolemite(520,  720);
-            spawnGolemite(900,  550);
-            spawnGolemite(1100, 450);
-            spawnGolemite(1300, 720);
-            spawnGolemite(700,  920);
-            spawnGolemite(1000, 960);
-            spawnGolemite(400,  1000);
+            // Semua golem (Golem besar + Golemite) tinggal di sini, tanpa skeleton dan tanpa merchant
+            for (int[] p : GOLEM_SPAWNS)    spawnGolem(p[0], p[1]);
+            for (int[] p : GOLEMITE_SPAWNS) spawnGolemite(p[0], p[1]);
         }
 
         try {

@@ -219,6 +219,7 @@ public class DreadGuardian {
             if (gp.domainManager.getSkeletons() != null) list.addAll(gp.domainManager.getSkeletons());
             if (gp.domainManager.getRoomSkeletons() != null) list.addAll(gp.domainManager.getRoomSkeletons());
             if (gp.domainManager.getGolemites() != null) list.addAll(gp.domainManager.getGolemites());
+            if (gp.domainManager.getGolems() != null) list.addAll(gp.domainManager.getGolems());
             if (gp.domainManager.getBossSkeleton() != null) list.add(gp.domainManager.getBossSkeleton());
         }
         return list;
@@ -234,6 +235,7 @@ public class DreadGuardian {
         if (e instanceof Skeleton)     return ((Skeleton) e).alive;
         if (e instanceof SkeletonKing) return ((SkeletonKing) e).alive;
         if (e instanceof Golemite)     return ((Golemite) e).isAlive() && e.life > 0;
+        if (e instanceof Entitas.Golem) return ((Entitas.Golem) e).isAlive() && e.life > 0;
         return true;
     }
 

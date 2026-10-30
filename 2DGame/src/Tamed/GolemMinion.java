@@ -200,6 +200,13 @@ public class GolemMinion extends Entity {
                 if (this.collisionOn) break;
             }
         }
+        if (!this.collisionOn && gp.domainManager != null && gp.domainManager.getGolems() != null) {
+            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
+                if (gl == null || !gl.isAlive()) continue;
+                gp.colision.checkEntity(this, gl, mdx, mdy);
+                if (this.collisionOn) break;
+            }
+        }
         
         if (!this.collisionOn && gp.monsters != null) {
             for (Entity m : gp.monsters) {
@@ -251,6 +258,13 @@ public class GolemMinion extends Entity {
      // 1b. Golemite (domain GolemHide)
         if (gp.domainManager != null && gp.domainManager.getGolemites() != null) {
             for (Golemite gl : gp.domainManager.getGolemites()) {
+                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
+                double d = distToPlayer(gl, plCX, plCY);
+                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
+            }
+        }
+        if (gp.domainManager != null && gp.domainManager.getGolems() != null) {
+            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
                 if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
                 double d = distToPlayer(gl, plCX, plCY);
                 if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
@@ -416,6 +430,18 @@ public class GolemMinion extends Entity {
                     int lifeBefore = gl.life;
                     gl.takeDamage(SMASH_DAMAGE);
                     gl.knockbackFrom(this);
+                    if (lifeBefore > 0 && gl.life <= 0 && gp.deathTotemManager != null) {
+                        gp.deathTotemManager.onPawnKill(gl.getExpValue);
+                    }
+                }
+            }
+        }
+        if (gp.domainManager != null && gp.domainManager.getGolems() != null) {
+            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
+                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
+                if (distFromPoint(gl, myCX, myCY) <= SMASH_RADIUS) {
+                    int lifeBefore = gl.life;
+                    gl.takeDamage(SMASH_DAMAGE);
                     if (lifeBefore > 0 && gl.life <= 0 && gp.deathTotemManager != null) {
                         gp.deathTotemManager.onPawnKill(gl.getExpValue);
                     }

@@ -239,6 +239,7 @@ public class SkillMaw extends Skill {
     // Aturan target sama kayak SkillV: monster yang lagi muncul/hilang/mati gak ikut kena
     private boolean isTargetable(Entity m) {
         if (m instanceof Entitas.Golemite)     return ((Entitas.Golemite) m).isAlive();
+        if (m instanceof Entitas.Golem)        return ((Entitas.Golem) m).isAlive();
         if (m instanceof Entitas.Wolf)         return ((Entitas.Wolf) m).isAlive();
         if (m instanceof Entitas.Skeleton)     return ((Entitas.Skeleton) m).alive;
         if (m instanceof Entitas.SkeletonKing) return ((Entitas.SkeletonKing) m).alive;

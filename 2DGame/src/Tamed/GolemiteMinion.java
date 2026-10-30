@@ -216,6 +216,13 @@ public class GolemiteMinion extends GolemMinion {
                     if (collisionOn) return;
                 }
             }
+            if (gp.domainManager.getGolems() != null) {
+                for (Entitas.Golem gl : gp.domainManager.getGolems()) {
+                    if (!isValidTarget(gl)) continue;
+                    gp.colision.checkEntity(this, gl, dx, dy);
+                    if (collisionOn) return;
+                }
+            }
             SkeletonKing king = gp.domainManager.getBossSkeleton();
             if (king != null && king.alive) {
                 gp.colision.checkEntity(this, king, dx, dy);
@@ -238,6 +245,7 @@ public class GolemiteMinion extends GolemMinion {
     private boolean isValidTarget(Entity e) {
         if (e == null || e == this || e.isDead || e.life <= 0) return false;
         if (e instanceof Golemite && !((Golemite) e).isAlive()) return false;
+        if (e instanceof Entitas.Golem && !((Entitas.Golem) e).isAlive()) return false;
         return true;
     }
 
@@ -258,6 +266,13 @@ public class GolemiteMinion extends GolemMinion {
             }
             if (gp.domainManager.getGolemites() != null) {
                 for (Golemite gl : gp.domainManager.getGolemites()) {
+                    if (!isValidTarget(gl)) continue;
+                    double d = distToPoint(gl, plCX, plCY);
+                    if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
+                }
+            }
+            if (gp.domainManager.getGolems() != null) {
+                for (Entitas.Golem gl : gp.domainManager.getGolems()) {
                     if (!isValidTarget(gl)) continue;
                     double d = distToPoint(gl, plCX, plCY);
                     if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }

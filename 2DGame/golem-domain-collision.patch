@@ -1,0 +1,469 @@
+diff --git a/2DGame/src/World/DomainData.java b/2DGame/src/World/DomainData.java
+index e69f45e..dcd2a8a 100644
+--- a/2DGame/src/World/DomainData.java
++++ b/2DGame/src/World/DomainData.java
+@@ -21,6 +21,9 @@ public class DomainData {
+     public final List<Rectangle> collisions = new ArrayList<>();
+     public final List<RoomData> rooms = new ArrayList<>(); // sub-ruangan (misal boss room)
+ 
++    // Peta tembok berbasis gambar (hitam-putih) buat domain yang bentuknya gak kotak. Dipakai barengan sama `collisions`.
++    public String walkMaskPath = null;
++
+     public DomainData(String id, Rectangle triggerArea, int spawnX, int spawnY,
+                        int width, int height, String backgroundPath) {
+         this.id = id;
+@@ -44,6 +47,11 @@ public class DomainData {
+         this.exitPointRadius = radius;
+         return this;
+     }
++    /** Pakai gambar hitam-putih sebagai peta tembok (putih = lantai, hitam = tembok). Lihat WalkMask. */
++    public DomainData setWalkMask(String path) {
++        this.walkMaskPath = path;
++        return this;
++    }
+     public DomainData addCollision(int x, int y, int w, int h) {
+         collisions.add(new Rectangle(x, y, w, h));
+         return this;
+diff --git a/2DGame/src/World/DomainManager.java b/2DGame/src/World/DomainManager.java
+index 748677c..7dd75e0 100644
+--- a/2DGame/src/World/DomainManager.java
++++ b/2DGame/src/World/DomainManager.java
+@@ -21,6 +21,7 @@ public class DomainManager {
+     private DomainData activeDomain = null;
+     private ImageIcon bgImage = null;
+     private final List<Rectangle> wallCollisions = new ArrayList<>();
++    private WalkMask walkMask = null; // peta tembok berbasis gambar (kalau domain aktif punya), cuma berlaku di interior utama, bukan di room
+ 
+     // ── Nested Room (misal: Boss Room di dalam domain) ──
+     private RoomData activeRoom = null;
+@@ -220,7 +221,7 @@ public class DomainManager {
+             "GolemHide",
+             // FIX: sebelumnya hardcode (3000, 200, ...) jadi trigger-nya gak nempel di bangunan golemMine
+             new Rectangle(GH_TRIG_X, GH_TRIG_Y, 200, 200),  // area tekan [E] buat masuk
+-            730, 330,                                     // spawn player: tengah map
++            730, 380,                                     // spawn player: tepat di bawah kereta tambang (kereta sekarang solid)
+             GH_W, GH_H,
+             // FIX: huruf besar "Latar" biar sama kayak Tomb (getResource itu case-sensitive di jar).
+             // Ganti ke "/Aset/golemHide.png" kalau filenya ternyata di folder Aset.
+@@ -229,11 +230,10 @@ public class DomainManager {
+         .setExit(GH_TRIG_X + 75, GH_TRIG_Y + 165)
+         // Titik keluar DI DALAM domain: deketin koordinat 723,170 -> otomatis keluar (radius 60px)
+         .setExitPoint(723, 170, 60)
+-        .addCollision(0, 0, GH_W * 2, 300)                   // dinding atas
+-        .addCollision(0, GH_H * 2 - 60, GH_W * 2, 400)       // dinding bawah
+-        .addCollision(0, 0, 60, GH_H * 2)                   // dinding kiri
+-        .addCollision(GH_W * 2 - 60, 0, 60, GH_H * 2)       // dinding kanan
+-        .addCollision(535,155,50*2,250);
++        // Tembok gua GolemHide bentuknya gak kotak-kotak, jadi collision-nya diambil dari gambar hitam-putih
++        // (putih = lantai, hitam = batu / rangka kayu / peti / di luar gua). Dibuat pakai tools/generate_golem_mask.py,
++        // bisa juga di-edit manual. Tekan F3 buat lihat temboknya (merah). Pakai "Latar" sama persis kayak background.
++        .setWalkMask("/Latar/golemHide_walk.png");
+         domains.add(golemHide);
+     }
+ 
+@@ -258,6 +258,12 @@ public class DomainManager {
+         int camX = gp.player.x, camY = gp.player.y;
+         int psx = gp.player.screenX, psy = gp.player.screenY;
+ 
++        // Tembok dari gambar mask (GolemHide): satu overlay merah sebesar background
++        if (activeRoom == null && walkMask != null && activeDomain != null) {
++            g2.drawImage(walkMask.getDebugImage(), 0 - camX + psx, 0 - camY + psy,
++                activeDomain.width * 2, activeDomain.height * 2, null);
++        }
++
+         for (Rectangle r : wallCollisions) {
+             int sx = r.x - camX + psx;
+             int sy = r.y - camY + psy;
+@@ -482,6 +488,7 @@ public class DomainManager {
+             gp.gameState = GamePanel.GameState.OUTSIDE;
+             // bersihin sisa isi domain biar gak "bocor" ke dunia luar
+             wallCollisions.clear();
++            walkMask = null;
+             skeletons.clear();
+             golemites.clear();
+             roomSkeletons.clear();
+@@ -557,15 +564,16 @@ public class DomainManager {
+         }
+         
+         if (d.id.equals("GolemHide")) {
+-            // Cuma golemite, tanpa skeleton dan tanpa merchant
+-            spawnGolemite(300,  500);
+-            spawnGolemite(520,  720);
++            // Cuma golemite, tanpa skeleton dan tanpa merchant.
++            // Semua titik spawn harus di atas lantai gua (bukan di dalam batu), dicek terhadap golemHide_walk.png.
++            spawnGolemite(450,  540);
++            spawnGolemite(650,  650);
+             spawnGolemite(900,  550);
+-            spawnGolemite(1100, 450);
++            spawnGolemite(1100, 600);
+             spawnGolemite(1300, 720);
+             spawnGolemite(700,  920);
+-            spawnGolemite(1000, 960);
+-            spawnGolemite(400,  1000);
++            spawnGolemite(900,  1000);
++            spawnGolemite(1350, 550);
+         }
+ 
+         try {
+@@ -575,6 +583,12 @@ public class DomainManager {
+         } catch (Exception e) { bgImage = null; e.printStackTrace(); }
+ 
+         for (Rectangle r : d.collisions) wallCollisions.add(r);
++
++        walkMask = null;
++        if (d.walkMaskPath != null) {
++            walkMask = WalkMask.load(d.walkMaskPath, d.width * 2, d.height * 2);
++            if (walkMask == null) System.out.println("[DomainManager] Mask tembok tidak ketemu: " + d.walkMaskPath);
++        }
+     }
+     
+     
+@@ -1011,6 +1025,8 @@ public class DomainManager {
+ 
+     public boolean checkCollision(Rectangle playerBox) {
+         if (!insideDomain) return false; // di luar domain, tembok domain gak boleh ngaruh
++        // tembok gambar cuma buat interior utama; room (misal boss room) punya koordinat sendiri
++        if (activeRoom == null && walkMask != null && walkMask.isBlocked(playerBox)) return true;
+         for (Rectangle r : wallCollisions)
+             if (playerBox.intersects(r)) return true;
+         return false;
+diff --git a/2DGame/src/World/WalkMask.java b/2DGame/src/World/WalkMask.java
+new file mode 100644
+index 0000000..efeb1b5
+--- /dev/null
++++ b/2DGame/src/World/WalkMask.java
+@@ -0,0 +1,105 @@
++package World;
++
++import java.awt.Rectangle;
++import java.awt.image.BufferedImage;
++import java.net.URL;
++import javax.imageio.ImageIO;
++
++/**
++ * Peta "lantai / tembok" berbasis gambar hitam-putih buat domain yang bentuknya gak kotak-kotak
++ * (contoh: GolemHide, gua dengan tembok batu yang berkelok-kelok).
++ *
++ *   putih = lantai, boleh dilewati
++ *   hitam / transparan / di luar gambar = tembok (player & monster gak bisa nembus)
++ *
++ * Ukuran mask bebas, yang penting proporsinya sama kayak background domain. 1 piksel mask = (ukuran dunia / ukuran mask) px dunia
++ * (GolemHide: mask 800x600, dunia 1600x1200 -> 1 piksel = 2 px dunia).
++ * Mask dibuat otomatis dari gambar pakai tools/generate_golem_mask.py, tapi bisa juga di-edit manual pakai editor gambar.
++ */
++public class WalkMask {
++
++    /**
++     * Yang dicek ke tembok cuma bagian KAKI hitbox (separuh bawah), bukan seluruh kotak.
++     * Kalau seluruh hitbox dipakai, kaki karakter berhenti 1 hitbox penuh dari tembok atas, jadi kelihatan melayang.
++     * Dengan separuh bawah, kaki bisa nempel ke dasar tembok dan kepala numpuk di muka tembok (kayak biasa di game 3/4 top-down).
++     */
++    private static final double FOOT_FRACTION = 0.5;
++
++    private final int w, h;
++    private final double sx, sy;   // piksel mask per px dunia
++    private final int[] blockedSum; // summed-area table jumlah piksel tembok, biar cek 1 kotak cuma O(1)
++    private BufferedImage debugImage = null;
++
++    private WalkMask(BufferedImage img, int worldW, int worldH) {
++        this.w = img.getWidth();
++        this.h = img.getHeight();
++        this.sx = w / (double) worldW;
++        this.sy = h / (double) worldH;
++
++        blockedSum = new int[(w + 1) * (h + 1)];
++        for (int y = 0; y < h; y++) {
++            int rowSum = 0;
++            for (int x = 0; x < w; x++) {
++                if (isWall(img.getRGB(x, y))) rowSum++;
++                blockedSum[(y + 1) * (w + 1) + (x + 1)] = blockedSum[y * (w + 1) + (x + 1)] + rowSum;
++            }
++        }
++    }
++
++    /** Putih & gak transparan = lantai. Selain itu tembok. */
++    private static boolean isWall(int argb) {
++        int a = (argb >>> 24) & 0xFF;
++        int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
++        return a < 128 || (r + g + b) / 3 < 128;
++    }
++
++    /** @return mask hasil load, atau null kalau filenya gak ketemu / gagal dibaca. */
++    public static WalkMask load(String resourcePath, int worldW, int worldH) {
++        try {
++            URL url = WalkMask.class.getResource(resourcePath);
++            if (url == null) return null;
++            BufferedImage img = ImageIO.read(url);
++            return img != null ? new WalkMask(img, worldW, worldH) : null;
++        } catch (Exception e) {
++            e.printStackTrace();
++            return null;
++        }
++    }
++
++    /** True kalau hitbox (koordinat dunia) nabrak tembok. Keluar dari area mask juga dianggap tembok. */
++    public boolean isBlocked(Rectangle box) {
++        int footH = Math.max(1, (int) (box.height * FOOT_FRACTION));
++        int top = box.y + box.height - footH;
++        int bottom = box.y + box.height;
++
++        int x0 = (int) Math.floor(box.x * sx);
++        int x1 = (int) Math.ceil((box.x + box.width) * sx);
++        int y0 = (int) Math.floor(top * sy);
++        int y1 = (int) Math.ceil(bottom * sy);
++
++        if (x0 < 0 || y0 < 0 || x1 > w || y1 > h) return true;
++
++        int stride = w + 1;
++        int sum = blockedSum[y1 * stride + x1] - blockedSum[y0 * stride + x1]
++                - blockedSum[y1 * stride + x0] + blockedSum[y0 * stride + x0];
++        return sum > 0;
++    }
++
++    /** Overlay merah transparan buat tembok (dipakai mode debug F3), digambar sebesar background domain. */
++    public BufferedImage getDebugImage() {
++        if (debugImage == null) {
++            BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
++            int stride = w + 1;
++            int red = new java.awt.Color(255, 0, 0, 90).getRGB();
++            for (int y = 0; y < h; y++) {
++                for (int x = 0; x < w; x++) {
++                    int cell = blockedSum[(y + 1) * stride + (x + 1)] - blockedSum[y * stride + (x + 1)]
++                             - blockedSum[(y + 1) * stride + x] + blockedSum[y * stride + x];
++                    if (cell > 0) img.setRGB(x, y, red);
++                }
++            }
++            debugImage = img;
++        }
++        return debugImage;
++    }
++}
+diff --git a/2DGame/src/latar/golemHide_walk.png b/2DGame/src/latar/golemHide_walk.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..cc6fc14c06e2a530df18273712f6aa0bab717110
+GIT binary patch
+literal 5146
+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
+Xp&k!=sxt=Q|AMaSo9b2SI7R&zT<f!}
+
+literal 0
+HcmV?d00001
+
+diff --git a/2DGame/tools/generate_golem_mask.py b/2DGame/tools/generate_golem_mask.py
+new file mode 100644
+index 0000000..6e14be5
+--- /dev/null
++++ b/2DGame/tools/generate_golem_mask.py
+@@ -0,0 +1,116 @@
++#!/usr/bin/env python3
++"""
++Generator peta collision domain GolemHide (golemHide_walk.png).
++
++Gambar golemHide.png itu gua yang bentuknya gak kotak-kotak, jadi collision pakai Rectangle gak bakal pas.
++Script ini baca gambarnya, cari lantai tanah (warna coklat) lalu bikin mask hitam-putih:
++    putih (255) = lantai, boleh dilewati player & monster
++    hitam (0)   = tembok batu / rangka kayu / peti / di luar gambar
++
++Ukuran mask = ukuran interior domain di DomainManager (800x600), jadi 1 piksel mask = 2 px dunia
++(gambar background digambar 2x). Mask ini bisa di-edit manual pakai editor gambar apa aja
++(cat putih = bisa dilewati, cat hitam = tembok), tinggal simpan dengan nama & ukuran yang sama.
++
++Jalankan dari folder 2DGame:
++    pip install pillow numpy scipy opencv-python
++    python tools/generate_golem_mask.py
++    python tools/generate_golem_mask.py --preview preview.png   # (opsional) mask ditumpuk ke gambar buat dicek
++
++Output: src/latar/golemHide_walk.png
++"""
++import argparse
++from pathlib import Path
++
++import cv2
++import numpy as np
++from PIL import Image
++from scipy import ndimage as ndi
++
++LATAR = Path(__file__).resolve().parent.parent / 'src' / 'latar'
++SRC = LATAR / 'golemHide.png'
++OUT = LATAR / 'golemHide_walk.png'
++
++MASK_W, MASK_H = 800, 600          # = GH_W x GH_H di DomainManager
++MAX_STONE_AREA = 700               # batu kecil di tengah lantai (dalam px gambar) dianggap bisa dilewati
++
++# Koordinat di bawah dalam piksel golemHide.png asli (1447x1087): (x0, y0, x1, y1)
++# Rangka kayu & peti warnanya sama kayak tanah, jadi gak kedeteksi otomatis -> dikasih tembok manual.
++SOLID_RECTS = [
++    (598, 70, 638, 190),    # tiang kiri pintu tambang atas
++    (711, 70, 751, 190),    # tiang kanan pintu tambang atas
++    (598, 70, 751, 112),    # balok atas pintu tambang
++    (1110, 352, 1196, 447), # rangka pintu tambang kanan
++    (1110, 447, 1136, 486), # kaki rangka kanan
++    (1062, 436, 1122, 498), # tumpukan peti
++]
++# Bagian dalam terowongan atas gelap (kedeteksi tembok), padahal itu jalan ke titik keluar domain.
++# Batas atas (y=130) sengaja agak turun dari balok kayu supaya kepala karakter gak nembus balok.
++WALK_RECTS = [
++    (638, 130, 711, 192),
++]
++
++
++def build_floor(rgba):
++    rgb = rgba[..., :3]
++    solid = rgba[..., 3] > 128
++    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV_FULL).astype(np.float32)
++    hue, sat, val = hsv[..., 0] * 360 / 255, hsv[..., 1] / 255, hsv[..., 2] / 255
++    dirt = (solid & (hue >= 18) & (hue <= 46) & (sat >= 0.28) & (sat <= 0.75)
++            & (val >= 0.30) & (val <= 0.90))
++
++    m = dirt.astype(np.uint8)
++    m = cv2.morphologyEx(m, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
++    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15)))
++
++    lab, n = ndi.label(m)
++    sizes = ndi.sum(m, lab, range(1, n + 1))
++    floor = lab == (int(np.argmax(sizes)) + 1)          # cuma lantai utama, bercak tanah terpisah dibuang
++
++    # batu kecil yang "bolong" di tengah lantai -> isi, biar gak nyangkut di kerikil
++    holes, hn = ndi.label(~floor)
++    h, w = floor.shape
++    for i in range(1, hn + 1):
++        comp = holes == i
++        ys, xs = np.nonzero(comp)
++        touches_border = ys.min() == 0 or xs.min() == 0 or ys.max() == h - 1 or xs.max() == w - 1
++        if not touches_border and comp.sum() < MAX_STONE_AREA:
++            floor[comp] = True
++    return floor
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument('--preview', help='simpan gambar preview (mask ditumpuk ke background) ke path ini')
++    args = ap.parse_args()
++
++    img = Image.open(SRC).convert('RGBA')
++    rgba = np.array(img)
++    floor = build_floor(rgba)
++
++    for x0, y0, x1, y1 in SOLID_RECTS:
++        floor[y0:y1, x0:x1] = False
++    for x0, y0, x1, y1 in WALK_RECTS:
++        floor[y0:y1, x0:x1] = True
++
++    # kecilin ke ukuran interior domain (1 piksel = 2 px dunia), >= 50% lantai baru dianggap lantai
++    small = cv2.resize(floor.astype(np.float32), (MASK_W, MASK_H), interpolation=cv2.INTER_AREA) >= 0.5
++    lab, n = ndi.label(small)
++    sizes = ndi.sum(small, lab, range(1, n + 1))
++    small = lab == (int(np.argmax(sizes)) + 1)
++
++    Image.fromarray((small * 255).astype(np.uint8), 'L').save(OUT)
++    print(f'ditulis: {OUT} ({MASK_W}x{MASK_H}, lantai = {small.mean() * 100:.1f}% area)')
++
++    if args.preview:
++        big = cv2.resize(small.astype(np.uint8), (img.width, img.height), interpolation=cv2.INTER_NEAREST) > 0
++        base = np.full((img.height, img.width, 3), 255, np.uint8)
++        art = rgba[..., 3] > 128
++        base[art] = rgba[..., :3][art]
++        base[big] = (0.5 * base[big] + 0.5 * np.array([0, 255, 0])).astype(np.uint8)
++        base[~big & art] = (0.6 * base[~big & art] + 0.4 * np.array([255, 0, 0])).astype(np.uint8)
++        Image.fromarray(base).save(args.preview)
++        print(f'preview: {args.preview}')
++
++
++if __name__ == '__main__':
++    main()

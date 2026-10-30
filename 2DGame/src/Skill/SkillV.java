@@ -594,6 +594,7 @@ public class SkillV extends Skill {
     private boolean isTargetable(Entity m) {
         if (m == null || m.isDead || m.life <= 0) return false;
         if (m instanceof Golemite)     return ((Golemite) m).isAlive();
+        if (m instanceof Entitas.Golem) return ((Entitas.Golem) m).isAlive();
         if (m instanceof Entitas.Wolf) return ((Entitas.Wolf) m).isAlive();
         if (m instanceof Skeleton)     return ((Skeleton) m).alive;
         if (m instanceof SkeletonKing) return ((SkeletonKing) m).alive;
@@ -614,6 +615,7 @@ public class SkillV extends Skill {
         } else if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
             list.addAll(gp.domainManager.getSkeletons());      // kosong kalau lagi di dalam room
             list.addAll(gp.domainManager.getGolemites());      // kosong kalau lagi di dalam room
+            list.addAll(gp.domainManager.getGolems());         // kosong kalau lagi di dalam room
             list.addAll(gp.domainManager.getRoomSkeletons());  // cuma ada di dalam room
             if (gp.domainManager.getBossSkeleton() != null) list.add(gp.domainManager.getBossSkeleton());
         }
