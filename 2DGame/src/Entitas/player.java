@@ -409,7 +409,6 @@ public class player extends Entity {
     public void takeDamageFrom(int dmg, Entity attacker) {
         if (isDead) return;
         if (skillManager != null && skillManager.skillV.isActive) return; // SkillV: player kebal selama skill
-        if (skillManager != null && skillManager.skillMaw.absorb(dmg)) return; // Maw of the Forgotten: serangan diserap penuh, HP aman
         if (dodge > 0) {
             int chance = Math.min(dodge, 50);
             if ((int)(Math.random() * 100) < chance) return;
@@ -419,6 +418,7 @@ public class player extends Entity {
         double reduction = 1.0 - getArmorDamageReduction() / 100.0;
         if (gp.armorEffects != null) reduction *= gp.armorEffects.getIncomingDamageMultiplier(); // Iron Will: HP rendah = damage -15%
         int actualDmg = Math.max(1, (int) Math.round(flat * reduction));
+        if (skillManager != null) actualDmg = skillManager.skillMaw.reduceDamage(actualDmg); // Maw of the Forgotten: damage -50% selama skill aktif
         life -= actualDmg;
         if (gp.damagePopups != null) gp.damagePopups.spawn(this, actualDmg, Main.DamagePopup.Type.PLAYER);
         isHit = true;
@@ -1134,6 +1134,10 @@ public class player extends Entity {
             return;
         }
 
+
+        // Efek skill (rahang Leviathan, aura, dll) harus tetap digambar waktu animasi serang,
+        // kalau nggak, dia hilang pas attack karena blok serang di bawah langsung return.
+        if (attackState != AttackState.NONE) skillManager.draw(g2);
 
         if (attackState != AttackState.NONE) {
             if (attackType == 1) {

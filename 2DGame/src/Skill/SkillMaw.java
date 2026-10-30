@@ -21,8 +21,8 @@ import Main.GamePanel;
  * Maw of the Forgotten — skill aktif senjata Leviathan Fang (tombol R, cuma jalan kalau Leviathan Fang dipegang).
  *
  *  1. Rahang raksasa Leviathan muncul mengelilingi player.
- *  2. Selama 3 detik, SEMUA serangan yang kena player diserap penuh (HP gak berkurang). Totalnya dicatat.
- *     Hook-nya ada di player.takeDamageFrom() -> absorb().
+ *  2. Selama 3 detik, SEMUA damage yang kena player dikurangi DAMAGE_REDUCTION (50%). Bagian yang
+ *     berhasil dikurangi dicatat sebagai "diserap". Hook-nya ada di player.takeDamageFrom() -> reduceDamage().
  *  3. Habis 3 detik rahang menutup dan menggigit semua monster di sekitar player dengan damage
  *     = total diserap x BITE_MULTIPLIER. Kalau gak ada yang diserap: gak ada gigitan, rahang cuma memudar.
  *
@@ -38,6 +38,7 @@ public class SkillMaw extends Skill {
     private static final int CLOSE_FRAMES  = 14;    // rahang menutup / menggigit
 
     // ── Damage ──
+    private static final float DAMAGE_REDUCTION = 0.5f;   // pengurangan damage yang diterima player selama skill aktif (0.5 = 50%)
     private static final float BITE_MULTIPLIER = 1.5f;   // damage gigitan = total diserap x ini (1.0 = persis sama)
 
     // ── Warna tema Leviathan (teal laut dalam, sama dengan tint Leviathan Fang) ──
@@ -134,15 +135,22 @@ public class SkillMaw extends Skill {
 
     // ───────────────────────── Penyerapan (dipanggil player.takeDamageFrom) ─────────────────────────
 
-    /** Coba serap serangan. True = diserap penuh (pemanggil harus langsung return, HP gak berkurang). */
-    public boolean absorb(int dmg) {
-        if (!isActive || activeTimer > ABSORB_FRAMES || dmg <= 0) return false;
-        absorbed += dmg;
+    /**
+     * Kurangi damage yang masuk ke player sebesar DAMAGE_REDUCTION selama fase serap.
+     * Dipanggil player.takeDamageFrom() SETELAH defense/armor dihitung, jadi yang dikurangi adalah damage akhir.
+     * Return = damage yang tetap harus dipotong dari HP player. Bagian yang dikurangi ditambahkan ke total "diserap" (buat gigitan).
+     */
+    public int reduceDamage(int dmg) {
+        if (!isActive || activeTimer > ABSORB_FRAMES || dmg <= 0) return dmg;
+        int taken = Math.max(1, Math.round(dmg * (1f - DAMAGE_REDUCTION)));
+        int prevented = dmg - taken;
+        if (prevented <= 0) return dmg;
+        absorbed += prevented;
         flash = 1f;
         float R = jawRadius();
         rings.add(new Ring(R * 0.95f, R * 1.6f, R * 0.08f, 3f, TEAL_LITE));   // riak penyerapan
-        pops.add(new Pop("+" + dmg, TEAL_LITE, 13, 34, -R - 6f));
-        return true;
+        pops.add(new Pop("+" + prevented, TEAL_LITE, 13, 34, -R - 6f));
+        return taken;
     }
 
     // ───────────────────────── Update ─────────────────────────
