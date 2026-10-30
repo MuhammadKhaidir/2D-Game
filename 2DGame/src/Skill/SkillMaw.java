@@ -16,14 +16,15 @@ import java.util.Random;
 import Entitas.Entity;
 import Entitas.player;
 import Main.GamePanel;
+import SFX.SoundManager;
 
 /**
  * Maw of the Forgotten — skill aktif senjata Leviathan Fang (tombol R, cuma jalan kalau Leviathan Fang dipegang).
  *
  *  1. Rahang raksasa Leviathan muncul mengelilingi player.
- *  2. Selama 3 detik, SEMUA damage yang kena player dikurangi DAMAGE_REDUCTION (50%). Bagian yang
+ *  2. Selama 5 detik (selama LeviathanRoar.wav main), SEMUA damage yang kena player dikurangi DAMAGE_REDUCTION (50%). Bagian yang
  *     berhasil dikurangi dicatat sebagai "diserap". Hook-nya ada di player.takeDamageFrom() -> reduceDamage().
- *  3. Habis 3 detik rahang menutup dan menggigit semua monster di sekitar player dengan damage
+ *  3. Habis 5 detik LeviathanBite.wav main, rahang menutup dan menggigit semua monster di sekitar player dengan damage
  *     = total diserap x BITE_MULTIPLIER. Kalau gak ada yang diserap: gak ada gigitan, rahang cuma memudar.
  *
  * Semua efek digambar pakai Graphics2D (gak butuh aset). Timing dalam frame, FPS game = 40.
@@ -33,8 +34,8 @@ public class SkillMaw extends Skill {
     public static final String WEAPON_NAME = "Leviathan Fang";
 
     // ── Timing (FPS 40) ──
-    private static final int EMERGE_FRAMES = 20;    // rahang muncul (bagian dari 3 detik serap)
-    private static final int ABSORB_FRAMES = 120;   // 3 detik serap
+    private static final int EMERGE_FRAMES = 20;    // rahang muncul (bagian dari 5 detik serap)
+    private static final int ABSORB_FRAMES = 200;   // 5 detik serap = durasi LeviathanRoar.wav (5 x 40 FPS)
     private static final int CLOSE_FRAMES  = 14;    // rahang menutup / menggigit
 
     // ── Damage ──
@@ -82,6 +83,7 @@ public class SkillMaw extends Skill {
     private final List<Bubble> bubbles = new ArrayList<>();
     private final List<Pop> pops = new ArrayList<>();
     private final Random rng = new Random();
+    private final SoundManager sound = new SoundManager();   // LeviathanRoar.wav & LeviathanBite.wav
 
     public SkillMaw(GamePanel gp, player owner) {
         super(gp, owner);
@@ -120,6 +122,8 @@ public class SkillMaw extends Skill {
         rings.add(new Ring(R * 0.4f, R * 2.3f, R * 0.11f, 4f, TEAL));
         rings.add(new Ring(R * 0.2f, R * 1.8f, R * 0.085f, 2f, TEAL_LITE));
         for (int i = 0; i < 16; i++) spawnBubble(R);
+
+        sound.playLeviathanRoar();   // raungan 5 detik, fase serap berjalan selama itu
     }
 
     private void spawnBubble(float R) {
@@ -189,12 +193,14 @@ public class SkillMaw extends Skill {
         rings.clear();
         bubbles.clear();
         pops.clear();
+        sound.stopLeviathanSounds();   // batal di tengah jalan: raungan ikut mati
     }
 
     /** Gigitan akhir: damage ke semua monster dalam jangkauan rahang. */
     private void bite() {
         bitten = true;
         biteDamage = Math.max(1, Math.round(absorbed * BITE_MULTIPLIER));
+        sound.playLeviathanBite();   // langsung nyambung setelah raungan selesai
 
         float R = jawRadius();
         int px = owner.x + owner.solidArea.x + owner.solidArea.width / 2;

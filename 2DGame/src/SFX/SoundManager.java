@@ -16,6 +16,9 @@ public class SoundManager {
     private static final float ULTIMATE_START_GAIN_DB = 5f;
     private static final float MULTIPLE_PUNCH_GAIN_DB = 8f;
     private static final float LAST_PUNCH_GAIN_DB     = 10f;
+    // ===== VOLUME SUARA SKILL LEVIATHAN FANG (dB, 0 = sesuai file aslinya) =====
+    private static final float LEVIATHAN_ROAR_GAIN_DB = 0f;
+    private static final float LEVIATHAN_BITE_GAIN_DB = 0f;
     // Sampel yang lewat batas ini (0..1 dari volume maksimum) dilembutkan pelan-pelan, bukan dipotong,
     // jadi suara yang dinaikkan banyak tetap keras tapi tidak pecah.
     private static final float LIMITER_KNEE = 0.7f;
@@ -31,6 +34,8 @@ public class SoundManager {
     private Clip ultimateStartClip;  // SkillV: pembukaan ultimate
     private Clip multiplePunchClip;  // SkillV: tiap player pindah tempat mukul
     private Clip lastPunchClip;      // SkillV: pukulan terakhir
+    private Clip leviathanRoarClip;  // Leviathan Fang (R): raungan pas skill mulai (5 detik)
+    private Clip leviathanBiteClip;  // Leviathan Fang (R): gigitan pas skill selesai
     public SoundManager() {
         wooshClip = loadClip("/SFX/ribhavagrawal-woosh-230554.wav");  // whoosh sfx
         punchClip = loadClip("/SFX/freesound_community-punch-2-37333.wav"); // punch sfx
@@ -42,6 +47,8 @@ public class SoundManager {
         ultimateStartClip = loadClipLoud("/SFX/UltimateStart.wav", ULTIMATE_START_GAIN_DB);
         multiplePunchClip = loadClipLoud("/SFX/MultiplePunch.wav", MULTIPLE_PUNCH_GAIN_DB);
         lastPunchClip = loadClipLoud("/SFX/LastPunch.wav", LAST_PUNCH_GAIN_DB);
+        leviathanRoarClip = loadClipLoud("/SFX/LeviathanRoar.wav", LEVIATHAN_ROAR_GAIN_DB);
+        leviathanBiteClip = loadClipLoud("/SFX/LeviathanBite.wav", LEVIATHAN_BITE_GAIN_DB);
     }
     
     /**
@@ -191,6 +198,20 @@ public class SoundManager {
         stopClip(ultimateStartClip);
         stopClip(multiplePunchClip);
         stopClip(lastPunchClip);
+    }
+    /** Leviathan Fang: raungan pas skill R mulai (durasi file 5 detik = durasi fase serap skill) */
+    public void playLeviathanRoar() {
+        playClip(leviathanRoarClip);
+    }
+    /** Leviathan Fang: gigitan pas fase serap habis. Sisa raungan (kalau masih ada) dipotong dulu. */
+    public void playLeviathanBite() {
+        stopClip(leviathanRoarClip);
+        playClip(leviathanBiteClip);
+    }
+    /** Leviathan Fang: matikan raungan & gigitan (dipanggil kalau skill dibatalin di tengah jalan) */
+    public void stopLeviathanSounds() {
+        stopClip(leviathanRoarClip);
+        stopClip(leviathanBiteClip);
     }
     private void stopClip(Clip clip) {
         if (clip != null && clip.isRunning()) clip.stop();
