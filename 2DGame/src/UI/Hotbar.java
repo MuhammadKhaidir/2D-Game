@@ -337,6 +337,8 @@ public class Hotbar {
         Item.Item item = slots[i];
         int count = (item != null) ? countOf(item) : 0;
         boolean equipped = item != null && gp.backpack != null && gp.backpack.isEquipped(item);
+        // pancingan yang lagi dipegang (siap klik buat melempar) juga ditandai kayak barang yang lagi dipakai
+        if (item != null && gp.fishing != null && gp.fishing.isRodReady() && same(item, ItemManager.get().FISHING_ROD)) equipped = true;
         boolean hover = (i == hoverIndex);
         boolean beingDragged = dragging && dragFromSlot == i;
 

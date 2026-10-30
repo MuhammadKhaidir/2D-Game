@@ -461,9 +461,9 @@ public class BackpackUI implements MouseWheelListener {
 
             case "fishing rod":
                 return "A sturdy wooden rod with a red-and-white float. "
-                     + "Face the water and press F to cast, then press F "
-                     + "again the moment you see the '!'. "
-                     + "Can also be put on the hotbar. Not consumed.";
+                     + "Use it (hotbar or backpack) to hold it, then click open "
+                     + "water to cast, not too close to the shore. Click again "
+                     + "the moment you see the '!'. Not consumed.";
 
             case "small fish":
                 return "A small, silvery fish. Not much of a meal, but it "

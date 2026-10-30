@@ -74,6 +74,20 @@ public AnimatedObjectManager animObjManager;
 public WaterAnimator waterAnim;          // gelombang air + buih pantai (lihat WaterAnimator.java)
 public FishJumpManager fishManager;      // ikan kuning yang sesekali meloncat (lihat FishJumpManager.java)
 
+/**
+ * Dek jembatan yang bisa diinjak (rectangle dunia, px). Diisi di loadObjectCollision(), ngikut posisi objek jembatan.
+ * Tile di bawah dek tetap tile air, jadi kode yang nanya "ini air?" (mis. mancing) harus ngecek ini juga.
+ */
+public final List<Rectangle> bridgeDecks = new ArrayList<>();
+
+/** True kalau titik dunia (px) ini ada di atas dek jembatan. */
+public boolean isOnBridgeDeck(int wx, int wy) {
+    for (Rectangle r : bridgeDecks) {
+        if (r.contains(wx, wy)) return true;
+    }
+    return false;
+}
+
 // ==== DUNIA YANG DIPERLUAS + BIOME ES ====
 // Peta lama (map01.txt, 243 x 321 tile) tetap utuh. Di luarnya dunia disambung sampai WorldGen.WORLD_COLS x WORLD_ROWS tile
 // oleh generator (WorldGen), dan chunk-nya dimuat / dibuang mengikuti player oleh ChunkManager.
@@ -1428,6 +1442,8 @@ public TileM(GamePanel gp) {
 	        if (o[4] >= 25 && o[4] <= 27)      deckJembatan.add(new Rectangle(o[0] + 8, o[1], o[2] - 16, o[3]));
 	        else if (o[4] >= 73 && o[4] <= 75) deckJembatan.add(new Rectangle(o[0], o[1] + 8, o[2], o[3] - 16));
 	    }
+	    bridgeDecks.clear();
+	    bridgeDecks.addAll(deckJembatan);   // dipakai FishingManager: boleh mancing dari atas jembatan
 	    for (Rectangle r : WaterCollision.build(mapTileNum, loadedCols, loadedRows, gp.tileSize, deckJembatan)) {
 	        gp.objCol.add(r.x, r.y, r.width, r.height);
 	    }

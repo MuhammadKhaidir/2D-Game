@@ -22,7 +22,7 @@ import Main.GamePanel;
  * berhenti (lihat GamePanel.update). Tiap dagangan di STOCK jadi satu baris: ikon, nama, stat, harga dalam Coin,
  * dan tombol BUY. Dagangan itu barang tunggal & gak numpuk (armor satu set utuh, Fishing Rod), jadi kalau sudah
  * punya (di backpack / lagi dipakai) tombolnya berubah jadi OWNED. Yang dibeli masuk backpack; armor dipasang
- * lewat klik kanan di backpack, Fishing Rod dipakai dengan tombol F (lihat Item.FishingManager).
+ * lewat klik kanan di backpack, Fishing Rod dipegang lewat hotbar lalu klik air (lihat Item.FishingManager).
  *
  * Kontrol: klik BUY buat beli, ESC buat keluar.
  * Nambah dagangan: tambah satu baris di konstruktor (armor() atau item() + item + harga).
@@ -111,8 +111,8 @@ public class ArmorShopUI {
         ItemManager im = ItemManager.get();
         this.stock = new Stock[] {
             Stock.armor(ArmorSet.IRON, im.IRON_ARMOR, IRON_ARMOR_PRICE),
-            new Stock("Fishing Rod", "Face water, press F to fish", im.FISHING_ROD, FISHING_ROD_PRICE,
-                      "Face the water and press F to fish."),
+            new Stock("Fishing Rod", "Click water to fish", im.FISHING_ROD, FISHING_ROD_PRICE,
+                      "Hotbar it, then click water to fish."),
         };
         this.panelH = LIST_TOP + stock.length * (ROW_H + ROW_GAP) + FOOTER_H;
     }

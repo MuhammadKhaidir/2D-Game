@@ -97,9 +97,9 @@ public class ItemManager {
             // MANCING: ikonnya digambar lewat kode (gak butuh file gambar). Mau pakai gambar sendiri? ganti icon-nya di sini.
             FISHING_ROD = new Item("Fishing Rod", createRodIcon());
             FISHING_ROD.maxStack = 1;
-            FISHING_ROD.onUse = gp -> {                 // lewat hotbar = sama kayak tekan F (rod-nya sendiri gak habis)
-                if (gp.fishing != null) gp.fishing.useRod();
-                return false;
+            FISHING_ROD.onUse = gp -> {                 // pakai rod (hotbar / backpack) = pegang / simpan pancingan, lalu klik air buat melempar
+                if (gp.fishing != null) gp.fishing.toggleRod();
+                return false;                           // rod-nya sendiri gak habis
             };
             FISH_SMALL  = new Item("Small Fish",  createFishIcon(0xB8C4CC, 0xE6EDF0, 0x8C9AA4, false, false));
             FISH_BIG    = new Item("Big Fish",    createFishIcon(0x5E86B0, 0xC9D8E6, 0x3F5F85, true,  false));

@@ -1,0 +1,661 @@
+diff --git a/2DGame/src/Item/FishingManager.java b/2DGame/src/Item/FishingManager.java
+index 83f2e0a..1741469 100644
+--- a/2DGame/src/Item/FishingManager.java
++++ b/2DGame/src/Item/FishingManager.java
+@@ -15,6 +15,7 @@ import java.awt.geom.Ellipse2D;
+ import java.awt.geom.Path2D;
+ import java.awt.geom.QuadCurve2D;
+ import java.awt.geom.RoundRectangle2D;
++import java.awt.event.MouseEvent;
+ import java.util.ArrayList;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -24,20 +25,23 @@ import Entitas.player;
+ import Item.FishingLoot.Kind;
+ import Item.FishingLoot.Rarity;
+ import Main.GamePanel;
+-import Main.KeyHandler;
+ import bahan.WaterCollision;
+ 
+ /**
+  * MANCING.
+  *
+  * Cara main:
+- *  1. Beli Fishing Rod di Armor Merchant (bayar Coin).
+- *  2. Berdiri di darat, hadap ke air (jarak maksimal 3 tile), tekan F. Atau masukin Fishing Rod ke hotbar
+- *     lalu tekan angkanya / klik slotnya (rod gak habis, cuma jadi "tombol pancing").
+- *  3. Tunggu pelampung. Kadang pelampung cuma "tuk" kecil (ikan nyenggol, belum nyambar). Bayangan ikan akan
+- *     mendekat; pas ikan nyambar muncul tanda "!" dan pelampung tenggelam: tekan F lagi SECEPATNYA
++ *  1. Beli Fishing Rod di Armor Merchant (bayar Coin), taruh di hotbar.
++ *  2. PEGANG pancingannya: tekan angka slotnya / klik slotnya (atau pakai dari backpack). Tekan lagi buat menyimpan.
++ *     Selama dipegang, klik kiri gak nonjok lagi dan ada lingkaran bidik di air tempat mouse mengarah
++ *     (hijau = bisa dilempar ke situ, merah = gak bisa).
++ *  3. KLIK KIRI di air buat melempar pelampung ke titik itu. Syaratnya: paling jauh {@link #CAST_REACH_TILES} tile dari
++ *     player dan paling dekat {@link #MIN_SHORE_DIST_TILES} tile dari daratan (gak boleh nempel pantai).
++ *     Boleh mancing dari atas jembatan juga (dek jembatan itu bukan air dan bukan daratan).
++ *  4. Tunggu pelampung. Kadang pelampung cuma "tuk" kecil (ikan nyenggol, belum nyambar). Bayangan ikan akan
++ *     mendekat; pas ikan nyambar muncul tanda "!" dan pelampung tenggelam: KLIK lagi SECEPATNYA
+  *     (cuma ada {@link #BITE_WINDOW_SEC} detik, ada lingkaran yang menyusut sebagai penunjuk). Kelamaan = ikannya kabur.
+- *  4. Tekan F sebelum ada gigitan = tarik pancingan lagi (batal). Jalan / noleh / kena damage juga membatalkan.
++ *  5. Klik sebelum ada gigitan = tarik pancingan lagi (batal). Jalan / noleh / kena damage juga membatalkan.
+  *
+  * Apa yang ketarik ditentukan dari awal lempar (lihat {@link FishingLoot}), jadi ukuran dan kilau bayangan ikan
+  * di air memang petunjuk hasilnya: bayangan gede / bersinar = barang langka.
+@@ -58,9 +62,15 @@ public class FishingManager {
+     private static final double APPROACH_SEC     = 1.7;   // bayangan ikan kelihatan segini lama sebelum nyambar
+     private static final double BITE_WINDOW_SEC  = 1.2;   // waktu buat narik pancingan setelah ikan nyambar
+     private static final double REEL_SEC         = 0.7;   // animasi narik ikan
+-    private static final double COOLDOWN_SEC     = 0.5;   // jeda sesudah selesai, biar F gak langsung ngelempar lagi
++    private static final double COOLDOWN_SEC     = 0.5;   // jeda sesudah selesai, biar klik gak langsung ngelempar lagi
+     private static final double CATCH_FX_SEC     = 2.4;   // lama barang hasil tangkapan melayang di atas air
+-    private static final int    CAST_REACH_TILES = 3;     // sejauh apa pelampung bisa dilempar (dalam tile)
++    private static final int    CAST_REACH_TILES = 7;     // sejauh apa pelampung bisa dilempar dari player (dalam tile)
++    /**
++     * Pelampung harus minimal segini jauh dari daratan mana pun (dalam tile, boleh pecahan). Dek jembatan GAK dihitung
++     * daratan. Catatan: sungai kecil lebarnya cuma 3-4 tile, jadi kalau angka ini dinaikin ke 3 ke atas, sebagian besar
++     * sungai gak bisa dipancing sama sekali.
++     */
++    private static final double MIN_SHORE_DIST_TILES = 2.0;
+ 
+     /** Ukuran bayangan ikan (px) per kelangkaan. Urutan = Rarity.ordinal(): JUNK, COMMON, UNCOMMON, RARE, EPIC, LEGENDARY. */
+     private static final int[] SHADOW_LENGTH = {13, 16, 20, 24, 30, 36};
+@@ -83,6 +93,12 @@ public class FishingManager {
+     private int lastLife;
+     private int dirX = 1, dirY = 0;          // arah lempar (satu dari 4 arah)
+ 
++    // pancingan lagi DIPEGANG (dipilih lewat hotbar) + bidikan mouse
++    private boolean rodReady = false;
++    private int aimX, aimY;                  // titik bidik (dunia, px), sudah dijepit ke jangkauan lempar
++    private boolean aimOk = false;           // titik bidik boleh dipakai buat melempar
++    private String aimProblem = null;        // alasan kalau gak boleh
++
+     // posisi pelampung SEKARANG (dunia). Beda dari target pas lagi terbang (CASTING) atau ditarik (REELING).
+     private double bpx, bpy;
+     private double releaseX, releaseY;       // titik ujung joran pas pelampung dilepas
+@@ -111,31 +127,51 @@ public class FishingManager {
+     // ===================================================================
+ 
+     /**
+-     * Dipanggil GamePanel tiap frame (sebelum cek dialog / toko). Tombol F SELALU dikonsumsi di sini,
+-     * supaya F yang ditekan pas dialog / toko / chat gak "nyangkut" lalu ngelempar pancingan sesudahnya.
++     * Dipakai item Fishing Rod (tekan angka slot hotbar / klik slotnya / pakai dari backpack):
++     * pegang pancingan, atau simpan lagi kalau sudah dipegang. Rod-nya sendiri gak habis.
+      */
+-    public void handleKey(KeyHandler keys) {
+-        boolean pressed = keys.fPressed;
+-        keys.fPressed = false;
+-        if (!pressed) return;
+-        if (gp.hotbar != null && !gp.hotbar.canUse()) return; // dialog, menu, toko, mati, dll.
+-
++    public void toggleRod() {
++        if (rodReady) {
++            if (state == State.REELING) return;                       // ikannya lagi ditarik, biar selesai dulu
++            if (state != State.IDLE && state != State.COOLDOWN) cancel(null);
++            rodReady = false;
++            say("Rod put away.");
++            return;
++        }
+         if (!hasRod()) {
+-            // belum punya pancingan: kasih petunjuk, tapi cuma kalau lagi hadap air (biar F biasa gak berisik)
+-            if (state == State.IDLE && findCastTarget() == null) {
+-                say("I need a fishing rod. The Armor Merchant sells them.");
+-            }
++            say("I need a fishing rod. The Armor Merchant sells them.");
+             return;
+         }
+-        useRod();
++        if (gp.gameState != GamePanel.GameState.OUTSIDE) {
++            say("I can't fish in here.");
++            return;
++        }
++        rodReady = true;
++        say("Rod ready. Click on the water to cast!");
++    }
++
++    /** True kalau pancingan lagi dipegang (klik kiri = mancing, bukan nonjok). Dipakai Hotbar buat nyalain slotnya. */
++    public boolean isRodReady() {
++        return rodReady;
+     }
+ 
+-    /** Aksi pancingan: lempar kalau lagi diam, tarik kalau ikan nyambar, batal kalau masih nunggu. */
+-    public void useRod() {
++    /**
++     * Klik kiri dari GamePanel (dipanggil sesudah semua UI lain gak nangkap kliknya).
++     * Pancingan lagi diam = lempar ke titik yang diklik, nunggu = tarik lagi (batal), ikan nyambar = angkat.
++     *
++     * @return true kalau klik ini dipakai buat mancing, jadi GamePanel jangan lanjut nonjok.
++     */
++    public boolean handleClick(MouseEvent e) {
++        if (!rodReady || e.getButton() != MouseEvent.BUTTON1) return false;
++        if (gp.gameState != GamePanel.GameState.OUTSIDE) return false;
++        if (gp.hotbar != null && !gp.hotbar.canUse()) return false;   // dialog, menu, toko, mati, dll.
++
+         switch (state) {
+-            case IDLE:
+-                cast();
++            case IDLE: {
++                int[] w = screenToWorld(e.getX(), e.getY());
++                cast(w[0], w[1]);
+                 break;
++            }
+             case WAITING:
+                 cancel("You reeled in too early.");
+                 break;
+@@ -148,13 +184,15 @@ public class FishingManager {
+             default:
+                 break;
+         }
++        return true;
+     }
+ 
+     // ===================================================================
+     // LOGIKA
+     // ===================================================================
+ 
+-    private void cast() {
++    /** Lempar pelampung ke titik dunia (mx, my) yang diklik. Gagal (dengan pesan) kalau titiknya gak memenuhi syarat. */
++    private void cast(int mx, int my) {
+         player p = gp.player;
+         if (p == null || p.isDead) return;
+         if (gp.gameState != GamePanel.GameState.OUTSIDE) {
+@@ -163,31 +201,34 @@ public class FishingManager {
+         }
+         if (!p.isNotPunching()) return;
+ 
+-        String problem = findCastTarget();
+-        if (problem != null) {
+-            say(problem);
++        evaluateAim(mx, my);
++        if (!aimOk) {
++            say(aimProblem);
+             return;
+         }
++        bobberX = aimX;
++        bobberY = aimY;
+ 
+-        castPX = p.x;
+-        castPY = p.y;
+-        castDir = p.direction;
+-        lastLife = p.life;
+-
+-        // arah lempar = sumbu yang paling jauh dari pelampung ke player
++        // arah lempar = sumbu yang paling jauh dari pelampung ke player; player noleh ke arah itu
+         int ts = gp.tileSize;
+         int ddx = bobberX - (p.x + ts / 2);
+         int ddy = bobberY - (p.y + ts / 2);
+         if (Math.abs(ddx) < Math.abs(ddy)) { dirX = 0; dirY = Integer.signum(ddy); }
+         else { dirX = Integer.signum(ddx); dirY = 0; }
+         if (dirX == 0 && dirY == 0) dirX = 1;
++        p.direction = dirY < 0 ? "up" : dirY > 0 ? "down" : dirX < 0 ? "left" : "right";
++
++        castPX = p.x;
++        castPY = p.y;
++        castDir = p.direction;
++        lastLife = p.life;
+ 
+         pending = loot().roll(rng, rareBoost());   // apa yang bakal ketarik ditentukan dari sekarang (bayangan ikan = petunjuknya)
+         nibbleTick = -1;
+         enter(State.CASTING, CAST_SEC);
+         updateBobberPos();                           // supaya frame pertama sudah punya posisi joran + pelampung
+         FishingSfx.play("cast");
+-        say("Line cast. Press F when something bites!");
++        say("Line cast. Click when something bites!");
+     }
+ 
+     /** Pelampung mendarat: mulai nunggu, jadwalkan "tuk" kecil dan arah datang bayangan ikan. */
+@@ -282,6 +323,7 @@ public class FishingManager {
+     /** Batal tanpa pesan & tanpa jeda (dipakai kalau game di-load / respawn). */
+     public void reset() {
+         state = State.IDLE;
++        rodReady = false;
+         timer = 0;
+         pending = null;
+         nibbleTick = -1;
+@@ -314,7 +356,11 @@ public class FishingManager {
+     public void update() {
+         tick++;
+         updateEffects();
+-        if (state == State.IDLE) return;
++        if (rodReady && !canKeepRod()) rodReady = false;   // masuk rumah / domain, rod hilang, mati: pancingan disimpan sendiri
++        if (state == State.IDLE) {
++            if (rodReady) updateAim();
++            return;
++        }
+         stateTick++;
+ 
+         if (state == State.CASTING || state == State.WAITING || state == State.BITE) {
+@@ -370,7 +416,7 @@ public class FishingManager {
+         player p = gp.player;
+         if (p == null || p.isDead) return "";
+         if (gp.gameState != GamePanel.GameState.OUTSIDE) return "";
+-        if (!hasRod()) return "";
++        if (!hasRod() || !rodReady) return "";
+         if (p.x != castPX || p.y != castPY) return "You walked away from your line.";
+         if (p.direction != null && !p.direction.equals(castDir)) return "You turned away from your line.";
+         if (p.life < lastLife) return "Fishing interrupted!";
+@@ -406,57 +452,122 @@ public class FishingManager {
+     }
+ 
+     // ===================================================================
+-    // CARI AIR
++    // BIDIK (MOUSE) + CARI AIR
+     // ===================================================================
+ 
+-    /**
+-     * Cari titik air di depan player (sampai CAST_REACH_TILES tile) dan simpan di bobberX/bobberY.
+-     * @return null kalau ketemu, selain itu pesan kenapa gak bisa.
+-     */
+-    private String findCastTarget() {
++    private boolean canKeepRod() {
+         player p = gp.player;
+-        int ts = gp.tileSize;
+-        int cx = p.x + ts / 2;
+-        int cy = p.y + ts / 2;
++        return p != null && !p.isDead && gp.gameState == GamePanel.GameState.OUTSIDE && hasRod();
++    }
+ 
+-        if (isWaterAt(cx, cy)) return "I need solid ground to fish from.";
++    /** Posisi mouse di layar -> posisi dunia (px). Ikut zoom (pivotnya tengah layar, lihat GamePanel.applyWorldZoom). */
++    private int[] screenToWorld(int mx, int my) {
++        player p = gp.player;
++        double z = gp.renderZoom();
++        double cx = gp.screenWidth / 2.0, cy = gp.screenHeight / 2.0;
++        double ux = cx + (mx - cx) / z;           // koordinat layar sebelum di-zoom
++        double uy = cy + (my - cy) / z;
++        return new int[] { (int) Math.round(ux - p.screenX + p.x), (int) Math.round(uy - p.screenY + p.y) };
++    }
++
++    /** Tiap frame pas pancingan dipegang & belum dilempar: joran ngikut hadap player, bidikan ngikut mouse. */
++    private void updateAim() {
++        player p = gp.player;
++        int[] w = screenToWorld(gp.mouseX, gp.mouseY);
++        evaluateAim(w[0], w[1]);
+ 
+-        int dx = 0, dy = 0;
+         String dir = p.direction == null ? "down" : p.direction;
+-        switch (dir) {
+-            case "up":    dy = -1; break;
+-            case "down":  dy =  1; break;
+-            case "left":  dx = -1; break;
+-            default:      dx =  1; break;
++        dirX = dir.equals("left") ? -1 : dir.equals("right") ? 1 : 0;
++        dirY = dir.equals("up") ? -1 : dir.equals("down") ? 1 : 0;
++        if (dirX == 0 && dirY == 0) dirX = 1;
++        computeRod();
++    }
++
++    /**
++     * Cek titik bidik (dunia): dijepit ke jangkauan lempar, lalu harus air dan harus cukup jauh dari daratan.
++     * Hasilnya di aimX / aimY / aimOk / aimProblem.
++     */
++    private void evaluateAim(int tx, int ty) {
++        player p = gp.player;
++        int ts = gp.tileSize;
++        double cx = p.x + ts / 2.0, cy = p.y + ts / 2.0;
++        double dx = tx - cx, dy = ty - cy;
++        double reach = (double) ts * CAST_REACH_TILES;
++        double dist = Math.hypot(dx, dy);
++        boolean tooFar = dist > reach;
++        if (tooFar) { dx *= reach / dist; dy *= reach / dist; }   // mouse kejauhan: bidik sejauh-jauhnya ke arah itu
++        aimX = (int) Math.round(cx + dx);
++        aimY = (int) Math.round(cy + dy);
++
++        // titik pijakan = tengah kotak kaki player (sama kayak yang dipakai collision)
++        int footX = p.x + p.solidArea.x + p.solidArea.width / 2;
++        int footY = p.y + p.solidArea.y + p.solidArea.height / 2;
++
++        aimOk = false;
++        if (isWaterAt(footX, footY)) {
++            aimProblem = "I need solid ground to fish from.";
++        } else if (!isWaterAt(aimX, aimY)) {
++            aimProblem = tooFar ? "That's out of my reach." : "I can only cast onto open water.";
++        } else if (!farFromLand(aimX, aimY)) {
++            aimProblem = "Too close to the shore. Cast at least " + tilesText(MIN_SHORE_DIST_TILES) + " tiles out.";
++        } else {
++            aimOk = true;
++            aimProblem = null;
+         }
++    }
++
++    private static String tilesText(double tiles) {
++        return tiles == Math.floor(tiles) ? String.valueOf((int) tiles) : String.valueOf(tiles);
++    }
+ 
+-        int step = Math.max(2, ts / WaterCollision.SUB);   // sekecil sel collision air (8px)
+-        int reach = ts * CAST_REACH_TILES;
+-        for (int d = ts / 2; d <= reach; d += step) {
+-            int px = cx + dx * d;
+-            int py = cy + dy * d;
+-            if (!isWaterAt(px, py)) continue;
+-
+-            // geser sedikit ke tengah air, biar pelampung gak nempel di bibir pantai
+-            int bx = px + dx * (ts / 3);
+-            int by = py + dy * (ts / 3);
+-            if (!isWaterAt(bx, by)) { bx = px; by = py; }
+-            bobberX = bx;
+-            bobberY = by;
+-            return null;
++    /** True kalau gak ada daratan dalam radius MIN_SHORE_DIST_TILES dari titik dunia (wx, wy). */
++    private boolean farFromLand(int wx, int wy) {
++        int cell = Math.max(2, gp.tileSize / WaterCollision.SUB);   // sekecil sel collision air (8px)
++        double r = MIN_SHORE_DIST_TILES * gp.tileSize;
++        int gx0 = Math.floorDiv((int) Math.floor(wx - r), cell), gx1 = Math.floorDiv((int) Math.ceil(wx + r), cell);
++        int gy0 = Math.floorDiv((int) Math.floor(wy - r), cell), gy1 = Math.floorDiv((int) Math.ceil(wy + r), cell);
++        for (int gy = gy0; gy <= gy1; gy++) {
++            for (int gx = gx0; gx <= gx1; gx++) {
++                int px = gx * cell + cell / 2, py = gy * cell + cell / 2;
++                double ddx = px - wx, ddy = py - wy;
++                if (ddx * ddx + ddy * ddy > r * r) continue;
++                if (isLandAt(px, py)) return false;
++            }
+         }
+-        return "There's no water in front of me.";
++        return true;
+     }
+ 
+-    /** Titik dunia (pixel) ini air? Baca dari peta dasar, jadi gak tergantung chunk salju / es yang lagi dimuat. */
+-    private boolean isWaterAt(int wx, int wy) {
+-        if (wx < 0 || wy < 0) return false;
++    /** Tile dasar di titik dunia ini, atau -1 kalau di luar dunia. Baca dari peta dasar, jadi gak tergantung chunk salju / es yang lagi dimuat. */
++    private int baseTileAt(int wx, int wy) {
++        if (wx < 0 || wy < 0) return -1;
+         int ts = gp.tileSize;
+         int col = wx / ts, row = wy / ts;
+-        if (col >= gp.maxWorldCol || row >= gp.maxWorldRow) return false;
++        if (col >= gp.maxWorldCol || row >= gp.maxWorldRow) return -1;
+         bahan.TileM tm = gp.tileM;
+-        int tile = (tm.gen != null) ? tm.gen.baseTile(col, row) : tm.mapTileNum[col][row];
+-        return WaterCollision.isWaterAt(tile, (wx - col * ts) / (float) ts, (wy - row * ts) / (float) ts);
++        return (tm.gen != null) ? tm.gen.baseTile(col, row) : tm.mapTileNum[col][row];
++    }
++
++    /** Titik ini air menurut peta dasar? (Dek jembatan masih dihitung air di sini, tile di bawahnya kan air.) */
++    private boolean isWaterTileAt(int wx, int wy) {
++        int t = baseTileAt(wx, wy);
++        if (t < 0) return false;
++        int ts = gp.tileSize;
++        int col = wx / ts, row = wy / ts;
++        return WaterCollision.isWaterAt(t, (wx - col * ts) / (float) ts, (wy - row * ts) / (float) ts);
++    }
++
++    private boolean onBridge(int wx, int wy) {
++        return gp.tileM != null && gp.tileM.isOnBridgeDeck(wx, wy);
++    }
++
++    /** Air yang boleh dilempari pelampung / dilewati bayangan ikan. Dek jembatan BUKAN air. */
++    private boolean isWaterAt(int wx, int wy) {
++        return isWaterTileAt(wx, wy) && !onBridge(wx, wy);
++    }
++
++    /** Daratan: bukan air dan bukan dek jembatan. Di luar dunia dianggap daratan. */
++    private boolean isLandAt(int wx, int wy) {
++        return !isWaterTileAt(wx, wy) && !onBridge(wx, wy);
+     }
+ 
+     // ===================================================================
+@@ -695,7 +806,8 @@ public class FishingManager {
+         player p = gp.player;
+         if (p == null) return;
+         boolean line = state != State.IDLE;
+-        if (!line && particles.isEmpty() && ripples.isEmpty() && catchFx == null) return;
++        boolean holding = rodReady && state == State.IDLE;        // pancingan dipegang, belum dilempar
++        if (!line && !holding && particles.isEmpty() && ripples.isEmpty() && catchFx == null) return;
+ 
+         Object oldAA = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+         java.awt.Stroke oldStroke = g2.getStroke();
+@@ -705,8 +817,10 @@ public class FishingManager {
+         int ox = p.screenX - p.x, oy = p.screenY - p.y;       // dunia -> layar
+ 
+         drawRipples(g2, ox, oy);
++        if (holding) drawAim(g2, ox, oy);
+         if (state == State.WAITING) drawFishShadow(g2, ox, oy);
+         if (line) drawLineAndRod(g2, ox, oy);
++        else if (holding) drawHeldRod(g2, ox, oy);
+         drawParticles(g2, ox, oy);
+         if (state == State.BITE) drawBiteAlert(g2, bpx + ox, bpy + oy);       // di atas percikan, biar tetap kebaca
+         if (catchFx != null) drawCatchFx(g2, ox, oy);
+@@ -716,6 +830,34 @@ public class FishingManager {
+         if (oldAA != null) g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+     }
+ 
++    // ---------- bidikan mouse ----------
++
++    /** Lingkaran bidik di air tempat mouse mengarah: hijau = boleh dilempar ke sini, merah = gak boleh. */
++    private void drawAim(Graphics2D g2, int ox, int oy) {
++        double x = aimX + ox, y = aimY + oy;
++        double pulse = 0.5 + 0.5 * Math.sin(tick * 0.15);
++        double w = 24 + pulse * 4, h = w * 0.42;
++        Color c = aimOk ? new Color(120, 255, 150) : new Color(255, 90, 80);
++
++        g2.setStroke(new BasicStroke(3f));
++        g2.setColor(new Color(0, 0, 0, 90));
++        g2.draw(new Ellipse2D.Double(x - w / 2, y - h / 2 + 1, w, h));
++        g2.setStroke(new BasicStroke(1.8f));
++        g2.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), 230));
++        g2.draw(new Ellipse2D.Double(x - w / 2, y - h / 2, w, h));
++        if (aimOk) {
++            g2.fill(new Ellipse2D.Double(x - 1.5, y - 1, 3, 2));
++        } else {                                                  // tanda silang kecil
++            g2.draw(new java.awt.geom.Line2D.Double(x - 4, y - 2, x + 4, y + 2));
++            g2.draw(new java.awt.geom.Line2D.Double(x - 4, y + 2, x + 4, y - 2));
++        }
++    }
++
++    /** Joran dipegang tapi belum dilempar: cuma joran, tanpa tali dan pelampung. */
++    private void drawHeldRod(Graphics2D g2, int ox, int oy) {
++        drawRodBody(g2, handX + ox, handY + oy, tipX + ox, tipY + oy, ctlX + ox, ctlY + oy);
++    }
++
+     // ---------- riak ----------
+ 
+     private void drawRipples(Graphics2D g2, int ox, int oy) {
+@@ -970,7 +1112,7 @@ public class FishingManager {
+         g2.draw(new Ellipse2D.Double(bx - 5, cy - 5, 10, 10));
+     }
+ 
+-    /** Tanda "!" + "[F]" di atas pelampung, plus lingkaran yang menyusut = sisa waktu buat menarik. */
++    /** Tanda "!" + "CLICK" di atas pelampung, plus lingkaran yang menyusut = sisa waktu buat menarik. */
+     private void drawBiteAlert(Graphics2D g2, double bx, double by) {
+         int top = (int) by - 62 - (int) Math.round(Math.abs(Math.sin(tick * 0.35)) * 4);
+         int cx = (int) bx;
+@@ -996,10 +1138,10 @@ public class FishingManager {
+         g2.setColor(new Color(255, 80, 60));
+         g2.drawString("!", cx - fm.stringWidth("!") / 2, top + 22);
+ 
+-        g2.setFont(new Font("Monospaced", Font.BOLD, 11));
++        g2.setFont(new Font("Monospaced", Font.BOLD, 10));
+         fm = g2.getFontMetrics();
+         g2.setColor(Color.WHITE);
+-        g2.drawString("[F]", cx - fm.stringWidth("[F]") / 2, top + 35);
++        g2.drawString("CLICK", cx - fm.stringWidth("CLICK") / 2, top + 35);
+     }
+ 
+     // ---------- partikel ----------
+diff --git a/2DGame/src/Item/ItemManager.java b/2DGame/src/Item/ItemManager.java
+index 8c16f87..358d064 100644
+--- a/2DGame/src/Item/ItemManager.java
++++ b/2DGame/src/Item/ItemManager.java
+@@ -97,9 +97,9 @@ public class ItemManager {
+             // MANCING: ikonnya digambar lewat kode (gak butuh file gambar). Mau pakai gambar sendiri? ganti icon-nya di sini.
+             FISHING_ROD = new Item("Fishing Rod", createRodIcon());
+             FISHING_ROD.maxStack = 1;
+-            FISHING_ROD.onUse = gp -> {                 // lewat hotbar = sama kayak tekan F (rod-nya sendiri gak habis)
+-                if (gp.fishing != null) gp.fishing.useRod();
+-                return false;
++            FISHING_ROD.onUse = gp -> {                 // pakai rod (hotbar / backpack) = pegang / simpan pancingan, lalu klik air buat melempar
++                if (gp.fishing != null) gp.fishing.toggleRod();
++                return false;                           // rod-nya sendiri gak habis
+             };
+             FISH_SMALL  = new Item("Small Fish",  createFishIcon(0xB8C4CC, 0xE6EDF0, 0x8C9AA4, false, false));
+             FISH_BIG    = new Item("Big Fish",    createFishIcon(0x5E86B0, 0xC9D8E6, 0x3F5F85, true,  false));
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index a202a2f..a2ce92f 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -119,8 +119,9 @@ public class GamePanel extends JPanel implements Runnable{
+ 	// hotbar: 5 slot akses cepat di bawah layar (tombol angka 1-5)
+ 	public UI.Hotbar hotbar;
+ 
+-	// mancing: tekan F menghadap air (butuh Fishing Rod dari Armor Merchant)
++	// mancing: pegang Fishing Rod dari hotbar, lalu KLIK air (butuh Fishing Rod dari Armor Merchant)
+ 	public FishingManager fishing;
++	public int mouseX, mouseY;   // posisi mouse terakhir di layar (diupdate tiap gerak / drag), dipakai bidikan mancing
+ 
+ 	// minimap di pojok kanan atas (cuma tampil di dunia luar)
+ 	public UI.MiniMap miniMap;
+@@ -355,6 +356,11 @@ public class GamePanel extends JPanel implements Runnable{
+                     return;
+                 }
+  
++                // ── MANCING ── (pancingan lagi dipegang: klik = lempar / tarik, bukan nonjok)
++                if (fishing != null && fishing.handleClick(e)) {
++                    return;
++                }
++
+                 // ── PUNCH ──
+                 if (e.getButton() == MouseEvent.BUTTON1) {
+                     if (player.isNotPunching()) {
+@@ -377,11 +383,15 @@ public class GamePanel extends JPanel implements Runnable{
+ 		addMouseMotionListener(new MouseAdapter() {
+ 		    @Override
+ 		    public void mouseMoved(MouseEvent e) {
++		        GamePanel.this.mouseX = e.getX();
++		        GamePanel.this.mouseY = e.getY();
+ 		        GamePanel.this.mouseMoved(e);
+ 		    }
+ 
+ 		    @Override
+ 		    public void mouseDragged(MouseEvent e) {
++		        GamePanel.this.mouseX = e.getX();
++		        GamePanel.this.mouseY = e.getY();
+ 		        // seret item dari backpack / antar slot hotbar
+ 		        if (hotbar != null) hotbar.handleMouseDragged(e);
+ 		    }
+@@ -970,7 +980,6 @@ public class GamePanel extends JPanel implements Runnable{
+ 		    snow.update();
+ 		}
+ 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
+-		if (fishing != null) fishing.handleKey(KeyH); // tombol F (mancing); selalu dikonsumsi biar gak nyangkut pas dialog / toko
+ 
+ 		// SkillV lagi jalan: dialog / inspect NPC / buka peti / pintu & keluar domain (E, ESC) dikunci biar skill gak ke-pause
+ 		if (isSkillVActive()) {
+diff --git a/2DGame/src/Main/KeyHandler.java b/2DGame/src/Main/KeyHandler.java
+index 7206335..be95ae0 100644
+--- a/2DGame/src/Main/KeyHandler.java
++++ b/2DGame/src/Main/KeyHandler.java
+@@ -14,8 +14,6 @@ public class KeyHandler implements KeyListener {
+     public boolean shiftPressed = false;
+     public boolean chatPressed = false;
+     public boolean tPressed = false; // ◄ BARU: Ditambahkan untuk mendeteksi tombol T
+-    public boolean fPressed = false; // tombol F = mancing (lempar / tarik pancingan). Dikonsumsi FishingManager.handleKey
+-    private boolean fKeyDown = false; // nahan F cuma dihitung SEKALI (auto-repeat keyboard diabaikan)
+     public boolean enterPressed = false;
+     public boolean backspacePressed = false;
+     public char typedChar;
+@@ -81,10 +79,6 @@ public class KeyHandler implements KeyListener {
+             tabPressed = true;
+         }
+         // skill player, human btw
+-        if (code == KeyEvent.VK_F) {
+-            if (!fKeyDown) fPressed = true;
+-            fKeyDown = true;
+-        }
+         if (code == KeyEvent.VK_M) mPressed = true;
+         if (code == KeyEvent.VK_Z) zPressed = true;
+         if (code == KeyEvent.VK_X) xPressed = true;
+@@ -145,7 +139,6 @@ public class KeyHandler implements KeyListener {
+         int hbRel = hotbarIndexFor(code);
+         if (hbRel != -1) hotbarKeyDown[hbRel] = false;
+         if (code == KeyEvent.VK_F5) f5Pressed = false;
+-        if (code == KeyEvent.VK_F) fKeyDown = false;
+         if (code == KeyEvent.VK_M) mPressed = false;
+         if (code == KeyEvent.VK_Z) zPressed = false;
+         if (code == KeyEvent.VK_X) xPressed = false;
+diff --git a/2DGame/src/UI/ArmorShopUI.java b/2DGame/src/UI/ArmorShopUI.java
+index 1d92748..8ddb1a4 100644
+--- a/2DGame/src/UI/ArmorShopUI.java
++++ b/2DGame/src/UI/ArmorShopUI.java
+@@ -22,7 +22,7 @@ import Main.GamePanel;
+  * berhenti (lihat GamePanel.update). Tiap dagangan di STOCK jadi satu baris: ikon, nama, stat, harga dalam Coin,
+  * dan tombol BUY. Dagangan itu barang tunggal & gak numpuk (armor satu set utuh, Fishing Rod), jadi kalau sudah
+  * punya (di backpack / lagi dipakai) tombolnya berubah jadi OWNED. Yang dibeli masuk backpack; armor dipasang
+- * lewat klik kanan di backpack, Fishing Rod dipakai dengan tombol F (lihat Item.FishingManager).
++ * lewat klik kanan di backpack, Fishing Rod dipegang lewat hotbar lalu klik air (lihat Item.FishingManager).
+  *
+  * Kontrol: klik BUY buat beli, ESC buat keluar.
+  * Nambah dagangan: tambah satu baris di konstruktor (armor() atau item() + item + harga).
+@@ -111,8 +111,8 @@ public class ArmorShopUI {
+         ItemManager im = ItemManager.get();
+         this.stock = new Stock[] {
+             Stock.armor(ArmorSet.IRON, im.IRON_ARMOR, IRON_ARMOR_PRICE),
+-            new Stock("Fishing Rod", "Face water, press F to fish", im.FISHING_ROD, FISHING_ROD_PRICE,
+-                      "Face the water and press F to fish."),
++            new Stock("Fishing Rod", "Click water to fish", im.FISHING_ROD, FISHING_ROD_PRICE,
++                      "Hotbar it, then click water to fish."),
+         };
+         this.panelH = LIST_TOP + stock.length * (ROW_H + ROW_GAP) + FOOTER_H;
+     }
+diff --git a/2DGame/src/UI/BackpackUI.java b/2DGame/src/UI/BackpackUI.java
+index bfacacd..2cb363a 100644
+--- a/2DGame/src/UI/BackpackUI.java
++++ b/2DGame/src/UI/BackpackUI.java
+@@ -461,9 +461,9 @@ public class BackpackUI implements MouseWheelListener {
+ 
+             case "fishing rod":
+                 return "A sturdy wooden rod with a red-and-white float. "
+-                     + "Face the water and press F to cast, then press F "
+-                     + "again the moment you see the '!'. "
+-                     + "Can also be put on the hotbar. Not consumed.";
++                     + "Use it (hotbar or backpack) to hold it, then click open "
++                     + "water to cast, not too close to the shore. Click again "
++                     + "the moment you see the '!'. Not consumed.";
+ 
+             case "small fish":
+                 return "A small, silvery fish. Not much of a meal, but it "
+diff --git a/2DGame/src/UI/Hotbar.java b/2DGame/src/UI/Hotbar.java
+index fb6a040..94e7388 100644
+--- a/2DGame/src/UI/Hotbar.java
++++ b/2DGame/src/UI/Hotbar.java
+@@ -337,6 +337,8 @@ public class Hotbar {
+         Item.Item item = slots[i];
+         int count = (item != null) ? countOf(item) : 0;
+         boolean equipped = item != null && gp.backpack != null && gp.backpack.isEquipped(item);
++        // pancingan yang lagi dipegang (siap klik buat melempar) juga ditandai kayak barang yang lagi dipakai
++        if (item != null && gp.fishing != null && gp.fishing.isRodReady() && same(item, ItemManager.get().FISHING_ROD)) equipped = true;
+         boolean hover = (i == hoverIndex);
+         boolean beingDragged = dragging && dragFromSlot == i;
+ 
+diff --git a/2DGame/src/bahan/TileM.java b/2DGame/src/bahan/TileM.java
+index eb40130..fbd1c7c 100644
+--- a/2DGame/src/bahan/TileM.java
++++ b/2DGame/src/bahan/TileM.java
+@@ -74,6 +74,20 @@ public AnimatedObjectManager animObjManager;
+ public WaterAnimator waterAnim;          // gelombang air + buih pantai (lihat WaterAnimator.java)
+ public FishJumpManager fishManager;      // ikan kuning yang sesekali meloncat (lihat FishJumpManager.java)
+ 
++/**
++ * Dek jembatan yang bisa diinjak (rectangle dunia, px). Diisi di loadObjectCollision(), ngikut posisi objek jembatan.
++ * Tile di bawah dek tetap tile air, jadi kode yang nanya "ini air?" (mis. mancing) harus ngecek ini juga.
++ */
++public final List<Rectangle> bridgeDecks = new ArrayList<>();
++
++/** True kalau titik dunia (px) ini ada di atas dek jembatan. */
++public boolean isOnBridgeDeck(int wx, int wy) {
++    for (Rectangle r : bridgeDecks) {
++        if (r.contains(wx, wy)) return true;
++    }
++    return false;
++}
++
+ // ==== DUNIA YANG DIPERLUAS + BIOME ES ====
+ // Peta lama (map01.txt, 243 x 321 tile) tetap utuh. Di luarnya dunia disambung sampai WorldGen.WORLD_COLS x WORLD_ROWS tile
+ // oleh generator (WorldGen), dan chunk-nya dimuat / dibuang mengikuti player oleh ChunkManager.
+@@ -1428,6 +1442,8 @@ public TileM(GamePanel gp) {
+ 	        if (o[4] >= 25 && o[4] <= 27)      deckJembatan.add(new Rectangle(o[0] + 8, o[1], o[2] - 16, o[3]));
+ 	        else if (o[4] >= 73 && o[4] <= 75) deckJembatan.add(new Rectangle(o[0], o[1] + 8, o[2], o[3] - 16));
+ 	    }
++	    bridgeDecks.clear();
++	    bridgeDecks.addAll(deckJembatan);   // dipakai FishingManager: boleh mancing dari atas jembatan
+ 	    for (Rectangle r : WaterCollision.build(mapTileNum, loadedCols, loadedRows, gp.tileSize, deckJembatan)) {
+ 	        gp.objCol.add(r.x, r.y, r.width, r.height);
+ 	    }

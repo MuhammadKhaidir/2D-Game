@@ -119,8 +119,9 @@ public class GamePanel extends JPanel implements Runnable{
 	// hotbar: 5 slot akses cepat di bawah layar (tombol angka 1-5)
 	public UI.Hotbar hotbar;
 
-	// mancing: tekan F menghadap air (butuh Fishing Rod dari Armor Merchant)
+	// mancing: pegang Fishing Rod dari hotbar, lalu KLIK air (butuh Fishing Rod dari Armor Merchant)
 	public FishingManager fishing;
+	public int mouseX, mouseY;   // posisi mouse terakhir di layar (diupdate tiap gerak / drag), dipakai bidikan mancing
 
 	// minimap di pojok kanan atas (cuma tampil di dunia luar)
 	public UI.MiniMap miniMap;
@@ -355,6 +356,11 @@ public class GamePanel extends JPanel implements Runnable{
                     return;
                 }
  
+                // ── MANCING ── (pancingan lagi dipegang: klik = lempar / tarik, bukan nonjok)
+                if (fishing != null && fishing.handleClick(e)) {
+                    return;
+                }
+
                 // ── PUNCH ──
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     if (player.isNotPunching()) {
@@ -377,11 +383,15 @@ public class GamePanel extends JPanel implements Runnable{
 		addMouseMotionListener(new MouseAdapter() {
 		    @Override
 		    public void mouseMoved(MouseEvent e) {
+		        GamePanel.this.mouseX = e.getX();
+		        GamePanel.this.mouseY = e.getY();
 		        GamePanel.this.mouseMoved(e);
 		    }
 
 		    @Override
 		    public void mouseDragged(MouseEvent e) {
+		        GamePanel.this.mouseX = e.getX();
+		        GamePanel.this.mouseY = e.getY();
 		        // seret item dari backpack / antar slot hotbar
 		        if (hotbar != null) hotbar.handleMouseDragged(e);
 		    }
@@ -970,7 +980,6 @@ public class GamePanel extends JPanel implements Runnable{
 		    snow.update();
 		}
 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
-		if (fishing != null) fishing.handleKey(KeyH); // tombol F (mancing); selalu dikonsumsi biar gak nyangkut pas dialog / toko
 
 		// SkillV lagi jalan: dialog / inspect NPC / buka peti / pintu & keluar domain (E, ESC) dikunci biar skill gak ke-pause
 		if (isSkillVActive()) {

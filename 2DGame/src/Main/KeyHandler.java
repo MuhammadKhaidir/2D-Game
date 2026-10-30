@@ -14,8 +14,6 @@ public class KeyHandler implements KeyListener {
     public boolean shiftPressed = false;
     public boolean chatPressed = false;
     public boolean tPressed = false; // ◄ BARU: Ditambahkan untuk mendeteksi tombol T
-    public boolean fPressed = false; // tombol F = mancing (lempar / tarik pancingan). Dikonsumsi FishingManager.handleKey
-    private boolean fKeyDown = false; // nahan F cuma dihitung SEKALI (auto-repeat keyboard diabaikan)
     public boolean enterPressed = false;
     public boolean backspacePressed = false;
     public char typedChar;
@@ -81,10 +79,6 @@ public class KeyHandler implements KeyListener {
             tabPressed = true;
         }
         // skill player, human btw
-        if (code == KeyEvent.VK_F) {
-            if (!fKeyDown) fPressed = true;
-            fKeyDown = true;
-        }
         if (code == KeyEvent.VK_M) mPressed = true;
         if (code == KeyEvent.VK_Z) zPressed = true;
         if (code == KeyEvent.VK_X) xPressed = true;
@@ -145,7 +139,6 @@ public class KeyHandler implements KeyListener {
         int hbRel = hotbarIndexFor(code);
         if (hbRel != -1) hotbarKeyDown[hbRel] = false;
         if (code == KeyEvent.VK_F5) f5Pressed = false;
-        if (code == KeyEvent.VK_F) fKeyDown = false;
         if (code == KeyEvent.VK_M) mPressed = false;
         if (code == KeyEvent.VK_Z) zPressed = false;
         if (code == KeyEvent.VK_X) xPressed = false;
