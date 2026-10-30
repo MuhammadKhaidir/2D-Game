@@ -20,7 +20,8 @@ import Main.GamePanel;
  *    termasuk yang tadi malam dibunuh.
  *  - Kalau player jauh banget (> RELOCATE_DIST) pas malam, dia pindah lagi ke dekat player.
  *
- * Gambarnya dibuat lewat kode (lihat WolfSprite), jadi gak perlu file PNG.
+ * Sprite 4 arah (kanan, kiri, atas, bawah) dimuat dari PNG per-frame (lihat WolfSprite;
+ * dibuat lewat tools/generate_wolf.py). Arah hadap mengikuti arah jalan / arah ke player.
  *
  * Catatan penting: pas siang serigala berstatus ABSENT dan isDead = true, supaya semua kode lain
  * (serang player, skill, tabrakan, TileM) menganggapnya gak ada. Makanya GamePanel tetap harus
@@ -74,7 +75,7 @@ public class Wolf extends Entity {
     private final WolfSprite sprite;
     private final int drawW, drawH;
 
-    private boolean facingRight = true;
+    private int dir = WolfSprite.RIGHT;   // arah hadap: WolfSprite.RIGHT / LEFT / UP / DOWN
     private boolean moving = false;
     private int walkFrame = 0, walkTick = 0;
     private int idleFrame = 0, idleTick = 0;
@@ -266,7 +267,7 @@ public class Wolf extends Entity {
         accX = accY = 0;
         pauseTimer = rand.nextInt(60);
         wanderTimer = 0;
-        facingRight = rand.nextBoolean();
+        setDir(rand.nextInt(4));
     }
 
     /** Kejauhan dari player pas malam: pindah ke dekat player lagi (fade in ulang). */
@@ -319,7 +320,7 @@ public class Wolf extends Entity {
 
         if (step(wanderDX, wanderDY, WANDER_SPEED)) {
             moving = true;
-            if (Math.abs(wanderDX) > 0.2) facingRight = wanderDX > 0;
+            faceVector(wanderDX, wanderDY);
         } else {
             wanderTimer = 0;               // mentok: cari arah baru
         }
@@ -402,9 +403,30 @@ public class Wolf extends Entity {
     }
 
     private void faceTowardPlayer() {
-        int px = gp.player.x + gp.player.solidArea.x + gp.player.solidArea.width / 2;
-        int diff = px - centerX();
-        if (Math.abs(diff) > 8) facingRight = diff > 0;   // zona mati 8px biar gak kedip-kedip kanan/kiri
+        int px = gp.player.x + gp.player.solidArea.x + gp.player.solidArea.width  / 2;
+        int py = gp.player.y + gp.player.solidArea.y + gp.player.solidArea.height / 2;
+        int dx = px - centerX(), dy = py - centerY();
+        if (Math.abs(dx) + Math.abs(dy) > 8) faceVector(dx, dy);   // zona mati 8px biar gak kedip-kedip
+    }
+
+    private void setDir(int d) {
+        dir = d;
+        direction = WolfSprite.dirName(d);   // Entity.direction ikut disamakan
+    }
+
+    /**
+     * Pilih arah hadap (kanan/kiri/atas/bawah) dari sebuah vektor (gerak atau arah ke target).
+     * Sumbu yang sedang dipakai dipertahankan sampai sumbu lainnya jelas lebih dominan (1,5x),
+     * supaya serigala gak kedip-kedip atas<->kanan pas arahnya nyaris diagonal.
+     */
+    private void faceVector(double dx, double dy) {
+        double ax = Math.abs(dx), ay = Math.abs(dy);
+        if (ax + ay < 1e-6) return;
+        boolean horizontal = (dir == WolfSprite.RIGHT || dir == WolfSprite.LEFT);
+        boolean switchAxis = horizontal ? ay > ax * 1.5 : ax > ay * 1.5;
+        boolean useHorizontal = switchAxis ? !horizontal : horizontal;
+        if (useHorizontal) setDir(dx >= 0 ? WolfSprite.RIGHT : WolfSprite.LEFT);
+        else               setDir(dy >= 0 ? WolfSprite.DOWN  : WolfSprite.UP);
     }
 
     // ───────────────────────── Serang ─────────────────────────
@@ -489,15 +511,15 @@ public class Wolf extends Entity {
     }
 
     private BufferedImage currentFrame() {
-        int d = facingRight ? 0 : 1;
+        int d = dir;
         switch (state) {
             case DYING:  return sprite.dead[d];
             case ATTACK: return sprite.attack[d][Math.min(attackFrame, ATTACK_FRAMES - 1)];
             default:     break;
         }
         // (sengaja bukan ternary: compiler Eclipse pernah salah ngetik ternary bertipe referensi jadi Object -> VerifyError)
-        if (moving) return sprite.walk[d][walkFrame % 6];
-        return sprite.idle[d][idleFrame % 2];
+        if (moving) return sprite.walk[d][walkFrame % WolfSprite.WALK_FRAMES];
+        return sprite.idle[d][idleFrame % WolfSprite.IDLE_FRAMES];
     }
 
     private float alpha() {
