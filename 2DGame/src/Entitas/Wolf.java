@@ -72,6 +72,10 @@ public class Wolf extends Entity {
     private static final int ATTACK_FRAMES      = 5;
     private static final int BITE_FRAME         = 2;   // frame gigitan (mulut paling lebar)
 
+    // ── Ukuran ──
+    // 1.0 = ukuran lama (sprite 2x pas tileSize 48 = 124x68 px). Makin kecil angkanya, makin kecil serigalanya.
+    private static final double SIZE_FACTOR = 0.75;    // 0.75 -> sprite 1.5x = 93x51 px
+
     private final WolfSprite sprite;
     private final int drawW, drawH;
 
@@ -112,13 +116,14 @@ public class Wolf extends Entity {
         attackRange = ATTACK_RANGE;
         direction   = "right";
 
-        int scale = Math.max(1, gp.tileSize / 24);   // tileSize 48 -> sprite diperbesar 2x
+        double scale = Math.max(1, gp.tileSize / 24) * SIZE_FACTOR;   // tileSize 48 -> 2 * 0.75 = sprite 1.5x
         sprite = WolfSprite.get(scale);
         drawW  = sprite.width;
         drawH  = sprite.height;
 
         // hitbox simetris di tengah badan (kanan/kiri sama aja), setinggi kaki
-        solidArea = new Rectangle(14 * scale, 20 * scale, 34 * scale, 10 * scale);
+        solidArea = new Rectangle((int) Math.round(14 * scale), (int) Math.round(20 * scale),
+                                  (int) Math.round(34 * scale), Math.max(1, (int) Math.round(10 * scale)));
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
 
@@ -548,10 +553,10 @@ public class Wolf extends Entity {
 
         // bayangan di bawah kaki
         if (state != WolfState.DYING) {
-            int sw = drawW * 11 / 20, sh = sprite.scale * 8;
+            int sw = drawW * 11 / 20, sh = (int) Math.round(sprite.scale * 8);
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.30f * a));
             g2.setColor(Color.BLACK);
-            g2.fillOval(sx + (drawW - sw) / 2, sy + 30 * sprite.scale - sh / 2, sw, sh);
+            g2.fillOval(sx + (drawW - sw) / 2, sy + (int) Math.round(30 * sprite.scale) - sh / 2, sw, sh);
         }
 
         BufferedImage img = currentFrame();

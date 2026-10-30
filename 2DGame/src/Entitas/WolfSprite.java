@@ -30,8 +30,8 @@ public final class WolfSprite {
     // Jumlah frame tiap animasi (harus sama dengan tools/generate_wolf.py)
     public static final int IDLE_FRAMES = 2, WALK_FRAMES = 6, ATTACK_FRAMES = 5;
 
-    public final int scale;
-    public final int width, height;   // ukuran akhir (BASE * scale)
+    public final double scale;        // boleh pecahan (mis. 1.5)
+    public final int width, height;   // ukuran akhir (BASE * scale, dibulatkan)
 
     public final BufferedImage[][] idle   = new BufferedImage[4][IDLE_FRAMES];
     public final BufferedImage[][] walk   = new BufferedImage[4][WALK_FRAMES];
@@ -41,7 +41,7 @@ public final class WolfSprite {
     private static WolfSprite instance;
 
     /** Satu set sprite dipakai bareng semua serigala. */
-    public static synchronized WolfSprite get(int scale) {
+    public static synchronized WolfSprite get(double scale) {
         if (instance == null || instance.scale != scale) instance = new WolfSprite(scale);
         return instance;
     }
@@ -51,10 +51,10 @@ public final class WolfSprite {
         return DIR_NAMES[dir];
     }
 
-    private WolfSprite(int scale) {
-        this.scale = Math.max(1, scale);
-        this.width  = BASE_W * this.scale;
-        this.height = BASE_H * this.scale;
+    private WolfSprite(double scale) {
+        this.scale = Math.max(0.25, scale);
+        this.width  = (int) Math.round(BASE_W * this.scale);
+        this.height = (int) Math.round(BASE_H * this.scale);
 
         for (int d = 0; d < 4; d++) {
             for (int f = 0; f < IDLE_FRAMES;   f++) idle[d][f]   = load("idle",   d, f + 1);

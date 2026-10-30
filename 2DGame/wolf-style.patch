@@ -1,0 +1,3175 @@
+diff --git a/2DGame/src/Aset/wolf_attack_down_1.png b/2DGame/src/Aset/wolf_attack_down_1.png
+index 5ee131e6ad23da29740b6f332fc23871cfe39232..f9cfeeb6682271d3e75caebefa041a104e64bc3f 100644
+GIT binary patch
+delta 642
+zcmV-|0)73Y1&#%f7k@Yi1^@s6rI<@u00072Nkl<ZcwX(9%PT}t9LGHu{sCPzQ5Nio
+z7_#svHL<W{!=K=hvLH*bQ1aN>l42oQn5LA+N@F5+>`0lEwS`1}^;w+L+?f3C#{GRZ
+zXU^R7J9FoL&+l>1DJd}w!!QiPFbu;m48t&@rBr+R)@1kR_kWy0P$N?x9qtzO8-qh5
+zVxP-ii2Y0cp(y*`Quf<{|BZ^M{!l|>lT4jYK8u1&i_6ka^>-9h5T&t0@u)DxwHZkD
+zJ5#Q$uSlO5@bvf~{kCMMv?z_;&eo>(EjgIt+RV<)$dvdtpsWu{V;42CRa`ws;=|oN
+zDG}}bEF&%bFn|1U__*b9Wg^St_jk7ieLS5xcK!msO-uBT8uRhLLgfXM6Vvk1SCH=^
+z>^duhl~ZiZ{}ZuQT+PR+tzTbX<YAMq5B7JY-`UkyPz3C@w)f;ZN)y$YPn*~(9$6m0
+zxxN&U#;4|`C2IHewmIURoaP**H&z#%>mToL>i76fY=0G3^YQASPTso#rBM*Y6N!2m
+zg6|%sPo<AfV@EX4WiMo2?FufoimUmLU!(h=Xri{xx#Y(JA8Pok?77;##@ff#o?>}r
+zmH1+6U`U=Q6`Eh0{{*oBJ7R=(bdRl%t3`Fl=bs%>i+vwQaiV%unBsp09}I#TC!e$P
+zf`a~vfP1hV8g1W(*eb3T)p;M!qz~nxHn+4(%P#BK=&<y|@;DV7yR7WHGv4yJ5^7N$
+zrGbhJI5F|Zu`<H!?0sArHN}a()a*WCr=R}HU<L5KMRjG=qB?|~q=0`;PBtLFlh5rW
+c#V}O(0^!^GLQoFoRsaA107*qoM6N<$g7&*hng9R*
+
+delta 665
+zcmV;K0%rY=1*8R#7k?rM1^@s62i0n%0007ONkl<ZcwX(9&nrYx6vrR=6DCTsky3s{
+z7G&uUn4+0vBe7MoA^rejBQ;hcDM?e*`~lXpBTOmTS>b=6@0c^4cjmr#r<rr!g7>MZ
+zdH3Dh+|NDt_XI&oN=nKfq$5eEOn2XR-0yvTyeC#4)gSVS4S$bM2LppcPWQLhm!R@c
+z_QpZ0an!^ioy{*tN<|4v&;W6HOT}{)`A%;WHwhwvN;NA2L3|{TcBKO?X`mKyg1S4R
+z9~V86i|hLIjv7>}o12L928bKeKB&<&qs-~@RiG6Rbx0F@2t>^Tt~|2K^U1T_=$nY6
+zQk92tT^_Qhi+^|3c38b~H|6I|f9?HjJp*QW5|oo?sd)a~j=YIDMLau~4=T@34MH1h
+zD<S*C!dbA&gaOI|G+;Y|QK-%8E=sq>V0dIS^h!ztnT9ebYl(??t*ck-&E;Lv1if=f
+z$L$eX#YCK_FGr5ZyWr9&+w7*N6->nem-j*4+b68C#DAHKb9v6p)MWJ|DI6VylCUiD
+zrBMr$S>1&cIzGAdN?VecIF>9xn-Xe>we`(vI-V(y3o6Ig_I5~2oRE>1&v9r;1G6z6
+zby@@WkKt39d?t95HKk3(IdT&-F&4gz;LkiSWJy?i_h#1B=|J&&_y}K6&{)Q%g?|UM
+z#dV$SHGeS?hjdTx@1a8yHG#==QC@w&ZXzy0_jN^5Mir+xp4XB@#7UZPjaM2PGOrct
+z;_?!L&(OZDD8H)8bobWF;=A_oR9#%MwY?Kc%H`&RrG;#0%%ZU_u1gJN_xE<K0<JGk
+zw=Wts=J)K{%bEHutHkvuL);kWXv?PjXMO-aRuW0DGQU*>00000NkvXXu0mjfu=hVC
+
+diff --git a/2DGame/src/Aset/wolf_attack_down_2.png b/2DGame/src/Aset/wolf_attack_down_2.png
+index 58e60d9df126394a31c433a5072cb3e8e4f23a9e..17e9ef45683435e0ae76f99c95db012a3854423e 100644
+GIT binary patch
+delta 754
+zcmV<O0uB9$1^oq(7k@Yi1^@s6rI<@u0008SNkl<ZcwX(A&r1|x7{@L84+Pm@QRq;&
+z!Y~sLnjkE8knj=+UAvVMc+fhU9)z&Ebv1%IdT?0?G!G#rMcwKk7z+*yo;ySs^T-Ew
+z9%eC|XI|Il`M|LI?#{gLy!(BhAMZ2U(cw7G|IE2ile;~B_kS=R>++SWGUW2o<6vW_
+zaX!?<+l>pMZ)mJC%8;@GPD^=LJa4e=cA>C}2cP)Jtv)$mdgke2e1u*J!6)7>1oP@Y
+zzJHTBuW#(gE8hM2i)W|uTe#w(sn*`hkWsWBdT7BF&x@{7k9h1>%9ctOWoXW8M0-JU
+zcvn0t?7nukw|}Ioa(7Rn%c0?lw6X1`oIPRd<?f>uQvbP^=;!nHrs+y>#j~Q7{`%#U
+zba}1!Mrzk6uhG}hwx+O(n@#-SpdrUu!EEAZ4YOSR&+lJ&U6Y*_w%ydPDXzFRm9cT@
+zvQ}M9jpx9wjkwKqM2SXp6wj@3#jTlo_(-~>*0%YfCV%ZWE3f302tb^lymwzdC!?F4
+zn~}CFZj6~%*Pz(q!qPw8vQ|2;j13BF<EA^FnCtyR635w%;kA#etLyXd1$phyUGc0?
+zLDAk?+qmA9>3uoALEE@>2Iq=rMccOa(x6uWb#-cTe9y`t{(A++2(vg&u8lW_t&i*S
+zc3^NM^?#Ph$yZ*#lkc_CdBt<LaVxNOlzK4zB$0zRKPipjSsF^eT%J$dinTW{eCB3m
+z<E=nJynMNQNlqo+uT?jst$jn@xQ$zZjpOA}wzIQKhR{z~K-bf`-g9+h%ywryI|C{(
+zcx!B!cwHI2DPxo4>k16lv1?mfeQS2FF@?49%xhj9rBPVNX+SwmU;jXAoTne+d=%}=
+zKA&8k6?0Nt@smQX4R<Cc<t?Ar>$}pPolF0(i~gqsaUQtdI%hAe;%1%_?~Kh-V{7Hj
+kHQKvFUbVNvD()1GzdB$kSmaCH@Bjb+07*qoM6N<$g0&ot5&!@I
+
+delta 636
+zcmV-?0)zei1&9TZ7k?rM1^@s62i0n%0006{Nkl<ZcwX(8F-yZh6vs~yKY)}9MRbs&
+zPz6U97jbc^C@pRx>geKB^aCh$5uu}qxQG-i7R1F5(6OKeLEN0wPvBDdM_+ikUXp6x
+z1;qP7;JD_R`@Q#axkM?4!{Kl^9DkL*BqyFqkF=w%_x}2l*nfOPFBB)1o0(PP*-4}O
+z^V6ehH5;*ckP42NIHdE%^-!rWVI2e@>fCzu%p1~c0K~+BNj^*j{lFv{Cl3&SUgY~@
+zYwHJKBA5_mr5gbg2nGd)B<Vk;5EZ8qqyR(#xo*n8*UW}7AQeFlN*)Ut!Lt>%4w%lN
+ztVgXMzePOblz(-;LPPfLYScTzpx?s+BaPLJ=a-AB^>FXadGli4pZm`CM!@5!avJy@
+zU~IismG<?ql5xMpYgLt-nhs1}mj-$t#zaX=-1k<*vA9vGb9s|ALBDZnTKxEWA%zuj
+zf+lXtyoscwfmLz9<>R384%^gVm6s^<M8vtg*B%>Ew|@&uYOs9b9cZIZuM!iueR|og
+zaja)t7pi3E)Z*Q>-;Xx>^Z@BdN?XmiY4?W5)=h50yYNS8%R2z|>Cgs7TH2~Ohd<IP
+z$A=w)ypNv?VH?uG$_56|yZP5vH2AuT%mX~acpK1$NBX5i$BH<lhco8wDT(Un{o44p
+z)S^aM5p~x=`I<7RXBGQ&ey&Z##q~EcUcQ7Wdvt41fKus<e?Ho+W<xaV;^I1`-Mv6p
+zp|GOXR`US~NS|NUJI0m|_N^sdT>N{V9{Dx3TllN3^gS;6&CP`A%WG7rbEIV*|Cvv9
+W4=Vk<T2!O}0000<MNUMnLSTZCIz9UU
+
+diff --git a/2DGame/src/Aset/wolf_attack_down_3.png b/2DGame/src/Aset/wolf_attack_down_3.png
+index 7e17989fef99b2b7e8994b74480a6d1f4f343dd2..d91d47ce0c1997cb964c08ae17890be8b39cfb7a 100644
+GIT binary patch
+delta 754
+zcmV<O0uBA01^oq(7k@Yi1^@s6rI<@u0008SNkl<ZcwX(A&r1|x7{@L84+Pm@QRq;&
+z!Y~sLnjkE8knj=+UAvVMc+fhU9)z&Ebv1%IdT?0?G!G#rMcwKk7z+*yo;ySs^T-Ew
+z9%eC|XI|Il`M|LI?#{gLy!(BhAMZ2U(cu(}bD^etd;IQUJb%{ZD_3R6<)z2L#!lmW
+zsEM~57ee3ASY?zUWd)p;@~(K^VB76NVHFQP@sV47a=`S=)5G`(y%K^?yj=+9)qi~d
+zCUaij*pXMf`|}siPUW|7#Y0oAy_X@QXg~DOf-9aEU8NrJ*sYW;l`hKAoY#o<g5>b7
+zcvjeb?QCyJSAXU1o<x^J!xd>`+f6xp!q&^(M=PZMb1%`)=j~0?mEekJMJxUF%O~mb
+zTJMe2u2Ej2ucK{EVHG!<_`yL#j<bT<#LpULx%!{qzwo*yJ1uOxsb5oEace4L<I-iV
+zx|$l#fn6JMo9l=Yjp!(zTjPpbGxhM1bV;pk^FvMAZ+})^$tw|nI6ryszI;wbH#;{Y
+zZCBhFGq0{evBia@f4XI@bY2-76xPN~cRVrI`-dcsvm3)}A6Hk`=iv+T+Mm1PS)qcW
+zy|uP+y(`oEa(sifaqA4u70-&cZSAE&uK?=m)a3Y{l|lUX3XBnEahzNmZwy->*X8ZN
+z;7IB%lYf)1ynZL&Yo+sw=WgRxVCyLLVERcS2XB5-8pE?RlzzE9pSTrkZ(jJ!&CJGI
+zfr5DXa`}>+O1xjIZb)1EhP-hbw*ni-%cE>(XO|42pRj<gr*pmM>c*Ju&UkhPRABJd
+z*f8<BGI~?SCdbzm7_MX2wzm4#>|SFEYvY-{I%`U!u#VG!a+<#Wfz&upKg9Vc+LwJk
+zxjZZ8q`2ZIg<Ko%OiapKKCjnzr9C^B{$CgUPYL2YaJ_ZTURcG=JSE;4o2ACq%A0Gn
+kcZa-cZ-rIdah(5~zp73tSfvF=^Z)<=07*qoM6N<$f<-ro^#A|>
+
+delta 658
+zcmV;D0&V^M1)T+u7k?rM1^@s62i0n%0007HNkl<ZcwX(8K`TU26vrR=1QIogg_Ih~
+z(gs;rSQydBPLidKmG}U}#%9)<>@-DYZD(Vtm{OC4vO?@xjQ+1V(|Pxu%j2ChrQWYz
+zjXU?fxxahPJ@-CAkdcv*k&*H5>1dZhPj7!C>2JM0KZ)bw&wudsNs6lYcXIjhiEvCq
+z!z1F@9_sh4_S((0*r%|()@rX-%BkeL#9#OWkmdv9K*}df(D&%;dyXcZS`S0&Aqp-&
+zX|(ew^9hjJwNVoXBu^8NB+?RyK9`p!G%aeWPEgUQR>}=p*FL!<SV#kPae(#CrTO4}
+z>sRVynewWs&VQrMD>GzY&IZEE2Yt^c##a#2R&=1coe>oA!s2pJySt6KZf&kd+Kx)c
+zu|E0Hv7mZh3AZ+651#}Lag&G>7&rttt~7AlNE&=sC(>XNad(|l<RxhiBG0AW>JE?r
+zX-{pyG~$$=QsgCEX%{VNb8*1se*zQ4@8M`l1C#9xG=C2>;W3t{?9gC$P#T_$NNv`y
+zf``Yqm^5u?+R|-_I6w+h<Xve%ZRo>`A%rcYO~vU=4O<UwY0|b8TgT1q&+5cRn4~(S
+z`*QxniiA5U&ixIIO3pE@>I6?;tY@$=J0D&EZ4_a5-?ySI;{5c6^*ncZ(elA(zV4-y
+zo&{|Y2Y*zd4?o|-zdyD&!V6HF<x7c+$r_j7XYHBksYn;BU(^NPONj;Q;_fS{M3O?)
+z)0=DEiqEy1Yt;g$F7C3uvm0qD7MFt6l|n=UlXY@hjoo{&zh@Eb5Or}x6VcHaF@L8|
+sk|n>v?Cp$@{^cx5B<+`x@i)Ez(X%d;w}hG=01E&B07*qoM6N<$f;nMFegFUf
+
+diff --git a/2DGame/src/Aset/wolf_attack_down_4.png b/2DGame/src/Aset/wolf_attack_down_4.png
+index 04cc92938078316b2fb31868abe31f71e139ae54..17e9ef45683435e0ae76f99c95db012a3854423e 100644
+GIT binary patch
+delta 754
+zcmV<O0uB9>1^oq(7k@Yi1^@s6rI<@u0008SNkl<ZcwX(A&r1|x7{@L84+Pm@QRq;&
+z!Y~sLnjkE8knj=+UAvVMc+fhU9)z&Ebv1%IdT?0?G!G#rMcwKk7z+*yo;ySs^T-Ew
+z9%eC|XI|Il`M|LI?#{gLy!(BhAMZ2U(cw7G|IE2ile;~B_kS=R>++SWGUW2o<6vW_
+zaX!?<+l>pMZ)mJC%8;@GPD^=LJa4e=cA>C}2cP)Jtv)$mdgke2e1u*J!6)7>1oP@Y
+zzJHTBuW#(gE8hM2i)W|uTe#w(sn*`hkWsWBdT7BF&x@{7k9h1>%9ctOWoXW8M0-JU
+zcvn0t?7nukw|}Ioa(7Rn%c0?lw6X1`oIPRd<?f>uQvbP^=;!nHrs+y>#j~Q7{`%#U
+zba}1!Mrzk6uhG}hwx+O(n@#-SpdrUu!EEAZ4YOSR&+lJ&U6Y*_w%ydPDXzFRm9cT@
+zvQ}M9jpx9wjkwKqM2SXp6wj@3#jTlo_(-~>*0%YfCV%ZWE3f302tb^lymwzdC!?F4
+zn~}CFZj6~%*Pz(q!qPw8vQ|2;j13BF<EA^FnCtyR635w%;kA#etLyXd1$phyUGc0?
+zLDAk?+qmA9>3uoALEE@>2Iq=rMccOa(x6uWb#-cTe9y`t{(A++2(vg&u8lW_t&i*S
+zc3^NM^?#Ph$yZ*#lkc_CdBt<LaVxNOlzK4zB$0zRKPipjSsF^eT%J$dinTW{eCB3m
+z<E=nJynMNQNlqo+uT?jst$jn@xQ$zZjpOA}wzIQKhR{z~K-bf`-g9+h%ywryI|C{(
+zcx!B!cwHI2DPxo4>k16lv1?mfeQS2FF@?49%xhj9rBPVNX+SwmU;jXAoTne+d=%}=
+zKA&8k6?0Nt@smQX4R<Cc<t?Ar>$}pPolF0(i~gqsaUQtdI%hAe;%1%_?~Kh-V{7Hj
+kHQKvFUbVNvD()1GzdB$kSmaCH@Bjb+07*qoM6N<$g4KeJ9RL6T
+
+delta 648
+zcmV;30(brW1(OAk7k?rM1^@s62i0n%00077Nkl<ZcwX(8F-sgl6vs#L6UcFbh!%1n
+z7{M}4A}K6Vco&0`P9#{`q>|(VB$y_RrO1&k93;83)Gp1H2YMigMIe<C?X^(;tM7RG
+zcJ?yKzIPCqA1oYmvv>2GH}l@?Iv0sVB9Tbse`RP;122^)Zhu4n>*D;E`MAvg06=<n
+z{&A?c>vr1a@~Yx_QRULpl^O2@oSmMe+9BVMqN_qp9MaX*^<1euVF@N6q;IQHFC;(Q
+zcUu1fL;!;c6@j3PGJv$NT^luVK=L#Jq0y5_dEbN<Wu)j2NNDf18uh*jEo3<Z3u&M(
+z?#tqQ@OgQ_*MG-y$*V4P0#WB#8M42>P9|3#^gW-Lyj4*&u>rNL&Y`+pU0!wF<D-o0
+zo6Xm$wof~InLe|R=3MJrqu0(SK||am;sgc`0gjXgvQ0``U=ne;&nfagX$~UKrG2GM
+z>r`hNaax|f$or7e5-n+9CQdb-%l`@5({vAIbqH%p1AmipCc#qgNllHqoywC`m(9~3
+z?(FAf(#8`aRfeMHavx^m^uTgopVu>`skXS3jHh|9pUT`+1*{G(go!w$$HucY8_8?t
+zd(%BXY&y5Sn~VXUu>wwB)KY;F_upzq-E5C@cuD(sbCrB`y|s~C0BsauS^lgriFhU(
+zi$lz_g@321E{G;=4c~#sf`LRF@N+jr`9)%uXLE^q#PeP=g*=V%KBe+_Z>;#-?X*?*
+zxw^Py>+QQ#)5^+AxAv-<lE7qr{?f|ayZzz4#VSuw7k_v%3x1>85B`Lwoz>0G>V)qF
+iq)#HWUnKHx+yORAEJ4;qAf5mK002ovPDHLkU;%>cB0cB;
+
+diff --git a/2DGame/src/Aset/wolf_attack_down_5.png b/2DGame/src/Aset/wolf_attack_down_5.png
+index 87bafe6a127ab42696ed38b3b6b056e7ee8fcc1b..ca06a75a9883b659f44aa1e68154ded2ed561368 100644
+GIT binary patch
+delta 690
+zcmV;j0!{ts1-%837k@Yi1^@s6rI<@u0007nNkl<ZcwX(AJxg3c6oxfwkv|ZwutZ1^
+zJ4MlrSeOXHqJ^b4`V;&>P|#S0C<wtMU0TC}79tid3jse0S=L3-PCG?#5v(mFL_Fas
+zX4s1^o|__bo@RFLoiq32opa{Q+^wlG48t%C!!QiPFbv~gQ-7;{!S-~|pNBr9s8PD!
+z+FY&b8UusFVqYp2#QwT`UX}e*dGXYS{~Ps5J<!|c7U{a2z7ho&J}*f<)Az2Tf+&q0
+ziYJ9Bu1$ZY&*}2(w=YsB23%g8OT8oAB_&E@mtFaxeM=6exHhwM)6ylr4Jhk_(%2<U
+zu!^hCk@#@W`+tmxwzr#?l6o9|JAB;cab*&l$InhrD*AXX|I2v<e4CQ!pETy<&xOnj
+zCdQ}ar>`K#A?`dQgOO8h&i@#}Dz4_^<kmMg*YdKNuQ%4SQt#^SttbL^D?iudJW3PQ
+z=}((r6;Es)KR!ATk;W$Hr6g+ie&}$-+ukWTN`GJe<bRz1eRr#Vj}HW^xSEf@ikf8I
+z4JeI*D4t5aktX==R&Gb?_%wDz^HQ-O{c2}$!78riKYotxgQBU|P0lGl7Wk0E9~Sr2
+z?lov1S9^<f4KKwPGyQ||M#<3p-25?!1=tZIw4-~lKCTwkp<KRlM6Gr`j^af1q%g&w
+z3qBY{jepL3&dv)8`Xd73c4)MH8-i6_EvmB~&*wJfrM9+pO35zk=*W=N<K}TPICfdt
+zcc;D0<4UMSb(97&GT@7e-;R+HXJ_kiWz-ZW`jWHz#C`qrM+PH+;}+GGQBxfFCj@(K
+zKy+qrjql{F<Jp-h>~D+7%<Q6+%S#`XANeoA&MV{Uij$e47`b{JM0<8&$>8k!xM8Sp
+Y59!VTb=!9VlmGw#07*qoM6N<$g1oU;@&Et;
+
+delta 733
+zcmV<30wVpr1?UBk7k?rM1^@s62i0n%00087Nkl<ZcwX(9%}N_l6vuCiPf&w`6*r|I
+z_<^O1iVGJ$K){mVt`yx0r5iu`04?pNwCGAGQYcaa7V-#Pxl(Bj2;xpRe!YV7A3gER
+znVZaHy#Ik>e-KD!&Q0#`o;&B>nK(zL)YE^N=O^;E%gV#7fq!{G=gZaC9ZTeG*9lZ{
+zaCorqI*}J?v|~aS7qZBUbP>?SpFACOkI&B{mv-`68u4hyq>K6G8ps@Xmm>LkZ9P%&
+za2&`Wv3bDy0h>Ya`=WIwaZOJ?DmA-<K?3#Kx;r~L3f@opR2N~0w41&-hZqb_5zxhv
+zNuMx|`zkkLi+_-(ino$Z1M=+Utgzx{VOQ-mDB>t=Lu2F3-$sGb>$wkKjLo{<#@@By
+zQKmXN)!5yN$)0WwxYNV0UTJ`Hh>>N@BC7<>XW0y;LCtu1y6PHxf1^IkZA>}0u^qjC
+zJ3kxi*XNaQZf*(Zrfvsoy6Wn`YH9t?4JG3OIzBW!5`XKQmG%t;+AyU7MO;sHE$@>S
+z<eZk40?63IQ^W=7xG(cQe9|na;y}x%A=BF~b$W#WA-1t}aV@Wzc=0@XSysM$iXF1j
+zp`cWCA2y4tYd;cUh(U!fg2KcBq-0YfnVo;L5S_D`wxFHt4eq*m0l{zgG`?z#>b>)4
+z-#r_>eSgp(pKZ2fkU|Ozg<RuyE!WaOf7Y=O#tRt^k!1~Ss>{CmdJlg6bVZQNBK!J1
+zke#01yECAOL%O$bz}w$e#mgQy?JxhCjB7A`eVMdb#m$F~WkSigMWh8^_T<vAu`CKH
+zZXnAOl`Ju#2%d5K5JJfE#6`!Hdit7e@xHOU6;|{*4=!$5Tz(fjRH?jluV%_I2@KZv
+zpY=rBk00KLN^pYU;y1UXx&9$d)CTnwCv;V(?%aUy@7{LBO%q!7Klhm{w$MS1yJYAM
+P00000NkvXXu0mjfvyyDh
+
+diff --git a/2DGame/src/Aset/wolf_attack_left_1.png b/2DGame/src/Aset/wolf_attack_left_1.png
+index bc8f5f7957cb1030bedadf1ecfdef755210beae9..d26c3455d9680fb88b86717423a157715226d171 100644
+GIT binary patch
+delta 645
+zcmV;00($+v29X7j7k@Yi1^@s6rI<@u00075Nkl<ZcwX(8ze_?<6vrzq=pP6JDQKvz
+zD9oCyAP^l~gP^ssA~3SKG76#}TWitK*pLW9=2R+)Z8ZdikOa;R5k;rI;5}sTM=HiW
+zpXK6xKJR;e?m73|+tefof*=TjAP9mW2!bF8f*{zZ+5WAK!GA({?fvsfQWtT0pzCzX
+z)H}5_#^cu?XZ?q)E_b&#^n=m$EovhxVVVI(=EeAb1F;Pz#yyr^L5$amU}%bBE}Ooj
+zAr6mDsP#{dn99CJ1pJfqm8HlAwfS7e=oUhZTgB1ZP9_Hihn1`flQ7-e*H72uu~Vx<
+zC=7XhG#-HISbsc0UHdz$)SktXm{Grur>$|@aRvj0#|Pz~^>|0=GfcxwFfh)I(Abz6
+z#o`lP=fCIf>ZX3*n4em1`uOmG`b(u}YTsU8Oudt~#{XQoaU(niclWlH83FT{F_;<i
+zbBpvn#4I;k$+X>7LR;ge;^8Nd)%}5x64L-RG>jtaVt*CjG0TB@4t8Ov&F$6$+8VbU
+z<2(!V?9GiM>jIanQ;}H7EC(})XMMY9Yus{-BO9Y8Mx_LEh(W|KKtJHuc~0P2-0BI7
+z5n|j3UVCpwmz7)G?jHJFDBM$v-4e1n;8~r|1Y~Ot)_=2=nGxC=H=Wf{OJkP><LAjN
+z{kf>1V1AlsbC~8?9aJk@n?;Np!A~vQoDQQ~6!N*u*M9nY|Be%x>6uyT<}(DCUFWSL
+z#%oPkHYW4f)$yzk!+g~!TgR*NsM;F0T)EYn4p%qL2%M;ZYOUWuj5iAL#FcWI3heH?
+fE1|7%K{q}CzG&#;PKArw00000NkvXXu0mjfk+(d5
+
+delta 820
+zcmV-41Izr81-=H57k?rM1^@s62i0n%00098Nkl<ZcwX(8ziSmi5XVpPPY4l$*oYuR
+zB^II}_^YrCSUgZr5Cb+wL<PZ0Yzzu2Vk!#>X+$0<ynjHnN|#`K5D*&?!5^)lmGZs#
+zea_9B-J89;D8~E1v6suc-TBVU&hB28wY0RftV1@e7fmChTYr9dw0!yWKG*z5gu^Hd
+z$kt<E3g~yTb7tt3w{KRmZQFMgp7*+Qx%iDK19*TD^gi#$C-&#}Y`xL(V2Orc0MWP~
+z-??jWkxib?Jy6W%v8~z2=vdZYTF8a=mlm?g<DI<4g=a9R*PSa(O{QfCEt(OQQO4L7
+zmD0|N7zBflAAjBz#$gKTC;%AMd)5u!!%;D;^wuESl9}sQa)%}fr{HTh?&N*-UoRIr
+zr8uS;kk4fLd5Jkkk8dG`A3MA^J96ltUwD~d4O7k%O=sw$W1-)-2=xQObc_`5int{h
+zRguI}EhM^0tg0;qOK3OiMzFX+^!IOHhf@0U)77~=^?&$ilNu_)sx70=D9Zo=T_}Td
+zoWeV&&sQ=^rn@Jty)bR%{Ki<i5Ne^CsPN}6UIy*CH~T2~KPv@8b)YG@G4b{n+`zzN
+zsDRTKuV#y{Rt7EZab21|8yzF|f6FntCU^>49ZEffln+H-N1evb-oHJtDU=z~F>tPY
+zNB$klEPqW()Juf}E#5N55>4dq%Q8h16R!K>8tush*Iu1z4`PPMs5M2%QFTNEmvDj<
+z<T8N><AMQbW1{)nsz{N#FGM*d(!_m8LDX^ZKr0Uz7&KP>fwi3BJr6ho>^ty#&mjA%
+zA~;z%;MyqHNbc@X>G$j|o_#G&oIEvnT(;K6j(@LpL?@?u3@sXtXaX7SCP|v(7A$;P
+z=;aIN-07T3%CZ%rws1}X3WWn?8pc+Ezeyv)DIU>>1MWU}7@ePWS^di6`?$EK5tmSW
+zS>dV!=6zl9jYV9Gj|s!)DUV}*EuBM0Oi)+6dmT>&sW|_nS9tB#%uTmwLI+{*p!>sS
+yMlFBi^Rgxp{}*s==&NECAWw>iXu7|a|B0Wf_TW)xr+!!f0000<MNUMnLSTZh28u!e
+
+diff --git a/2DGame/src/Aset/wolf_attack_left_2.png b/2DGame/src/Aset/wolf_attack_left_2.png
+index 2732c9beeb6f763d92cd665f01aa3f1cd67e8b4b..4266c086734d156c43af2200c354694bc67204c4 100644
+GIT binary patch
+delta 700
+zcmV;t0z>`G2FC@E7k@Yi1^@s6rI<@u0007xNkl<ZcwX(9%}bO~6o;p*MgM?|5V@;e
+zVyH<AQxJx6F-rr{t-DkL!J?%l6olojtrFDIg~Nc5&Pq&_+T~6O8U)uZM2t>6(0iK0
+z`!P0S-1BTM@16JFxpRN#>)y%b9LI4S$8j9TaU92S9LG6NE`Oz+>`vdn*{?DAe1{BO
+zTYWEc%*;NM{&&l7rT?gQkb3TBa=Dpbc9FP}b}=YjDX+><EC7y=kJ3)r5`tAcu^(z>
+z2ksXlN)-#k@;p);l=k%GN8-6#L9mL)`Z&?r0;S89^~fvj`A&)QJ$?O==zmdg#Wh-K
+zlm!%i{A5<Tw13ZEztJiEH*ekkJ*1Qq3#iq;%j3fHm(mu7@3tfs1gp5Y+ask1qR{lz
+zBT)ur0mV?Bij6$}aOSDJYFSEkvl20~&wHQhx_?)9??15+SKP|eC^j)ZDm%Zt@<Cc1
+z#Q`O)Jf9S6{{63C>Q2F#At|nS+tq90(`)68$fgYq_J7Fp$Bmu3oB8_9E9u|a-jY`P
+zxP{LDRz0B6F#}i!5Sy&5;fe#w7m6k6V&?$g!`H~m8tvna!uMI0r7eLhWYr77D*jik
+z{>Q0Gd|u~ooo~sr^pn3qTSit(&`Pt;>SjgONj9<S0Zp)qH(V!k3ZpjHic-<>x#rv9
+zfpqEdR)58}v^X#CH+tR=R`J;LcpR2e#0K(u++CdhTq~}hmlo&6x3elAtm2t{9N!+B
+zm=vQx5h^HdVS$QJS5nNQ6(?H|GpvdY%i7(prur?exCN&+Dj=(ZBhQ}qKPZ+(P%pe#
+zn3E;--y4!Psq(IP9PB*jaqiC{Yjn*DH$>d&r8QOF6;F!xIV)N>3mt=!{*&X1|L@@Q
+i)DLknCs@Uu(D(_=)*?wGdkMS%0000<MNUMnLSTYQ%w^F4
+
+delta 834
+zcmV-I1HJsm1<VGJ7k?rM1^@s62i0n%0009MNkl<ZcwX(8ziSjh6vro`e}EDa2oj4B
+z5TZc~Q4kYjA=t!N94IJ=f{iDlLcmI_1VMv%m4yTwkpm@Hiue=7Afl*&gOEazfHBw!
+zT1CEtFL^teAMa*oEzbQw*t@yQ+xfirW_E9tDk&)`X+t{N&3~!0YvWSLX>s9eM_Y+Q
+zdbDyp<2^UqRHKI~nXxOEE~qu3?4*J!A*o0VHfhk;zgaaN)K`TpOq`42^}x1WdW?=K
+z6X2>e!7ILh?+!g&h`1>V=;Sl+Un|I?CGow`U#R+~G+LV~ZR6q7H+nev8t0Yl?&($E
+z=D+9@L6$)K(SHPy5Nbu+Yb45txu$IlY}u-2K7CyNs8OHHFK)Ih1Q!?P^+`IrdNT8X
+zFhSxHe97TL5+I#xS0~|%m#^vbnG@h*B#bfJYafyX@q}`0m4<XwtA~V5NR~^d#1_{S
+z22^P}w|I@)gb|GJt+mjGlNVP~`TVHT#9GNoA^rQ;&wo`d{r!Hg9y@t=UoecT9b-U6
+z`SPO8QeU%KF-%#GsNy7EId(c`p3aJ-Zhy0#eTXU!UQNGs#+j(yc7EoPvyGc$sT0Ey
+zi-W#R8&s`-kE+hT$Q<b+)f_u0?g+Hyx$24K?^n-`tJ;mL*7v@|a<I=d>XS>p7AM55
+zKE7_f7JmkiH#zWVDl>%1axp%6J}$v0ZpIoJ9`dejLR@i(&3*o%{|~QGeR>aklgkU_
+zB=M!vAo^aNOS|Bc#d?+8jJV*HHDf`z6=@)@c!*F{_~ne20VXQ}_xw9|uUs;DtX73v
+zZgt?B=#yv9^>?J}_wbRU`um}cDCN&rj;P|8+<(aMkaM@B$(hpcJ~Y+#!Id8-Ca9!R
+zO0)~xXyv+XB3|RZ%KS}?7Ui5jb4uLK{~ED)2*{Ht5<qK@l2QcdnAoL|Oq|v$CE)ta
+zThWt}f(<WLUUUN!11dqw!+bn6{qnI6iKjE6%?(ghUB3VkPa2C5ZEi7e={xrtnGm=R
+z<2#X(M4CDYN8FC$Xp2XWxTGX)^`em`N<v|+&arJkc_dQDEBPPz15Mw=sej-H(EtDd
+M07*qoM6N<$f&-A4e*gdg
+
+diff --git a/2DGame/src/Aset/wolf_attack_left_3.png b/2DGame/src/Aset/wolf_attack_left_3.png
+index e49188db9ad5080be93a9c939413a8b16e006f53..8d34acdf3454a73cd69a29bee7f5b87983142225 100644
+GIT binary patch
+delta 724
+zcmV;_0xSKl2j2yd7k@Yi1^@s6rI<@u0007}Nkl<ZcwX(9&r4KM6vwAui~a!_A+lBO
+z48=@Zn1V2ji&+*#?xdY2fuYe-GYZ0T7w!~6mo6Lzg3MKzD7w>CBSM4VI>;pP$Y=2m
+zb9nEKqciZ%XLGst&Aac-{hnX<zEsL_9LI4S$8j9TaU92SoPTO^CGKQx9bNxV?@6Z{
+z<<{k;1({=bWJ1R0XTQk!L8%yf?#txrWj?H)xE}XqP`Z#`l3TF=I6ORvJ7rBstm2XV
+zP%GQ@C=*aBo9UH)U$$G?<D);3=dJ~bRXo(kiPjb<oiBV1{G=h>BvHP-qcafw>jhU_
+zqm@QkK;g01BY!faeg4+%CK<om+;VnHE+rOFD*cx3<l7I@W_lmgBo-uAadWl%a!*8|
+z7eg;a8I%PSLwPDT^7!EJ8~LeaDXZTL0VCVm{8`rh@3r2)5DRg|tvrol{m&lD%FoU%
+zN~@zdprn=Oqhig!yR%((3ib?9amBCQxG6rpoL>nnT7OS>yY#=Ute0KPPoF=^`1;xp
+zX|<1A==^Wh0~#GOfcF4mla)1GaX|S@HYY=@9N>HS8hKfxef+%eJj=4QC6I-zdchUf
+z{QY+<K0kA(RW1$u+LSh||7z@AU@C1Hm0E(X6WIOfY^3V}VwU!GS6oBorhQniD3ulC
+zRBV7!)PL@p{k@_LaUF}WD!%Edarymu_xp)e+}w{xt%UaXiV_P@9;Jw?<n^$#IDK6!
+zuKUwd<MP}}l~1hVvG>B9tUT?1F205mR8E|}f)!PP`LyCXYFoY!SlGteYNY?<id%&3
+z+Vp<B+FwvCiy(WvpB$A}?|j%Jtt%da=?^GPtxXHMR*xF}FAC}n&i0~Ofcv-wKE}xl
+zUrM0TJX&qEg@%36amB+FC(nlE<$3|%r>@YJnOMc0q;Ud~S3G9~hW)bu0000<MNUMn
+GLSTYV<ZyHV
+
+delta 933
+zcmV;W16usw1+E8>7k?rM1^@s62i0n%000AZNkl<ZcwX(8--}FP7{||Q{Q)FO;$qv{
+zTEvAY`5DTE87?Li5^`fC)M~HfN)(d0lC-&zW?Ob{l*C%m%7qP6TiafclpncMxEXz4
+z^Bm84&-4B`Kc;P&Pn~A=?40*~KhN_%?|IJ&g8!6`f5Cg+{C`Cam&e!7A0n<ZUL4Ye
+z(!q%L)Z|1^*j0+0JAd|cM1GblQdyu(_+%svk~HY*?g?sltJWq{i%T+G6yJMStWoFa
+zGtU5+GEMM|Z`-&k7KF~Ek*2{fShyIMHmG(;us%MfMC;>Ys&jnez&VwP>OkUp)X}9e
+zwb3>Xi3cMuV}GZuH7;eSDI9$I_&(AYuQLop2ZN&X2nbC@={o{tL$7Ix-lfZe`r9|*
+zziQQiNR5l)B;0@QlDd#L07!sGSd!&%aUX2K(Z}OLmj)4Wm#_{^F&}9Pm}xq4T<rl<
+zJFZL<N?Z~~lnC3@at+c)G$|BtjxG$OOcR}u{`up(`hS~Gp)W&f@d^&#-kfw?Er-g6
+z2bIRo6Q*xkI2|Nj+J7w7fD!%5)r-NE%FWnx%`@A`sGc13tuKT&*_im_C!<DbU5G={
+zgzdM4G)=Q$o6a`E4NTXPxxxJ{#n@-hy<v6uaI$<z9VR4ceT{If8F`_mdf)6hs=e~$
+z)1cD5E`Qec#Li-P4q}v9o1`iG{F?HKK2;_J|J!uEM4GHe#3i;r92N&*la{8w&+j=l
+zalNfg8`gW*HeubXL)rue_Ud(fhn5$nK;<C~jN)9{G>DbU<-IY1dd*U^ykEU7WI0Wy
+ziO54raqEu13A=D3_;uz;B!M&#bO>D2SGt|iwSO+?nPBzWKl=#YRu*AV+y<A%y^?l&
+znC`C3gFSoqh0VL}wYJCCJfuOGajfW5@4i{(rA~EeDG)E7JyPxBiOwYrn!jmK)?0z9
+zan!R*S_gweAoK-pWb}EWThVmk{RT$LHsntoKdSzR0Py-vavx5LtrUFm61UYA<S77`
+zuYX-P_Uk*%UEoO(2jsH^AgpoQYU@*%0Mne4w6-}^=cYhFzS(~G`YQ?H^SG~^gz0T3
+z29`C`lvUF^fwX;Oey@&!-MUkY#A9%9DD{9$n1Tz^$R~cw>H~IJSu-u&Md%H!9%$+>
+z37N%FA_sOCVzrp1bWHG#Q&uuh_31!b%^q73=r(QI%v^p0#3Lfk#&LYP00000NkvXX
+Hu0mjfx>C_S
+
+diff --git a/2DGame/src/Aset/wolf_attack_left_4.png b/2DGame/src/Aset/wolf_attack_left_4.png
+index a79906e4b8cc47749e235d50e6aa7987a7ef3deb..14a75b3d5988242f14bbc8796755cc501c4d30ce 100644
+GIT binary patch
+delta 723
+zcmV;^0xbQP2i^sc7k@Yi1^@s6rI<@u0007|Nkl<ZcwX(9ze`(D6vt!Lq5puSAk9{{
+zN{fxsAu0$V4jC(yX6>exf?%a%Y@mf=>*lHmam<hq5R93M4Hn&WvlI-1vx7**uY95J
+zn8SN7NloCM&vJP;@7~<p@A-9aA`!zd48t%C!!QiPFbu;m+J8w;*vX#96Mt{UM5B)|
+zv{=Yvj`@XU^lz@Oq5rIY5_<0Y<iUM@SvS!ab}>}CTq<BFEr6V#pM{;WBRH#gU_X?~
+zCdQK<rBcZ$JWr=4&|Y0$1fIJSIIFm?k26|pQ0Y>6+w;mmG=?ZY5+CzK|8Bt)mq?|l
+zETO_5mKM+@eSd!NaSZ)WhMwLINk?D-_4+9ubDzGTO-_w=Bo;WUxVqcZ=@}^WZtgvl
+zp|XUEQF&Hu%;U53AMvVYDb?Mw$H)$T{cPy|!_Qv)7Yi}PwLDG5GH+gC=hrv3(8?%I
+zsHB$XgQCrUe011w3Z5B)Vv6_nKZH*gOBK(iO-_v9d4H!;Yq*);zJEo3ZSMzK>EjwQ
+z|7-PtM8*ulbr8lTEo+$KgvuvVX>@Vt2z`&f#=I<%KHe()KFzYEB`^zV^@6jC->KFA
+zIaR^uW&W1=mU))_%-=*>MzfY6mF7CDyJf7C*+i=cB+e?{a-Gam7;AH>C@VUCF8TBO
+z1YL5xR)6uWu4M6ktLJ@Z756=l`=Ket*ucE*cNZr=mx{~h)s-xKyIJL(RXnth)2Cl&
+z-ohBD1S==rz7ke~S_Q@Vq~cVPX9&g)t#YG<?eA3s{U%df!|&84&*Sa>2Su|8R+hZs
+z`J7wCPZ)bSiPlefXB7_|)miguHG8|2CfdBkLQEd7)Z?d!?mLy+dwr|id<YZ)Z=kR7
+z28REbkY@8~yWw3Svx~MaXMH@h;>@>x`MKM1R&m2Mt^wfYDnQqG-pc?0002ovPDHLk
+FV1nV*ZN2~i
+
+delta 910
+zcmV;919AM`1(yeq7k?rM1^@s62i0n%000ACNkl<ZcwX(8xocEW6o+5Lzd%BSAX<cg
+z5EU&%QJf?qf=!~ufP#W3q;Z0nfM6A@0s$3qDhm-Ck%WlT2qLZsiiM&E20{u&1Q)at
+z6pNAHojH$l?>l#S%eaL3nm42GF5fxlE}1Cm(4oU}rmLND-G4o68ecxW@1kcr#zNn|
+zelZ90okAzWMKRF8=IznK%ct=ZNR!9{36GSIdYji~uO`M_>1`DVCejk6XEbu4ti(ya
+zuYWxzktstQj3o&#E!Nc-^mLIc<7O$FWrsizG$DY1)NamNKO;~sOle8f{5Lb}nZ!wO
+zb?@5f<A--zDSvZW4i^u>6`X}Puf1IiY}ly1Gd(q_mAkjprOgAv0MY<b{E29r(meA%
+z(4Hy+NS|rUtXRcK_{`aJs&6yOm|S;HuUN`?q<H{sn1SUW(;*d+5cdh2nWIU#CQ~%h
+z21ddm(jZ>rk}x&|!gXxer1O@enMt$qFs^MQq)G*Qhkv$4!-J*d8i(}HAKw!lf1Yoy
+z<>S|Pdy`hZI1^o{Uh%#ca@0sjnM7bAF5L~LrzRUDf9JvTM3-8rmyev#UI-E9oT?mC
+zUu^*hId-xJCM~Mek@5QvA6eVFGKq;I+a|U)6dX`Fd0K1BzlT&0A>GW#i{3G-LKE*>
+zw<@ak?|+Iai;uM@QQtqB5VVP#ndibGxWvuA%=H_>3VP}Gp3#IXf<Vmt`WA0?H1JSq
+zhnVdmum!3JX`rof%CsuOR@TA3ySJh`+qftjTQ)T>E;eYl&$_!qlEyMm4rCc*{i7!q
+zhuqTJuj&c-XB(K5Ei*t8rV0C?+u^pI%@c+9m4BtQO}tlDf=8e8;#J+7d9*!v=&-ut
+zhGa;(CKE+SCraG~2E-+XUuvY2Knet;vq0Hy2U^BmWr$4SZ)u*f;lWbl{H4oU#wW(d
+zRDfJd;9o$ALk1GQGBp1m-zUb$)LDrDK$=K%4*w0}<IE>*1MOM?Q1br^v3OocKIAvB
+zJb$2n*X9>WVd6HPJ-MfL^UxigmLA^c8z~1zU0(UZ#BDzS5^0wbEg?xByM12y!o(#g
+z+i9gat<xmYeO~$C3yce7``V3~_R8Gcyt7Rj=qNSEz%`bB_e)FLGES4qlkIkr>E~q$
+kX|pL>`cI6}VY%`f1CSQxtzH~E00000Ne4wvM6N<$f+)_gq5uE@
+
+diff --git a/2DGame/src/Aset/wolf_attack_left_5.png b/2DGame/src/Aset/wolf_attack_left_5.png
+index 6ca251fdc18162d8d2e78b644d3d74930ce5a70a..44c31ea73257512be9507fbf0805bd538c6ad6b3 100644
+GIT binary patch
+delta 703
+zcmV;w0zmzg2g(JI7k@Yi1^@s6rI<@u0007!Nkl<ZcwX(9&r4KM6vs7d(LWF)3<)i4
+zrx>QL%s?2%g-hGizfckw**Y}}q941qh6|T290r7JRyB%IJ6i-J0}g`g79xfRKHxog
+zd-u(}N5(y$&1LR=bKiUOJ?DGRz0=iY7=~dOhG7_nVHk#C<bO+dzSHN&?A*f1>Fl-7
+zRk_Jdy_V`-F6H-V7n{o$`|<qz-2EYgON+0hoqskb5fG}pDgM7eZo}P);kF*#6wjKe
+z>3foM+x0Ip_43D6X-ku%sod8`xil$5Pv&1p`~BNis#h?@L+QD4Rg@eYy6w0sN}_cC
+z%>fy&R@OqNK7W^6Bja*EK<P?#L%QC-c`ogGWs`^sx?i-4r_MJNXzn$fUv_w8Og^JD
+z%1o6fv?6j(BBRyXmvKE`@p_;1kKZXttCe0^{viE_hX>LgAN@}CF3~F9cIBoO(K-0`
+z-D@WzP@ae(G9EpAEZ32<T3MgcovsqmDxNAYPQlen<$q}>r-2$8MR8qL0iClNl-IBe
+zqc-of9*9=);2hU3tle8Hj_X39(CdikQ&vL+Y1i+RXcZ66aom`im`Vxd$U$-#=m$Nn
+zJwdy8yC*D3nBqQk?fr7;sdH(uctbuno4=%Gw}hL6c6A*IxV47$KW$}}M6`-0x;nKq
+zyDSv{w12rRKPnXzN^3VqY3=HewOfZ`iYI}Kqcl*H>wPy$gKym@LVUG)UYO!OIH!Ja
+ze@0G1*#Dv^>$-N`=3c|OUc-9LI*!ZJuU$WDOz|WRS`DYl+o{+7`W3EcHwW7F^(ib+
+z;iWx24aF4Ci!-?|InT+BuIzAiT^XLK)iZs>XgC!Q-ks&mwL;&yt3cK@I+)`Bn(D?^
+l=N}X3^lZ&Xw2B+C@du|-8rXaKL5ctX002ovPDHLkV1mEvT2=r6
+
+delta 907
+zcmV;619be#1(XMn7k?rM1^@s62i0n%000A9Nkl<ZcwX(8%WD%+6vnUOpCAe<ZbT5O
+z#R{Sz_*%FWx(Fy(kP5o6QnVnrDsGGx9~8SPD8-FP7DATY_*h6q#QF#n#Epoc)TN-S
+z$T#N1lhb?eIWu!(TJ#6QB$MRM`OfQ}iF1iqyKYl6(Ncef)qi>K;uDB#M=K{+l=xi2
+zA#nYM%^d<s^oREgd41SZatRLs(Ob4|>#2~utg-%pq74vr=Ui6PNb!|Osfd&4jo%hC
+z?V&oSzObAcpgH1_Sfr)EzMXqrV}7nlXRNjO_0y^pnPPROyr1djJk5vCjAr&W-o5Rx
+zo0=PHooe1!`+sz;UYk*MYtEs@Y617->#4%Yqn9q<@Cue_-JKkhmBwJj)gRV^uN(7o
+zQB5-Iq{F4-x%i-PpI|IR#>7%RCY}qo5Oa>qIt^7gMF0HpJzJ+Tbhf?TovXW?dwt!V
+zx_>x&kC1TM@~qpRmOVh*Mnh5eMx2Cm(RuJ0tQlAYtA7JI6!l<NfA;)k(3V?McY~i<
+zqLd2WNQu7fJF*hs=T70j-+A|ObiYFf_PdeMi|*B%h4vY*ahx9+j@k}`=&+<?9v}z@
+zA$tbZy;lFhh(kQ~-huuJH#Iq-+D4JacX>vHQoKl-0-qq<!?!)g8gO)SqsVh0N~Ss&
+z4UiGBtbYjY@0=nf1AF-qn-$c_ttGzs=*iP)ZTqqU;(h%95#o+PN%7zF_pyG$L3Hc2
+znWi@M5b6K}(B)g>W_AOL2KIDZ*GhpKuk{B>Ot@SNeMt(3?KFIW>iAgp9n(WftKPFS
+z(g%WRkb!74ylxS4ltr}U$idz1OKPeU<Vo&Pnt$#F`s2^ye2y;yFBw_;h%&IG`0V2s
+z`Gx!7^&i96*~wrHJp1q2_h(Y%Yxz=J0voI2W9|O~$wB6bYardV$b)0YPb|rz5V1#2
+zi)fjx98-;3kfO`hJv|EZXs4vKaN6so&<p2Io6|Wj^4YowrG-;tA)#;pPs7-D)Ju{G
+zCx7vXJ{)lK_H?v9%V7EE#zHdTypce>WqT<C1}OR8ei4!jr|8Fw`SSUr>KHf<-%Ax?
+zNmqoYB9t}g^kt)-Y#*0kJG%Fv-f{U_^@=IloYt7UWGzf^$cUmW>xg#~)6-c|e3Mtv
+hrk8T9|NM*m0_7SNZtl{%*Z=?k07*qoL<FuvV1jZq)&~Fp
+
+diff --git a/2DGame/src/Aset/wolf_attack_right_1.png b/2DGame/src/Aset/wolf_attack_right_1.png
+index 976a60fc12ea8fcba2add661345c9747fa4a06a3..5c831fcb4fdd6cda3cbf90f5b2018d0535fb8bac 100644
+GIT binary patch
+delta 683
+zcmV;c0#yC72DSx|7k@Yi1^@s6rI<@u0007gNkl<ZcwX(8J!=$E6o%KYV!<vDCLpHM
+zPEq0}SVRL0LoCwzE21JOMlHpN0g2kB4J@Pyk|N7O3f;<VLd0}QAw(831X5dwD8AtV
+z=io5zT~}G=Jk8yE_uM<fyyt7CRB{~0aU92S9LI4S$8j9Taeu-&mbdlB)XncdZO)y)
+zAk+D|N4b0Yf#dyflfB?%)}bhU`_^5V%sjl;i|hY4T=6`{uf;Nnq9Min>dI1I$GR(S
+zNs@gn)f;OXpU*zfcz@=Z#?{hNo|F6$gVC@&XrwYGdvZ!#9qp+{x#E_sR#Q*B{drG{
+zz+_z2&)uDEt$*Vgvrp%=-l<ZDhX>k6pYZb43(XsA>pGwFs4|WEivIuh^-EVCQCP)u
+zpBgcUGShb+>xrX0Ibe5ZTkD&x_bKN&b9PwsC>qjetHFs=<)bQ5f2;qq&g1$QFI|xx
+z9vMnu70>M4;2_ycc|~n;;kPjlWM!1Io{?1cwg2OXjenF_bcW;#AolSna!R)pR`J{z
+z&*E}rT*}eWSy0+yW0)*W?m$_Tw!EHyq9xDjfdngVJFYB+@<73XfkBy41#GP2Db06{
+z)RCe6Lt$e)H>+nswoj6yUK_=;>bvy_Vwt*3u3$eMob3#2iwh~w2*ni-g?enW`!7Ac
+zjwUv(9e?|6U4OG&)4p=~bn4dH?N6HXmKgeF$QADu^zLM9Am)i-6eos(9zLs{hf-L@
+zgX=i(b`?)fX^CEa;`)f@V^=3M65BQ_qcqBP`aT~@VHFRq<3JrIW>K1~YqK`?tkZMH
+z)zMJ#f^fw{;Y$eL+il&ovAfl3hF<EgQdq^i&Lrx<S5eEq%F>-uSjC;9@dHUd`lML~
+R&xHU0002ovPDHLkV1k7zS`q*N
+
+delta 808
+zcmV+@1K0ev1+oT^7k?rM1^@s62i0n%0008{Nkl<ZcwX(8y=xXh5XMgt6l_Hyh>ZwB
+zqG+WcDEbGypd`eAgrJZrA}T1c5i3DZ5tBwx1PhC|5K>wsDhLTF6k{MDHX?%J|DZgZ
+z%sMx>AG3RRMdW^P+`YVav-><dGxt#x9UUDV{~=pQ)2`in|9@!o{r>gcUbC4oA|Sdq
+zGEvg;^~+kZ|G>eDwz>ZER>WftFqQUgo4S<-7#uoeH!d2-92lg{4h@KfZScr(b4+_0
+zgZ|gVO2G;*i90)Df6}UR1GM64(xE+KLG0?sMKdOi&5hVIu&;3gY^qP+xnB~$`gtX4
+zAksbrCJ!NVuYdYhl<OGglCfm8j1BSN=Z|ldA#?hU6~6HHUGe(OvJI*cj`E0!(!hli
+zu1u3X2jhdgx38OhiUH0QC(#J(GeFk93s-ZLg!%~?5{r{#K;?EOyE||h;OqKzk%opu
+z^Kvk~A|V4Rw+-2`T}HGe8l(sZPsirX{?f}c*7N?0S$}i9eaB93`bY1V(g-vxz6#{B
+zuOxCHW9t|U@wJ3=Tn{>R&<Km2b9L&XcM7LZo%F7_^FH1bGHqRH9BPswQ2_sc__SuX
+zsVg_kG4>(RAe!n#>T1)ZF^QQ+_iP;b`{B$pr_Wq8t^u;q`HYE)P8N=PJ;yg`T8$KV
+zESDgkcz-#TMl?{TIvx%Xl;d+emZCZEtdWpuTG2_u0g2}ZphkI}))6gZNgy8QU<`gP
+z?&p*dTGTZzLCqueUFp8`e%|>^?SjfDmg*dtc{#7M+q4czHdep#9?ywAJHx#5V;9UN
+z$4>lv0P%s2ef049Hv$<uHkL$P<0)uFXn;@-iGOZ_TEgLS?A0_Er1Q1QlcmdHL`nk-
+zQA>DRP`y(#CBZNvHKl!I*Em3p(g%VzK>P=fpEN3%$X;<0-Bdlh!0I-+%ABkf4~eFl
+z*QDgeIl-*a#K|E`_<EWT6vM;kN@I?X_L3(`;_*OobNZHzhuGtzJ@d&qM_7#PRNw4m
+myCLcNwq9p-nvU1eQRXj?`M>wXhqAZ;0000<MNUMnLSTaHPKL7p
+
+diff --git a/2DGame/src/Aset/wolf_attack_right_2.png b/2DGame/src/Aset/wolf_attack_right_2.png
+index 3d1ce4a09a6c75c72e073038da57ba1919e03e39..89e9accfde00423ff0af749264583600e4f4525c 100644
+GIT binary patch
+delta 723
+zcmV;^0xbQ~2Hpjb7k@Yi1^@s6rI<@u0007|Nkl<ZcwX(9JxClu6vs_WiqwLfa70Lv
+zbO{DMQyBxop+yK535d4o{6Mf!EKO1bLO!~*ieO3$kAr~bs&I;Oc3K1?2Off*a773S
+zzT{Wz%Z<BpcM@gZuUTgHc6N6E^MCK{TuX~#7=~dOhG7_nVSgBgVHnNiN;3y*Che)t
+zU#H`BXCBC~YpW|V*P+MHq<^dURr-%A-|KpYtIeG3W#ZaJo$T@PQDkZ;ozJaG|Glmr
+z6tC+MO!14#?K^iPQ=`4Vw=4bkGkxOu?P9^p>%l7S^_I?)shJm|-16c_xeXr2%Y6^C
+zXWpI_K=h9zSbxR;TT~}XS1N}Qand(CBZ{X|9nvm*$;%Pt2eSh;MXh8G6M5bgZxo$p
+zHFy<>&XW_<HE&(o*_3|r_W0Div{Cxq`!~{N#k_j?TG}7pE+l%CU=>ds)rq=9PmRv6
+zv|V1*<no^*U3eOg>wM0*W1~;yx^nrO9M?Ct<TyJw6Mq?x6_Fk2m1hoCac5M=v%nkH
+z3TmaaGQjV+USFrd<E6hRw3lIV=~Lv=NB!N>M&Y5s{+gZ-R`Gv4&UdhWlPFYgW#tPV
+zcj3zC%#-N;^GCI295cnC_4*B|d_d=4zJm1c$g{p^Wpz!?3ZtUK`>y$M-la5{;=Z7`
+zuBdbrM}JY2&?^Ya2Y+@_M#i2;rb6971sA7eQi4_7`|FITk20>x45hRubz8#<ArAw2
+ze7jgkD(ab-;&D)`yA&pWYENs{avRb`%?zw0Rs^-SR=%{eDOtxgPEvwZJof8MEA6V_
+zpiw0>I(q;skJ|jn@Q9qUJ+~N~inCvh$Fzri_e`-Hh4~Nzs?`%2GM&C9N8kU@%;Rz1
+z^4+&SFYtU@Tf5wXuSlIG;xNTsic?$bJ*&%3u!<X@@f#k4C6HW?fyV#<002ovPDHLk
+FV1hBpYis}j
+
+delta 840
+zcmV-O1GoI%1=0qP7k?rM1^@s62i0n%0009SNkl<ZcwX(8&ubJh6vtB$6ue2Pu!tT?
+zp-=@cq9E>C5y8uf(ozdjM8VUFR6+10o`eM};(8Gj!GniA*!5D7Qhy;R9u&18lpYi*
+zSc?7u9+Yp|7n5uzd6}72Smp!EOw0BqpZ8vp=?GC!P*Bi?^nbvqw{Pq3klV`gH~HOe
+zp$F2JuU<EN9zSY|{((XBcg_1<CBM$Dpi3H5M^CXjBMsDXoX*P&DSr6CZWXV3Y*gJZ
+zE_^n|$y*+x_zdmZEAQ$0FA^cepFDf(OeD3to&c^qN%^jb1=;!cuUETjE$Mb5oRiCl
+zT;rGkF|=c+n1BEDF&GwW-UlWR5iA{&a@`}jdSWRFTT0u+_oc6Dh`cvfwX5s$9FU-p
+z6bF41wU^e)@{$bE+gDNvA+jby9Z@lrw<qYrJ{4Rbj=r2+OUsUfgoA5WF3M}#1Q=(t
+zEe~9+uTMBnC@v>{)&#UYl;}r_tNl5XN(*(8uUquJMSpINDLcUXG-fBkmZm{Dn;{oY
+zV(*U6$#7>L9#mnQ4{po*4I4MH+TSa#<5~t;ND}0TCjt5YE^Z6Bgwo1S)=nqN4_C^p
+zim&HXEw<V;vD*1dqH(jXhOmFW(YVJMUNJb`lJ_&yEm2!|DH;R&jqBo<AMALnR)_f0
+z=P!()zJE#kD&j(qrT;B{Z^xQBbhIr5k^qp1`mdk)RUBvKaHZTP?;=(@gq`5Y+109p
+z{_UG(m8sH4W?Q0ODThKzSgj679`{sz`}oNsZ9f!omO)Hw+pxt+9#>Q!XQ+MNVzO^u
+z%^A<wK9E2X<UHwRNo*$Z7($Pd*f&m$pA>uc{eL}+b!<sW5O(b(?0v{b+lvSekP7{G
+z<^$6B@5{%#59Yf7JrNk+_2C|6AeDHhfxv}xXN_Tyh>%#Q%XFgFIKin{T68(=B~!QV
+zs3gRQg@_g>>7=!p7Z``6^Asjn4={G6lcZ_gb0(^HjUG>bn~U#oVx=KP#Y<vj<hU``
+z#6eh9{v0#OweQLojCwrWPmEQia7?^da@*WGImu2C)#||Y?mLTg-th_w-24G+;lKg8
+SMVP?=0000<MNUMnLSTZY1eKHk
+
+diff --git a/2DGame/src/Aset/wolf_attack_right_3.png b/2DGame/src/Aset/wolf_attack_right_3.png
+index 7a411e03a7a255be0d5777c374dbdeb80dab6180..81fa5220a0dbbf83704189a7abf3a98e132677e3 100644
+GIT binary patch
+delta 758
+zcmV<S0tx-G2Z08V7k@Yi1^@s6rI<@u0008WNkl<ZcwX(9KWI}?6o*^e3eJT#La-vJ
+zn^LK%Q>_pP?I7ZyQ0yiS1+@qr6vwKAAZj;ps|Y%FXb1?_Op=y{cGE#r9yAoX2^pkR
+za?%gHhuq}7kkrUK-*UP4CHI||-}(1$y1ER*Fbu;m48t%C!+$Ug!)PVlt=y~~3?zp3
+zD*KM4F39%FOYg+y$;;PeeXa0W*0)PPB0bBYb{P9V(A()o?(A$kCZcpMyCmyphtH#U
+zq(?EuJDpRf&p0MB|N3Q9*3YHJB<9x(`B1SQTg5~DItR(@+#^x$?cyuBEiq0kk6p~v
+zH3ttM`}>Hk;(z}<tCOWmr7cIC<gp<~@kHXN%=4deGNSxMCS6n1QfjMi%$wq^Lf2Uh
+zu?l48yLax@G-0E-D(lqk+p`a4j?yn)K9e~f^W^bUnJ+w_ulq=`RXlQ5C+m_uHM+hs
+z_r;<noBQA_5!1xDuIKDKedC&ZF9^QL_;F=T#`_QEoPYiB2vgh#F$=y})JkbkhR^A_
+z4;`!I2$a)Y8Xs|%P=0b^T-KMfD>9nm8s38!-@JD&p;)t>RaA&^AHI5yop{Xd@3NE6
+zOmR(5-x2A2K-XX1g7oL8vr*B?>Yf}ABWu4tJ}kGm`MoG(qxs?99#gzR<T~#24Bb%y
+zv4)~_Vt?9$Aoy85Ntv3y<=l$Cfewv*d>+a5g~5~Zk(prA6tB?q+ZkCOWqh3(N@<1k
+zT!V+`dQH!+v-El)Uo)-D1l1E7jb-&l(4+g5^~EyE=<H7il}V4*%rkhDK7qjlbe(Rr
+zpDDgi(=qPr;NUL>WJ$+lCS6_kq5m1#D6UFhp>KPA;JrNTX{*J!hF?y{6xlZH`E|P>
+z=K#5fx3eo(r{t3FwAB>XkcH{U!k$+j6nG^4K)L)&Zk<e?kg?Ifr=~cdv_9$Z)!R-1
+oyZieG#3arUe0IlHaU*X00gF^ZuX{+poB#j-07*qoM6N<$f>J1j=>Px#
+
+delta 936
+zcmV;Z16TZk2C)Z_7k?rM1^@s62i0n%000AcNkl<ZcwX(8Pl!!%6vuxgl%1wglUPhs
+zQ-fHDk{KhEg*VYmOi4mkPePfjWF=Ebo{f;Quy_lGg+h!GjVw%fH8stGq)6;pJbmxH
+zbDjIU=lAE{-<`$eed=}Zd+*+J&-eVhzk8MXPnoCdZfRX!cYnp=$M-L(^X3`}0T6xW
+z+{J{32luL~y`wYvTlMyw7eC*YDM>Ua4IK2Uj66`q`BYvADd9V|tdH%Lb`Qk+(^Hd)
+z>l7^>Lh<QZyD{3Qtt}8C!AS{!Jo;7)B$Yc4fUkHGW!u6Q#MUOpXR4|ZbUhH{9BeIX
+zTM^q9owktbaep{Kbgf#gY9Bv1ZKCIGz<CHk>yRjEAHmft3-B4EUkl>Fx38a5F4%^!
+zIMum$9}pmyC?8D1IXnmyBz^e8A8`Kcsc0(&K)fxXjC?aMWk^SNOagYKc9Ng~x$N2k
+zV7wpe;(=89+~Fc|1=J>*w?i~LgbJ`OMEKN{%73;*gMSd=;O5}7XnXkX);J&4JJ+K9
+zMT?i1Gp?iGIxw(!)G4Yy!_XHguqVogRQdR6XPKLT_)Nk%QX7QeTR9L-xWw~gb$WZc
+z?JKvU(92f;?waNhVH3jXygw3s9&PJW?JJk2wuH6EC9-Cl97cvJSB4WA<KHh=Zi&~k
+z38r&!41Yf#!gb11FIA;ubM*7@pI`ZeKYuZnuxoM}_-2aWwtUW&u8s4MaT5@3eMphO
+zVgNnDF*)etcwXMUpR@*i=hJl7Ihln663+vGzU93eB3id4v2IQBQJLV^wTWLKTJ?aI
+zfxSK5QR(XoihYCoBP-GxT7tKaYeh!TLWR!N%YT01g&V4G`>y!-ktYx1{ahL6NTsiX
+zV{9KBk3dndT%gPee*G*}7A)KbvhDMl3dc}oym>XV;^J_jKreGs@P7{-NqjKbiCGn1
+z1SsFpvDc|UV7~YSl{5Y6XWaL}!b9GIxZphtp~yV8CyyOXi8f{3MDF26g0numn`mS&
+zdVi}Tap~%HQ81?=KDEw}$R(U!`)t_s@5x8Ux4(7Al~Q%;b8cTRcUu5)r!oCccYs_=
+zR%FE_nr<;!`;TJ_Z0M_P*oJSJgu5~w>Xb=*fB&Aue+TxKf&vRNmwHQUo9GA#$+8ah
+zyz7NTUNQ@J45vbY_}avH9T^s8K@gcr9U(}!uOc(uq)C$|MerB%h59ICJKE*|0000<
+KMNUMnLSTYnLd=H%
+
+diff --git a/2DGame/src/Aset/wolf_attack_right_4.png b/2DGame/src/Aset/wolf_attack_right_4.png
+index fc0dd479c97fe693e3790765c870d6d1275e1448..f58d44fcbbd0be71dfa56dabeea91445b18bd577 100644
+GIT binary patch
+delta 728
+zcmV;}0w?{Y2jc~h7k@Yi1^@s6rI<@u00082Nkl<ZcwX(9O-NKx6vwr6(OQrZ289;2
+zD-0c7nZdxIi-;BllG}EEAP5>Q{eXh#W7pOQYU#pZAjoDFlPI;Tg`f;L2=0VgL@1s3
+zf%h<X-h0Dn%00i$<=z?ZocI3c>t0)048t%C!!QiPFbu;m41dFDCaulf>@?_1^&I`(
+zw=Xj&+pn#D5SvHuK9u#1(pOpEuk0jxmP@B$>_wpMyc>CNu<w|N(uMr0tl#YINAX0D
+zVv3)4u3f+3n8^Is&mXdWD>Ec9zga5AiuGU>kM(xWlIht+QSSZ9TlraHoLC;ZovUjO
+z9zgc@5v=0>J%6i{r7M*^N1SwbkE3`h)g|-dmx7EaKa$JV6t$Ass~hvCc(c%TRzs`;
+z*?DSmrltwsx4y|bb$ep^smxLO)$12B$77b4p3D5r%Z0j+6s+QjvpQLq?5WZ9mANk#
+zHTl9PXNj05#&tbs-|<He<nPMmZ5cnWZ^$_RWY*aakAE=5eGs$Yi$$%J24(o3p8L?T
+zN{&D|&7I*sX9?v;M}}p6Ex#_KDX!rhyz=g&^AU<Q+F2!q8290;=h%tI{P|sV@|h{F
+zx!it5Iv>#Wms61b9(6V;T3Owb<6(4k)OVkKe6E!SQ@l}7Tz6DJtf44MXb*z&?!TLq
+zvGK=_Nq_VWbZ|Z;;}Wdm4WG`)`Y7Y;%uq_lq@HW=5M8h7$u~>IxZ>6%SjA)a>h$P7
+zWqq+sEb8n}2bIeX)U*MQ(l;=8fUeU~`)N#ZAKYH*H%$zZh4uY+QU#*$RS%RWmz>A}
+zb-g)Q#Uryi*;l{WsQc?&b|6Z`M4YJG(oyPD-chsVIoa>t{jpg42CKL?4u~mz{`F<y
+zvx1z1CswP6^3&<`RT<;{*VGihsNk6$9i8$B+#f`FX0VDIp>Yg{VKJU355f@u0000<
+KMNUMnLSTa1sC{|>
+
+delta 924
+zcmV;N17rN-1*Hd&7k?rM1^@s62i0n%000AQNkl<ZcwX(8ziSjh6vs#LPY4l$*hnA{
+z6|EG-ixC@}6D3CsXb=N7MnnUGRj>*KRK%+UC53Rp73wvDh(8e&3q=hGA%!A>B3cQG
+z#mRSbZ+$yEKi=%zspx%R*}Kc^%zWSbzM07?)ul_9f0<<_aeqC%tC~L1pFX}bJ{t?h
+zM&ERg?axN8V+>fX9Q2OYsLv&B+7$o__TYxiYX14-^iE^6I}j^;3Kth%t2O-t>7Ah9
+zH0pCnhFtwf9EAQb7DR*co(c~@vlS5USW+?**0W8bIi}wz`!+CX2x(lar=m=sDZm5;
+zf#4+&>wui_Q-7z=WadBr>ZLb`gKO7$MM=<wb0`Q@3M>0os}Jwr7B07F;c$Qt2=c+5
+zr1weBQyX#^!~+Td$5(#d8VAUzEAtXzK6oE`<|z==23aTcu`yRLGd-2;Ott`sgp+7J
+z0H%8HBz!zuuxYMTvbF%^tbX_Y19j`(({%nb(^Ez*h<`dCoFXk*6QtP6$mKA;&|;@x
+z4#=zrxs2<gO;*8*st+C`*ybF4jN_As)a0>~&bUGBrLj9nn~9oA=k@*D*W@?a4VFuz
+zAA_Db)8ge?Bq11=l!@Ao<l<Bg9Lan)p4_N~E!&cl9YGUDrmE*>)8F;)=c<>Dx=e!c
+ztjq4MAb$-Hl@eXSXJJ?c>j1|#X%Lbr!27a2YZE?j{l>4rE<9A#{%wli7vFqNg$G+5
+z(L&TXwh4xcmICK&FKx*L7K_^Kk1uH#5DmEan>%->e-9Q8NIVY!YLwS$jA*?t6C2kr
+z9g4^yC_h}gZfCR3#dCtKu0z(>?f&G^(#mQ&RezbF@{w3wFA0hJ2&!?>0melu`_2W=
+zcYFlHL!~B;pjT^GoNESn_QHHj4slr_t4r9lHM^Zi**CU7*Hjk@n?oe(nyyyxq{GOL
+ztbY<%AL95<f<T-&dN|`GdM^Oy*yhXoh_-qs;q{K%JbU3{A{gl9L*HFxg`m*i|7zhJ
+z5`XOy=7T>QUE|VsbTMF?(ybj!RK_8iUIyrdzKm>TBdJepg+&)fDTOmmqD>QoXb1_l
+zrK>%%E_rDwrI2umXz2uWARdPvIskQw!dCC;?NcKodo%MIA1ynxRs=o<K97%<+wzLJ
+yu<%Yo_3ru~J(j|jG}T*ZP5byAV|4jn_!S9rI2KO#c|b}40000<MNUMnLSTaHh_L+t
+
+diff --git a/2DGame/src/Aset/wolf_attack_right_5.png b/2DGame/src/Aset/wolf_attack_right_5.png
+index c24bff831e98fcf6b2dc15eece2e2628075dcfcd..1cfdb36c61a5b7f155c5a4e95135d0f63c092ef6 100644
+GIT binary patch
+delta 753
+zcmV<N0uKG02mA$)7k@Yi1^@s6rI<@u0008RNkl<ZcwX(9&r1|x7{|9?hlOr}j1YON
+zTT$319V}sCu!GnBihd9jSsf)KA*^m*g#|AW9$XfLY7b#+D0<UFu(IGFc<vBU_{ayE
+z2VeJ{9aoh1`CQ(aci#7%VZP6=ccxG<48t%C!!QiPFbu;mx_`?l-{tR)-ut^d_R{4m
+zGG%J=h4<X!$m!$wP)EVpb~i!khYudh(6Q%F+D$nTnBu++-Hv5w6!nSE&(F=CNMAR_
+zT_nktT&mU<q<u5-OxmYouce(Y%=#M3f%HcGVnG9?K^aF(iOV;;Vo|2Ji{(aL-gs-X
+zDT=^IT$aO)^?x<#$1)~fO-g@OrFM3<Wgd0HyZ3M9yteRN)@MDkOszU6*Z=(f)saO6
+ztGM^u!Us|2{-c-j#!;Rau(7@-{XZIuDI>aYv0u)ks83p*4bGe^?q!MU7rE|QkNaP}
+zc0<Ntky!~=@wSy4Y$wf>byQ}i_w{)oDx;jXjHI+B^M6-YmQrF-84@c1-^ZeeDV-9m
+z;@&>);(BRFl%t~4ptMH&Fj1P=fwCyA`7kvuT^7|dl3Q_Iak&&~2MYG|^vY1OfcAAP
+zrT(>+S~6?>5Uh`TM|BrO`y|<`wNc!a-?c^H%j9KZ1@o!kbY)nXnNC?oR!s4{kdJkA
+z|F5Q(TYuo2dK~k0UjOv5BJ+yH^QlK{wSLMuyTq(thD`BpL+wtq27DeLMsa)?sNr4t
+zJS)K}o;!~NyQ_F)RJwGnPM&t{>U3UiZ8l{cy&Kbc9q@7A-CD4U=g#9Ay=y{A^0dzH
+zT-VVYpXSTU>dKPT2`GEOcrSN1#SaU<u)yNC&uVfwcxzZ%YHe5LrIiMDVatvBzK<H0
+z{geh%JTLe#d3pHGfGkO6r7JVW(~qKAmFpB!JTK%={;BEOTKlfcSC5Kd6+g7f4fyk+
+j$@*ud+XSn)5gPvhqPj7+CeR~_00000NkvXXu0mjf-rRwN
+
+delta 915
+zcmV;E18n^K1)K+v7k?rM1^@s62i0n%000AHNkl<ZcwX(9ziSjh6vsyq6l_C;C^jMp
+z@n<0lg1-vO10^8_BuEZYC5Tbf*oc)7PzlCD;f{di6~dJk@dpSIL4$fAh>eJ##J}O>
+zJKo#O&dtnwyE_|lkPjSl+1q_H-}h^0H%j#oef_)Iv6j0zmVcqLf#}NcWvBQ&4(S=;
+z;QP0)$`%jNI|g=V7T;6C_w3!L#m8Vv3?pj^#N*R!Ea-Yiw2iU7^5^F!$$HjJ#HmhQ
+z^-A>(cK%(_BT~KyT@iOp>_X~U4w`T9@Nv~zUTV|GT}R^Iy<L=?+C?fYOwV#O8w;#>
+zi4zey)GgB2gny2iBe2gK+<!nHuRod7<L_TT*mZ$KxGmZ>u{|lohd}fy=Z97EdE<YC
+zJl`cv%bweY9B}W>HT@HpkzU~vFc~LG0w+8qnw$?O<2<PYv~XXvLr88bT$F&B=02O8
+zo!aQ4Qiraq>a7pSk{iz+>+f5)ZFffBDO`f9E@R*l&wmN`0r5WJNmr*7AzEKP>tp6f
+zlqK2+H{aFCap$Ete&*Ck=WoFc3`7GO?bHP1F!P)uP`#T`4wV(eef+e#o2%98s#+b_
+zV{3WI+vI}6U0vJWI1~}=i=>^}^K-Lm^2!bEPgmL>Ik<W&#JM_H0nxy_bEEq-ZVU9u
+z8c91+_J7}8H%BxnjY*Jg<KcW=e@u|x-0dtFag!{Y8$b(2q-fE={@Y$O;i_9R@;0zT
+zHO+|zNmrk_dq1&-O@Mtdgui_KCN-aL(WY=IrY&EyBH%ovGVa}!{>aeIc2^`kN%eE5
+zj|SHWN7x-Q)J@9*jm)fLIDpEMt80@a)nB}N&wsA9BVIp1Q1q$hsOfOg3L)7PnT^cO
+zN=b?nsVyrVlo+7YccnX?nDDS5fgG46)g{e~BZ;^~tO-Rw^jyr@g!3+rUeacdojA*_
+zRj0Wb@gkJ+A_5}vya%%}HzpvKXi!KvBFa6Q<^}0IJvEWK9FB;Q=7oiq1=Ty<Nk}jp
+z!GD#HltK|F%8ELAz=KCm6Tz`W1M$wy1-;XjG^RX2==9Wt_|0h+3JLc?8NfxT^Sl0s
+zfDg__UUH{87wxhZ9E(B`@9Q5>Lqiu*YZ)7<WD-qL$FA+>%<aS$?2e68N=fr|+tt^C
+p%+J^+uJ`77Q#_`v4L0cJAA*_qcCaUm*bD#w002ovPDHLkV1lHizf1rC
+
+diff --git a/2DGame/src/Aset/wolf_attack_up_1.png b/2DGame/src/Aset/wolf_attack_up_1.png
+index 5adaca9eb5023e54c17d6ac6781ed24c54e71b8c..6fea7fb61be7f6d8033a22759b7432b167562e7e 100644
+GIT binary patch
+delta 662
+zcmV;H0%`rZ1fd0x7k@Yi1^@s6rI<@u0007LNkl<ZcwX(9ze^lJ6vs`BMg9TVgP>i~
+zDUtJH<qr^!yW&cP5ZiPnVj&2rlYk&-nN|^!@`^hSEYwOgL`<h$MDRGc+CoI}$p^9z
+zH}1J_Ewb;^3^%-)x!v!+A2ZX{<v5PxIF92uj^jAaWAns%!GEE`=+)nI{@UB=Xbr|6
+z9_-6Bmlx+9jgQOIxQ725&(eCJ(XpaT9RxY~0zQ72m*2(7H+L#nu1t&F%U1(pcY5+i
+z+E(+nwZ;{<rc|5^O}VnVEWf*Zo`+(<;Ok-OM`_0GY&Tr-G)T?IK`W248f}+0ne}n=
+z9I5koT!J7crhm=mnU3n_|M7;*DsJxMDA%Z0<;@bc$?Mve>y1sZBZ^b8G0yY2F=mQW
+zd7(5!DIFE{QJj{T(P_<pADQ)WvxwOn^h-t7Zny6A?YQ9U)auM<y-Uli;)#76rC;>*
+zi>N4sZ%0*VL~{+}j*ota^7`SyzI;)&`j+%Z?egN{ihn0X=imDvpR;R=s^OW}8dv<G
+zw3@fIG`<c*XYI2nJu#ja)0Nfm%8b)k`8K%XNkRF1VML-YyR4*GEA5IWRYVh|wC-P6
+z{3=6#?(IseqdJva(tI6-`*>Oq#W&Wz{c{O@x=IC@7OuE8x>nB@Mr4U{X*{$PCoRA@
+zze!06^M9z$nHxmy!Zg~BFQiuWyE9YF6z9y1e9i4BN|LWN?7sBb95p-h)~eslPK$2H
+zY*aUUi`;@zThF|kk~d2}E|w~xN{#;6xlhtho~NIA$O3-mW`vpIz&W_i<0!he{zFWu
+w!P&>Zop~R6Bz*kK=cSOn6`A#MCu>{-+TZpF?GN4MUH||907*qoM6N<$f^0rsNB{r;
+
+delta 557
+zcmV+|0@D4V1-S%}7k?rM1^@s62i0n%00062Nkl<ZcwX(8!AiqG5QbCn5lRo@O$wDN
+zc=Ra>9*Q^d9XxpwPo8{-;!S!G@&Mk1dMjwLP`r5(-$D6PCJgH)*`)KwV)H>rNoKeC
+zcV>5HH;Nh>Olfy^zpHduwOuG%p@vn!#}9_*$z86zezcvmtAFypA#8^jtqMd4@pzPq
+z`TG25Y0qjqHnj-XxPwrqSWSyPvJ&nt?~8f*Xs_G*^*$btl89h^A9aqeGaD<M7D^fk
+z_x{0QwBPGSZ}Ua++V^|*`a%zLKou@4_T7D)iVXn+a&|gMOj+}sCLE$KuWv(i=5lj&
+zK@neTI*T91g?|GvI2jh&SU~Z(>+KN1E_whMUZ;AzieN$7vLb-y@&3_qqQNarP?%)l
+zR&i3~%%&6bd2XJ^b(s4qGJrvGFCWq#i=_2#&0ILpA&%UQD-@soDpMv4+8h^ep&%)P
+zYma_(U2g@&<5?kI73=;0MR*7dF=a3pjuJC(<rd0>FMnf;YA!sKf9LT~#N&T80JK%T
+z2nd!mhdYXtI-!O7^V8$9SW!7#&wXER$9wm=^ka>=a8y{R%G#Zs<Xe4tJkPtXJ^ESp
+zSM7X03v=O`GAp-_RomxbKF5*HX46S}cAm9(VXIk$jtuLQ7|QMpAT)90<RV8(KC<ks
+vMFVQ6uO>4zkBiq`@p<0!Enp09H*6w5SQ5~v@<$fk00000NkvXXu0mjfG^+#j
+
+diff --git a/2DGame/src/Aset/wolf_attack_up_2.png b/2DGame/src/Aset/wolf_attack_up_2.png
+index e4937d5b1335e1dd48f60c8fdc3fad6556443f94..19e9f6b48f5ddbb23acc949f58243fd679ff638a 100644
+GIT binary patch
+delta 680
+zcmV;Z0$2T_1hWN@7k@Yi1^@s6rI<@u0007dNkl<ZcwX(9yGtBV6o)mBBL6@bA;d0r
+z3Cg;$QUk)W7M2MFZS8!JLJ(4GARz3PwuV3~w{TgoFjhfBL_5<Z2rdiO79tVP@_}>k
+z>TKo=f^)uRn9DtPcIP+eb#GUf<2a7vIF92uj&t{PTmOWC;(zeJt84z++3x5W*zfP{
+z$};C?rybcR<w4Sk_l-wc{h{HJk}MrXJ@N(2&3=&k(%9>36&#;<C-YwPy_9)JfB(p}
+z)ofp_amB4Em&RgCR;nv<|M2mXSPXd8KPclUjotS5hAW;0nfW+q<xy6n=VeW9ecU`p
+z>O7v5DC&`^&41>xj_T&W@sivsZtmkK*QnRz%@VcA>)My=jZK+H6sKat&hxl2W{OjJ
+zp)`b)4n=(w=Ss}zwC2B!-1@j##C#g{N=0^Z(z@2SlY*~PtFxYUmzG<_Q~NkdKYQLQ
+zqM{JK9jefX<{IpNA0EW=`u^Uod{G<qEg27Wc}a1_(|@A#?`@FJ>DodyJnLHHivKUI
+zX1kWg*MaD)eHNwPj22{Sr5b-Sb{Z?+23I^SC|@WJN%W=5N{hA9u6SBSG$Ez+_`>2R
+zG5xvoL#{fiQ@N$h*CE`;vw|r8b#3*=N9f&ED!{C8#jVk`dZ9QZj~FkH#va8^3t;Cb
+zDH&lN)qmM@gHRWy(ewC1Hfnx$W{SDu<ZDhxQIdSEq5IN%bD^5u3Xke((dXNAUywA9
+zW4FBYSxhU{mG;g{?VH*D;3c_L-0UrK?oBr}HThQFEEQO(JR$e^I^#3*A7z{`f^pU%
+z@B1#R5oU@5Cm*_UL(#P_>oS$Di=CVIQ`51(L?Kki*R8v>-1@kaH!cAB9Q_1fI$mS|
+O0000<MNUMnLSTZE^J0+z
+
+delta 534
+zcmV+x0_pv;1)>Cy7k?rM1^@s62i0n%0005$Nkl<ZcwX(8y-EW?5XUd#BZ!rq1R_ze
+z^eGN3f}QvdR#swV<vRpBxgu~+VJT=Z5bUhPcToNd6UOmAcK2r11n&n&B$-|BKOZ}D
+zmt{RYJv|-R+1>k!SsuI2mn~nz7;y9X<idT@)wB<{qjfR=*MEm?AET~71W^{#m6*?u
+z_W_SAx3eaRaE^3BO0k@QwPz{aC2z~c>Z|?X=-2OMF?AVXb$_NczRn~~_3`0Rb}$-d
+zuZ!i6zX5$ee|b*gFSAqvba352luoQKaKian?#!*y-Ap({U)|jKYOUq=`qD&v(o`>J
+zMXMw7(@Cq127e|Im(lhSEa48Yh`MRSV+0el)+z(cB0fGoaT;WgMt`nD4l~s2=TDF7
+zb*|pWd74)ZCIC*6R~57#hotsHi@I>YQyje;moHWJT}q}7vl^#pg$^Xr9{cd|RtuAe
+z*QIzHb@d;+UlS(6eUM`4FieHIaEzEuCpQt2z7|hv>VLw0u}I$#{!BPdZwx1JfYp$)
+zb~TQHgih~}R;P)2#4%{#prRV)!g%dV!ElBfZbZ+=KG<&~1{jX)%Wcosp?yCVvss;P
+zNW5HJ39pNwv?tme7K({*0AYCZBEg%LDiNXfT~V*`O~EYU6m{u{rj)Hpf9(|S`LBEf
+Yf;i5Amk%(p<^TWy07*qoM6N<$g4n_Rc>n+a
+
+diff --git a/2DGame/src/Aset/wolf_attack_up_3.png b/2DGame/src/Aset/wolf_attack_up_3.png
+index d70a6c9ea10ad9d4dfe5233046d2a6a9e3fd0265..19e9f6b48f5ddbb23acc949f58243fd679ff638a 100644
+GIT binary patch
+delta 680
+zcmV;Z0$2UT1hWN@7k@Yi1^@s6rI<@u0007dNkl<ZcwX(9yGtBV6o)mBBL6@bA;d0r
+z3Cg;$QUk)W7M2MFZS8!JLJ(4GARz3PwuV3~w{TgoFjhfBL_5<Z2rdiO79tVP@_}>k
+z>TKo=f^)uRn9DtPcIP+eb#GUf<2a7vIF92uj&t{PTmOWC;(zeJt84z++3x5W*zfP{
+z$};C?rybcR<w4Sk_l-wc{h{HJk}MrXJ@N(2&3=&k(%9>36&#;<C-YwPy_9)JfB(p}
+z)ofp_amB4Em&RgCR;nv<|M2mXSPXd8KPclUjotS5hAW;0nfW+q<xy6n=VeW9ecU`p
+z>O7v5DC&`^&41>xj_T&W@sivsZtmkK*QnRz%@VcA>)My=jZK+H6sKat&hxl2W{OjJ
+zp)`b)4n=(w=Ss}zwC2B!-1@j##C#g{N=0^Z(z@2SlY*~PtFxYUmzG<_Q~NkdKYQLQ
+zqM{JK9jefX<{IpNA0EW=`u^Uod{G<qEg27Wc}a1_(|@A#?`@FJ>DodyJnLHHivKUI
+zX1kWg*MaD)eHNwPj22{Sr5b-Sb{Z?+23I^SC|@WJN%W=5N{hA9u6SBSG$Ez+_`>2R
+zG5xvoL#{fiQ@N$h*CE`;vw|r8b#3*=N9f&ED!{C8#jVk`dZ9QZj~FkH#va8^3t;Cb
+zDH&lN)qmM@gHRWy(ewC1Hfnx$W{SDu<ZDhxQIdSEq5IN%bD^5u3Xke((dXNAUywA9
+zW4FBYSxhU{mG;g{?VH*D;3c_L-0UrK?oBr}HThQFEEQO(JR$e^I^#3*A7z{`f^pU%
+z@B1#R5oU@5Cm*_UL(#P_>oS$Di=CVIQ`51(L?Kki*R8v>-1@kaH!cAB9Q_1fI$mS|
+O0000<MNUMnLSTaM>teJ3
+
+delta 569
+zcmV-90>=Hb1;qrA7k?rM1^@s62i0n%0006ENkl<ZcwX(8&q_i;6vj1r1aT4WLNF|F
+zm(Z>U5L!sP=p9_Ol2)#KhiDfr0w17VU^}5CLE5#7-of}rP7LGB+&`Yr4E@2y3wQ2y
+zzWL5M_uMHKh?L5ed8>UL{D<M-u8?&7`|GpFm?Gt&HX-pJvw!LDu)}I?NgEc0B^vB8
+zR`Wlw6V3wRim(Os;}diEu&=Sh9Bgfl@3Wi^xq4Kq7T%{b<FK3qIiI|}u4PJ8$5GLt
+z;{IW1#HIy{aCO--!&#M`CLE$~Zu@Dq2I+M>6!B{f_2J_naUoh4?Zhz}P#kyNP9xaG
+zUI2#cRLAoO7JuYkRs_%-uQ!@TgWHbEJKcxdw@X_)8IRQST)lI%!`#<{n?|P5TsnNn
+z{V0<1hR{M?IIu%J)~)&Qjb9~YLeO$t+{)UJxa090`%6v>isPXWPa>56d7l@9B0LSQ
+z7%7J9LS4B1H5MaF_%goM)P<*o5x!aYGvTP-Xil&ItbZnD<8mAgiB#{<#snLh<1f!o
+zi)O{zaj~nmD;SI6jtBA_ZD_&;_r09-eVz5apBGvKBW|6ZoiEJ|;(OhW*`$cUavM;E
+z$M89?-H*pm7mmqmH6x|+ftfpgC*#pPDNV9K&+$z~-Ep`AcSP_ijfzxypy@WCY(y-=
+zvogo-sxk|9Peb{gW&EmaZK%^67uQ{9Vj=6R>e?Z`V_W$F*w5kK*zfUh00000NkvXX
+Hu0mjfEae>Q
+
+diff --git a/2DGame/src/Aset/wolf_attack_up_4.png b/2DGame/src/Aset/wolf_attack_up_4.png
+index 961fcbb392b81f9598815abf134ae9a67020c31b..19e9f6b48f5ddbb23acc949f58243fd679ff638a 100644
+GIT binary patch
+delta 680
+zcmV;Z0$2Ua1hWN@7k@Yi1^@s6rI<@u0007dNkl<ZcwX(9yGtBV6o)mBBL6@bA;d0r
+z3Cg;$QUk)W7M2MFZS8!JLJ(4GARz3PwuV3~w{TgoFjhfBL_5<Z2rdiO79tVP@_}>k
+z>TKo=f^)uRn9DtPcIP+eb#GUf<2a7vIF92uj&t{PTmOWC;(zeJt84z++3x5W*zfP{
+z$};C?rybcR<w4Sk_l-wc{h{HJk}MrXJ@N(2&3=&k(%9>36&#;<C-YwPy_9)JfB(p}
+z)ofp_amB4Em&RgCR;nv<|M2mXSPXd8KPclUjotS5hAW;0nfW+q<xy6n=VeW9ecU`p
+z>O7v5DC&`^&41>xj_T&W@sivsZtmkK*QnRz%@VcA>)My=jZK+H6sKat&hxl2W{OjJ
+zp)`b)4n=(w=Ss}zwC2B!-1@j##C#g{N=0^Z(z@2SlY*~PtFxYUmzG<_Q~NkdKYQLQ
+zqM{JK9jefX<{IpNA0EW=`u^Uod{G<qEg27Wc}a1_(|@A#?`@FJ>DodyJnLHHivKUI
+zX1kWg*MaD)eHNwPj22{Sr5b-Sb{Z?+23I^SC|@WJN%W=5N{hA9u6SBSG$Ez+_`>2R
+zG5xvoL#{fiQ@N$h*CE`;vw|r8b#3*=N9f&ED!{C8#jVk`dZ9QZj~FkH#va8^3t;Cb
+zDH&lN)qmM@gHRWy(ewC1Hfnx$W{SDu<ZDhxQIdSEq5IN%bD^5u3Xke((dXNAUywA9
+zW4FBYSxhU{mG;g{?VH*D;3c_L-0UrK?oBr}HThQFEEQO(JR$e^I^#3*A7z{`f^pU%
+z@B1#R5oU@5Cm*_UL(#P_>oS$Di=CVIQ`51(L?Kki*R8v>-1@kaH!cAB9Q_1fI$mS|
+O0000<MNUMnLSTXel4836
+
+delta 576
+zcmV-G0>AyU1<VAH7k?rM1^@s62i0n%0006LNkl<ZcwX(9u}T9$5QY=+5kd+{CxJ*5
+zQsyZF7Qs%$*3wE4#L6n~5bPv{a1UT7#4ezRfnaAPzQf6^%rR^>dwX~DpTXpV<4ksM
+zbN~LcyR&Pp2Bgt!CFd8{3Elbf{hX}F&!Jv#7uB$2Fg!~?Mt_rWD(3s^vrb~UP}W0J
+ziEv*hR4G<cNB1l_>Js;{n5RFz-|j5EMl>0lh(NvH4yxgGXDb{9g)4<E(LFpemkU{j
+z4s!xFh8Q`<N!&rFU3;G|OtI_l`0dq{p~XXm^HO#H5T#;6pbj}b8JMc52@WQlL|@&G
+zLUek$ySapjuYYtMj~*wP9Wgi_X4cUF;<)X0h+rGp0SMQjju#Qk@Uy50fH~gn^^FEQ
+zE90fjg`MGXb{Eg4>f>BJfstYEN=40j-s>-2F8FzxB;{sC19jnM4HlD_FKKb%s$XWv
+ztO7R1*)2{;Lb2;pJ90y#1;p`HAzl>i_6UgZ5D;SWpnoo0Zc2RQ3139st}Z;3f9H58
+z?D$`G0Blyzf&}y4obHsQR0%B9U!I?g4tek(vo_a(1eM$0b359=gfp&n+~;oIb-yT3
+z;bq+_`@9eJF-|!(Z%};DRx^u6bI(+vdpw&anx`>P$JZHk$H^6Phed}jSN6Y?2ssyM
+zx=ld#<2k?K*-Ge;(S{BYT_W<<FU!V;I?Qo)-FC(ovaZ7h?GWFxsr&%?Xy^5a3TW8?
+O0000<MNUMnLSTZ77ZOka
+
+diff --git a/2DGame/src/Aset/wolf_attack_up_5.png b/2DGame/src/Aset/wolf_attack_up_5.png
+index 0f973e82e610911395a708878effe0265adfb620..19e9f6b48f5ddbb23acc949f58243fd679ff638a 100644
+GIT binary patch
+delta 680
+zcmV;Z0$2UT1hWN@7k@Yi1^@s6rI<@u0007dNkl<ZcwX(9yGtBV6o)mBBL6@bA;d0r
+z3Cg;$QUk)W7M2MFZS8!JLJ(4GARz3PwuV3~w{TgoFjhfBL_5<Z2rdiO79tVP@_}>k
+z>TKo=f^)uRn9DtPcIP+eb#GUf<2a7vIF92uj&t{PTmOWC;(zeJt84z++3x5W*zfP{
+z$};C?rybcR<w4Sk_l-wc{h{HJk}MrXJ@N(2&3=&k(%9>36&#;<C-YwPy_9)JfB(p}
+z)ofp_amB4Em&RgCR;nv<|M2mXSPXd8KPclUjotS5hAW;0nfW+q<xy6n=VeW9ecU`p
+z>O7v5DC&`^&41>xj_T&W@sivsZtmkK*QnRz%@VcA>)My=jZK+H6sKat&hxl2W{OjJ
+zp)`b)4n=(w=Ss}zwC2B!-1@j##C#g{N=0^Z(z@2SlY*~PtFxYUmzG<_Q~NkdKYQLQ
+zqM{JK9jefX<{IpNA0EW=`u^Uod{G<qEg27Wc}a1_(|@A#?`@FJ>DodyJnLHHivKUI
+zX1kWg*MaD)eHNwPj22{Sr5b-Sb{Z?+23I^SC|@WJN%W=5N{hA9u6SBSG$Ez+_`>2R
+zG5xvoL#{fiQ@N$h*CE`;vw|r8b#3*=N9f&ED!{C8#jVk`dZ9QZj~FkH#va8^3t;Cb
+zDH&lN)qmM@gHRWy(ewC1Hfnx$W{SDu<ZDhxQIdSEq5IN%bD^5u3Xke((dXNAUywA9
+zW4FBYSxhU{mG;g{?VH*D;3c_L-0UrK?oBr}HThQFEEQO(JR$e^I^#3*A7z{`f^pU%
+z@B1#R5oU@5Cm*_UL(#P_>oS$Di=CVIQ`51(L?Kki*R8v>-1@kaH!cAB9Q_1fI$mS|
+O0000<MNUMnLSTaM>teJ3
+
+delta 569
+zcmV-90>=Hb1;qrA7k?rM1^@s62i0n%0006ENkl<ZcwX(9u}T9$6h&9@6G95HlRzX2
+zmVU*8MX(dGwX_lhv9j_X7CYHO*blH1Vi(Y0AlO-n{}8z&FAU@C?yPxtS4|Eq3E7v~
+z+_`UN-b|vX23qZn>G8?=6t6{(3ysrYRilv*UMJ%y?jIR(zJGXpj{AtKgW7~|cDhE7
+zh?fq)tB3{?$7YTF03Q$!vNSO+H^B<~p|+bgc1rtP&eA0Mcz>h)zS>g#x3Lt?0_lph
+z1-<PZbNR6EvC|yT#*ko-afsXMcA}T@#N771A3Z<G#77<DRN=B@-P~p~u_2&C4i91z
+z%9`M4!Xf(X@_#x+XCYS?rxfwEuH)HVTG|oue!nzE1B&CW+aZEo><(bKPIdezf(7|5
+zD+6eb_jdP;2Dd7crOk(1zDjjB8V=OQxq1O(r+MCn1D)btKIHqDB+It6RZ$lX>=Z95
+zT73B8=NU42(8jp9B?U<+Zamsy?9nNXYwxMG+XEEgA%8H$R6$+1y(uZ8O8PQ3E$YHU
+z`FD<oB91rJ0gXFeCFM1t34eUJH^0+9c(AKBe2#KdF0=lp$+v?FX-6BHaADqcoQ1k@
+zl$Iz*TkZASG)C<m0)_$F`D(BDUzn<>3;!#qm#kRFN5jGFZ=$?e8++_B?99+Uf}(6o
+z0a6oZZ89!$mgXZbURyL+*i@%EF0Q-I7P;q}z!+{XSwubov?JlODk%ac00000NkvXX
+Hu0mjf4bBfA
+
+diff --git a/2DGame/src/Aset/wolf_dead_down_1.png b/2DGame/src/Aset/wolf_dead_down_1.png
+index fb0e011d01ef6adfb3e4ba66219d74698d7c7dfc..f89b9dac810329bb8ce2b44207f49ce3976c3b11 100644
+GIT binary patch
+delta 593
+zcmV-X0<QhW1l<IX7k@Yi1^@s6rI<@u0006cNkl<ZcwX(9Jxjw-6o%{9;2#i&V!=T-
+zMe$>+6$+spia1m#?dm3U>7Y3JF}Mi+1YLCO&{8P0c92?&qML3N2k{R$h$tR>p*fH?
+zH_1iho@cp9ZgRQJoA=GhZ73uNf*=TjAP9mW2!bF8f*^Qjz<>Lt!7?@;`T7|#JQ1OR
+zZ(9wma~lkH`u_*5cU6U<kx^3IN~CO;m5S#y$7E`Q`rEB0^}oG#e9c`H|7+%#qNJ!3
+z(G`ojPLB7e{rq?r#l7I`t_1<STPYW5xY@ZyYN0SlSaI4+CStbp4iAoK--<6Q{T5?A
+zJ{*K<UQkt<gMTL?mrYX_-U@ELZ>-`<z6b)O_x;^XPfzy)o(J1I1=@65@foYQc8})^
+z`}BTpTvlvp4Ucl=%9Sde_w@Kc?bP&4Pw{d7%X6pac^qRE*XD6vi8(0@pd7#x!n1(y
+zL+R7A3#IqDDDD?0FS~_j06=XHP}xEGQn{|AG!VsAfq%jP>AV_SphLBKn_BK&4z6=b
+zbMAGo3QMa0;yTrNN;j`+wwuTmc1q=b>5kevliQ^6;qjo9Hs0f|D>t5^P#85b`kg>O
+z6o;pI<p%J?=)%}kcda<Sb933WtMzYuAM^JvSCXeX*407K-ZtLju2bDB{2vmY1zY)D
+z8k*Mu;Y#o%9rwF_?u2+;7hQ_k*3IF4uJqb^hNjZ>wWVch#wxDe<DgQ#wkeJZjidTq
+f?G<Ac7fj<DKNHwE)bY2P00000NkvXXu0mjfL3JYW
+
+delta 570
+zcmV-A0>%B^1jYoA7k?rM1^@s62i0n%0006FNkl<ZcwX(7ze~eV5XaLZD!7&kMO;J>
+zTm%Qjp{4(TTSq~}O&4(}brBa!k<z8&B2siJDGK=q#12vip`ZmpTto_re}Ri~!HX}+
+z`;{i42={@~CcWI<_wL@~#V`nhAP9mW2!bF8VrV3W7Fj?lJ%9C$e|>(u#g<=ejt2om
+zmkz4VqvieG*u*DQ2|_aXQQ691J1N7uGQ)(?M%r;%2XuuX^9##HuiJ4YhNFzWz~*nv
+z`^J0!HMWkAXqV_0UXr@7!hl}4V^7g})3UEC<wIRpp;2~xGBfQ8a#X83*HI-}EbVc9
+z;e^Do$p!8>%YV%5obmGfq*Z;9E!=OlE`5Fh_z$qmhCLZk7C^bH!)RmIQ|XK=AswJF
+zC_n@jPi1GBjmX3+M;(*J^{GmZCsaqgE>Vg131@ff)xx@NJ}#mVYF->0g|#i`n<WbI
+zF5w`0P_c1<;&-+;j9UH72?4^xu6bKHc3C7kiVg;a?SJ^~-97j5d@jqqud@jzyoVH^
+z_xRv*2vwKCb_C$ri)_62y{KX%D@%*^&$00drT8R!HWr~1SjUEiwGaBN4AFFWNmNgo
+zzB4$l;{dF!>zlST@F3vGik4c?!hk>3xC;+3xPh>MvwSY=6e?^HP%tKm2Nj(ScC>Qp
+z%I&MT88fKnzK+AIAfT!k5cEaGizr51ep&3z&D+&Lr6c|qKVq!t!`}R2MgRZ+07*qo
+IM6N<$g7_d01^@s6
+
+diff --git a/2DGame/src/Aset/wolf_dead_left_1.png b/2DGame/src/Aset/wolf_dead_left_1.png
+index dfde888e42e270b3b24af25448af0ed16579d5ec..d47eb5d4f442a69e1ab305065772116165e18e81 100644
+GIT binary patch
+delta 638
+zcmV-^0)hR+1d0Wa7k@Yi1^@s6rI<@u0006}Nkl<ZcwX(8J4ixN7{~23Gz(%7xz$z_
+zy=brm;bMbCLxJSlSP=+4)=EeawXM|<YKU-9gobi7FlwvK2ok}$A)@GmKX?w_?!9`i
+zLHGMDSLHm+-}xRLhl61lhG7_nVHk#C7=~dOhH0Iy)~D)YD}QqM^)oV)KBWn@YQ^$B
+z_0X+n(0`=2-9O6Z_K?xRArCDTJ&MsYnTiWb*Xy-*w=xym8gDz^diwgwxDp5oMyl1f
+zriRL;V%vL~fo+Yq9OH|@RWe=3XGy^D$fzI!?~Atu`uySkj-C_KUYdtop!jG0<OHyB
+zEs(vDonaKlL4QE;)60C}nx5WyMOYf<clRP%TUrVm*8+7qeRlEdP?(mH&A+}>gqZJi
+zwrAs7zz~cgmeqKEdK9uf#>?{>P6%atw|ju*<+A6NW_#NjH~g!j4g+NAvGFPT2qyzM
+zL5^*;lLGTNDd_yHihbJ}H{7|w0D5%UH0pdPye@=4I)6AV&>u8(f)x8WIf>Z5;ZxcS
+zHg1&9k9Ydz%cY`Fj}hAdF$-gIXQu|n9Y=TMA#?%&#u@GTZEM_=cxePZJz^YpZE77K
+zvN>{qT2+8q-@>G@-_ml3-W#m~Y}_p5J2=$&T>eJbLhk8L5(m1z0;&l9p9kT!6?&=n
+z7MG2ijd$GPsbzKfhQ{f1(N{q~fa)QG^^p^hL-b~MHf}cP?9^f#*&b#QyK+v@YtSgR
+zHEy_9*9&4ZnTk`Vb#<8$rlO<6on5C)12%3In;YA-^z59Ep2)(8Z8-;671J`dHO|<L
+YZ^Sn3K+&V*LI3~&07*qoM6N<$f`K|W>i_@%
+
+delta 568
+zcmV-80>}M|1;hl97k?rM1^@s62i0n%0006DNkl<ZcwX(7y-EW?5XVmupCCjCVk3eO
+z1;IkGNXQGM3s#DVooRwdh>h47QizRqB0(#;pl~lBT1YH}Gyy?uL;{Aig4#spV2-_Y
+zKjw0GD6&5YNj9^y^WT}>n^=~?U@#aA27|$1Fc=KK#!#FqCx4RTee~b!zQ(#%P+|)P
+zL|66>ym+d+TYpOYaL}C^1n0^oO=Bx$5MVyObn|1)_*iPfN+eTW4DD9a{fuSL3r){0
+zdNx#8UqLEtgt|Z!oLxAso7LsKn-LJoBN|iDZZ);p6%k9uF_R(@<;sp#tL`hsPyt`a
+zcB$x__SSh(-hU~PW*i0Q3v0e0o}V7Q?~TT#H90ly8$)E{BEU8bk!2i2^MZMB19U-y
+zoz8{@{r0*YcUYHgAQIse(NsjDDI0;}@d5=@y+df>BGLBwu~k^v^xnfj5iP^9>)ucN
+zCWJcUqUUa@xb7~7;=>Z8<ayYm=h*c=E1r~bkwD=3=6_bGYiVIVvWy2sRUudbumM`(
+zAo}y;-Ch6g{(%(7;nAtm4y%H<!*LdhjmjQK&&>L4pnWE_tW?1iSaBkuDk%088|d&z
+z8JCr`3|Ypp)Pnk>kjrL%^bZK1aUk&JHd;IJ#qm|%(8k4{EileyGj5w1b^|~x0_PSk
+zFg_SrZ!w|GI3T;+sK}nDartGzHP}Be07>|NAnYdp8@>T!CgA?M48BbO0000<MNUMn
+GLSTYeEeQ|+
+
+diff --git a/2DGame/src/Aset/wolf_dead_right_1.png b/2DGame/src/Aset/wolf_dead_right_1.png
+index fb0e011d01ef6adfb3e4ba66219d74698d7c7dfc..f89b9dac810329bb8ce2b44207f49ce3976c3b11 100644
+GIT binary patch
+delta 593
+zcmV-X0<QhW1l<IX7k@Yi1^@s6rI<@u0006cNkl<ZcwX(9Jxjw-6o%{9;2#i&V!=T-
+zMe$>+6$+spia1m#?dm3U>7Y3JF}Mi+1YLCO&{8P0c92?&qML3N2k{R$h$tR>p*fH?
+zH_1iho@cp9ZgRQJoA=GhZ73uNf*=TjAP9mW2!bF8f*^Qjz<>Lt!7?@;`T7|#JQ1OR
+zZ(9wma~lkH`u_*5cU6U<kx^3IN~CO;m5S#y$7E`Q`rEB0^}oG#e9c`H|7+%#qNJ!3
+z(G`ojPLB7e{rq?r#l7I`t_1<STPYW5xY@ZyYN0SlSaI4+CStbp4iAoK--<6Q{T5?A
+zJ{*K<UQkt<gMTL?mrYX_-U@ELZ>-`<z6b)O_x;^XPfzy)o(J1I1=@65@foYQc8})^
+z`}BTpTvlvp4Ucl=%9Sde_w@Kc?bP&4Pw{d7%X6pac^qRE*XD6vi8(0@pd7#x!n1(y
+zL+R7A3#IqDDDD?0FS~_j06=XHP}xEGQn{|AG!VsAfq%jP>AV_SphLBKn_BK&4z6=b
+zbMAGo3QMa0;yTrNN;j`+wwuTmc1q=b>5kevliQ^6;qjo9Hs0f|D>t5^P#85b`kg>O
+z6o;pI<p%J?=)%}kcda<Sb933WtMzYuAM^JvSCXeX*407K-ZtLju2bDB{2vmY1zY)D
+z8k*Mu;Y#o%9rwF_?u2+;7hQ_k*3IF4uJqb^hNjZ>wWVch#wxDe<DgQ#wkeJZjidTq
+f?G<Ac7fj<DKNHwE)bY2P00000NkvXXu0mjfL3JYW
+
+delta 570
+zcmV-A0>%B^1jYoA7k?rM1^@s62i0n%0006FNkl<ZcwX(7ze~eV5XaLZD!7&kMO;J>
+zTm%Qjp{4(TTSq~}O&4(}brBa!k<z8&B2siJDGK=q#12vip`ZmpTto_re}Ri~!HX}+
+z`;{i42={@~CcWI<_wL@~#V`nhAP9mW2!bF8VrV3W7Fj?lJ%9C$e|>(u#g<=ejt2om
+zmkz4VqvieG*u*DQ2|_aXQQ691J1N7uGQ)(?M%r;%2XuuX^9##HuiJ4YhNFzWz~*nv
+z`^J0!HMWkAXqV_0UXr@7!hl}4V^7g})3UEC<wIRpp;2~xGBfQ8a#X83*HI-}EbVc9
+z;e^Do$p!8>%YV%5obmGfq*Z;9E!=OlE`5Fh_z$qmhCLZk7C^bH!)RmIQ|XK=AswJF
+zC_n@jPi1GBjmX3+M;(*J^{GmZCsaqgE>Vg131@ff)xx@NJ}#mVYF->0g|#i`n<WbI
+zF5w`0P_c1<;&-+;j9UH72?4^xu6bKHc3C7kiVg;a?SJ^~-97j5d@jqqud@jzyoVH^
+z_xRv*2vwKCb_C$ri)_62y{KX%D@%*^&$00drT8R!HWr~1SjUEiwGaBN4AFFWNmNgo
+zzB4$l;{dF!>zlST@F3vGik4c?!hk>3xC;+3xPh>MvwSY=6e?^HP%tKm2Nj(ScC>Qp
+z%I&MT88fKnzK+AIAfT!k5cEaGizr51ep&3z&D+&Lr6c|qKVq!t!`}R2MgRZ+07*qo
+IM6N<$g7_d01^@s6
+
+diff --git a/2DGame/src/Aset/wolf_dead_up_1.png b/2DGame/src/Aset/wolf_dead_up_1.png
+index dfde888e42e270b3b24af25448af0ed16579d5ec..d47eb5d4f442a69e1ab305065772116165e18e81 100644
+GIT binary patch
+delta 638
+zcmV-^0)hR+1d0Wa7k@Yi1^@s6rI<@u0006}Nkl<ZcwX(8J4ixN7{~23Gz(%7xz$z_
+zy=brm;bMbCLxJSlSP=+4)=EeawXM|<YKU-9gobi7FlwvK2ok}$A)@GmKX?w_?!9`i
+zLHGMDSLHm+-}xRLhl61lhG7_nVHk#C7=~dOhH0Iy)~D)YD}QqM^)oV)KBWn@YQ^$B
+z_0X+n(0`=2-9O6Z_K?xRArCDTJ&MsYnTiWb*Xy-*w=xym8gDz^diwgwxDp5oMyl1f
+zriRL;V%vL~fo+Yq9OH|@RWe=3XGy^D$fzI!?~Atu`uySkj-C_KUYdtop!jG0<OHyB
+zEs(vDonaKlL4QE;)60C}nx5WyMOYf<clRP%TUrVm*8+7qeRlEdP?(mH&A+}>gqZJi
+zwrAs7zz~cgmeqKEdK9uf#>?{>P6%atw|ju*<+A6NW_#NjH~g!j4g+NAvGFPT2qyzM
+zL5^*;lLGTNDd_yHihbJ}H{7|w0D5%UH0pdPye@=4I)6AV&>u8(f)x8WIf>Z5;ZxcS
+zHg1&9k9Ydz%cY`Fj}hAdF$-gIXQu|n9Y=TMA#?%&#u@GTZEM_=cxePZJz^YpZE77K
+zvN>{qT2+8q-@>G@-_ml3-W#m~Y}_p5J2=$&T>eJbLhk8L5(m1z0;&l9p9kT!6?&=n
+z7MG2ijd$GPsbzKfhQ{f1(N{q~fa)QG^^p^hL-b~MHf}cP?9^f#*&b#QyK+v@YtSgR
+zHEy_9*9&4ZnTk`Vb#<8$rlO<6on5C)12%3In;YA-^z59Ep2)(8Z8-;671J`dHO|<L
+YZ^Sn3K+&V*LI3~&07*qoM6N<$f`K|W>i_@%
+
+delta 568
+zcmV-80>}M|1;hl97k?rM1^@s62i0n%0006DNkl<ZcwX(7y-EW?5XVmupCCjCVk3eO
+z1;IkGNXQGM3s#DVooRwdh>h47QizRqB0(#;pl~lBT1YH}Gyy?uL;{Aig4#spV2-_Y
+zKjw0GD6&5YNj9^y^WT}>n^=~?U@#aA27|$1Fc=KK#!#FqCx4RTee~b!zQ(#%P+|)P
+zL|66>ym+d+TYpOYaL}C^1n0^oO=Bx$5MVyObn|1)_*iPfN+eTW4DD9a{fuSL3r){0
+zdNx#8UqLEtgt|Z!oLxAso7LsKn-LJoBN|iDZZ);p6%k9uF_R(@<;sp#tL`hsPyt`a
+zcB$x__SSh(-hU~PW*i0Q3v0e0o}V7Q?~TT#H90ly8$)E{BEU8bk!2i2^MZMB19U-y
+zoz8{@{r0*YcUYHgAQIse(NsjDDI0;}@d5=@y+df>BGLBwu~k^v^xnfj5iP^9>)ucN
+zCWJcUqUUa@xb7~7;=>Z8<ayYm=h*c=E1r~bkwD=3=6_bGYiVIVvWy2sRUudbumM`(
+zAo}y;-Ch6g{(%(7;nAtm4y%H<!*LdhjmjQK&&>L4pnWE_tW?1iSaBkuDk%088|d&z
+z8JCr`3|Ypp)Pnk>kjrL%^bZK1aUk&JHd;IJ#qm|%(8k4{EileyGj5w1b^|~x0_PSk
+zFg_SrZ!w|GI3T;+sK}nDartGzHP}Be07>|NAnYdp8@>T!CgA?M48BbO0000<MNUMn
+GLSTYeEeQ|+
+
+diff --git a/2DGame/src/Aset/wolf_idle_down_1.png b/2DGame/src/Aset/wolf_idle_down_1.png
+index a8a0f50cc2d85e870315b1ce1269c9269be1bd97..ca06a75a9883b659f44aa1e68154ded2ed561368 100644
+GIT binary patch
+delta 690
+zcmV;j0!{ti1-%837k@Yi1^@s6rI<@u0007nNkl<ZcwX(AJxg3c6oxfwkv|ZwutZ1^
+zJ4MlrSeOXHqJ^b4`V;&>P|#S0C<wtMU0TC}79tid3jse0S=L3-PCG?#5v(mFL_Fas
+zX4s1^o|__bo@RFLoiq32opa{Q+^wlG48t%C!!QiPFbv~gQ-7;{!S-~|pNBr9s8PD!
+z+FY&b8UusFVqYp2#QwT`UX}e*dGXYS{~Ps5J<!|c7U{a2z7ho&J}*f<)Az2Tf+&q0
+ziYJ9Bu1$ZY&*}2(w=YsB23%g8OT8oAB_&E@mtFaxeM=6exHhwM)6ylr4Jhk_(%2<U
+zu!^hCk@#@W`+tmxwzr#?l6o9|JAB;cab*&l$InhrD*AXX|I2v<e4CQ!pETy<&xOnj
+zCdQ}ar>`K#A?`dQgOO8h&i@#}Dz4_^<kmMg*YdKNuQ%4SQt#^SttbL^D?iudJW3PQ
+z=}((r6;Es)KR!ATk;W$Hr6g+ie&}$-+ukWTN`GJe<bRz1eRr#Vj}HW^xSEf@ikf8I
+z4JeI*D4t5aktX==R&Gb?_%wDz^HQ-O{c2}$!78riKYotxgQBU|P0lGl7Wk0E9~Sr2
+z?lov1S9^<f4KKwPGyQ||M#<3p-25?!1=tZIw4-~lKCTwkp<KRlM6Gr`j^af1q%g&w
+z3qBY{jepL3&dv)8`Xd73c4)MH8-i6_EvmB~&*wJfrM9+pO35zk=*W=N<K}TPICfdt
+zcc;D0<4UMSb(97&GT@7e-;R+HXJ_kiWz-ZW`jWHz#C`qrM+PH+;}+GGQBxfFCj@(K
+zKy+qrjql{F<Jp-h>~D+7%<Q6+%S#`XANeoA&MV{Uij$e47`b{JM0<8&$>8k!xM8Sp
+Y59!VTb=!9VlmGw#07*qoM6N<$f}y=v=l}o!
+
+delta 723
+zcmV;^0xbQ#1>Oaa7k?rM1^@s62i0n%0007|Nkl<ZcwX(9K}%Fo6vuDTC#b=|#Ek@k
+zB}ogVMIT|HP})hjO^7y1;ku}eD7Fehf)+ARFdxB{yF?oh#GP)^`U)feXJ<I?yz^$>
+z%-sLo)DH&dy}9?j`@849bML!`K%_P@)?RwC*2dp{ZZl}Tet)>$PvJp0IX(*Yh3A<}
+zmHH@$@~FpzE-qA&7wHtx#V77ghC9D6GM8@hS{mh1kI4<@#Wj#QyH(5Nn~m+lu*Z2I
+zoy6uE>jpN0VE0dXB=Jl?zFF%u2b~0(jqPyp>oj^h=|f$FA<}L5;y08*=cIrxj!1gK
+zIPYa{luaQ|6@M?2?gix8(^<0QW?^UTUQoo5*rp!Lb?%J>rRQ@GuM9Kll%b9++}hvE
+z$)0~359cSFt~9`JC?nGvz%_J6M~BL%^g<PhK1~3Lc>T#jX#G4aH09OuQtsUP*5^W*
+zseAWB^LwKsZ&!80PIHuq3urh5G*%keb0W=zBCdzJmVfu81^F$7G@ytJlDWOeduVCY
+zmHLdA7pgeW^1VO@={ij4;$<R_W*=rB%htw+Vxm)1BN#TZ0m?k?VTC?^`Z|zwERu=K
+zlqHK2>4@c*E13(9y=jd_GI7C1-W%E;=rCCn#duAnJ>zJcUWRIZ9OU=Y?6DxD1H!V3
+ziy;kY;(r>uh?$wrZ!76zU6vs%(1yC~s$NC?YFkN=XBmqY{T;{>w`{b;f+7y-+oR)d
+z8_N=yJ#Xr_V-0b7#O+Y`B59+FH!}=%@5LrIl!#lbh!;J1G*U<>OKzabrb3l6v4|dV
+zyZa(k*=o{dY9phay7=DO-;4U3M;EuOzJ8NCHB3MMG%P-==OoZsUv`>>y6@k;jTPVm
+z(Z&D1ix0gulud1F`zm%;r))iGy#JDROKzIjvj6#)xdfqCQDcvQe0%@^002ovPDHLk
+FV1fedXTbmf
+
+diff --git a/2DGame/src/Aset/wolf_idle_down_2.png b/2DGame/src/Aset/wolf_idle_down_2.png
+index 42e39de55710bc1ecb7cc3c5fa59d7d3d098112d..f9cfeeb6682271d3e75caebefa041a104e64bc3f 100644
+GIT binary patch
+delta 642
+zcmV-|0)73^1&#%f7k@Yi1^@s6rI<@u00072Nkl<ZcwX(9%PT}t9LGHu{sCPzQ5Nio
+z7_#svHL<W{!=K=hvLH*bQ1aN>l42oQn5LA+N@F5+>`0lEwS`1}^;w+L+?f3C#{GRZ
+zXU^R7J9FoL&+l>1DJd}w!!QiPFbu;m48t&@rBr+R)@1kR_kWy0P$N?x9qtzO8-qh5
+zVxP-ii2Y0cp(y*`Quf<{|BZ^M{!l|>lT4jYK8u1&i_6ka^>-9h5T&t0@u)DxwHZkD
+zJ5#Q$uSlO5@bvf~{kCMMv?z_;&eo>(EjgIt+RV<)$dvdtpsWu{V;42CRa`ws;=|oN
+zDG}}bEF&%bFn|1U__*b9Wg^St_jk7ieLS5xcK!msO-uBT8uRhLLgfXM6Vvk1SCH=^
+z>^duhl~ZiZ{}ZuQT+PR+tzTbX<YAMq5B7JY-`UkyPz3C@w)f;ZN)y$YPn*~(9$6m0
+zxxN&U#;4|`C2IHewmIURoaP**H&z#%>mToL>i76fY=0G3^YQASPTso#rBM*Y6N!2m
+zg6|%sPo<AfV@EX4WiMo2?FufoimUmLU!(h=Xri{xx#Y(JA8Pok?77;##@ff#o?>}r
+zmH1+6U`U=Q6`Eh0{{*oBJ7R=(bdRl%t3`Fl=bs%>i+vwQaiV%unBsp09}I#TC!e$P
+zf`a~vfP1hV8g1W(*eb3T)p;M!qz~nxHn+4(%P#BK=&<y|@;DV7yR7WHGv4yJ5^7N$
+zrGbhJI5F|Zu`<H!?0sArHN}a()a*WCr=R}HU<L5KMRjG=qB?|~q=0`;PBtLFlh5rW
+c#V}O(0^!^GLQoFoRsaA107*qoM6N<$f@LC0#sB~S
+
+delta 709
+zcmV;$0y_PU1<(bM7k?rM1^@s62i0n%0007)Nkl<ZcwX(9&q^Cn6o+q1pFo3!DA|;P
+z;2$h5DlYm6ffj?iQd|d$8;d@GQa7a%S3(Iw7bT#ON9ZcMN;M!zcDhmPD_DNf6VIHv
+zlT60@n@#(HkleY~neU#NbMBouN2V|~ahv57S;wX2Y1)oiz<<S;D<6iI$U1HqsN$e=
+zcIt+a7io-RLKhd($cuCy(8XW8oOI)VuDdS%<h3;VV;qxb%zv(d%*AM-E8lF?V+jxK
+zKqiUJ6V?fA1i{an<VfO~elt?&T@EG*G#hnyeR&@II_bB%2t%ab?TcgRgUQJQx;P@~
+z6Gpo)bE9t_@_$tEB<Vpwo?XszOKui+)*b{!9EojeZlQN>Bq&|aefat?qfWWik%ikw
+zt%&T^LCIZpcD&L6$IwU08k^u{0!YNmZ!4~SavXD5t*%7czSO?O`b<sFxaMKQVFIO`
+z>5a={OB^NQ0xlc^8Y>NKn@DS9U4T0x&GL5;6mfm4Ykzs4v>?Z{G&2EG#09x<U*vrx
+zNi#MtRB@o?2Z0IFW0=szlSCF@&v*YUwXfTeCX_{88bd*;<38;3y1Vy1)(w4p8Qv0N
+z<C2>=fRrpsB(l|yYu#fu(rhSoT<|3&Wba?UPu;88hZha<-9}rl-1LIzu{9jz5^-c}
+zy^zt;K!1PNeM8G?XyUTUx?6+ay<HI`vWUL^3}k}z+C4;sEfjG`KQETNk7-i!vh8O4
+zZD@IlxJBQ-I+FS`z*5vc7A$fRw;L5-^yJa-ZE6_gvVZ|;_SR|ogd%vv?MnzD&4xqw
+zDU20+WAV9t)C&5X2N$<|THlB?EiJus@0ZIF2|i5L{*PvC?B}h`Pyyy=_4_Spre8=c
+r%sNh8xdGqLz5SA#CUgn=&%exHH|#uXe6M&z00000NkvXXu0mjfGdfn6
+
+diff --git a/2DGame/src/Aset/wolf_idle_left_1.png b/2DGame/src/Aset/wolf_idle_left_1.png
+index 45611dfffa572b1d611209a95f8ebd3af6e98eb3..44c31ea73257512be9507fbf0805bd538c6ad6b3 100644
+GIT binary patch
+delta 703
+zcmV;w0zmzy2g(JI7k@Yi1^@s6rI<@u0007!Nkl<ZcwX(9&r4KM6vs7d(LWF)3<)i4
+zrx>QL%s?2%g-hGizfckw**Y}}q941qh6|T290r7JRyB%IJ6i-J0}g`g79xfRKHxog
+zd-u(}N5(y$&1LR=bKiUOJ?DGRz0=iY7=~dOhG7_nVHk#C<bO+dzSHN&?A*f1>Fl-7
+zRk_Jdy_V`-F6H-V7n{o$`|<qz-2EYgON+0hoqskb5fG}pDgM7eZo}P);kF*#6wjKe
+z>3foM+x0Ip_43D6X-ku%sod8`xil$5Pv&1p`~BNis#h?@L+QD4Rg@eYy6w0sN}_cC
+z%>fy&R@OqNK7W^6Bja*EK<P?#L%QC-c`ogGWs`^sx?i-4r_MJNXzn$fUv_w8Og^JD
+z%1o6fv?6j(BBRyXmvKE`@p_;1kKZXttCe0^{viE_hX>LgAN@}CF3~F9cIBoO(K-0`
+z-D@WzP@ae(G9EpAEZ32<T3MgcovsqmDxNAYPQlen<$q}>r-2$8MR8qL0iClNl-IBe
+zqc-of9*9=);2hU3tle8Hj_X39(CdikQ&vL+Y1i+RXcZ66aom`im`Vxd$U$-#=m$Nn
+zJwdy8yC*D3nBqQk?fr7;sdH(uctbuno4=%Gw}hL6c6A*IxV47$KW$}}M6`-0x;nKq
+zyDSv{w12rRKPnXzN^3VqY3=HewOfZ`iYI}Kqcl*H>wPy$gKym@LVUG)UYO!OIH!Ja
+ze@0G1*#Dv^>$-N`=3c|OUc-9LI*!ZJuU$WDOz|WRS`DYl+o{+7`W3EcHwW7F^(ib+
+z;iWx24aF4Ci!-?|InT+BuIzAiT^XLK)iZs>XgC!Q-ks&mwL;&yt3cK@I+)`Bn(D?^
+l=N}X3^lZ&Xw2B+C@du|-8rXaKL5ctX002ovPDHLkV1n^kT4(?O
+
+delta 925
+zcmV;O17iHj1*Qj(7k?rM1^@s62i0n%000ARNkl<ZcwX(9%WD%+6vnUOpCAe<ZbT5O
+z#R{Sz_*%FWlm-+OB!VtlDOwN&p}49PABbHEN^v8Sg^;BSU!b&zSRa9cxDgSQx)gL3
+z`No`h=Hx!k+_^Ck{lPHJWOC<x=XLL$8dH$vE7mmSPjIa|a(}*Q`>tPETEs92Te)g&
+zPCTyduN*V)-z^jws^=6E?gFCMt>4gdF-2IWy_up75Orfrmhy=9-$<#5ljzl77c=en
+z?CJsdzMp!4I^q&vq@}=t&D%|5ezr+xjJ5dX<B}AaqIITxp6cN|&8sKJGJ6|u-{kD3
+z=7w6Qnzz+HU4N_BW`epy&Y{Mt0ng*(1%;DG&t14|6)XvLcXCWt8V4$-ey`^IyD>lO
+z)g-e{I$S!Qi+2jQ3C2KVj4#!F;<<1QKIh1+3lS6!(LcU_%f_i39chnu^Wqj`UR^TB
+z@9gzH!zG-iJni%s${rA!MqN?2Mx2Cm(M7Ns95OHlt$zbK6m@4;e>V5RY0K5=Th8w^
+zQA!1Gq{P6+O<4)>b6)tbPu6)H-EYsXoo00Gta<r*p?${RI8KjNy|%+3IyC861PH=G
+z$euxUAF6+6#33GY@6h0snZ7m^w2dN-dwE8<QamP2flUyeVVfR(4cNPKqsVh0N~Ss&
+z4UiGOtbcIL@0^&DfxZ0jtrdbRx0d+k!^cm&wQb7^h`03vM2I^ECB=WwKl}O#2hpw9
+zW}2Zz4-s6z0Cf4*ax;4XMFVp>u7^s28z1Tq5}$B67W$GD4%=z*1turPvwKvVlvcfG
+zXQU4V(?SNK(eS#3%TXH9l6||kwl4)!oghzgkAKqYZfMZI7w7Bv7<kFZ+DDXuCdKbR
+zdR|<(4PO5~Y@MA94uQS@wjIA$ihL|vYD-|_<ivRUbs0HG9q|xI_fX`)p~FWyvdD#R
+z%c&79vz4Q&aSc***}A8#FpqXhN(-mCUJ5;P>V!I-iz4^dF_acgjfI550Xz+T(@`%;
+zB7dC3Bl>W_mFqXW^;w1#(FVzc^F{*kn&~A5`CdPk<iaWXK7&4g`Ve#s9Ebbno<7J8
+zm8#h#o6fpHD{DIbWkv7x%VbqoBJM&)PXjHJIf#1Ml<!)^F%RFqThAFxFDqjrH9UN<
+zV=R<HEPpiO{e)^;8jEeo853=ga;*RSix&I@$G9FdGb~5>00000NkvXXu0mjfK83sG
+
+diff --git a/2DGame/src/Aset/wolf_idle_left_2.png b/2DGame/src/Aset/wolf_idle_left_2.png
+index 0dc125bce78dbeb6af11c70ce544bfd2e76e9196..b635b1644afadb4f3db8a7f62055e8b822e4c68b 100644
+GIT binary patch
+delta 671
+zcmV;Q0$}~72dV{-7k@Yi1^@s6rI<@u0007UNkl<ZcwX(8J4*vW6ouof@DE6YpkSe$
+zqWG#bLSRV>TmOZMps2Mk6vRho8?msoFf0VrR2oImP76T^7zAqz5ycA!G8fmK$*wUn
+z_iKjT9cFg-+<WHEL?VJ92!bF8f*=TjAP9mWgh@@9gH@8r>3_wKulaH(E=_xx&l!D7
+zZ6#l}ny9a)moee)_J+DIFRf8KH$P1gpsTzn{$D_DgOPY|S+6dNhfQj9jB@TGe@a8A
+zclW7v5(7r=>qXK@(4(2T6>6`q&W%1n6xXG$p^=pA>h4oq6-q+s_Kr?^?q&{jhyIqH
+z{vnzVK<SK|rGH!78w=DPW{we2TJu?}xN*Kgfx_d1@@ISd2k9D0Lzz@E&K03K5gEne
+z6FukS#adeF{?M>PEmwLky+ik3UY@Cae|t6h7HbtRyK>`-@EqLST2~?h$|GVB8584E
+z)DJn!mGx3O=qh2Y;zoJ#1zg=pjw(3~P(wpexGq)!o`16(D9^zz47GXCdca!6wR4=i
+zFn4dRI9wM*qs@wlUdnP1LEQC&Vy)uZISw~QO^iwj${`1l!vOaIf6hIDyLh=LEPjaM
+zUhvv`b$M3l8jH2jb)j%iEp|(AbHH7lM*`fMgZ1CEGV{Y)#eH2JwKR5FQ2gllf_^G0
+zC@9U{9Dho4R|jFcwJz2wuI=hg(N@|QV>bjP;qp8Oz54UY4K+O?tK`&_#Pb?IDAp?O
+zo8#cQ_@G3`Wj^=gPe*^$_JDf;Ka&H94AZkTT}1KUq9pgpBe0L>>pUtzUMG}PZlS)S
+zwTf%I`ftNm0T6b@21N0{#?787=jR~kNsAZODi|)<#wXhy3T230o5BD9002ovPDHLk
+FV1k5kJ3#;d
+
+delta 925
+zcmV;O17iHD1*Qj(7k?rM1^@s62i0n%000ARNkl<ZcwX(8%}W(g7{*W0pAZEVZ6Xk~
+zs6`Y6nk`xig%>Ic!V9&?kP@O+(n<&_LRWzzZ6YLsyKGSw6iQU~AqdeXLMUt*)T($!
+zpX-_To{#r9bJeIHT;|@nXWlu_`*qHYF(t8a)3)CwnOYInr+?nXB@pMjDrf#G@kzoV
+zaPyY!Ie`@Y>Empw4_B2W;XWXG$Ig~j6_UyZ?FEcBK-7&fSxqCwW8m8PZ(r8&7#qJ5
+z6pA=SZ~Z=>&6Rb|K7b=Wt$Pk+-+5dMjZhtNNhs0~I5Rz&37wgqG+jq4*%2R{Ls`_u
+z$D*qMvLqILjeiqecA|!Xo#s8~`m%E~AKvHY#O7w#x~t*gf1Za!Y7fU3vc>Toj*6iv
+zwc7YtgZQX$di3hG8&1KJSa-LDYX~{V<$T(g%~p!{3U>*HC`KXVX`gsbM!O2coCvh5
+zi4^Xvaftr)^G8F3Cmx(M=IxxR-aD)bRt|fD+R4Vo#eW=QI~ajNUtzrmn_K1d`P}5I
+zS6&-q(nU85Us{up<GjLOOuh2X_tx;J_dl7&+O*cv+O{i~iBdfNNA2_IBUs~DdaBhP
+zGcq!o9m(F^Ene|jq1tgpvF~Hod9bUa)}K6m=DfFzI_qut_VxOBUuL*O7tIuiay48T
+zd5TvpXMeVMml&65;uC+dcPWE<`!44kX8#VAl?0-Ibbu{hEgUfNp$OWMme|+Xf;EJM
+zOIw{C?b$|!PmF*)fea4xXJgcRbwq(4MTGIeZyfFVFB_kue4=rG2;*FRsP^hGguVBo
+z!Q37@6lvnx&ZYp7jJ#aC5oL-^v8fVn8<rdX&VP<}Zv!N*^^_Bifk)u|2bcB^wk@W%
+z%Laqg+P1LOmZ*itc=K*HTjpXMKXIx)L^@Ftdh!a1)}XHO7*aGGQ3O5_+R-kP!om?X
+zcwY*=bm6Qzol|i=X8O_{UED=s;Q-<(6b`V{Fti-4CZ!0ccsk(b(4Am?7C{?r7e@~5
+ztAC#^O*o<WSmRnQ^7VEKk0xF=PdK9=n$Xv|&r!#~aTquC{Bh1yS<SAr<*XSjW=+FO
+zNxt6JWEI8?4)oV;@S4(7J%o&&2G{lzQBO&E*x-lvY+A&z4&S|B%W2~~J58h{-QC9;
+zY@rmE%Zf&PEs?abPsO$6Tu!t>nYRA(FBb9#(h(Ys>T30q00000NkvXXu0mjf$Zf`9
+
+diff --git a/2DGame/src/Aset/wolf_idle_right_1.png b/2DGame/src/Aset/wolf_idle_right_1.png
+index adf5fefcd1f91a36d7379db335dd0ed77f29e135..1cfdb36c61a5b7f155c5a4e95135d0f63c092ef6 100644
+GIT binary patch
+delta 753
+zcmV<N0uKG32mA$)7k@Yi1^@s6rI<@u0008RNkl<ZcwX(9&r1|x7{|9?hlOr}j1YON
+zTT$319V}sCu!GnBihd9jSsf)KA*^m*g#|AW9$XfLY7b#+D0<UFu(IGFc<vBU_{ayE
+z2VeJ{9aoh1`CQ(aci#7%VZP6=ccxG<48t%C!!QiPFbu;mx_`?l-{tR)-ut^d_R{4m
+zGG%J=h4<X!$m!$wP)EVpb~i!khYudh(6Q%F+D$nTnBu++-Hv5w6!nSE&(F=CNMAR_
+zT_nktT&mU<q<u5-OxmYouce(Y%=#M3f%HcGVnG9?K^aF(iOV;;Vo|2Ji{(aL-gs-X
+zDT=^IT$aO)^?x<#$1)~fO-g@OrFM3<Wgd0HyZ3M9yteRN)@MDkOszU6*Z=(f)saO6
+ztGM^u!Us|2{-c-j#!;Rau(7@-{XZIuDI>aYv0u)ks83p*4bGe^?q!MU7rE|QkNaP}
+zc0<Ntky!~=@wSy4Y$wf>byQ}i_w{)oDx;jXjHI+B^M6-YmQrF-84@c1-^ZeeDV-9m
+z;@&>);(BRFl%t~4ptMH&Fj1P=fwCyA`7kvuT^7|dl3Q_Iak&&~2MYG|^vY1OfcAAP
+zrT(>+S~6?>5Uh`TM|BrO`y|<`wNc!a-?c^H%j9KZ1@o!kbY)nXnNC?oR!s4{kdJkA
+z|F5Q(TYuo2dK~k0UjOv5BJ+yH^QlK{wSLMuyTq(thD`BpL+wtq27DeLMsa)?sNr4t
+zJS)K}o;!~NyQ_F)RJwGnPM&t{>U3UiZ8l{cy&Kbc9q@7A-CD4U=g#9Ay=y{A^0dzH
+zT-VVYpXSTU>dKPT2`GEOcrSN1#SaU<u)yNC&uVfwcxzZ%YHe5LrIiMDVatvBzK<H0
+z{geh%JTLe#d3pHGfGkO6r7JVW(~qKAmFpB!JTK%={;BEOTKlfcSC5Kd6+g7f4fyk+
+j$@*ud+XSn)5gPvhqPj7+CeR~_00000NkvXXu0mjf=dXc>
+
+delta 918
+zcmV;H18MyH1)m3y7k?rM1^@s62i0n%000AKNkl<ZcwX(9%WG3X6vjsp6x@~yRosXm
+z)aODJ1YZl60i{I?B9ed`E8+uD5X6;GP$|}hLPEi17DART>H~y|phXP`;zmSJ>faFg
+z#+=)e$;_N{U)n%_5GJ{gnfc~Bb7t<1F$2QT@TN}n{LKzZw|~pNV-l;S3zidKzkD{8
+z@v}WbA$r5e=G5W`O8Azo+pPE^SW`qL{}PDDr`4RbArH4%*;)MceU+v^%f@k<r=dBF
+z5C<E7FWQoRXQj_^U&B7MBP&7ejqcuW+6(g?Dy92K{F~QvnoIlW2@7;WJCd#DtSDYH
+zh-eS<7U9dGV}HB^?scQvci7{NN7J_a`Qw||FOUd#Mf)0d8-@57aIbQF+_auH|2h=-
+zu1Q*M+b%Q!cWzy=r=*As3fF+fBvBe9;W5!P_!wkdryT$*Jmhu^&9Wl71bCQ->XhoK
+zPs|y!>#C_;f0uN*`Q)MfzINSuulru%8hrDz2z=rt;eR0@J|sNJ>J%bG`_o5zjF&`N
+zqC-gSU7D<VZ^iK=hYotrMK>@I4XAWO6VQP1Yw|$zox2>HRuK38!_sc9UT>IMt!m5m
+z!hA5vMTPsaw!7Tr5gc;T4egofDKmNTnjKGH*zei7v=ri6YgR-w2=3fyoyM|2pR`W8
+zPPxCOY<~_nDU3;wTgUyGhW&65-qLawb)1uCa|5WuaEdw&+~01e3E#Zs&by!<n$wbK
+zkYx26x9=u(VH4oq4B^jTzUpZ&)M+kU3$H7btOyJqLK$l}g+C&+yWLd@PeT3J;l0s5
+zVj$cM8Ox?+fkejVF$RF9r8KWONvJ=2@mB0>SAV>HfFSp2&Qa2l+=`*u6!ApnMx`di
+ziJmPh9n@4nq3;WKJTc*6K?4n7no!pyFNwr)jaUx3AA6dU>crrknmBE%-FM)q)K?qk
+z-0?h=@*)Bvvb+a#;TscBlxUDkI2@H8O|yb<zI@?a&+Qn9BEmek@Uo!!PAdrs#z08Z
+zM}JE$$3dB{BM01j@Hi1%l;}bnr}x@r0HH;?%*pMzFC)`(COL%j(y}Mjk(FG+LvCwd
+z`29~Z3n$U;`m1^S>LcrG;;g8j&U_3FkC?Hs6FsNWE^pmXw(rw<UHE?HWJUeYNLn&G
+sKIo)=xxn%LVURT$6<OB`EA;aRwk!p^Q4d!bZ~y=R07*qoM6N<$f{Js-g#Z8m
+
+diff --git a/2DGame/src/Aset/wolf_idle_right_2.png b/2DGame/src/Aset/wolf_idle_right_2.png
+index e434914966b30b1e89a4e80b71c69b111aaa5b43..bc8a5f7e656c8ebf1695a1e4a130ccae135e288e 100644
+GIT binary patch
+delta 714
+zcmV;*0yX`n2h|0T7k@Yi1^@s6rI<@u0007<Nkl<ZcwX(9&r1|x7{@oQ!$LPfMu@!G
+ztuSnr4yLfM*r98GMHxYn)iE*>!s_N#Snv|z!DT_H_7Jv;p*KAQ#)5<3xkE(JBOhoU
+ze4BZ9Tv6WVb9r~(dER%1`98m9woot(!!QiPFbu;m48t%C<9{eQlXbJ3w{HLbYddi1
+zvMiaMd6IeUNu=u}-qdk$HtixPJ$d)Om`*)@khbJhV2WpD^hQNYqo_|}era*xRK~g~
+z?jnwN<y5V{EaS`RM>0N~dLiRdVIixt{FmOSUp#22G$MB7luCKHBOYanyI5~F<cYVw
+z?}#EWQ7OyM?SHLJna4AxpU=p=uTuN_d$Nu`;q{wWa$H~jBKxx+Ri<8Bl=HuS{%Ff1
+zf>k{8(;@~@=FYvR^2AY|9I(B$Df4U1m4p*rxY#epQPd}+t_I!biU(Dq_EFBe_T&0j
+z2Cs=79_dT4il=sNuov$nyrVilcWBH5SsCTDXT+slS%1Irbu}Rtogujbh<!YYoYF4A
+zDxNvUU0f}VigI*x8kE-P7$!@TJ5Uy-HE(C1$&_VvPjV}+J1&<(X`o<FPp_C#1$3<A
+zDUDC{#FoDOL$EQPIjg%M+sE-iuZ`la`mQ~KSf(zMD_Bnlr#r*y{9M8_d@;rILOs^m
+z{hyv*E`LF6YCG2Jy8ixMRn`@Y=M%TsYJHPq-V%Mk44LAchTffQ4a7V#jN-&F(8Igx
+zxi7&gp1Y0%Z&zez>Z*=C=5;;Rv5msKhwJ^*?9&KV@!WM>!}~U@eEuLmN3M^{h|;b)
+ztd$0O^7UrpP%$gz;WUvGnBsXMw#m}tV?&8Lt3&HF_ROQGuX62TisyxIU;M+OJ1rf%
+wu2?-Tf>r#;>NxNnT;uzlz0(A%xDgtE04rz}X1Ryx!2kdN07*qoM6N<$f)ui9uK)l5
+
+delta 925
+zcmV;O17iHu1*Qj(7k?rM1^@s62i0n%000ARNkl<ZcwX(9%WD)t5XMIl6ugEAQM`x{
+z@O=;kAu&043@BMNpdwlDVnj3|dJ3Kb0hM4pDC{D5@URCVM-TA<LPXG@E(qd9L{Q@2
+zpnPR&?CI(5s+sK}F60MG_wMv`*H=~jnAs%hB6@na{f=es`hQp*RSiUs)Xq7@mvKnf
+z2nSz2e@ble5WS^udtvciC49%uei9#p|3)~ctCY47&r#=SgQ8Jib>T1`pI!S8Q=LoG
+z5j?-a)?dq1LVPD|aNR6<9W4L+woV#Y(+>n7ecMZme+3<{Q5_CwFD;TI_?ivwef?@d
+zGQ&yEc+<Nf=6_ocgVzC!hLHIutyGk&?wh;#o#DA{{zhZ$-a}>c{w$S0zJFB(B_rG=
+z8UwOnu0bVH8Z?WRJ+=)yV0vm&m64)wADY!wG8V97x$Yv=4`&{-3+=QHNQK+cHVtwi
+zT`!Bvp^^g|V+%>L?`l%N{x%)9_2?eeH*VVOOnvXF9)B9FD$!-BKOWAA2DLL6g57x|
+z&I?ET;|EF~ly+)z8^G6NU^`ZF^yP_h@32FI1I~y$g-Zj)LOV{V9Ynu-|L-){Xf%_0
+zeVj^cgT8H-gxmAmjIaq7k|GBOP2?m|%*3T@RJEs|FWSCHGdbZd(Y$gN5zPj{;JMkE
+zi~#fdoqxHeGl5)!eBy!GUJ?yb;WuvH${4_N7NU_Z$ckq#US`_(jJ6HYVD=T7vk>oF
+zcyXUbGzgy6Su`3#JUTV;85lCWQ!sxqJzyJ3-v02NGeU#&tnOn)JiP_s=-WrhPDE=C
+zMF;lw(^Nqa_zcgB7|!;ZX9(aGZbsXLJ02Pwpnuf2(+(+%2M3&)HJH;!I;b$dbk>Rv
+z3YXyMhZa1^5Ud-g#!k~vhmH(OL(;Z|h{vFk=W&QA`eML^xj%zgqJdL5o^YgS0kqLP
+zo|XaWeC6W#%&l;QcGZ@sB;uXITO02rEEtZ^1VlqB{MgZhn)W%Wj5^kU+jk$Nf@6u!
+zq<{L;=Wj|0H(&V020~*-*(6G;+bc3}XHtZ4UE21fKFUJ-I69x6noR$m(GKQ|w)VZ(
+zYLZ4AV)>&nh(+7c_8ojA%DycvOQ9pHO;2xMGCF!9^K;SdZ6&+tHL}?k>Ss@msE?pU
+zi89B#5mj3IaQ$JRT_5t<lm832Y+q}vkrw9<^$Z4TBiJNA00000NkvXXu0mjfVFR?z
+
+diff --git a/2DGame/src/Aset/wolf_idle_up_1.png b/2DGame/src/Aset/wolf_idle_up_1.png
+index 0f973e82e610911395a708878effe0265adfb620..19e9f6b48f5ddbb23acc949f58243fd679ff638a 100644
+GIT binary patch
+delta 680
+zcmV;Z0$2UT1hWN@7k@Yi1^@s6rI<@u0007dNkl<ZcwX(9yGtBV6o)mBBL6@bA;d0r
+z3Cg;$QUk)W7M2MFZS8!JLJ(4GARz3PwuV3~w{TgoFjhfBL_5<Z2rdiO79tVP@_}>k
+z>TKo=f^)uRn9DtPcIP+eb#GUf<2a7vIF92uj&t{PTmOWC;(zeJt84z++3x5W*zfP{
+z$};C?rybcR<w4Sk_l-wc{h{HJk}MrXJ@N(2&3=&k(%9>36&#;<C-YwPy_9)JfB(p}
+z)ofp_amB4Em&RgCR;nv<|M2mXSPXd8KPclUjotS5hAW;0nfW+q<xy6n=VeW9ecU`p
+z>O7v5DC&`^&41>xj_T&W@sivsZtmkK*QnRz%@VcA>)My=jZK+H6sKat&hxl2W{OjJ
+zp)`b)4n=(w=Ss}zwC2B!-1@j##C#g{N=0^Z(z@2SlY*~PtFxYUmzG<_Q~NkdKYQLQ
+zqM{JK9jefX<{IpNA0EW=`u^Uod{G<qEg27Wc}a1_(|@A#?`@FJ>DodyJnLHHivKUI
+zX1kWg*MaD)eHNwPj22{Sr5b-Sb{Z?+23I^SC|@WJN%W=5N{hA9u6SBSG$Ez+_`>2R
+zG5xvoL#{fiQ@N$h*CE`;vw|r8b#3*=N9f&ED!{C8#jVk`dZ9QZj~FkH#va8^3t;Cb
+zDH&lN)qmM@gHRWy(ewC1Hfnx$W{SDu<ZDhxQIdSEq5IN%bD^5u3Xke((dXNAUywA9
+zW4FBYSxhU{mG;g{?VH*D;3c_L-0UrK?oBr}HThQFEEQO(JR$e^I^#3*A7z{`f^pU%
+z@B1#R5oU@5Cm*_UL(#P_>oS$Di=CVIQ`51(L?Kki*R8v>-1@kaH!cAB9Q_1fI$mS|
+O0000<MNUMnLSTaM>teJ3
+
+delta 569
+zcmV-90>=Hb1;qrA7k?rM1^@s62i0n%0006ENkl<ZcwX(9u}T9$6h&9@6G95HlRzX2
+zmVU*8MX(dGwX_lhv9j_X7CYHO*blH1Vi(Y0AlO-n{}8z&FAU@C?yPxtS4|Eq3E7v~
+z+_`UN-b|vX23qZn>G8?=6t6{(3ysrYRilv*UMJ%y?jIR(zJGXpj{AtKgW7~|cDhE7
+zh?fq)tB3{?$7YTF03Q$!vNSO+H^B<~p|+bgc1rtP&eA0Mcz>h)zS>g#x3Lt?0_lph
+z1-<PZbNR6EvC|yT#*ko-afsXMcA}T@#N771A3Z<G#77<DRN=B@-P~p~u_2&C4i91z
+z%9`M4!Xf(X@_#x+XCYS?rxfwEuH)HVTG|oue!nzE1B&CW+aZEo><(bKPIdezf(7|5
+zD+6eb_jdP;2Dd7crOk(1zDjjB8V=OQxq1O(r+MCn1D)btKIHqDB+It6RZ$lX>=Z95
+zT73B8=NU42(8jp9B?U<+Zamsy?9nNXYwxMG+XEEgA%8H$R6$+1y(uZ8O8PQ3E$YHU
+z`FD<oB91rJ0gXFeCFM1t34eUJH^0+9c(AKBe2#KdF0=lp$+v?FX-6BHaADqcoQ1k@
+zl$Iz*TkZASG)C<m0)_$F`D(BDUzn<>3;!#qm#kRFN5jGFZ=$?e8++_B?99+Uf}(6o
+z0a6oZZ89!$mgXZbURyL+*i@%EF0Q-I7P;q}z!+{XSwubov?JlODk%ac00000NkvXX
+Hu0mjf4bBfA
+
+diff --git a/2DGame/src/Aset/wolf_idle_up_2.png b/2DGame/src/Aset/wolf_idle_up_2.png
+index 4f264528fe81bcc85ae49f874db8c7600735e083..6fea7fb61be7f6d8033a22759b7432b167562e7e 100644
+GIT binary patch
+delta 662
+zcmV;H0%`rV1fd0x7k@Yi1^@s6rI<@u0007LNkl<ZcwX(9ze^lJ6vs`BMg9TVgP>i~
+zDUtJH<qr^!yW&cP5ZiPnVj&2rlYk&-nN|^!@`^hSEYwOgL`<h$MDRGc+CoI}$p^9z
+zH}1J_Ewb;^3^%-)x!v!+A2ZX{<v5PxIF92uj^jAaWAns%!GEE`=+)nI{@UB=Xbr|6
+z9_-6Bmlx+9jgQOIxQ725&(eCJ(XpaT9RxY~0zQ72m*2(7H+L#nu1t&F%U1(pcY5+i
+z+E(+nwZ;{<rc|5^O}VnVEWf*Zo`+(<;Ok-OM`_0GY&Tr-G)T?IK`W248f}+0ne}n=
+z9I5koT!J7crhm=mnU3n_|M7;*DsJxMDA%Z0<;@bc$?Mve>y1sZBZ^b8G0yY2F=mQW
+zd7(5!DIFE{QJj{T(P_<pADQ)WvxwOn^h-t7Zny6A?YQ9U)auM<y-Uli;)#76rC;>*
+zi>N4sZ%0*VL~{+}j*ota^7`SyzI;)&`j+%Z?egN{ihn0X=imDvpR;R=s^OW}8dv<G
+zw3@fIG`<c*XYI2nJu#ja)0Nfm%8b)k`8K%XNkRF1VML-YyR4*GEA5IWRYVh|wC-P6
+z{3=6#?(IseqdJva(tI6-`*>Oq#W&Wz{c{O@x=IC@7OuE8x>nB@Mr4U{X*{$PCoRA@
+zze!06^M9z$nHxmy!Zg~BFQiuWyE9YF6z9y1e9i4BN|LWN?7sBb95p-h)~eslPK$2H
+zY*aUUi`;@zThF|kk~d2}E|w~xN{#;6xlhtho~NIA$O3-mW`vpIz&W_i<0!he{zFWu
+w!P&>Zop~R6Bz*kK=cSOn6`A#MCu>{-+TZpF?GN4MUH||907*qoM6N<$f??)fL;wH)
+
+delta 553
+zcmV+^0@nSZ1+@f_7k?rM1^@s62i0n%0005}Nkl<ZcwX(9u}T9$5Qb0j5kd;FlRzX2
+zmOe$mBG`%VU}Ys%R=z{93s(sD0Cqy`0vZeiJ1g-Wlz(NyvhLl@dGlY?_`#8o%<bL3
+z|LpGUU6M3JtG)HExs*1pF6(t0&;T+0!AYqoZJY&-2nWyeS$|R_UPL3V2^tf=-RU|#
+zB3@D&pCTGa9GeaH1!6!v$kL%30?S~HeNo>{A3vpIE@$a5d3$}K-Ctv={?k}l;j~op
+zk#z6v?j<|jPVzLHyT4=Kr;iWxGzV1SGIL*#vV~X;=#b;1z6)iIbDD67KD)Tm=q%*&
+z{FEZT(d8_=Nq<W_qJKCjjj@2@c<8o9aERXl4A-fSe@Cz&=dv<@=6G-az-b7J6BH(S
+zgjJjrIn&A5e4LxF<9?dw)!pcn@Q5MjW0JJqu9^!6eu`u5#-Sw^UuVeVK^x=Z77CIo
+zgz;#Hu~nrwZoRd%ZVym|YhZ|}g1K;%m_;+UP$hjCTYpq@;adKj<66Y=Wp%*P9j}t|
+zme7RX-`%?V^w)5I?BjQoqjI?QKOKHq^Q9eYXu^fM>o^N@;V3Opj<(vHxoM2rTLXpx
+z+WBlx_a;V*x$xhDdC7`(d^#B~-jn6c+Sp^4;b(^RBPhzY6d*P6tSv;IrNzjLw-yan
+rHq~j4iz4fxvqkR3CNPHE|EwY(pbOSB=HeU)00000NkvXXu0mjfQhyU1
+
+diff --git a/2DGame/src/Aset/wolf_walk_down_1.png b/2DGame/src/Aset/wolf_walk_down_1.png
+index a03bdc50634ea43e0e88c4372ccad3eb4afdd592..ca06a75a9883b659f44aa1e68154ded2ed561368 100644
+GIT binary patch
+delta 690
+zcmV;j0!{tg1-%837k@Yi1^@s6rI<@u0007nNkl<ZcwX(AJxg3c6oxfwkv|ZwutZ1^
+zJ4MlrSeOXHqJ^b4`V;&>P|#S0C<wtMU0TC}79tid3jse0S=L3-PCG?#5v(mFL_Fas
+zX4s1^o|__bo@RFLoiq32opa{Q+^wlG48t%C!!QiPFbv~gQ-7;{!S-~|pNBr9s8PD!
+z+FY&b8UusFVqYp2#QwT`UX}e*dGXYS{~Ps5J<!|c7U{a2z7ho&J}*f<)Az2Tf+&q0
+ziYJ9Bu1$ZY&*}2(w=YsB23%g8OT8oAB_&E@mtFaxeM=6exHhwM)6ylr4Jhk_(%2<U
+zu!^hCk@#@W`+tmxwzr#?l6o9|JAB;cab*&l$InhrD*AXX|I2v<e4CQ!pETy<&xOnj
+zCdQ}ar>`K#A?`dQgOO8h&i@#}Dz4_^<kmMg*YdKNuQ%4SQt#^SttbL^D?iudJW3PQ
+z=}((r6;Es)KR!ATk;W$Hr6g+ie&}$-+ukWTN`GJe<bRz1eRr#Vj}HW^xSEf@ikf8I
+z4JeI*D4t5aktX==R&Gb?_%wDz^HQ-O{c2}$!78riKYotxgQBU|P0lGl7Wk0E9~Sr2
+z?lov1S9^<f4KKwPGyQ||M#<3p-25?!1=tZIw4-~lKCTwkp<KRlM6Gr`j^af1q%g&w
+z3qBY{jepL3&dv)8`Xd73c4)MH8-i6_EvmB~&*wJfrM9+pO35zk=*W=N<K}TPICfdt
+zcc;D0<4UMSb(97&GT@7e-;R+HXJ_kiWz-ZW`jWHz#C`qrM+PH+;}+GGQBxfFCj@(K
+zKy+qrjql{F<Jp-h>~D+7%<Q6+%S#`XANeoA&MV{Uij$e47`b{JM0<8&$>8k!xM8Sp
+Y59!VTb=!9VlmGw#07*qoM6N<$f}B}b<^TWy
+
+delta 721
+zcmV;?0xtc%1>6OY7k?rM1^@s62i0n%0007`Nkl<ZcwX(9K}#D^5XYa=Phf+ET5=Jg
+z5L+r9lpg#D0Y&Mp6t4=U7f(G`)I(6xQ$a$(g9H@v5j^$Q(pCtFxAs!geuc<?(}}aQ
+zv)Rq=n|JaDA<5f$oA-b7-puTabH-GrpY%7k-uLl7&QBHXmw%VZyoP1CzUsRA#+yh?
+zp8LQK_ULCt5aC1~@g&-sAi`(op1PU8y-3R_@mw_Q(a(wpRyWpwnBNa8k@!x#m00#@
+z2Q*2ROjzDrdJtUvOZO!9^vYCaI3!FG=(Jm|_ve?_u?AV{Bp5<QEni%N4JOB$Aj08E
+zO)%QE$PHU-@qgyR(?n+h@s{Z<XmFEQM(r%jgd?!kUMvrP9|4Nza}CYL%IjuJ9Z~r5
+z+n1Qwo3pCBxjs@w16+d*r8NyqD7{i|lmo9Rf<qp!uWq=@pFa{qdAGe8Yil%*6E?N^
+zXRdSJc9=j+q^#=7q&YK>6BsxIaHMD;+eow(X2SVW=YQfg(F9%NqA39SuHnsu6Etwm
+z^BS6H3(SQBE<OuP5bs0q4B>+y!Zjh_<<esGk~9zZV@;aqGJy@4<#7#JuzdV<k}!jf
+z7U6vpR5*YrDoV(++i!QGYtqva>PP9V%w&}6oChr$BYJ=R-gOJl?+zO1yYx1%+^8V(
+z@rWAC<9~?OypZ9d0sqczdG+T*Fkvd34i^VC_~3MfAkV`4{4<~l;<dX^(Wb!-q8~l3
+zs=FaAc*%CrzwcALsmD2d`EpP4&j1f7a$8ssOt^ed(Y!}nLwl(4O%UM+jb?1z>+5Uo
+z^{cwNbc>$Yj7zY}Eia)?WlZw8JbfXuQj^U2@=El@N8u7AooS>+W{CcL+DUZT+x?*4
+zrz|FW{Qt9f;%KNyI?7rlMKM|GMbZ9EEizg6+>_)M|Ab8e4pYC200000NkvXXu0mjf
+D6-{YO
+
+diff --git a/2DGame/src/Aset/wolf_walk_down_2.png b/2DGame/src/Aset/wolf_walk_down_2.png
+index 415bd9489bb987218329b1f219f00cfbda67811c..1019375ca01773d7dc63a4a1ab8631bae2fec160 100644
+GIT binary patch
+delta 687
+zcmV;g0#N<r1-b>07k@Yi1^@s6rI<@u0007kNkl<ZcwX(9ze`(D6vwUF!GA!W5EMGp
+z&0?`pI#>lE#KBP){S&MrRETvHTM&wEx2_gJ2N4HDKrqc9AqGp`bW15D1TuFhrQ(s#
+za4&gi@VplK&S$x~@7;6XkMBJ{-c4JZVHk#C7=~dOhG7_gn|}w|7kru={c}BM5cJ5@
+zhX*??U1M@;M(oR_qS)7Km6q)9O8Z?0{%>?f^+1pN2W0A6vMLI`S>KR;YGSylf+&q0
+zibsVhu1z{M;Y|7d!#n8{1Act3NPj3fA}vZ|x4rdA`<5I`acwdyuVhMm8&K8<rLl{e
+z*eb4`Bk|$U7k?=ct?(r$E&VY3arn69ab+UQ<ChobO?^C@J8~WY-=-z{M~(UTeWCJ#
+zg_le6(^rt=5O$uG!OCg1=D&^DDz4_^)YgqgU0yc%dVg<Q`XkTBn~H$l*5_S0kJ3bS
+z=F=v&ibs~mzkNLwk>(dyr6p>Qj}1BE9p}rA(jPb1oPYDbfBjUy$7^D%xSEf52YvG0
+z4JeI*D4s|>k|Fr+VKy&)d>T8VdAU@Sd9^FJ*eb5(KYoqwgQAJvKIfDl3w)^I&q@Wg
+zdyTb^tG&gJhh5@}sq~b*Q7SaQHopyG0d~X)?dTp`A6JX&P^(oPQCs~UM{%NhRG8xT
+z1s@E89)BmFv-5(2{)&LG9U5)lhS(~u7S;J4&t(tfr9K&aCM~<HbF<UZ56k0JaO|?O
+z@6LG3<4UMSb(97wGT<K*e;g|#%+9{Yl~Gfi=!>tj^8%TboBWP1Po~GD@2?D20LLw=
+zE2E}3kf)b3Z{-k`n-5Cz9na28@#I*BV!yfZS}6IEZ?HW6uOKF{QmEkUzca&7;R-}W
+V2-UYacG~~|002ovPDHLkV1i*vP&5Dl
+
+delta 729
+zcmV;~0w(>s1>^;g7k?rM1^@s62i0n%00083Nkl<ZcwX(9ziSjh6vs#LFVI6lC5;Gy
+zXoy%S78dyf4pJO;B1vgLY+?-7iZ-IeN{}E(kb?;KCs?IYQ3Hac)5iSx7f!x=dGYPr
+zcf0HEe5c9>LT-28?9FH1?9A+32xK~^&kyJCJ{scx|9n-`a({I>UN^7}+dqGVZtqSe
+zQ|CU2Lp;i{NFpxOkr!z;NyIN)oDApob~BeUc`c22lw)y%bz=|6{65vm<Olt=Lbu0x
+zAdST281v>fgW%)-_)OxNzIn29SS2(P81&b|?w?;#>zbsii!emWx-YIF293iei8wOp
+z3FEvsawC>4Pk$F5CtU^PnbTR)!Og-PwX2|sV_=(_xqkTl7@+ig?%~DQtm{Qkn*op3
+z)lsRfFPk~posEgGv;ESQ2DpY8nbrXAA%ZeX;Ch|KP#N@$cjtOx>-)E?4h!qEA*_GO
+zKHp!Q&(-Vs>YK2zjBB(18f&g6^20XS^`K>37<}l5seenCbKh;Hy@o&;lx0B^*Iix9
+zd(whj^Q2?1;c4Q6jND%4J+w5+vPOQoIMDJ{NcXN1Zo7<4BCh2%H?CdH{w%96p5;zq
+zTGUfx3}~aehZTDD`dy_oi=^V1vVbf~q#+jXEoJ9%EHNHZPS5R4Nh&Vb%-iEKVn_q(
+zGma@uFMmTdpTFk!)9kUJvm8sBF0QeQm@CuyZ6$rIV<9WTF;{QYt}ZVWqpXj%l>~W~
+zv1rksfh=*y^_CdW#36m=?1Wp#aRZn=Z^}nquhYaW=)PViZC3HtrDItn6BlX0dtT+y
+zu(1rNqq?QeR#Kgq7)0H&73}WIgNG}Hy57FkEmCCNzJb|Bh&i1l>FQ6PJRXhKYDdO)
+zbx6N`KPWVil#LBV{NP=@@JmUPdAO{x+Cb^*P4RwBZPHjr98u&i01#Z1OoB;e00000
+LNkvXXu0mjf5)p56
+
+diff --git a/2DGame/src/Aset/wolf_walk_down_3.png b/2DGame/src/Aset/wolf_walk_down_3.png
+index b772cefcd7fa0254ddbc5edfbcdcf6c3adfdd3f6..f9cfeeb6682271d3e75caebefa041a104e64bc3f 100644
+GIT binary patch
+delta 642
+zcmV-|0)74C1&#%f7k@Yi1^@s6rI<@u00072Nkl<ZcwX(9%PT}t9LGHu{sCPzQ5Nio
+z7_#svHL<W{!=K=hvLH*bQ1aN>l42oQn5LA+N@F5+>`0lEwS`1}^;w+L+?f3C#{GRZ
+zXU^R7J9FoL&+l>1DJd}w!!QiPFbu;m48t&@rBr+R)@1kR_kWy0P$N?x9qtzO8-qh5
+zVxP-ii2Y0cp(y*`Quf<{|BZ^M{!l|>lT4jYK8u1&i_6ka^>-9h5T&t0@u)DxwHZkD
+zJ5#Q$uSlO5@bvf~{kCMMv?z_;&eo>(EjgIt+RV<)$dvdtpsWu{V;42CRa`ws;=|oN
+zDG}}bEF&%bFn|1U__*b9Wg^St_jk7ieLS5xcK!msO-uBT8uRhLLgfXM6Vvk1SCH=^
+z>^duhl~ZiZ{}ZuQT+PR+tzTbX<YAMq5B7JY-`UkyPz3C@w)f;ZN)y$YPn*~(9$6m0
+zxxN&U#;4|`C2IHewmIURoaP**H&z#%>mToL>i76fY=0G3^YQASPTso#rBM*Y6N!2m
+zg6|%sPo<AfV@EX4WiMo2?FufoimUmLU!(h=Xri{xx#Y(JA8Pok?77;##@ff#o?>}r
+zmH1+6U`U=Q6`Eh0{{*oBJ7R=(bdRl%t3`Fl=bs%>i+vwQaiV%unBsp09}I#TC!e$P
+zf`a~vfP1hV8g1W(*eb3T)p;M!qz~nxHn+4(%P#BK=&<y|@;DV7yR7WHGv4yJ5^7N$
+zrGbhJI5F|Zu`<H!?0sArHN}a()a*WCr=R}HU<L5KMRjG=qB?|~q=0`;PBtLFlh5rW
+c#V}O(0^!^GLQoFoRsaA107*qoM6N<$f|STh*#H0l
+
+delta 728
+zcmV;}0w?{B1>*&f7k?rM1^@s62i0n%00082Nkl<ZcwX(9J!=$E6ozj?enDI!L`fq7
+zAu5W6VquXVun@^&Cz6x~B#mEKE82(>D?x%FAuK5DPq4C5Q3HacOPYN67gpYhC!RSu
+zJ2Sg`-l_6H$j;2UJNLQge$8x3L>d#Py9;+7ck#cU+YDN+AAd&s2_A&a-@j6`bvu)(
+zQXX-LM>!^RaiNO5NY?>f{LJ*(bZUPub19P7(uhYnCS%Mm*Fa|bL?e^$v{#RGdz=T-
+zNNh$}H?SE5pZ@gDB*ygh@y20w&`6-uUQK&DTjBMjcXbhlNKyC2HN>EC>VPheOnSmN
+z@6FtZtwWwF-hWHF49K&Wv)U#%3wzcsgCdTJZRX<D!+T?b((Ad07h|)oH$lTrc$BV=
+zN^N}moRi)CFqL*UU%Ao%*AOGi8o+mmpsW(OUS%^>1~uc&xmMcv`6H{t;@WIVYhSX@
+z%S#Kndc9bAn-(A7+U)<vnrn%Cci8NDP%<ubKDN`$xqtJy`&wzQAy5WonNY-aSJ(2M
+zv>?|!X~rI&A}+|x?PcCWOQS4v=BJ7SEnkLo?=s<tZ7f|}%WJM(xt#r3R$e~Oox-xH
+zm&Pb4v$}^Bdi~~osWg+?#Ia-n*_22_EZx1AoyW1nct|<Dwhu#X;)2b*JuV_j8qmf#
+zmNdN$)qi~bo`0Waj|H9ONNK9L#%^LRUC6&y(#JX$vLYP4d!u!Ad7wDR`oU`@LB=vR
+zE&4N%EpD&g5(PyZ(kCaU+&cD}!0dTbK77AU5x1cGdYQCY#Z#A#Wm1c{NDJP0m7!r{
+zS<q&6OO;niRbrwD&$xa2A{6bvQRdxxC+9Rje^Dbnd-^0h*O-{Z>>fJK!^JK4A3i!F
+zbn9j_RALaq#s58vSNefak9jmkkwEl19{vl3#ru^sTH=^v%J~bNWmP=2@qD)c0000<
+KMNUMnLSTXg{$t?)
+
+diff --git a/2DGame/src/Aset/wolf_walk_down_4.png b/2DGame/src/Aset/wolf_walk_down_4.png
+index e891685a1017e7e6c3db99935c99f199116c7ae1..ca06a75a9883b659f44aa1e68154ded2ed561368 100644
+GIT binary patch
+delta 690
+zcmV;j0!{tn1-%837k@Yi1^@s6rI<@u0007nNkl<ZcwX(AJxg3c6oxfwkv|ZwutZ1^
+zJ4MlrSeOXHqJ^b4`V;&>P|#S0C<wtMU0TC}79tid3jse0S=L3-PCG?#5v(mFL_Fas
+zX4s1^o|__bo@RFLoiq32opa{Q+^wlG48t%C!!QiPFbv~gQ-7;{!S-~|pNBr9s8PD!
+z+FY&b8UusFVqYp2#QwT`UX}e*dGXYS{~Ps5J<!|c7U{a2z7ho&J}*f<)Az2Tf+&q0
+ziYJ9Bu1$ZY&*}2(w=YsB23%g8OT8oAB_&E@mtFaxeM=6exHhwM)6ylr4Jhk_(%2<U
+zu!^hCk@#@W`+tmxwzr#?l6o9|JAB;cab*&l$InhrD*AXX|I2v<e4CQ!pETy<&xOnj
+zCdQ}ar>`K#A?`dQgOO8h&i@#}Dz4_^<kmMg*YdKNuQ%4SQt#^SttbL^D?iudJW3PQ
+z=}((r6;Es)KR!ATk;W$Hr6g+ie&}$-+ukWTN`GJe<bRz1eRr#Vj}HW^xSEf@ikf8I
+z4JeI*D4t5aktX==R&Gb?_%wDz^HQ-O{c2}$!78riKYotxgQBU|P0lGl7Wk0E9~Sr2
+z?lov1S9^<f4KKwPGyQ||M#<3p-25?!1=tZIw4-~lKCTwkp<KRlM6Gr`j^af1q%g&w
+z3qBY{jepL3&dv)8`Xd73c4)MH8-i6_EvmB~&*wJfrM9+pO35zk=*W=N<K}TPICfdt
+zcc;D0<4UMSb(97&GT@7e-;R+HXJ_kiWz-ZW`jWHz#C`qrM+PH+;}+GGQBxfFCj@(K
+zKy+qrjql{F<Jp-h>~D+7%<Q6+%S#`XANeoA&MV{Uij$e47`b{JM0<8&$>8k!xM8Sp
+Y59!VTb=!9VlmGw#07*qoM6N<$g0DAM?EnA(
+
+delta 728
+zcmV;}0w?{w1>*&f7k?rM1^@s62i0n%00082Nkl<ZcwX(9!D<sx6o#+GC(ux#mTsg_
+zXe){fOBX&upwi;5NVg4?E>sksz>O$%C6pq#C;^2$f~)RYYy$=9uHD$`D@6W@C!U-+
+zlVr;I2N(SyB)M~MX1;swoO|acB@(sq$<EsP>ki(_oZ_<W%6~Fewm}(AejKOz%F|3{
+zly<0x`e?_7DlUv7FVa;(6~8k*lWzaI$Xo`=YiZO+J2uzZCjgK+yIITRTg{!^ut&Mn
+ztBPxk6WIuYZ@-HpiF^9djau(g&`F@x+({QdPbt?(9qJ+skwL>3$502IQx#NkMA8#R
+zxtF<7w<>v>cz==fFd$#WbXG}nvs96_hY>E0#5Q|xp?6*+C_SHhcy-uO4<G8t!tH~-
+zKH2jxQ|bKVy(<lH40U8$^FW8ntMG?P5I$8%#Oq5dseN>qyOhnwT3^}Qt?gW$*}3`D
+z`r1tBKy;*C)kREm;Sm>b;SkVRX<*AlnoYR49_m`&lYbWEn3k3V$XdgPiwkn$UgSMI
+zX(lvrpyh{w4$^G|Jwrr7757BI;=>2o%d++EO<$2G9g)~T_&n}m7c3t>e$G`x9WTSP
+zs6-q<N){y&*~Z56?3j(TMcT>q7SS0YKjPtKV`T6B@5kx>-G3Vm^4&&TuiRuo6#0ls
+zk2tcmUVq4FX`sLBx_b2&DJ)RLWplB+2Jh~!2ohODUw;PDL3-`ZkftOzNZ*>6a)*CW
+z^0MWoeTN}WiMU1&UmZ#P8Q=lM-WE*g;`Twsi=NyX-a`!wx;PlL8w2T2yRAOI<>kle
+z*=B>~oIzi?f&XF0#S$8EyZbT<82YPE>b=bcSy86e#wW7ocyAx<g(tXBam$OBuW~~e
+zlJ-8A@1y?57D1@^-)HelZw(c-XG~|bC2Mz>=Km#SNL+EnaQ*<^KunQTTdWuW0000<
+KMNUMnLSTZ#wP%z7
+
+diff --git a/2DGame/src/Aset/wolf_walk_down_5.png b/2DGame/src/Aset/wolf_walk_down_5.png
+index 4faa346646703350555a875d3091114b35843f5c..1782b93e71bdde35b090d6bff05f7734801e4f69 100644
+GIT binary patch
+delta 697
+zcmV;q0!IDW1;hoA7k@Yi1^@s6rI<@u0007uNkl<ZcwX(Azl#$=6vyxMEc^##1HpiW
+zc8U^XusA(92xpN}8~qbJMNo)ZiV6pEYG-?LpoK_^gn(d7b;NLocG^XRgg`nWg@}>|
+zA8>{&Nw_x_&igcz$<CYX?swmhna#q2VHk#C7=~dOhG7{0ntw&@A3Rf7{ym;ENis5Z
+zt@>)N-?&u1BKDp3j@S?S-MQ>%<-n{1|2LLGUC{9pCuQn>p(hGHdblC|((1X13ZgW2
+zC>{z^T${Dhsx#%&XHTS04EX-7EB$<-C@o53x4rd3`;;6^acwGhZ_AYUHlVBzN@EwA
+zXcbq_k@)cPg@2NW*80$pmVO%kIDFjlxH7@=_}4F=C;E83@y@vfe4Cc&9~$%V{X*ph
+zH`Z^-M_)m{hqU8789X`j*8J0mR&g~Sr?wsr2XeE?*Kgl!OTT!2Wuge!ZM}Rg$5EQ7
+z&V1TLt9Y<H{%P-{h;;qteQAl>D;M*Qc<-AXN9pIA4}YBFzkZI?&v8t&imUnfkt8SU
+zZa`@iMDc9)m<+*pYxSn|@oDUc=AHJA%&T3&MXR`)|M)e!4~k}w=A1)*EbyU*-)*<l
+z&NXTuSG$V`4;>a?EUlI0j#8odwfQuN1=tZIw4-~pKCTwkq2KR0qRzV>M{%NhC`|GF
+zf)6H1#(&A@?7X0$|3pCA4vn^NL$r#kMRnHWje1pX>Z#LbrDd1(+SSX_Ps`&}aO|?O
+z@6LG3<4UMSb(97wGT@DgKaM9O&Cb^2%BU$$^rdF^NqhT=FSAY`jedyfoyucrH#hF7
+z#i756Hma*B4*U~>y*3~^v$w{3@_eBvd7nKw@-n%-Ee(Xa;#6k%D7AVT{(kvxyA|kC
+fU841IBR2j32tfa5!CHbb00000NkvXXu0mjfIdEpc
+
+delta 718
+zcmV;<0x|u>1=$6V7k?rM1^@s62i0n%0007@Nkl<ZcwX(9&q`ZS5QmS_C$PbSN;V=C
+z)KYO#>7tJiP?YY9WNSdWQ7m06c2io?RY64PLIMhT1Xu1_+6sbXryG;{3Ms#vj?A4q
+zN$xE(XXOVM&B-~r`R<%E=TAa#qBK6$t!}*U;%|{#{BOIWjDHqwP=waiWvHyJCo*~3
+zp&sg^oj0!HL>_sPj)klE^vu&R`KOb(43g*4sE>BuJo3H)fXvO~QX=1M9A>&b%Bfx~
+zMm%mLBM8p!`bQFD`qfzJ{;S|2fo9_{bZ)O*zN2ebCt-*T>b`gnb?|Uv;VO<uYQiYj
+zGB@hRl6MpDCx1N*$j6w@q9iv-jI2Ejb8#fL+2>35_eFx@^SOpr$2;ogT^(8Y;>USP
+zwtZ3#?bc^i8sI(Dp=k}^GrTf7FrO+Y;+5sKaPj+BM)qy3nkxHPKgiUXotqEM(}t_O
+zdBh2PaR_jvG>~N^?TxuO@9JD$lP2iBLDJ|+bXhzUbANGyGPf3a4K9tgJoD2^5IG>v
+zh9?hh;(*H!0}qI|@y1oWpUBG>i^(OafBKLq^V+VO&*K_W=*!n{xup4ez?vxHG-c7E
+zgdRj~b1U(|Yi(N7u-dUj5hrBiwXPitmobhhjW0tv-+!jh)8uP{FIn+fbXl$D+#`-@
+zim%`no`0o}mH2C3moIy*WH~P4bgJ5mdhb|?ps|ca3;!R`1LD2KLmHTiL;A@?SskkV
+z5|}I(?YkcG=He3GeR(8h4#0{`4hv7*#pMo7iyjRPZ8ztIOIDZUIaJ6~#}d<s%hMNP
+z&`}fG933}PPOGacVSjHoDJzXnAj6xFbJK$eDM!A&^DYylH?J$1?#_Q()0U|or!l4x
+z|F;(}ykF+y9?_Lg%Ok6sMqHx(O6no;zyrhi3##@{b|$-)T>t<807*qoM6N<$f_eyI
+ARR910
+
+diff --git a/2DGame/src/Aset/wolf_walk_down_6.png b/2DGame/src/Aset/wolf_walk_down_6.png
+index 5568fecc6c6fe148cfc600a0d22bb940bfb6d974..f9cfeeb6682271d3e75caebefa041a104e64bc3f 100644
+GIT binary patch
+delta 642
+zcmV-|0)73@1&#%f7k@Yi1^@s6rI<@u00072Nkl<ZcwX(9%PT}t9LGHu{sCPzQ5Nio
+z7_#svHL<W{!=K=hvLH*bQ1aN>l42oQn5LA+N@F5+>`0lEwS`1}^;w+L+?f3C#{GRZ
+zXU^R7J9FoL&+l>1DJd}w!!QiPFbu;m48t&@rBr+R)@1kR_kWy0P$N?x9qtzO8-qh5
+zVxP-ii2Y0cp(y*`Quf<{|BZ^M{!l|>lT4jYK8u1&i_6ka^>-9h5T&t0@u)DxwHZkD
+zJ5#Q$uSlO5@bvf~{kCMMv?z_;&eo>(EjgIt+RV<)$dvdtpsWu{V;42CRa`ws;=|oN
+zDG}}bEF&%bFn|1U__*b9Wg^St_jk7ieLS5xcK!msO-uBT8uRhLLgfXM6Vvk1SCH=^
+z>^duhl~ZiZ{}ZuQT+PR+tzTbX<YAMq5B7JY-`UkyPz3C@w)f;ZN)y$YPn*~(9$6m0
+zxxN&U#;4|`C2IHewmIURoaP**H&z#%>mToL>i76fY=0G3^YQASPTso#rBM*Y6N!2m
+zg6|%sPo<AfV@EX4WiMo2?FufoimUmLU!(h=Xri{xx#Y(JA8Pok?77;##@ff#o?>}r
+zmH1+6U`U=Q6`Eh0{{*oBJ7R=(bdRl%t3`Fl=bs%>i+vwQaiV%unBsp09}I#TC!e$P
+zf`a~vfP1hV8g1W(*eb3T)p;M!qz~nxHn+4(%P#BK=&<y|@;DV7yR7WHGv4yJ5^7N$
+zrGbhJI5F|Zu`<H!?0sArHN}a()a*WCr=R}HU<L5KMRjG=qB?|~q=0`;PBtLFlh5rW
+c#V}O(0^!^GLQoFoRsaA107*qoM6N<$f?}Xc#Q*>R
+
+delta 708
+zcmV;#0z3VV1<wVL7k?rM1^@s62i0n%0007(Nkl<ZcwX(9&q^Cn6o*IY6WGu~Ep9{*
+zY>VQerHej7z=gOg;#Q$_qf}g1bR!nKDwI&@LIN%15nQ>e*a||)PB%^LD@1-1PdGVq
+zl1#??yQ_Q<%uMc`neU!E=l(HCh?E{ZZLO{EwD5PB+Z3%g41eRp6fQ#j?`2Y6UQK24
+z)JHj#M?EHVaUqYqNXLLKK0Py=Ox`q8mwxhE8s$-s$phxaHITV}SW4w<)k>z@<2;Z?
+zVl&3NfsG(I`QJN|c&Fb?lsb=tMgp~JC29V<3jUn*t}en5>DPVn8_J+@Vn7#1Bt2oA
+z_cAxi#*n9q_kWTe1mxMnS+wM4VQ1|@P{fhg=H_2@?u`Vc$8!&_3^VGKu8u5xadz4z
+z+xRh+H0qyRX@K8QMus(jYcMi82tG^ziFkQwIl1`rJ0tskW3B7l!O_=DnYm}rliJTJ
+zO`Z~Q0S^uVjg<!WoJcdFi0iJd<vnRZe(NWVo+O|9Hh&65T#(G|MczY8qpr^UG804&
+z$g|)X1XUbp`9Yw8bR8yi@m?aYUoNH}%hBO}<{V?WN*TvJtkCB#-*ZXp`9MgbiOY~B
+zlM-o&jdz==501TI%_GE$Et<GsBky(X7|`Bv3~72As`+)^y`N@}1wCcOwd50GHWwx0
+z7^d_LZhzrL_qLKg)@AjyH-xN)CN8_G?Wni6l>~X0F=^4?fi#frEup0WMI6$PpG>*0
+zYOe%l&zt(K(DD><i|)QUk~RlmMrL0N7E#3Q3eAh2yc*tWjsY#JTk>ow<S7%1;OlX_
+z`?B?6JM*k>SIU{F+i9t7gwUH3^sc_Q`>~y^)jf`k?dp*Jc3jIekkn-mT>Ne=o>?y!
+q$;!-eJa|_xiud2tB8@d-gwHLHYfgwf?nAo(0000<MNUMnLSTYxF<ZX?
+
+diff --git a/2DGame/src/Aset/wolf_walk_left_1.png b/2DGame/src/Aset/wolf_walk_left_1.png
+index d7fa3865800f85ae85e6a41d5a6a44aafd4d1701..b495e663a3420fda4efbdd8f77cfb4102cc9fa74 100644
+GIT binary patch
+delta 702
+zcmV;v0zv)D2gwDH7k@Yi1^@s6rI<@u0007zNkl<ZcwX(9%}bO~6o)6vh5tZI5V_M`
+zQJ9GfKR_79#ViXVx9u_!gbJ6Ipdfzi+$usXT{sK`>8!$}sGaSMz(H``BBJof1HPv@
+zydR^Ea?i85ym#Jv=g$3|uX`t#a~#KU9LI4S$8j9TaUAC~xqp&&vU}Zqe~-rG^EYJZ
+z#`;^CV{GEJ^slWfOaDP_FZJB#Ny~YD*+t@7+Qp!BrMxafu>d$cJV-lbQwUb^#D1ui
+z?dvZ@lqwd6<axL_Anl*uzY@>g41!fW*2js~7ARe=ypOzcJ>M=-zN@<@68$d<uDC`k
+zjk18kFJDbamw)#8o44AfzoYZ^@sLtZETC4~m&fThv(grZ9yBEu1gp5Y+ry<tqR{iv
+zaZv_k0mV?Bij6$}Y;00qwJfE&Rf!nc*Ds&yy8oTK_s_&aTyZN;qu9ukhqCi4tM8=M
+zQ5;ax%JWIF=KsF?t?m?@8It0PUu|s@pWY~MMmBA5pnprAKWy&Q-OPo>IqBco{wS^X
+zaSNUQt$IMCV+ODeAU0W9!xaaVFBD7C#m)h~hp&;BHQL7;h3~U0OIre2$f_5DRs6qN
+z{luwCd|u~ooo~sr^pn3qTSit(&`Pt;>Q+V8Nj9<S0Zp)qH(V!k3ZpjHic-<>x#s7O
+zJ?YZpt$&JdX?{xHZ}hw$tm3if@i;7{hz;cRxVt$0xmH|1FU?PhZ)a6LSj98@IKKUO
+z<f#}1icmpu3ky_)x{_iZtvK0&m|<0HSk~w5YO3GjipRm}jY`O><jA*;{*z)^0(HX7
+z^b1)+Pw$|#u6ROH`Na_^!MU7!bjTWIlfumqcQ<)im3JRci}pb)YM&K4=A``x#}&V<
+k;PccCNn=c~iaVk45A4<=NvoF8E&u=k07*qoM6N<$g0RwQQUCw|
+
+delta 962
+zcmV;z13mo71<MDJ7k?rM1^@s62i0n%000A$Nkl<ZcwX(9ziSjh6vs#LKQJh$*oYuR
+zgDFHoNQ{MLz#^ccAa|feB0&S9AOx#}h=$-*77}bk4iT=j&?pEILF12ufY^uzlvoN{
+zoqUIT=i7HPZ)Sg-InfU+d)b|xecyRMW@ckdO8Pc!YsyD(t$#FrrRloYtE^9B7=&%!
+zvOOUl*G9)qn-A}o({#1wq!R7}qIc}vwdP{dupzcFc^km%#uyv&@OB71yZZIhIy#5i
+z{|Tav;KIR|m5*)FTfeQE&l~&f^?GgIo=GTv_wPMm8cU1qGu<yzpjKaCi+oqK$0eGl
+zTSA*8c=YI)6@O0RkrwsZd`FR#xD4iSv6?-2m+UKQ)Va4yXD98u8}HsGjG*GibKO<&
+zaG$PYK<W=_wjbAT43vfxOSQ&Ta}bGKd{8)z>gB7~oq{Ey>duA7pbd^3e3vcU5nQ}i
+zxJxiZkr%Yk@`)!SVrPNSAc8cr2^a3naftr;<9mmP7k}=bFy{4&Dc?OD<E#YSz*u8L
+z?P3PThdPgsof=O(SHAQzljv^YN}K-Od+h7z%m)WiN|Edgb=-XX<f+%*+3IcYJsHNa
+zVI2zz;`yz;1MPWR3U{Z+QT;}Shs?y}Mf2*-a{G+mIL=R$V(s*XYt}G@2wBux)1%iW
+zh^K?_&VS<&-&k5~4i3zi>fB6FC<)<heUahvP!W+rizg6TQASN?JnUU!T%rk|cpf!~
+zEIwfTZ!N7PylT_tiBf~8Oix*-289F4dCh}bRPg80qzTZ3%f67Fe31gXY5gIENAJ$y
+z1qvm27zh5wxm=FV`Ly^3DkM5Y)LNbL9cQ`5)_*)rxR$e7kwp<+2BCGmBuY5%SiWFn
+zcu1Z4fNLQ_28X~Fc>lrQ3nt!|3~dQ)txQjKggb~99s<+c;6V6e#IfTi+g)j1qKy$3
+z%?XKiapcfGQ)%6Z&hZdZGzOyAc)0MQZBlNJw-!6i8#iwy#9ugf#=b;b0cJ&RF*PXM
+zsecVcSs@-rXAp|;gQs~IYSWPq`L!o6u#XPvs}SLUI>rFN`@R0DxiH~8lptO!T=-t6
+z-RC@i_9(BzofIydyzjF%jc6ZydzqEo#ZAjod~D1@D;jJ;!aNSIUz@Eay5bv>EObqH
+zURWyF|K1dhHzbRIc1T2;X^8Mu_`E68H9L>P;5+x~xx<sfUZxF%=b<ab?Qfv#q0R>(
+kb_#PL*9Cd{`p>_}FW~<xvhW?hzyJUM07*qoM6N<$f{d`-jQ{`u
+
+diff --git a/2DGame/src/Aset/wolf_walk_left_2.png b/2DGame/src/Aset/wolf_walk_left_2.png
+index 80acfad7295e4120950ec7715871e7a006b27122..b1616b6c582af6d27cbbc05d566e1fccc2dd243a 100644
+GIT binary patch
+delta 700
+zcmV;t0z>`32ge1F7k@Yi1^@s6rI<@u0007xNkl<ZcwX(9&r4KM6vrpch5tZ|Ai2w(
+zQTU4%{s3VZ7qc{o+`7{w5Hea;f`a&C=hg^x>B8ZGkj|=9l-k+O2pR;}Eh3Cge4uxl
+z!+X!snW1++o6EcN?tPd0J-_aqOvZ5>$8j9TaU92S9LI5-tAFH1(#h`k4qW^mlg+lt
+z(Cw`anPYn9mGr+|Uz7f`@@e9^Ye`crKh{XxOu8794vJec6bpd!^RuK=)`iq69@`JK
+zvIB#;kW%^Fh&+$xhot@a<9qD6>p^N2kMwb(wFOESgPqVTx3V1)<-2?PL(#ucaK$xR
+zX_N&No_#(eU4Po=+i!PB|DDdRKSK%`v4C><n>^0FUXV67(pQ&QkXpsf-5xDG6osBl
+zJr!k87Elc3so2QllhZHcRm)OJdqK#^J{})bbpN~edalJnTyZN;quBW4G1>X`H=EMx
+zC=MuT<@vZ+^M5}1RB;N<3~_PAn_F7Nr?-o{p-mee>VKB!ce{rbH*<MqQTh+}-%G1~
+z+(PGns~*tkm;tN<h)q`3aK!=TbNPaFv2%d$;cMh&jrQ?s;d_>4X-gmrS@l9{75}GJ
+z|LasGKCkn)&bQ=Q`pMs*E#tD5pp|BwrM*DbNj9<S0ZnQZuewg=6h>{X6{Vu%cg@!?
+zr_!azTYnYb>e5SjzuNP@E1nc8JrqVEVuJQH6e4R_5HpVUOJa?|&Ij>f4cX<g7T}7<
+z1)qL2J|RO;n#zgWSD+HKDk$dDx3gG?Wmy_54NHl_6$f^hiU)MX#?4Bt{yDKMgSugU
+z?wKsL|G}`dQOdjG8g`iTH}~aGZ63X9xG};KqctqR6}J>8+D1j^MnT6Y>z^H0{C@@C
+ir@kOIrB-n#ZTterWGiE(hA&nC0000<MNUMnLSTZzP-9yF
+
+delta 950
+zcmV;n14;bH1-}Q77k?rM1^@s62i0n%000AqNkl<ZcwX(9O=}cE5QbavCy0WI7ZHSL
+zFoGxuiSghupd_fEBD<i6M1l&UAc!X=_<@*{kPy6x<RI)1P!yEppvI4dfOruRlz0^M
+zwDL|;p{CMR-M!NiMITspcXp<x->T~BnqKD;S-oaMOJ0IwwSU1&E#Gf{Dl1b424QR0
+zZ7hk$vA%&5?!)`p6jRGil5h=(-n4nkvWrP!RqV+WZGfmd=Zcg^wEspbMVv&h|29`>
+z$9Js;;P>BI17O>F$>2msTw+C93hdav+cjsVTJ#QEb6-EL$dM^@uTbVSCMR0_o>4dF
+zX<j=uT#UE*?tg7*+*I5!*J;lC<~|*3Oil!Khnz!&RifP=_avJ^;pEYaS8jL(`)+DM
+zjwz<bfdSWeIH`Va&P<uMWRzoyEQwcz`vk)<4aQ0>YiZ-cW3Zefv(ATfhAAAPfByJh
+z*cmuBxM*+e+79PlUw8HU`^+(G!fDBii42J84MNLk$A8vsrLkVUe6C1$v$%25pnl<{
+zbIum6!3P)`ED<`-ats7p8KDY)KK()!acgv3{VgU+x!{GAAi<$&;1!Nk=<Vq)mY;gP
+z=Elaxi+AG8P|Xz2BNdz0u~6!gFcMF-r!ikEnIq<lvP6wI#AEI4>Kt*Sw@17eb12d{
+zmuG~Qu7B-1#1~221H$F<XEjV_=e7{}l0b-(sm?_MWCUIs+WPKuWEC)e6f<J~-kpn|
+zgX=he=N><Ks-`!DXj!4v1MZli;q#^I`FHJlAG|>!Fm~!e09Ey9;S23%v3^s8kzP0+
+znhJdIRwnqcgiBk!J>5&vodQR;qdPb5Ib0;?4SzD>)tgz@)u}(0RuK+-;$uZ?L_egE
+zr+5J&Cs?8Z@8hc?mrFz$$ifyPD%CA${#(e1AzC!x5L#<YHc|x>(Gd?3N_UPn7dhIK
+z7ZGE_qS8hLN2WU*p`mS95FydN>YYku;k4FEp=VE@j85kia)<_%g#(Bup>P1rU+m2t
+zK7VpFMVHC+vq#x%Wf4x|$pJU-+|4#XiQL|9mu$ib62Gt$TaY7C+(r)Z*@g4{IZn(T
+z8+V>Of7hP!K0sCR*@gS~^7&)C8EH~Qe71EQAlm5NIrO+_JtAuK_a9u6HGB#I`g0?-
+zk*VCdNu)sP@9#ZmlukW<s4v)cX|^=yrZ1#b)`){t&s*fQB}wv96@1Za*IrIr|M^$=
+Y1$T85qEcO7xBvhE07*qoM6N<$f@W#UqyPW_
+
+diff --git a/2DGame/src/Aset/wolf_walk_left_3.png b/2DGame/src/Aset/wolf_walk_left_3.png
+index 2c87d04e9094472a76b9b1b7a96fc33b4a933a22..740ec6f72200ec778526b744554be50afd516158 100644
+GIT binary patch
+delta 703
+zcmV;w0zm!F2g(JI7k@Yi1^@s6rI<@u0007!Nkl<ZcwX(9ziU%b6vyMQ!GEAc5WDGS
+zvBVl2Y6^jn4jC1sS>4nk1hhC-3ku?o%{3zEm?7ao!8TJHgQA;m6~Pe5>>y(Cln?lh
+zIpn>@B$anQ%jMm?dvkNY=hwYSr5wj`9LI4S$8j9TaU93_mwz0JJK5~q{IB0*(&-a2
+zv|f89b1YZxN&n00bLsDPc4E&xP7aUr%MKDp<1PlJgGNn;Vgb<Wb>mJs5fZC-WIxo(
+z&R;5olqweT^1N8gN&EB1_sDZkg2XC5(8r0^7AV~a)<dsMrKcszXXdh@=zmaf#Wh-K
+zlm!&Nvr>^R?SJzpPfbhz=`&~dhLlob0iDh_d0e~yP})NN!bD<0Vih-cd$Dvy6uNoi
+zmMDX=fMO_5#YP^#zI<0+wJfE%8H9}N!~3^=-GAoX`H@(ND{kd!6e}-XmYuJ@crC4t
+z;((G?o{x$(|L0F1`%b}`Au6u;kz>cjr|XT4(55ZqGJo>?W~1GAGoL(tB>nBymbBW(
+zEp-03>H&?88NfP#*kol5R~%5jP%KFoI|uk4zD8cwXdfRIzR$8OZ3$!{t6oT~;(yiZ
+zf1Iks=XL(p`IbCOKlvN9W$f1yw9>4zxf#eh$tG4kph>LaL)Xci!l=!)qEvKzuKD_9
+zN4oTQtAFBq_IOp^ANIWOipPaY4~0>Pn4o<Pg~%Ef#Ef^XrdVUJzAZkiA-n9?0$lN^
+z;L}&j*JKDvQ#o<_3RHqt1;u>&b`}e<EK7r>VJU-f#WjOYYx*2M>VHlw%b;$cUf{;(
+z!P;&4N!g1F(rQa^#Q~+MaY5JUanHZwLa*Pt=Qwx8HTV=aF6<l(TRDvj?heT|tlJg0
+l6eqt9%E$j3iB;T58oMU4E@M|K<*@(&002ovPDHLkV1lqKVo(48
+
+delta 965
+zcmV;$13LW51<nVM7k?rM1^@s62i0n%000A(Nkl<ZcwX(9&uddb5XV>XPY?waFCqxl
+zVg<odYdv@@C=Dv8NCJ9jrKlhZf_PGjKM;EoQi>Om9)$b>ih|M})cPY(5HBJHOFRmC
+zihN%)W!`jWc3<{M75zYH@{%_@-<jFjeOu=WvVOysw!8(`s(&L_+P?4pRMr-848k^U
+z+L{xOYeSV&?$gKlBBoZILc%p5dfWCLt1hMp>tcUQ*#^kEb1o}+WczO<DdQx1^S4%}
+z9iO!xfbV~24}fj!C6g1Kafy{_DX?evKG&R^Y13cWYAt?QQ%0rGSfR>mOi#7>m{EiC
+zGOwN)%lvJAcz>Vso0=QuI?Z|C+^1`e>8YUZP;jWRO0@AYCfN)Mr-)v@cFQZ+H>d>#
+zCYu_EDz5Q(T7BP~n=x(4EXOoi60ZvP35H>E#wsmqY2(6Uu!1A2&W8+!DIB7I{`j8R
+zshk*DwpYKg$GNvRUG3ok(`QXMEqO7S0Wo`n&@$SybAMOP*Xvg=WaVx)H!d2~F1>cn
+z*`hVLgCS>$(C@6kK(JL2s_>VyuT&9tCMMPIVzN{gypa+lI5Z8s!chu?1O3_ZQ>#^7
+zy*`=!CC-gjP4PTav1J_#l`aV*@zi@7OTCf>VyP)h)Qm$s*51C}aW`>y+<P;JGL7Hz
+ziqOin+kb%gGKn!DTrPjshRNKybuyn52vM@sxoCijz)M40-+h5h0sf<z5eN70U49>2
+z#{nYu^x1Q@ydgxZ3auaTz>JPv%-zpFYxn!$8x#V*(;fs+SC1Cn*=}a*H)R;*h3lcI
+zz@4`$!G|SW+8P|_Us3LqII<nRbK{Z2O>*9#5`W&jn|FP^`eSK|aNrXkD_SG^A%!Bv
+z8wdr#5)Jr1J{7rKBFjKFwh&RJZb9?kLS_uvB8Nk0TVt|OR4@^p@erYM=V)_LVl79p
+zHZ+nBA~>?#5eN<Kz=ESaasprXE=sa+TI;3I^Jh;-m$NU^p@W4~l7$0^C!q)cFT<n9
+zj(?~6m}B<ElTz%JBAmoi0B+yApF6cF%UQBRN8DBq2vJ&dBRb+&9PXtegV#Cf1-Y}d
+zSW3&dggKUxn)R;>pS_yoKR9A3T{u6O<Y<ojK-KsTBa7GwQF^KSfWr?SHF96YoU(Gz
+z<#7*e;rXE3pc17DN4BL?t;K~<@KuI~4?ZUa%c4}_TDDQTCyxx}8eX?sO*$aqV|8OI
+nd9N;!OH4OT5oOx?&%e$uk_#Qq-E|R|00000NkvXXu0mjfeIdzH
+
+diff --git a/2DGame/src/Aset/wolf_walk_left_4.png b/2DGame/src/Aset/wolf_walk_left_4.png
+index 023720d490f7baa3404862a38c6de085fc6145d4..4f4afe39cb34cfaaa5e6506cacb9ca0f7f1f5c57 100644
+GIT binary patch
+delta 720
+zcmV;>0x$j62ipaZ7k@Yi1^@s6rI<@u0007_Nkl<ZcwX(9y-QnB7{=3DhyDYSg6O83
+zqSzQZSOp=(A)|%TtZr5*2yN-;2UI9lH&;c_F+)N?FlLfeEOo1!rC<=8I~1|xkq3HT
+z^K!ph6FBd0Ioy+b&pkQM`*qGuBn-na48t%C!!QiPFbu=^mw!A6JJ@h)?56QdGWi6L
+z77M!=V}4-?{X1Km=)bI=haUSrd3c{MYbPFsoeY&OmkM~47C^49F2fGl5}Z{$updfg
+z$DU_AN@X*XxSq<6qrLw9EAZH@z*)t8eVox+gG!gm`<`36lD&xXBdN3}`nL<FxI`*V
+zWeF92_kICg(tqc>dwS8|*FSLkNG<^jsMjxWxw5>9HZwWel33uZ;_7No<z7Icxz}%?
+z43#BRjLNfOV;-NK|A1RHOQ{}~Jx2EJ>zAhPKRERCzgUPVuH|VemVY&kmEYRlLo1^=
+zp^{pj4~jPa+4s|?LvYU!6jQvT^D%t7SgLpyZDM=`*MA3<<ED%GdHoamk84M0rH^aK
+z{IAsm5*afH=Rp{ow5(x@6Dps{=Fr8JBlJD`8uPM5`gmOUKFzYEB`^zV^@6jC->KFA
+z+Eu~lW&W1=mU))_%-=*>MpR3XN^_po!!qW{Y@*cz5@!{UT_<xF#@bve%8HJ^OMd=1
+zN0)qFtAF@5))sMp-2J|@iu>-z{m_(RY+zpZJByRQOU32&#@Zr$JF4=|DjwO#>Dw>!
+zGcXD&!U~F~u!I$%tfV-ORGis@F+;1^Xjvz<YN-EWiu>WWdz1U}xL;B<OJGIGlbw$%
+zZ!z`svkA08m3LP0&{3VWuU5OqRhnqy6brk!rAeN;KvX}d+@9wLt=NdOiie7X4d{D3
+ziQ$(M5;d<zg=d4zB0=A8iibr;T`f<yE6yrzxW*q~A|^l^#YS2H0000<MNUMnLSTZ@
+Cd1cK2
+
+delta 973
+zcmV;;12X*E1=a_U7k?rM1^@s62i0n%000A>Nkl<ZcwX(8%WD%+6vnUOe_&BiaU+6I
+zEp{OaLTg>PEGP}AC`bZz(Uj5_ML{U80tG8#S1zQu5eXt>=|Za@R0OS$KtbGy7Fz03
+z&{gCc=8R`f?sGCp3i^X#l6l;FzWbf~n5$GEJv;U^<SV#V9Dlpf(B0dtYz+wv!glW3
+zn-Y&}!-Y%g%jcDlqPk9ya1#){Z~uX=iwR+y@5AIafa^-BDCOa{3%t9r{%s4LUC(y{
+z?;yBvu(tX&5xx7zhWfs}C%Rs%E<|S%ir>A5kE#0dQgWvIc?z_RFNj6f<?Xn{=5#Ey
+zL4t=*7b4*#9)I1UR$XWsBqh3lIb5tQ9@Hhv@@jSNcJcB=RCoQ;$5aqBxbeQO8}M+S
+zuA@O}PpVNly5DFh8&WKdHM%henaIUEg;T3uzj;e5SmGMpxo{tBjUyXh7YjFni#H0_
+z35F<g!IoMk@f3vbEZ}NH5Hg!^;o3e9(Z7HFY;t(<@qc-x-mj|C!;?N{rQiYj2J3px
+zr(sN3=kdbDvDAB|Yi~1&ZWp?4(|hnxR2`jp;~+~ZleMXio6ldoG{$>-{=V^^Ok>})
+z_JsuT{%xxR&+}&~-L;Nm^cxx+Q00lM>fMKx<c!}qCd)<NIF0F=HBBKx4r=lAXp9Ns
+z=^%{rIDf>~mzNs-eY0x*&a6`?3E|J0GDGK39+^UmC*WF9dQE3M?R8>wq6w3Do;AoU
+z-eCN{ty@X>s7)VF)HR68%yeX`Q#hbLZ*$O=75u%BZUSt=Wm)K+e362<Y5gIEdw-q5
+z1xh72j0691E|vWId?==da*1}~wN|J8j<Z~2+kc!Ubj#TgAd;MygCbl8u64b{OE@oB
+zRxmU;V4eDaZXrSe+lW7Z)zRaB7fie?nc5P>TA7({N_XHb+y$n&{yz6+#MyHflA>%b
+zxwf%fqIH})aYR+(8{U1~g%pj3$O``&<Zidh)5SMQ5iL6&FLoMpckiXdPmPa8mDpB*
+zoqvGRo$8`2%f)dN2BAnlIL*`0HXUU}ep|ahe00#Wxd;bTFd6{vyZUIiX*tz(Bk9!m
+zXtKGOMPQtc+IL^SdX}ZgCUSF}6FR5ru$3YA_Osx%WX%Fn{lTMJ>eVZg<>)_lXnh-p
+z*4!N03GyvNM_U}X5hA*sw9RoK_u@m{CPs9whmP!$+y^%vEcVqo*r?2!o+Be?Qf2XP
+v?<{mY)i(=mPjxOdtJ~CV@+#{;{~~_?yXi90$;$+r00000NkvXXu0mjfE??t}
+
+diff --git a/2DGame/src/Aset/wolf_walk_left_5.png b/2DGame/src/Aset/wolf_walk_left_5.png
+index 0f11b47297024f9620ed5e6b2954efff2c3591d4..7de8519b925366906f044f5592637f15687dd8e2 100644
+GIT binary patch
+delta 729
+zcmV;~0w(>m2jm5i7k@Yi1^@s6rI<@u00083Nkl<ZcwX(9!An$86o;qGMgM?IAiA?%
+zlGrFMOkv<LE@o*Ex@}iUAY`=6gapyrwN(UL&SHiE!EsihlGv_xM&Ka0ZV{1mhL3!w
+zxy*ZSMn|~k+dSX(-8*mY@1FBJ_f9Hh7=~dOhG7_nVHk#C7=K1PxfXY@q0HEyzkSl_
+zThg^y*pxA5=N6=WW9@^qpVW?GkA0b3zswK2O5BM1GALax6{IUG08UR&;ttsnyj47M
+z9BO699t0t!azR$^Cv)R+{r&4_<gq(}w~9B7ak8}wlrELGLXY&M`z6Z{XGTNW|Ege$
+zYqZiR3n)DQa(_;mbj<hm^-KG}?K|}@`IM}HTJ2bF7vC(&HOP*1Bo}zAxO28A^AAO#
+zXHTDtGAIiuhVoQw`1q6ASMsQ9rBrvyp+$Chu-7pB2k+jykQHKzyL=kOW~QfP=GWFg
+z%2j7^KuMR+N5wV%x36Cs4#A!wDyDc>_f3iEVyP0Ew10{5VY%O~>^Gdu)pyI%zQ6lP
+zt~$nDX#aQB0~(z(fcF4$lgl+saX|SXmzO4H4v0Ns4PVyi7;hCm&$Y7jO2CC&^@6vG
+z|5vM@+f_--YyZ}Mi_g-Ie}i5bNmqhan)j^kl;u5f6IVT;@mBGc>tuFe)aF`IDmwnJ
+z`SJZontybESH<^!<+VKD>VDr_#hdQOo55*nZ(n`?4JZ~h_V9nQ@I~XT;%$rZM>CH_
+zB$TF-;xrbh45_Hd5h#vJkSko38gBD>x0>iXc&m8g7}vWw4JR-7FS#Jdj)Wei9p&+1
+z&hO#v;tTn6^!|iglPV3ScwCrqly}AAzf;z_UsAi!zqJ($oAPKab1ZJLU8$ejN3G17
+z;jQ9{GGZf$QBG+1MFo;pTAcmi4oSz+nBwh5`?L1%PUEfOhHsn!M6n-4RfGom00000
+LNkvXXu0mjf^I~=?
+
+delta 939
+zcmV;c162Iv1+)i{7k?rM1^@s62i0n%000AfNkl<ZcwX(9%WG3X6vjvKPbd|txDi2U
+z6%|B5XsrvE1s6dD6-hxCtrQhRK@eAp_(1GRP{fT$7ebaUv=)?#p!E?bh#QfDB`yVB
+zMZVjd%gJHR%$ek-spt<bN$%rhzVn)y#JNOzde_(GBRE$cyMI{sU0bQFP8k@4t?k>;
+zBp&BRO2^%o&+{p!x=xaC4T#>jX>-@bq_D<%GesL9>dv_=<q_?_k+vdEqSyVXW!mvs
+z>jAjFl6rtS;*wCLrNI7eyIpl|wob3GRa^YFs+*Z&`f{G;<&zWHc&nd2HjSH_8)}_u
+z-dFo{t}^u?s(;(!97`7Y>_ml=;R}~<cm+#h-JKkhmBxXRt2~)f-&f~mqt3DP7&uvq
+zSB3ioLlg}r^o1euT)2ghb9`CHGmaz0dxb;v?_WQ&=SoM%^5^ee-QnE(>u&VXzTlWO
+z;WXu0r@vVC0P8d=g$J7(7Y#<wzje-qMQiW@S_d1uFMsBkkb~8TKYuZ!inuj-U%eKK
+zcF|a~2k@wS=W#TG;h{k{K5@>y`!Jus;ysSj<K^J^5h*%S($PZyz?SSFWY3^${2m{{
+zu8vyQA}^y(k)FJLEtnBRN~DS+8gYUm&w=2OXn>3eWra4sb7J)?(bff;o#;FcDDqlu
+z!#E=CLw|dQI|e1ipXZ-L{lq6eHm_6E&B7bY&CD=)5pz1uYoZB0_*j3CgoI05=u1F~
+zN4?XWPr^-`6r?;v;uR0#JuPG)8V#>gXpZuU#`tKA1aEe{;hBU3TJn)`z69L9HM|!`
+zhNRXkhl`Z95M>;EJW{-mmUn05jNzfd;G7S93x5$xOO3{!KWEpTrG*o>B?YI@mT(Tz
+zJr;RH?$F^Q*<%p)ec`Kj=VaM&#Y8uvUhf}R+FVJ@sUAa$_SHR!4#Bs;ouqByG}lX^
+zXHK06cH|T&&5NXM;Z*Aoiu8j6c>RW^qi#}&a1xK`!vQz%+>I_ImII9E%B8cNt#Quu
+z%zvwn>(YMMv{G2aLtxQ^16@1@q9pHo{qk9MNK(b`-@7w6u`I%=6k?(YpLmTF@lU7U
+z<Yo$+#{s6IhmR{wV?1_nBoorgG}Y7F*JKM>6WfGH8g-uk-$yGva}=z|#RrMTW`<K+
+zTu>J<gl0=~u62x{(1@p`w6<z%c24L1bR<afQakvf*Q&iDZT;t8;ScR0AhR8RjE(>R
+N002ovPDHLkV1ffE(~tlF
+
+diff --git a/2DGame/src/Aset/wolf_walk_left_6.png b/2DGame/src/Aset/wolf_walk_left_6.png
+index 70e76d49d2df9675aab45001d5987921cb2af7d4..bcabe36be10fe2477190994b50dd9233d4af95e0 100644
+GIT binary patch
+delta 714
+zcmV;*0yX`u2h|0T7k@Yi1^@s6rI<@u0007<Nkl<ZcwX(9ze`(D6vtC*2mb+yAiA|%
+zON+ng;138q;*iloF{@jv6a-s3wh9)+>ef{ebaXHTgleW@#nNtdQ-lV=xkD)}J@!-j
+zj=AK$m&63_`7D=r^X|>d{oZrF=f0#;hG7_nVHk#C7=~dOhJRtylN)g-doVEk>(7{U
+zx=V)cY;VdOGqbOye`D>P^q-ecV$Xe@v|Z<ywG!=d9|on1g>4zi4uFe`^SDzs1#cCP
+z9EV!j;gKMuR5r-S^>}tv+MhqZN1nSGc&m8T7$;l1K<PqpH*`y9x>vG%-@s5P`?m_F
+zxJE0DvVg+RUw_O>myY@Fo?hv{edq4wkX%Z3K)L))E*IwCNE>7Zo01E>RouDS<GDwo
+z(Dc)1q72FcilICe8$SMI=B3=~+9{>|VrY|n{`9e8_}{zV-;f<*io1Lo#qyIAvhr)|
+zThi(*4k+pJ`KY+&KmPiq;uM@2qGF2QywxEwy;Il=Eq~hBXrEla-#e_hm~U5>r2p{X
+zgS0xvU1<Mz)dL!xGl1s+a+Aw7OmRT@Ae)meRt|_gVhvx`=oqgRzR$I@^iIHqT=jyt
+zieIVK|2tJl%xnMFev8l2kAH*S8A*47R+{H5?HA=aaT8ZPpz&7mn(JgvVbtbYQ7Sq<
+z*PNZ6NPm|e@2dD#mtV>KwVwCARlMqXyc)bs?e4iee*=m|jXnIIEZk_kRlII7{y0A+
+zBB3;u6mMgJ%8-hR9D(Av1i8Xhso^$92c<;6!CS=>$GAStX=VPsdHD;cryw&J3SV*r
+z%HzY@j~5r_WZclhF=>-34W@Wp^or*vCnT$LUPH%kqoV(7;|)-w@K*6e88HevTkC8d
+w6><swUax;@Oz~EQSf?JSwMO?os~f)Y8xdg`C);cWH~;_u07*qoM6N<$g0C!TZ2$lO
+
+delta 932
+zcmV;V16%yn1+52=7k?rM1^@s62i0n%000AYNkl<ZcwX(9%WG3X6vjvKPY?waHzEkB
+zqJk(0t##qD;3BA?A}Q#im7;<u2;xc+ABbHEintN!LdepEFAyq%)<>WqZbS-7T?)F2
+zeAAq8GR!%1rkR?G{@{}2-aF^cH|H@kH_m0Ue8rk(*aYWlBY)?bv1^N!r8ymgu$8OU
+zc8JHhq3RL$>Em>csh*Q1Tmqukt>4gdF*z)=-b~&G@Vax(hdjLfH`0~IN%ZRPvtB!X
+zOEm!37gG%|dptz*bSSX0d53FEO*ZKhwr0P5S<=f$F+H4zdF|Mk?{DM7`;LB7aYL?C
+z&c||}&ebRGCVzEX2FDUbF*`}&Wccibt5Lxrsp?Jx<5OdA)zu$Ph~FDilgYuc)EEqM
+zC|(pE6AV$*8SR0ZcrM(6HaM}U;}ORR#Ycrh^sk>ke7owQk#_srm$o|h_KF+6zgz9I
+zB%G!^>-3k39$=kDL*Z(1<D$Xvnb*!aU9<%6ptZB9`+rgcqYbd=@h8uoiz2R%-x05+
+zyj>b=^Z@Sl=sb=>FgVcfM#oOOH}9s~pZJdB#Ar?JKRiW8PB>bq^lkJ95!MX4#_x%t
+zR(0gM<oVF+<mvGnm(_?May(Uvq{j*JJO_d`(Et&lMTIoKb5i*mBCQJ~JIQ$*kmse`
+zhH-d0hJVzC4-8U@x97jLdJ+?#n%BweX5p>nrZ-HZh&dhSCD8=$e5yW#Xu?BVs7oLe
+zk9?;&pM;w>DF}Ip#3vf!J1t}&8U=5mkOnFy8vUa_61>>)f@cyAXvs&$`4Vu;CVelC
+z2+7S^4i_2Pf|qgd{)FOV%zJl6gE2VJug>`(wto<zu+(Vn`#sxt&Mlm{tx#|dT?ywP
+z+*6*1=k^~s=$k>**O|}JofF>;N~A=$yxy$z&26qi%%Pql6dlWZ5}gZqyChu;r@1~9
+zdh+;DwIWMcyj_B>g#(C(P=p@_fak9^9rcnT!bv<0z_pvV7F?6`evgCxTs(hjVRM`y
+z@qeimR0%BNC5m}Gh2<R^MGmSx=jDsXV*4ENdv<MWn=LM!{#oHzMW^W2&ZDQV+K(tU
+zkEg(zzBB)3#3rp(nE$(qpm`tS?>(rS2ey^x?f?5|g=gBNSb?|0P95Gi<R2D$4XnLB
+z#{J=7(S9McrP-1AV;-MR=OjwlD(Z1i!W|n#Nn8K<*ZB>Cp%>%YruK0F0000<MNUMn
+GLSTZ~1k>{X
+
+diff --git a/2DGame/src/Aset/wolf_walk_right_1.png b/2DGame/src/Aset/wolf_walk_right_1.png
+index 8dbf2cb76605c6a0ebcca89d1f506f6c1c498bd6..6edd6cd93391e0ee90af3cbeecfb39d2d34492b4 100644
+GIT binary patch
+delta 727
+zcmV;|0x12+2jT^g7k@Yi1^@s6rI<@u00081Nkl<ZcwX(9Pe>F|9LG)b;8~Cj76lJ=
+zQwm!<nZd%MhmHl2*KVZ*9tw|I2SNIC>#7KK^x(1(WP6fTl<iiBAX#t`yajuRDE#T?
+zFu&$G^R|hU_xoIi_jc#aoB6))@ArE%9UX>Y7=~dOhG7_nVSgBgVPwgLEC<VyzTCjC
+zqwz)xH)PoLwYM_Y$=i3Of4jCR{Rho&ZQVm>mXkeCTs*6jJv=;!Obw+g<u&OazIq+S
+z+qwl){H${M%1~r#w7-1*B>mS4W8(RpTGh+z!7A?cl>Q|%vkRi!>hc@83?9eJV>e5u
+zUY->|^iLvK#ee@>R3}O|oBI)Q^8Eu5#dEn!(yo52$PwiyO2t@Fn}z*Uo;St+7M*7`
+zcom4w(~lm<Ub?=!CH>^>hck21M(LNYmZZ&!dH!rs+OJ>Cr@ED36;B=2iMm8jjn1#M
+zU0&3bEAJy+cp8uEe9pL2_wUGgjmB3we%RQS<CCYek$>@65vAg&+;gysJEJ<D1)i{0
+zP%EXC0shDN`aBIDub=#&y$s7M?;@w(8Xu813Qtaq$9g_k#sBa)`(XVfQK;R@$`?HD
+z!j;dNC(-@qk5+6PGsU5+yGJS?(D|2Lkp3Te))%d;uE|+pRCIXXH9vlLDGjE$FDR}n
+zDjmg96n`c33WCPo@tc%;Qx76jp>CjpOHwi|!7A>(J0t3&jH@z3DeXz!*04gz!$2P2
+zsa4a8dMc)P64dH0g~^}V)0*}2hICOg11pIYL9MNoukUV2)^UxK7E|08S0x87MM}ld
+z*h}dzA}FhCdd8(DXHSv#T^j_ec;bGX_ttn#dr;Z;eYP)LAMdwX-(`q=eo&6~?aY%z
+z#dU?|`~EsBm`87KpA5<FQD=v=n8#i4q^Ys>yQ}j`u!<X@@f%*MD@3<}9*O_}002ov
+JPDHLkV1gkGaY+CG
+
+delta 959
+zcmV;w13>)Z1;_`G7k?rM1^@s62i0n%000AzNkl<ZcwX(9&1(}u7{*ueKd>mMco9Kp
+z>&HP9gx2=pv7j_)MMV<u(umZeC<w(<p`cRiMIoVh5y?Tw(L?<Jp(1Ee1A=%F6_k1u
+z^b~o9ywi85^YPAZS{vvO!e+CxGxNM(GrLKW4xwwyj%IQ6Mt>7WbIP{gLTn5*SWA5V
+z^f4JKoKFdb=&jp!MvLz#;k$P4QR3Udnh{Rn8VXy8C$E#YL9Ev|*sSLpeDUX3>pfYa
+zvAXvkP8tjI`Uo%<U58k({nujhZF86UUa!q6!Nia6U&Qm<WGfUjh>dz}Ru`9$5klSr
+z7z^PG(dztofqxsINd~cjdtber%VhJE_b^dYG$uv4g(C+R_kl@6Nd0k5i?V%p<t`tO
+za@(9kcTcbCyLxY09i?8^!cEa6*ek53Hz-Piq-dFfO~?R~6XWVqC>ou@LrAJ?XtIDC
+z*wv@6ABs9e7urb;uq?-8kO&LG`;d6v1gTjWnM;y=r+<^uwKqxQ!+X`_@1Ni5h)A}1
+zUoB_0Fb8BkIuepJSWQX~2bE|};q0h)3M$l1;SfreGciSzQC#h_V2%+o^jNv*9A==u
+z&zkQ#)J?D2Kt7pOKaXISpqLbb=(q2dc5{_VH7S*f>WC%MRpf#>9$K<|ggob3CJFAz
+z@};ZlXMdYf4(wf8W@o0SR6Cz&phNxo&08rA@FYZ&#cXT551KS4Op^iT`JI`nwHsUb
+z`o#10uJGnKg=0PBVFKY#pT9`m?3y(2<(&=Qm+xMPcclXElZXc5hZGnAopM|gj1?UN
+z@)s$DXvC4$ew<T8NC@UQrzKwP)yey=tz;G?n|~tYGg1dmp#44Nb7NuNx@Oz33OB>t
+z6p!<P{yr7@wy--jaz^c$CGhl-R&!T4hqkF49qPx99+b>eV+(!a(2+s?xQKSH58A^>
+z_(<T(R$jF5C(mBz?W^sWLiw_l7ZvL8$mGPh_&J-veRw|iJ-=s#3Mo$o7~=B93sE8M
+zLVxFYOnyjdy&Vx39D<fMDyFyZ-dBRjNz(CsL{;_G273n*-EPN-*YOynuY(}QSN(Cl
+zU7>A~%j2=zSQ{-*F8h;!*O3^bOUWf13=f}3jdf+Ltj@`kSwpn-k}<kINXaeShV+Hs
+z|0Gu!@fZ4>EW*vS;ZKGuL2ls)NlxfF*f<4*KX_D6T|RemD08ZWSdpsU3FPuPF#j#d
+hTFlzr*E;K@`3Gd89?5EyL5%<a002ovPDHLkV1k8x+Bg6J
+
+diff --git a/2DGame/src/Aset/wolf_walk_right_2.png b/2DGame/src/Aset/wolf_walk_right_2.png
+index eb2c1b157372c441506ca5bf3c883adeac9e0afd..4eb7c047f847966b5ae7b840c98e5ba097bda87d 100644
+GIT binary patch
+delta 720
+zcmV;>0x$i#2ipaZ7k@Yi1^@s6rI<@u0007_Nkl<ZcwX(9O-NKx6vwq}(Rx5e7!q9Q
+zE-|L5l}#WFx)5=ZAkMa3CV`8hWgm+`w03TlAeSy?7!Wj9p^{9yS_H{}gWyh>MMTl5
+z-{PI-_THPGjCRj&^SF23yYIaFzvtuL>F6*F!!QiPFbu;m41dEg3?oT8lN>Bby3@Vi
+ze~y>U-IQTV>u<!?vGFPC-`ja7{YUjLEq%j<B#k{!be&aWkB^T6rlEADye|ENL)THf
+zrB5)$&no=`R|BTe{`B#K^k2&ji_gE`*^cGw-YOnzmQIto`KO}X>y>4B4L*)958o>M
+z_4TX(qJJ3PDu3R#s7{ow*AD~YWUllE6i=snq`m#NB3G0jEsQi3wVpeS<nyNZzoPT3
+z244lD^ZnTeO<!Hz-<5vy_Px2s(njf}mkZKn#XNuZLfWqupG5i;ZxxRm)rq=9PmRv6
+zv|YZaDOWZEUHCLUuJbwL7H96rbG6!Mxo&Rl$@Sr*`G3H8tcb$M4f$qo6?aB;d={8t
+zt)Ny)D+Aoe^ZGdrK3@I(gZ5=uSzQY}dOM$$HVTi8=9~Jww~GJa<Lra=OrlV$l~r8u
+zaTl(9j-5pJZ(kct<CrN97cX6w$_I4*Wf!FHBhSV~E30dARu~l>zVEV+-(5<BDIOOT
+z*A<nH;(sWL5_$ze?cmo*%5?E=z!d5RD!4EuqhgAOL9|B^S4Bn*&AwR20v9OB{j3b~
+zG0~b86!*kM<E`SM`*CV?m%>^J9d$LO@|JW_Giy?*Zs}qiYHpN=>i(`|pRn;<c&oT`
+zccztgRc_Gg%tu9M5e+MnT76=2T5fTj!I|QmPf4Fv6ipiJB^ERqC-RC+rcbV6|EZbc
+z+K1wvQ@0!JCo8bKbY%~J6?auiu9^B@@K$ldH+}%y`X&Hzv*d380000<MNUMnLSTX}
+C)@W@2
+
+delta 945
+zcmV;i15W(g1-b{27k?rM1^@s62i0n%000AlNkl<ZcwX(9%WD)t5XMIl6ugEAQM`yC
+z#OFa2gv5C8xS%9xKty)IixKgGC<x+75LANkps-8Olk7p*qlfqaAtGo{7X<MlA}H~1
+zSou0zlb%X<SM|(nFpwV%vyYjY`l_m{dwY{)h0xc(rBgk3qkn@lciHus#9HZs|B3J4
+zz9yBiGZ~=}y=h=;wD=VzeB1UNMtm8pE5pcg0`WLn&1qBe$hLLv%>VhhM&r+tjH7fy
+zhsJ0gXq@`SFiIS3{yT5Z^gb_{jN_q_L5j3CvJxb8aPPsSJvZB-vvePcfA@AqbLkS&
+zvf!dImS{}j%ztS$r$zCu>~RoidX^1;K8<be%izvk=C;P8Npt@F>xbwUFv2yNb~y*}
+zA&|Ywv9YA}yt$Ae&udN7as}Up0&x50W%IFAkxt<*kuLBsNt6ajct|t_A3?@-+5n`&
+zuiv_x@v;5obI@nav?65**g^K$l<d^UXOd*km85p<Lx1XX^XWtLdi{ot&g=(;BYM67
+zXsaR?mv~9I4~X{(56<Hxng^g)qJ2ouyEsvG-ipshhKHQrd4=1JtF_RZ3^bO~_uZ~4
+z4Gk@>nItr<AnxO*#noKB-biY-syVmkX1z@=m~q}2(fxVZ6%p*qB!9-#<eg;V!c`MH
+zSK05|y?;2};#v?A4bqj{(Zl=Gq+m*rrUMN;Q~bTu&5=ziV-mz|+@ETg!v^Io`JZO|
+z#jE#0Et<LBh8#ww$Z5debEgT{xV1CSfgKvtl4y`wxsfr~jS&9w^_$G|d`<&j!|`F;
+zlI}(DP|D~xRQ~8m-Q{kaa1C1VlH)G4!qLburhj?2MzY|aCfgv`+&C~gGCX7|gR<{i
+zL+3%WD6$(F7pWDUDfL(=`@V9Q*6{=a$Zbd!qiJ3exp!c?+4tI~pSQR!bodq+F6{Zb
+zD7l3L2nuDE?~ie$nSu+o%e*Lsgloj-1(k5={MpRy2t*lW4hjn=^6rGVI5~bQ-AjW|
+z5`T<9#5AxFQC-~yZSVGqdk-F$DwrsgaW1-ytlKuQgIZ>mZE_2DW%|IOBN^kGeK{Lf
+zqs;SXfrebdds*JtEL;wv$GA^493CA#E@n`o+q}#+Gtt*SV78viYHUFDuY(PQ+fD)c
+z?aQ~5B}Z}nlV`1r{nIBZ>AKtgLb4T0bSlO}l<8cVwp>JK9K>ceM47f$S;fyk_s$ts
+TKN-(-00000NkvXXu0mjfOl9Px
+
+diff --git a/2DGame/src/Aset/wolf_walk_right_3.png b/2DGame/src/Aset/wolf_walk_right_3.png
+index 0d691565c283320d20a0d21b388e04486d91fe60..0e03c6ba258b07fef934ed01ec222e60344341f0 100644
+GIT binary patch
+delta 735
+zcmV<50wDd%2kHfo7k@Yi1^@s6rI<@u00089Nkl<ZcwX(9O-NKx6vwr4(Rx587!+FM
+zPD#e8l^F<wE<{`;NV9EcO5mbsS-A+Jk6l|uu%(L`1_VD=p^}U{TL{L$3<K_jSws|_
+z`UUSa*Z1By)x<r&&EwuT@4oxq|DOLj?@mXDVHk#C7=~dOhJRrghG7`3q_dTSwUX{+
+z@7M3+r875W*!<e6%yoQXTKe~P-b;V2dfe1ATxjKF|0gcB>ts((YJsVtbg{4|{R7vB
+zP`s%}FvZ)IYkmEJsnPy;cp&|QnPG|f4?EkjV%=NCW4)z6$^61oQEp}Ft=xtfCzgkA
+zWzW1lD**Qo!+%@F|Cy`f($#7uAWo{MH=uYjc}3dWTSYmd{8)Chp{UhNB~r|r;^#%@
+zSq-rYxbxio2Mups+TWFa^7icfV`-!GtJg22&5Buk_FUR;UOtKRDBda_+0}7f+*70T
+zD{WUSY6`{mKo>DhjO%>PxVgJ`<hpYCNRAtudvbjEXn!Fv9xEa{dPAPsTg9EOPRs&t
+zSSzTN(#in8<9dCah8QpXJfUM5mX_ZIF1<aHmNp8HkBu~pd2bc}Eyno{)^8Gpnyswj
+zLX5j`<#XnVyMOsyZ|GyDI9%+yER_%F{L5F6{vCNXE?QY#le5C8=!kvS{5bDY8cgxH
+zpt!E6w111EC`#xR1m#aZc2Z_?_X1O)ZlHn-Q!*;1co?`ninuB=YG}TTwHLTRNq*1D
+zARpt_tf06%E*ftY5B(meMt3Q!mC&xM$rm=Ii<()JNOVgV<4|*>Je2l#CHsVp=fYdX
+ze^oW?R=Q$}{HiNAX!gxV#g#=^akxJ<eV7NB;#m5P#@)62+u%Kb2k~__IW;4vT)VFR
+zD(=dgF4t`r@Fd*7UO$zorBYYr81^r!zlyhug6D;mOC7*|f@|e^tGMAC-vIk@EC8nv
+RMcV)X002ovPDHLkV1fuYbFu&c
+
+delta 962
+zcmV;z13moe1<MDJ7k?rM1^@s62i0n%000A$Nkl<ZcwX(9%WD)t5XM^(6ugEAQM`yC
+z#OFa2gv5C8xS%A&fCSkEFGj=%q9BMTA)peB2Zdb%9`_*Z(L;QI5D_$}3xaqN5tR5h
+zjC`G~Nl$HeSIz814CDvH>`rEC>Z_`*?(`b7M(FF`kyJ0-N`G+XF8i)YY?N;JpZNCm
+zi>ZvA%Ls+&Z38=Vi(ga1ckSL|#h1aRGK~C7ARb4nIcG~A*>=v!((fM|H2!pD9HkRG
+zG)9X+<1{peQQ~0xpCx;y??uUE950m&Qlzz!l^~&m2alTe;zB}a={XYr_RYNJ)-KYr
+z;G!{>XiVYEX@526MDf1taS&*FmkWPCjcxAB;NE@qvBu*Wd;azFyXY6N!Zn%pIS27E
+zkiE*OG1Ge1T+UG7v!-eJg6~2BxO@Amy)0FvSGZ5454=ngr9l!N6HUQKka3?j0IBes
+zckX3;Y=8a~^;t8mNLd1IkV7^lJN1cqV-8$1wHxnKpMRTAAKA~Fw`}!hKPnv23k5)1
+z6?yTAmxPCa_>l1EJWir{09H$M2<d&7r>fpZaeZWX$osdTaJO-_mV1+h#!~vd(^aLR
+zp~W|o#D*2befYStnyc3vrdF%kb9-?i*yN%a=baJVpO;-Pf<u|)@0gvLHdB|b+t~Ta
+z{?PuF>3<gYf|zKKuG~%@Kb$57Q-U-dXyBRR-=%JjY*HDMAa3KqY{MQdC~wLCG~>@-
+zzKd$n%=IqhFfv6>1OA;mP58#Gn|TiG(3qA)gUrf}jQJjf@E5OMXWkcb8iX272-lYM
+zEP{tpM!%u*M^EZ3ck>C?pcOAU?n5gajSOR&cYkXn3;t=c4WiAB1EV9uL$)#~`=K>-
+z5j2Y;w~=v?TG5$O&kJQgRPNF`o<IP(4XI)@%}b*24ooNeQTw<@IzkH!AMSkJD}{vv
+zhzezv?~VD8W(qFUE%RRKNw|bYd<ay+m5b*ye?}n6D05JX@S?jQA<j&kO)CmQNiYJD
+zr+<OP$ko+dXm^D+`yl?vu@h1eh)@tac9Z)LpOh+?D3o#9%O=r8*_j7rX4xgTa1!kU
+z`(3@j1IGhfCb@-&@QK!JNV@oJ6#11zL!mL=*FTW4jde4Swx)fIj-F00<MZTrWmPjx
+z6cQf76#=xXHy>_r@fmyWWp#9rTR2`0Cp%nc=^un(L;~Qs$?-~;En`f=tEy~NzcXp!
+kKOppyp)zf)vyL%;0X}FMD~d<leE<Le07*qoM6N<$g4xB@3jhEB
+
+diff --git a/2DGame/src/Aset/wolf_walk_right_4.png b/2DGame/src/Aset/wolf_walk_right_4.png
+index 3fd187915a1b43881891c2a66bc2f6712253114c..b626932488db7b88a42e76b9e4143f6e6de1bac6 100644
+GIT binary patch
+delta 748
+zcmV<I0u%km2loY#7k@Yi1^@s6rI<@u0008MNkl<ZcwX(9O-NKx6vyquMQcGO7!+FM
+zt|)ADr3M3oE<#!uNN(Fz5(pJ7{eXh#W7pOQYU#pZAV_BwqbSp^7C|xKAh-)=5m9vN
+z2lI~adfyvInz-k;dE7g`d+&Sy`#<NrYgd<H7=~dOhG7_nVSgBgVHoY?SUU%6C%u{e
+zpTEZ&%ni%1t1GW%trJ(SN&jZ$z4Y(azqIrW$J@Es|A~{Gy4bzF-N@2Vx>Q_|{___u
+zp?FJ=V2XDtX9vzjmPY&2#}CqfF*hQf->Q^Tc|BOgQ@y35WOi;rlzX-OLZ-pvczI;B
+zaNzXp0HVK-V1E_=XHlIfU9ay%#L4#cM-<OwPD{JIUXm-yj~DW>qSkXei9BzL9~PZw
+zHFy<>&bM#fiJiK-y&?VN?VGa?q>a)~pFNf~J7#I|k+h#bnNRd6!783OsuOjIo*JEB
+zX}i3rDVE+wy6`j}*ZG`rXRc4leYM(WxxQQ5l<U3wbAOTX*b#;NkUVp+iaVn^o(0~p
+zR!}RYl>z>a`}KVqJYN0#gZ45kzkCz9_43%Dv{86sd@R=U!79Gb<9r9}H;F>6R#s`j
+z<1SqJoOKf2e|&Gm#xYYIPIRA=$_I4*<ts@49eFk_T3KC_v%{$9@V;w({O(d3O!2g!
+zxUQ&l6n{ril+Zf}YG41Hq)gA;h%AM=feOy2WKx1vJoVQZQ6FVol^IHDPwKXY9YP)k
+z^7vMzoK(~UF~xmQtGg5?e`-%_R*P%WMa>NCBz6R~wpPBny&+l0HBM53Rowe^#wjLm
+zUMov9*5}}dRm7Dwn4cKZ<bCh6G!v}i-l&e}^ktj&onsgBLrLuxOH;lUPwTI{hf8<m
+zzR9c8EzJ|G;$C0iH7YKBl5x}!W7v6(#y6QVn>`~}`)_GVyoz@U?7W_yURe_71-c$c
+eO0XU`LgN>XW-&mQFLd1i0000<MNUMnLSTY4I(Huc
+
+delta 958
+zcmV;v13~=v1;+=F7k?rM1^@s62i0n%000AyNkl<ZcwX(9%WG3X6vnUOe_*Ik#f=C;
+zTOSKi5L(-X%YxFN6%|RqO(Rl^q97Dk1w~6S8-;}KTx20+>7qVBs0dorfFN!}1*I+p
+zT}8g3=l0y`nOEl02lNMFa+5nV=R1#?$xV`M5DHzp+NH5uZGW`7$<k*owz_UuPkj0O
+zDH$$a%m{_(9o@Tw#cwF#d-m>A;`3nL2&Z&)r7gr$)G68^H0oO<@7X3_{Pj)j(<wAp
+z&%vWfYhgZZ0p_CbAr|cXy_kI8UQq9wjaem_`1#|jw|(2Bg@PuLXf|fk#l__WSM&hp
+zLi$3qx;|Ot4u5EqLnP4m^{cs#e4dFO4An)$D5@>A9C+LYjE0crlSV2^dT**-J|ES#
+zZbMIRpBlUVa7MMhQBQ^IqDin-SZ|+Gln*|OmM&O_956LGp}uluqfxjEpVif6EZ`0{
+zjcFT)vJTmW`+Oa+qQ*n;5$1xA;S+fslxA&oE=dlYO@GQa-X^V&AJi@X{{B%dGFghg
+z+Rmgj2jo3!37;}pP0EjllxR-z{Fv1QmFl{12qn+y=%UFfru#cVpTp(o@k+@!&EP=4
+zSnp}7>rs_JJ?X1{j9`<XkP?FEckh=^bG2GMDVIyC#TIE=<eW9`+Oll8B4^qr2_DJH
+zmFwzb$$u$__AhU<)tNi$KAUKeruxm>_c9s~Nr)zoNqf8vG8zVxF+jhbuGYn2r1Z6k
+z=l7e^n`0D?{g9^#gg<-nGSk^)G_cj31Ru-R7vfE&fPOxrf%lITI01ulOa_LE4gvLx
+z5<)hjrM(~5lo38SYn-zrUY*q``ub5aMzqhN2!HjA(m@dDd{6b<T9_C2Yza}gp60rE
+zTn`TPtJK%i4k=4N9B^)S!OO>YH8-WR>zK+(Q~kv8!!8@8=sWws7}E=#&y1c^FCX}}
+z6-z4o>GL<SW2GE9Hl*H%J{-`|h4O7H7M1FV$kgP7_wVf0fEH3-3UI{L%a?*u+C&<0
+zo_~(M!q6w?fMbHTHrh!b7>>wGGzePNR~wui?mu{xt6;)=AGaYr{=tgw`!vJ^BA#cI
+zIZ?v-Q%;GH?ZqbE_+<o9gF-kx`QY#~z6<WWyVKRo?H5iD=i)qxsEFqQvcl(}lQ+?e
+zoAl(h(-glpUP<-Et`9Dvg^!G!T9M|VEH^nyl?_qo>c$z|`|KUcny30&5w*Ah{oj&K
+g(>(97HrXW0e<DaCQ}N*STL1t607*qoM6N<$f`EA9s{jB1
+
+diff --git a/2DGame/src/Aset/wolf_walk_right_5.png b/2DGame/src/Aset/wolf_walk_right_5.png
+index 01db528e16fe9e194df9692467348332f0ad9171..eb95ff423890b359be1d2628db53efeba6edeedf 100644
+GIT binary patch
+delta 722
+zcmV;@0xkWM2i*mb7k@Yi1^@s6rI<@u0007{Nkl<ZcwX(9KS&%w6o*ZWMQTAVa44im
+zIwfK*sf+>P&_cu_0nygZL<EZjOEpCx<WHB@5QwFP$3Z}26;zZ<r-h&#cnEgF6(J~j
+z`W5?f<LzuVXqfjk>+Igl&hBr1@4X!x8VtiQ48t%C!!QiPFn<igNRw-64wfb@nYNSP
+z<8|d8%CJj|Uu3TR15f4r#@cr|e^}W|^bFV2ob3O^jjKA@qoc#f)KI!uSd{Y}_wJ*3
+zqDL^ruPS%$wnwH$duRKHobSwai|04jR=vC)tm0m8>0dH2H7m+}p8qJf!Q*(j`%(VF
+z+p_|Q{`Ck}@qbH;>O|>E<sc$XwzVyycqVg8+N<A+azy#Qd~Z!rE4hPMo;St+7M*7`
+zcom4w&!0`!yme`7UCxuY$0w$xjnePlzmYa8=GEM5X@7V-6YEieRXlc7C+ZSCH9Ei2
+zc6m`#D1MEc!qa$M=X1s#9eE=C%H>@-F0X9J@x{xj$bWdOh<xt@dFEghcSdzQ3%p^i
+zpjJvN1N@Hux}OG*m(DL}FT?z&g-F-OJzdg9;r_m!nw}3<@jpDycd&kwD3r9a@&%8(
+zaOHF6Np%19vsyEbnc~pcbW<uH(D|3IApJY?tS?$wU6ZrIsOa#%YkpjJDGjE$FDR}n
+zDjmg96n`c33WD<f*-pyv=vZVb)D2W{^^}ZDu!<-CI%{rjx$xzZuThMAtUao|s`EVg
+zJ1wPy_qey>)a<SroII+%4NHX;`IDNNx`CBIjZNhRrLA?zHoAXOg7tXpuQLt1n<(R}
+zw8oVs7?)Uq=Y4loHKw>PS|Q(EP7SdGh#`D!4NDFU%cZ!xsP!<#lY;V8WO}C~F2oF?
+zd$oEjU9;KSa!mSPQ5UB8Wy8v$B4j^+e4jSKDsF_vDV7^0An0ZArvLx|07*qoM6N<$
+Ef+B-!Q~&?~
+
+delta 906
+zcmV;519kk}1(OGm7k?rM1^@s62i0n%000A8Nkl<ZcwX(9yK5Ce6vkH(6l_C;C^jMp
+ziLXKwg`32}@`6Q(0TGE{V?=x)7J{W<BY{|07=l)E3*nX)Nen28prQr>Vk06b@o!l9
+z#(Ori=g!PIvpdEF@`GXab!X3a&Y9QVEL$h^^zO>XFWt^jbAOXv*CaMe53D7=ep$+z
+zBj-y(A$mvO?r8DrO8B0=`;7P$Y)R3`Y69^n?beJ*c|_Z)^W|UPH)-ryGZCkL>g&Tu
+zaj^6EvZ?93D*s(Lgrf8xI%bZkrt2<85Ou^m(?T;!YEnwm4va^?Mf%#%HM<7<x&DFu
+z=KA!*NmKv)@qbNaTbFPctMO#JH6vyjqSrh<lC__;{-&qrSTksG!5nhH-8<LKEh#W1
+z;V#kK^EP;yBuaxMJS3U|04L))tph~iJ~Y#c6eVD%xvx#BokwG{S$6P7cH!2$!ra!A
+z2j+O|w(ZX7dxg9DovRO~#wA`7?gQdQ;o82<qm-H|QGdTWG43^Ec(CD&cyKzS{zA1&
+zH165=>q60`g^Cnyh<^WZsVEayZkl7%KGC2^^_YmKLh4Qg#6bw)j_^f0BpNs)?n^h#
+z6voGa(7804Llg;{n!HzJoX!2IX;W+@(M7~H(S~Tv{BB1HAW~$s>zo_Sf6qaCzVwHa
+zG@_lt(SKhTKYuE{k0L$yVxi01K0*VI3)=zGZy|p1!)r5lgU+VKoa4H*cmYMK+k=!n
+zSV1%zLV-7Jd<IH}*8u|;We`N7kd0c=Ah<212FcKlc(Wa(=+k&W=~qXzW>Iwbz{;AQ
+zM^+PQB6>egjSmkta){^s?abKOQb4h32w`_0X@BY>wEZ}QcOK`_=D1Sd2Xz&@#<Tc{
+z07s!{G6iX#ihsTz*M1M<nF6>_JI(8oT=>xwC+pf|z$kz1^2JhHa72nU2g!w}z@FM5
+zlmx>OF#}i#=ir9Te5x1J0Sl&~#_^<riOLbztoBkczwjzWGhGzIPYoSWzrZK@&C6L+
+zY=5-h!0;SqlGyz~RSMzH=ijQ@h>5gTG_ji9tF$fE7~m6*NYUDv2rVJ$uOC--;NIh>
+z?b5w-qs^p_QT^*+6Ecc_P7XzI<v*{!Qv2krn6|1Ay<`m$ld7F(^ByK#lXWSGjyOme
+gjg)O|uz{aHK(7j7He9}D00000NkvXXt^-0~f)6jiqyPW_
+
+diff --git a/2DGame/src/Aset/wolf_walk_right_6.png b/2DGame/src/Aset/wolf_walk_right_6.png
+index 82b218a2c4f27f3994ee9f420cd5c32b6bc3ea28..64468ea2be32034c106827cee6479df4b271671d 100644
+GIT binary patch
+delta 729
+zcmV;~0w(>Q2jm5i7k@Yi1^@s6rI<@u00083Nkl<ZcwX(9JxClu6vxe1ky?-w4uur4
+zOGwbuN(~5y79pfikl3a(k${DgQcWR9KDxAukdzi42SU_JR3ev73qd*X5bOe1gplA%
+zevp0M=+3$!7v}w%y_wyeo!$TZ-+Q~)&|nybVHk#C7=~dOhJRrgMw(nnbFegN%C!DC
+z9j`stCBrT+eUP~hJRFk#?adA8Kdu}kx`(T2PWFG|dc98e<m5OqHIyzEmZbmgy$%#l
+zbPJ|<y>h$lPGoAd_jbQX|NUIIc>eR|x|i33Rov?-{Y}Qkr$xEN`S)@eJdT&Ud-CUA
+zo)tj!zldNJ|9@vuohV(Y97V**wzNhR&t#gVy}nkIEz0-j`)Z0>$sNV=yeWQJbe`4V
+zRUkS)fA*s0rAs?o(ofzV9eXKllz#JePTH)PS2MHHe)oDR)~y7qc<iW7)Fpaqbbh7n
+z@}j0tT#0nyX*{m;IpdBz8I<$N<$c+HTHTiI#N>EnJbzY1zOPg6IatM=Q60|$PgpCc
+zmD0)p$8o+sPlLxxzjtUa!~DX>$f*x{+og@d1O2@<Js+&%XFSe(uzr##l(e$)1&_OM
+z<#XmqbpQUXS~HHB;&AQ8O{si9=U?7}^l{`_U$nBiCTE3F(cyj9{MheO8ccCtP+V73
+zI*OwxN`L4T1m(kDUs8rgo<^oZ-9QC*k&<x<R`JAdXN`?b=RREWHHwjswMVsAb)F}G
+zr=@i89`{z9n%z}{lSj3;VY#p>KdG6i8(0a{*i>Fn+S!t9qt8!DupW>7cBawFyDB@E
+z(ysA<6-Dj+=<%@Z!t=ggRW+u#FMQ9&i`v`1ic&BhUawZa%9OI%Te401ADN3_759$n
+ze?(dNiPGe2U#0bU)CYV?Nn2?MR`JA99jMu<!S%PTdL>xJjnMcB^<67KOrUmD00000
+LNkvXXu0mjfz@>N$
+
+delta 917
+zcmV;G18V%_1)c|x7k?rM1^@s62i0n%000AJNkl<ZcwX(9%WD)t5XMIl6ugEAQM`yC
+z#OFa2gv5C8xS%9xKtv*VF(Mif4?>Os4~AeoC>VmCWDmj~J;VnHilCwf0^&tPP~zXP
+z^0le9rnY;kW~Z|zkRJ>^GdtT;Up@M<n`NtnuI_Ekk&8E*Xn&>2p?ezZwFg!bU%xD5
+zwV`u4p%A^LXM1V!t4jEeox7a)6l_S*Nhg7L9F6*{OL;__wavv}-`82}Suqi(I*rvZ
+zQXFjkz35uHZkPWq971vQ?mz6#sipfNM-WxS2h+kbN?KCN(hrPB-6DNCbdR?{KG(Z@
+zkGnr}Z_2ele}8;4+14T)##%htsL!fdhUnE!3}uZc^}p#EIkya2Qm}*^Ffl&nKGFh{
+z6CM&RJ<q|*G*K2b;YFe;0B|y%vpPT(9>X%NXi)+@&0~FP{X7_+%d&mfvhz3Id2{QJ
+z?z;1hn>Gid9~B;|yHE|LCL~@H9s}Z4;nv!gQA$laQGdTOIubQwpuaB|@xtkh>V?{n
+zXne*$uL?z%7Ajh_A^QEt1%HfQzV6P^#zX_3>SZFH3ay+7h=ULy9TAImk!TQ%cr4v4
+zQ<xkFimtWM9HL0r^wce%ah%EN8Fz3r(LUmqXhXDRe&<mFh!hzex|T-E?@Q2MEdAjm
+zi|C+m)PL*z=TEu!QKX-}c-i9Z7)1k42<`ywyAVJB;kBE)!P2J1UE{vCcmY1u`5?sy
+zD~Lu%IN(iA%s|cXDq!HE41!1;WTRCyDBPA(hh*rIc()y-=+k&W=~qRxWl?ls@4q#@
+zjI1TnMCtuFbw1GF*MxXkZ>NXP_|CCm(BS2xO@Cd4wT_F3&f_xLl2GbP=tlx772e`m
+zd=5w9uw)9-JQd0J<A;tMYs)sCDTEZt)4VFlg@>YU*_TT&%3r;7A$J>&NRj4X*@d?Q
+zpV}al1j7+!2CyQ6gBv#U+6yd;o)p}^b3dtIqOFK`N;FoADWlBs!jB(4XbMn~Xv_p}
+zUVqKy`mz272FmUQs^En`eg3veKgo=i;^jXlsc<!pdY%{`^Z!X{^*uOvGWY(or)ut+
+z=54|f?XK<~|2)pI?Cb=le;p)pdV-_qH*t=(b`DK*)YrqujTYx>0VzZ2B`ak}nU};!
+rDWoh(1Q4N2C~MGi^tHwsS@s8$jrkjT^bTw800000NkvXXu0mjfS<<@F
+
+diff --git a/2DGame/src/Aset/wolf_walk_up_1.png b/2DGame/src/Aset/wolf_walk_up_1.png
+index 91f645ed59d8e9162934bb3bafe5e5bb72e0a5c5..19e9f6b48f5ddbb23acc949f58243fd679ff638a 100644
+GIT binary patch
+delta 680
+zcmV;Z0$2UQ1hWN@7k@Yi1^@s6rI<@u0007dNkl<ZcwX(9yGtBV6o)mBBL6@bA;d0r
+z3Cg;$QUk)W7M2MFZS8!JLJ(4GARz3PwuV3~w{TgoFjhfBL_5<Z2rdiO79tVP@_}>k
+z>TKo=f^)uRn9DtPcIP+eb#GUf<2a7vIF92uj&t{PTmOWC;(zeJt84z++3x5W*zfP{
+z$};C?rybcR<w4Sk_l-wc{h{HJk}MrXJ@N(2&3=&k(%9>36&#;<C-YwPy_9)JfB(p}
+z)ofp_amB4Em&RgCR;nv<|M2mXSPXd8KPclUjotS5hAW;0nfW+q<xy6n=VeW9ecU`p
+z>O7v5DC&`^&41>xj_T&W@sivsZtmkK*QnRz%@VcA>)My=jZK+H6sKat&hxl2W{OjJ
+zp)`b)4n=(w=Ss}zwC2B!-1@j##C#g{N=0^Z(z@2SlY*~PtFxYUmzG<_Q~NkdKYQLQ
+zqM{JK9jefX<{IpNA0EW=`u^Uod{G<qEg27Wc}a1_(|@A#?`@FJ>DodyJnLHHivKUI
+zX1kWg*MaD)eHNwPj22{Sr5b-Sb{Z?+23I^SC|@WJN%W=5N{hA9u6SBSG$Ez+_`>2R
+zG5xvoL#{fiQ@N$h*CE`;vw|r8b#3*=N9f&ED!{C8#jVk`dZ9QZj~FkH#va8^3t;Cb
+zDH&lN)qmM@gHRWy(ewC1Hfnx$W{SDu<ZDhxQIdSEq5IN%bD^5u3Xke((dXNAUywA9
+zW4FBYSxhU{mG;g{?VH*D;3c_L-0UrK?oBr}HThQFEEQO(JR$e^I^#3*A7z{`f^pU%
+z@B1#R5oU@5Cm*_UL(#P_>oS$Di=CVIQ`51(L?Kki*R8v>-1@kaH!cAB9Q_1fI$mS|
+O0000<MNUMnLSTaE^J1|8
+
+delta 566
+zcmV-60?GZe1;PZ77k?rM1^@s62i0n%0006BNkl<ZcwX(8!Ae3w6ozlnBZ!M=7lL6y
+z%br3gly(tqTeb*8h*qt72Wb~Bg8KmN0^12C3DT}r^bW>9aAX?h&YkO>e-!isxuWNe
+z{_~%ibLJ*VBr4UN>BVJtimU4<edEfqS$2RTd`-qlvwg0_*?;cC=lC9RY@!O^t<{wt
+z5ib*ftB3{?$7G8+xC@8}X}_mjj?G4lAJpB{(No&ya@y}DzdzrU{}?sZmx+}XPDvxz
+zj@{TlNcQTr<a0bxVYc_9k9TUC1G;e8xgVd>nOGk%A!nye70OuWRN)ZaxqI-@>E!<Q
+zD!BOQ<t%;f=YLK_^SGTGQx=-zrrSP(P4o!}?K<7@c?1h`FCzn}jyDdElm@doL1U7I
+z*~LkdGa3$pu5(Hq*V8<!@5ZE<FB@_{Hp#q`T@fh4fu7>1-FW$8i!ZZeY*5#@xP^wK
+z2xdIS34K(hIUf3G8G1aLa34a8DFQ_}T1?l@E!fgG>wmt`M^uV%UrfiP{Ka6Q!o~4L
+zr2N8!qahK&p?7Q_sKVb~U(|olYq-9Kvjm$pU&aXuwT=s}I&Svi$b_PGe;%lg1D9J6
+znFqsdKye&Bwd~N>otuB!TCJ1WlNBE-)om4q>u5NbhI$%9cYIl)9!s-C!!_4QOFx?G
+zn_(!o0WVGXJYX{LP|^es9Ycx+>r`JBY)c@t+iO;lKf^QGy9ynwX#fBK07*qoM6N<$
+Ef~~y{ssI20
+
+diff --git a/2DGame/src/Aset/wolf_walk_up_2.png b/2DGame/src/Aset/wolf_walk_up_2.png
+index 38f9887fc31bdc4ed9107392d666c7dff0387a39..84c6c95b15d6cd45d218449bc5e32bd0a0b2a25e 100644
+GIT binary patch
+delta 672
+zcmV;R0$=^d1giy*7k@Yi1^@s6rI<@u0007VNkl<ZcwX(9yGsK>5XOBL{sVFW(M~%>
+zi7{1-AcUkysUW7c^MQpZSQ}9gOlhkKTBb+{2u3SWF~m+gMKA=cEkqP2eBcdPbMfX7
+zy!kcD9Xq?5d^?ZbYiUswMNt$*Q4~c{{+?FpC5(h3AK%Bkxqm!wY7W?!OII|^``c?%
+z_D*SY+VQ{9;nfd{jK^qb%L>pASX@}9=h);}T?G@#Y3kQMFi8EL9v`T!R%)#@s<<@q
+z*raX9-OLU>w|92gV!+VwD7}Z$usc61sN!DWnU4dmJe1||eqQ5S9~aM&JdZoYvI5k#
+zQhDZ4U3`sS_<vS$aUX|rg?yI&SwwB*b?(dg!U^?56i3AdJI&+5h$)WB3rYi%(x#{n
+z#nB>WG+XmG!nZyy7BRc6KB~xGUaEC{+bQsM)an>d`jqBd#a;V2l<w*6BT=CceA`r^
+zA)0ewcYk+l%j@OR744{8zDVy)r#z>q;%?#jw-LzaIDfU7YIuw*jVk_Is+C$T4POU{
+z&fI6A^h7jBU3W9~nPJC~@@=4sy9LSzLt%=(IAys-T4`0>ts)$g()|6(+9sJ^UtUnl
+zqdF=#xB1$H`nXphiXZOp{Wt}`T}1`x6{@&2yjBl}!Zbx99<@z{n-%~&{gUDl;!z!U
+zZoqU3<A3me*de*BemfIIOmY6Tb1S_{3q37fQ)`OqIDPTEIaAFpg>R#}*qs}`f}*xg
+z%}$Xx$j7mGlAcki@jMMXoZ7Hca9+=4kHpscg(@xu?!kE;hmY?c9NY5w{L;ED24E*(
+z2O#h3Evpcse)Ah}b2F2gvza5Rr#H6gz4R%~w;4XJ_>E7pd-$zjOT<_J0000<MNUMn
+GLSTZerA9UY
+
+delta 571
+zcmV-B0>u5R1;+%C7k?rM1^@s62i0n%0006GNkl<ZcwX(9u}T9$5Qb0j5kd;FlRzX2
+zb_#YrK)@o{iP&0N34&Nz`3}KOt`P14>;&xu4F-apmG};ke`RD@_V)I?`8Nvr;7G{L
+z?cKjKyEAjivP87nE7POnvnf79w~V!G%3{+2>hLxhXZ^vU5r5~q4!`3(?ARm~zS`*;
+zJtAHv0G}cnh#iw9=HMY99u)b|csVr-DQ;+c)5Z>IpO=e#n0<b{Q=TztsQ)GA!kHjk
+z5w@VWzF`g@_Bm#l1IqewvDY}nt#v!u>v&?!eBVbe&$98+);L|bq^#?k;zw)@n2>}0
+zzA<HNa8%(CeSdm!6{9oA<@t%a_~d!KxXmjkqQ5t&v}p>><F2=31iRQ1pzU?K$A2SO
+zkZTzcK=pWUbK7Wet1?M#KHTzEs=LwCgX%h`6fky}mo*%i6!-8U*JG2cYH9005f1DS
+z4;3vweD+P2j1TG>7jH>H5{qk(akP7Mn#Z+!YVGl8!hd7X7E=d`aJwl9;S1lg9bda?
+zp$Lz~^|++J6wFk(czhNiKQrMdNJOyqjvWIvoju;)Wm`MDCNJAPwqRa2I}HgY#I^?*
+zN1G%bZ<@y$P=uqj#75O>F9*XI-mL;rfpNaa3;zpK2a53j0JS^A1mKmEi@Z`Q!|u@R
+zysr5QiZmu%@P%iY0N9pIl%{Av-PM8i18YI|cwOp5$ecOxd;z41>2&xoP_O_1002ov
+JPDHLkV1j0u5C#AM
+
+diff --git a/2DGame/src/Aset/wolf_walk_up_3.png b/2DGame/src/Aset/wolf_walk_up_3.png
+index d36bef46a543f9dacd3c5d639ee8419b7a53dc29..6fea7fb61be7f6d8033a22759b7432b167562e7e 100644
+GIT binary patch
+delta 662
+zcmV;H0%`rp1fd0x7k@Yi1^@s6rI<@u0007LNkl<ZcwX(9ze^lJ6vs`BMg9TVgP>i~
+zDUtJH<qr^!yW&cP5ZiPnVj&2rlYk&-nN|^!@`^hSEYwOgL`<h$MDRGc+CoI}$p^9z
+zH}1J_Ewb;^3^%-)x!v!+A2ZX{<v5PxIF92uj^jAaWAns%!GEE`=+)nI{@UB=Xbr|6
+z9_-6Bmlx+9jgQOIxQ725&(eCJ(XpaT9RxY~0zQ72m*2(7H+L#nu1t&F%U1(pcY5+i
+z+E(+nwZ;{<rc|5^O}VnVEWf*Zo`+(<;Ok-OM`_0GY&Tr-G)T?IK`W248f}+0ne}n=
+z9I5koT!J7crhm=mnU3n_|M7;*DsJxMDA%Z0<;@bc$?Mve>y1sZBZ^b8G0yY2F=mQW
+zd7(5!DIFE{QJj{T(P_<pADQ)WvxwOn^h-t7Zny6A?YQ9U)auM<y-Uli;)#76rC;>*
+zi>N4sZ%0*VL~{+}j*ota^7`SyzI;)&`j+%Z?egN{ihn0X=imDvpR;R=s^OW}8dv<G
+zw3@fIG`<c*XYI2nJu#ja)0Nfm%8b)k`8K%XNkRF1VML-YyR4*GEA5IWRYVh|wC-P6
+z{3=6#?(IseqdJva(tI6-`*>Oq#W&Wz{c{O@x=IC@7OuE8x>nB@Mr4U{X*{$PCoRA@
+zze!06^M9z$nHxmy!Zg~BFQiuWyE9YF6z9y1e9i4BN|LWN?7sBb95p-h)~eslPK$2H
+zY*aUUi`;@zThF|kk~d2}E|w~xN{#;6xlhtho~NIA$O3-mW`vpIz&W_i<0!he{zFWu
+w!P&>Zop~R6Bz*kK=cSOn6`A#MCu>{-+TZpF?GN4MUH||907*qoM6N<$f|Z_LSO5S3
+
+delta 573
+zcmV-D0>b^F1<3@E7k?rM1^@s62i0n%0006INkl<ZcwX(9!AiqG5Qd}p2&D({CWT5B
+zJo*#?rKPtbUOjpe1o7m_cL?4j2O$sOP0*X5#X|AsNqmROzcR9Hx7$rSf2z_CLP9dx
+z<lmXi&TNvT0&4Y*(b4hQ2>a0EV(m0o)o3J!x8Wd3JBLP`&wn20aUFJ5P?_+}M$_mK
+z@zMd<i)bKrY}VKh@B#6l$TQ>RMX<ttsO?P~JEVPHF7hn-{CKCmUuB{G+gJ)`fpA6G
+zg4Xtq*?id7*kKN6V@R;aIK*u=8_DZnXfFGX`!CP(;iHams&JXIu5XGTu`!@Sdfn8R
+zvOaJ$;Sha#aeoz~Gsxxn2}OLR^LTNaPwj|wzcbZF1B%C8Z^sCBu{(g_b*jf_5iH2P
+ztO%faytTV$G`LxrOl>~g^i{IE{?mi{I9E?#>@c5HaG+D%&4=8NkL0wHwk+zxfgR$Z
+zq{WBNex4yS3ECJJZ%INDi))W|7&SV@<JvW~c6)##Jbwm;m@=pfw~LYxWx|(Hw5SV@
+z<==Tc7V-F^I$+@*FB9^b(1btU-<kKc7ar`a4d;=L%4X*OJR4i6kao182^Z#_$62Tg
+zM{0?5v{qlA7{<uGW56&#JKybv|H70-UHD&tR-H))*cDf(G6Ptma$zk&QF3)8F$hgp
+zNV|Ptgf{rr(L$ljSa+icp9P5Pb<?pQiVV?!66%7_i!32amW25N#tY`E0VPtp00000
+LNkvXXu0mjf%9|U*
+
+diff --git a/2DGame/src/Aset/wolf_walk_up_4.png b/2DGame/src/Aset/wolf_walk_up_4.png
+index 2e7ab4186627b650776878bc6fcae7d5b3ca6361..19e9f6b48f5ddbb23acc949f58243fd679ff638a 100644
+GIT binary patch
+delta 680
+zcmV;Z0$2UI1hWN@7k@Yi1^@s6rI<@u0007dNkl<ZcwX(9yGtBV6o)mBBL6@bA;d0r
+z3Cg;$QUk)W7M2MFZS8!JLJ(4GARz3PwuV3~w{TgoFjhfBL_5<Z2rdiO79tVP@_}>k
+z>TKo=f^)uRn9DtPcIP+eb#GUf<2a7vIF92uj&t{PTmOWC;(zeJt84z++3x5W*zfP{
+z$};C?rybcR<w4Sk_l-wc{h{HJk}MrXJ@N(2&3=&k(%9>36&#;<C-YwPy_9)JfB(p}
+z)ofp_amB4Em&RgCR;nv<|M2mXSPXd8KPclUjotS5hAW;0nfW+q<xy6n=VeW9ecU`p
+z>O7v5DC&`^&41>xj_T&W@sivsZtmkK*QnRz%@VcA>)My=jZK+H6sKat&hxl2W{OjJ
+zp)`b)4n=(w=Ss}zwC2B!-1@j##C#g{N=0^Z(z@2SlY*~PtFxYUmzG<_Q~NkdKYQLQ
+zqM{JK9jefX<{IpNA0EW=`u^Uod{G<qEg27Wc}a1_(|@A#?`@FJ>DodyJnLHHivKUI
+zX1kWg*MaD)eHNwPj22{Sr5b-Sb{Z?+23I^SC|@WJN%W=5N{hA9u6SBSG$Ez+_`>2R
+zG5xvoL#{fiQ@N$h*CE`;vw|r8b#3*=N9f&ED!{C8#jVk`dZ9QZj~FkH#va8^3t;Cb
+zDH&lN)qmM@gHRWy(ewC1Hfnx$W{SDu<ZDhxQIdSEq5IN%bD^5u3Xke((dXNAUywA9
+zW4FBYSxhU{mG;g{?VH*D;3c_L-0UrK?oBr}HThQFEEQO(JR$e^I^#3*A7z{`f^pU%
+z@B1#R5oU@5Cm*_UL(#P_>oS$Di=CVIQ`51(L?Kki*R8v>-1@kaH!cAB9Q_1fI$mS|
+O0000<MNUMnLSTZ^vtp?L
+
+delta 558
+zcmV+}0@3}m1-b-~7k?rM1^@s62i0n%00063Nkl<ZcwX(8y-EW?6op6e5kd;FlRzX2
+zmOe#5Nw5>KwX_lhNn^0^9fF;t5cUD=1nmS327;ZH_zsaXaAg=~|B`!V1IY(V!shO7
+z&YU}Q@2oLoYW1z@+4<EJpIMJ88mGm&){V0Gnv6}mduqjn;(u@+zauUdQG{<dnpTg9
+zmjS@1hz1fDgN+yuae;V{3<uWbs#s$_*mcvzP3e%!$#7tPf4-^zElR2{B1<crnodB{
+zy|ue%cA5?IIiA?_q3@%Q_b6!&Xu@UXzJEym#TEera&p|Zq0D(s5f0Ipy}KehGwEMn
+z(8Nb8XUXF*cYh$-huz#5Ez}+N-7X^7#~lEc>omt_5iH2H%nYD7-r7H~8vN!2jY%4Q
+z7bi{5=<S6v&sFQVo91bKHwMK&Ldf-4B=dH5v!E&*xG9d>jiV@`_<5#G7L++IZlNJ5
+zgCCFku(qn|j%#l%weKgW3oimoOc_*#qs2^Hx!v<+(tnq=MO77^M_QSyf~dj;alFcu
+zuSB>A#sHu}sRD}d*XJjzC9Q^s<~ZiEA20V|K&j(GsE+&nx9fP>x<3yT$3e)gGHK0p
+z8>l*to?2G!vfxdPOQ&;WZu>W;R^P;cO|{>~&>UZMDBDsI?QS*G8XIvkYX_$7Hc%H1
+wAi_^wfG3xT3=y-iN_A~Qsk<m{uUJO@0IE#dojsD3ga7~l07*qoM6N<$f}2kV#{d8T
+
+diff --git a/2DGame/src/Aset/wolf_walk_up_5.png b/2DGame/src/Aset/wolf_walk_up_5.png
+index 37792973c3991ce6641ffe2fd6f9ea9ea4d20646..9ae4ec6ab697c57df7e1a844d8e2801b8a35e37c 100644
+GIT binary patch
+delta 670
+zcmV;P0%85i1gQm(7k@Yi1^@s6rI<@u0007TNkl<ZcwX(9J4gdT5Qcpg)&aSIm`*!I
+ziP6dj2q7s_Du}jrKClo3YZU~+l(veXWeP(;Fs70u7-FZLB6tK+TZkx5_`w@oy?Ap7
+z-h9oH&Ft<a|IK4}TUr!FQ4~c{6h%>#zo%9D5r$*qZ=dJ9E`Ju9S_9*&l@d+!`tsb=
+zc(=5<HT-XM`1OOvC*m}<WrgVtSXo}9&++NeFBMFtX34Ive}L>BAMUBG*^O2jRa}}x
+zeA+SPetM5Sw|90qV!+_g2=zm0j4NE`RB=D>&Bp;(9?EjKo!<o3$Hj9b&*N^ftT36{
+z_7jil;?MX&V1E@C_i-qf%Vy}GMbt)K=f0fHos%7+I4U-b(>yMWnBu6spfoTkZHoF(
+z94%r-vo-%u1lGsJB4)Q0p^B_tuYKv;Zh^0(R>yqOyR^V6?%BtobWd-DM1?}|ZBvDY
+zXwJd7yW1N_UawY4^hTX!^VDzJ<+()__X^LyKY@IXU4NUYhR3|psN%n+W;beS_&Pvz
+z<~|FhrzWFhx}SEgjBy+(-v+9<SD<_}Hb&7GyDYCrE3JxqRfJ<wn)k17?9kA1@rqg=
+z)ls>5&DSQ>$Nd6P{P^(T+a>tvDk?y~P{pO;wR$u*MoT0Ula8fu(gH9}Z&G|hJgVc&
+z4VZRe9Di<yH{>j%cW0uAD~^1P+fgWqe9gh`YkO;#zCsOukuSrvu@BFjh@BRFpi$i`
+z{C*qC0aG4dTHPd*h4~q3k-t%+^HW<X0;{-~-{9UGN^u3_i4=(iUx%`xP&f6@Ei5|3
+z#J(K9FI}^%;!@z|gI8|w@x!B2T1r~MW(lm~N*B<02m2!RaUlU$Z~y=R07*qoM6N<$
+Eg34S;0RR91
+
+delta 574
+zcmV-E0>S;M1<C}F7k?rM1^@s62i0n%0006JNkl<ZcwX(9u}T9$5QbOr5kd;FlRzX2
+zmOjOSMMxLK*3wE4#LCKd2zGLXa1UT7#4e!0K(MnC-y!lZj4bQk-6qbzXORz%h}paK
+z+nL>+J&hsLYVRyg&n_4Etm-PZofex~531sQJ~LVW#L9)*;eYq|9_><*M0~f?wLT&*
+z1AtGF2GTACTPZqmfjlVkk&SXwY%n`^qv_(NbSTP2J~CgQAJo4sNvi)x*5VA1u1H(Z
+z+dr^Z2=}`bX%49K$erVm+v|4B+iY$-4*fiReUXKaKF4X|vSr=f7eBHwU_ge0%r<2%
+za1?P!UtHhDcz;%Mb9GLWPqvR24|(lCWXJv5Hd?4h+>dsQu#Y<ctf<o>zKXCQ_cAkp
+z67k;Qk#+E^GTGWf_~olqchkw3GS5{D7&pz!4jdR1{|X`ZW09;o(yoH4IB-+Es%WVz
+zWc;+(hBC(`T2he2;<v|hSZ8$gh-;szwVx-bi^sr{S$_sqaraQ-<F4q-q%Z5xqAFfT
+z**4b%NyP<;c#|pLh`0!208pSb0Y&`z>Cw8By?6-Cam;1Ey*!5jMO^snKF&n7fI(>~
+z3mBs6&tasse@-t;b===-Z`*4+885V7N>C#ni?&n@su70(q9Yy0uG+{HyrS}9zJgK}
+z2apemR5u+-anEp&{rbNeGZWO$<Df2rE=;*9DB>dTcifcZnl;9J1Ez)eCi(4`VE_OC
+M07*qoM6N<$g7Wbdl>h($
+
+diff --git a/2DGame/src/Aset/wolf_walk_up_6.png b/2DGame/src/Aset/wolf_walk_up_6.png
+index b0e318758615d066ed7ab8ddd7c51c52f00d4550..6fea7fb61be7f6d8033a22759b7432b167562e7e 100644
+GIT binary patch
+delta 662
+zcmV;H0%`rp1fd0x7k@Yi1^@s6rI<@u0007LNkl<ZcwX(9ze^lJ6vs`BMg9TVgP>i~
+zDUtJH<qr^!yW&cP5ZiPnVj&2rlYk&-nN|^!@`^hSEYwOgL`<h$MDRGc+CoI}$p^9z
+zH}1J_Ewb;^3^%-)x!v!+A2ZX{<v5PxIF92uj^jAaWAns%!GEE`=+)nI{@UB=Xbr|6
+z9_-6Bmlx+9jgQOIxQ725&(eCJ(XpaT9RxY~0zQ72m*2(7H+L#nu1t&F%U1(pcY5+i
+z+E(+nwZ;{<rc|5^O}VnVEWf*Zo`+(<;Ok-OM`_0GY&Tr-G)T?IK`W248f}+0ne}n=
+z9I5koT!J7crhm=mnU3n_|M7;*DsJxMDA%Z0<;@bc$?Mve>y1sZBZ^b8G0yY2F=mQW
+zd7(5!DIFE{QJj{T(P_<pADQ)WvxwOn^h-t7Zny6A?YQ9U)auM<y-Uli;)#76rC;>*
+zi>N4sZ%0*VL~{+}j*ota^7`SyzI;)&`j+%Z?egN{ihn0X=imDvpR;R=s^OW}8dv<G
+zw3@fIG`<c*XYI2nJu#ja)0Nfm%8b)k`8K%XNkRF1VML-YyR4*GEA5IWRYVh|wC-P6
+z{3=6#?(IseqdJva(tI6-`*>Oq#W&Wz{c{O@x=IC@7OuE8x>nB@Mr4U{X*{$PCoRA@
+zze!06^M9z$nHxmy!Zg~BFQiuWyE9YF6z9y1e9i4BN|LWN?7sBb95p-h)~eslPK$2H
+zY*aUUi`;@zThF|kk~d2}E|w~xN{#;6xlhtho~NIA$O3-mW`vpIz&W_i<0!he{zFWu
+w!P&>Zop~R6Bz*kK=cSOn6`A#MCu>{-+TZpF?GN4MUH||907*qoM6N<$f|Z_LSO5S3
+
+delta 573
+zcmV-D0>b^F1<3@E7k?rM1^@s62i0n%0006INkl<ZcwX(9%}T>S6osSs2&D^gCxuEC
+zT>2CNrKP(fZe6+(1nJ6^?@-)H7D67toltiL4Hk+!SK>QV&cH3hFij`zJxS4i5K@xK
+z&zW;4bMG{YN}yKXn_gVrOtH^<TxdHDwl!`N!slch#hr5_&VSb)$8jF*%Ahpi`;Dg2
+zBjTk4uouxl+OgSTKfnjXgESc!m#bil{ZQLY8#|<ZE~m*L`uYB%y<cgezHV%Uvp~2a
+zY(eYr$ZS6BbL=n&v@s;uV;tfRnvLjVJTa$zzq9u@`S4N4I90ezSr3otOl%0~kX|=7
+zO<5l}nsA7|?tkBh=*;Er_KG6D)OkF8N)~oReA-#qMgxlDuG=AkUF;5ExK4F^8Nq^F
+z%ZdP+<E`TpqruI}WNP!_rmvFSWuu|`I9E?#>@c5KaG+D%&4*l%kL03~wkYbtfgR#`
+zNsA9(`&EX_JZNKF+>(SO6t_L@!>G|Ij%(M{+V=w#;eR18#1uhYxLuUwQ6zjBMT@%d
+zQ2w0bp@`#EbwK5g7YTVyXu@A#p3QsO3lDbI<`azb?m~s!M;n@OVbyt@g?a*m)Kc<v
+zxau3j$i3ZK9mia7eXYK0wrn(<YA#C99bZ?}9fvD$2ZFKWWYcb+&6boxu%kfJZJ;h3
+z$V>LRaW?Lsgf8<sN?SBdxZrzXDKD|AQYDmyh-LBB+zhuj{6~HPvzhLhT2U?>00000
+LNkvXXu0mjf)72Ow
+
+diff --git a/2DGame/src/Entitas/Wolf.java b/2DGame/src/Entitas/Wolf.java
+index bc38bb1..f76a989 100644
+--- a/2DGame/src/Entitas/Wolf.java
++++ b/2DGame/src/Entitas/Wolf.java
+@@ -118,7 +118,7 @@ public class Wolf extends Entity {
+         drawH  = sprite.height;
+ 
+         // hitbox simetris di tengah badan (kanan/kiri sama aja), setinggi kaki
+-        solidArea = new Rectangle(14 * scale, 20 * scale, 34 * scale, 10 * scale);
++        solidArea = new Rectangle(14 * scale, (WolfSprite.GROUND_Y - 10) * scale, 34 * scale, 10 * scale);
+         solidAreaDefaultX = solidArea.x;
+         solidAreaDefaultY = solidArea.y;
+ 
+@@ -551,7 +551,7 @@ public class Wolf extends Entity {
+             int sw = drawW * 11 / 20, sh = sprite.scale * 8;
+             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.30f * a));
+             g2.setColor(Color.BLACK);
+-            g2.fillOval(sx + (drawW - sw) / 2, sy + 30 * sprite.scale - sh / 2, sw, sh);
++            g2.fillOval(sx + (drawW - sw) / 2, sy + WolfSprite.GROUND_Y * sprite.scale - sh / 2, sw, sh);
+         }
+ 
+         BufferedImage img = currentFrame();
+@@ -564,7 +564,7 @@ public class Wolf extends Entity {
+         if (isAlive() && fadeIn >= FADE_IN_TICKS) {
+             int bw = 48, bh = 5;
+             int bx = sx + (drawW - bw) / 2;
+-            int by = sy - 2;
++            int by = sy + sprite.topY[dir] - 6;   // tepat di atas kepala (tinggi sprite beda tiap arah)
+             if (life < maxLife) {
+                 g2.setColor(Color.DARK_GRAY);
+                 g2.fillRect(bx, by, bw, bh);
+diff --git a/2DGame/src/Entitas/WolfSprite.java b/2DGame/src/Entitas/WolfSprite.java
+index bd4c80c..927eb15 100644
+--- a/2DGame/src/Entitas/WolfSprite.java
++++ b/2DGame/src/Entitas/WolfSprite.java
+@@ -12,8 +12,9 @@ import javax.imageio.ImageIO;
+  *                                         arah  = right | left | up | down
+  *                                         nomor = mulai dari 1
+  *
+- * PNG-nya dibuat lewat tools/generate_wolf.py (pixel-art 62x34, gak di-anti-alias). Mau pakai art sendiri?
+- * Timpa PNG-nya aja dengan ukuran 62x34 dan kaki nempel di baris ke-30, kode ini gak perlu diubah.
++ * PNG-nya dibuat lewat tools/generate_wolf.py dari sprite referensi (pixel-art 62x56, gak di-anti-alias). Mau pakai
++ * art sendiri? Timpa PNG-nya aja dengan ukuran 62x56 dan telapak kaki paling bawah di baris ke-52/53 (GROUND_Y),
++ * kode ini gak perlu diubah.
+  *
+  * Semua array berbentuk [arah][frame] dengan arah = RIGHT / LEFT / UP / DOWN di bawah. Gambar diperbesar
+  * pakai nearest-neighbor (tajam) sebesar `scale`.
+@@ -21,7 +22,10 @@ import javax.imageio.ImageIO;
+ public final class WolfSprite {
+ 
+     /** Ukuran kanvas gambar asli (sebelum diperbesar). */
+-    public static final int BASE_W = 62, BASE_H = 34;
++    public static final int BASE_W = 62, BASE_H = 56;
++
++    /** Baris tempat telapak kaki napak (dihitung dari atas kanvas asli) — buat bayangan & hitbox. */
++    public static final int GROUND_Y = 52;
+ 
+     // Indeks arah
+     public static final int RIGHT = 0, LEFT = 1, UP = 2, DOWN = 3;
+@@ -38,6 +42,9 @@ public final class WolfSprite {
+     public final BufferedImage[][] attack = new BufferedImage[4][ATTACK_FRAMES];
+     public final BufferedImage[]   dead   = new BufferedImage[4];
+ 
++    /** Baris paling atas yang berisi piksel (setelah diperbesar), per arah — buat naro HP bar tepat di atas kepala. */
++    public final int[] topY = new int[4];
++
+     private static WolfSprite instance;
+ 
+     /** Satu set sprite dipakai bareng semua serigala. */
+@@ -61,9 +68,22 @@ public final class WolfSprite {
+             for (int f = 0; f < WALK_FRAMES;   f++) walk[d][f]   = load("walk",   d, f + 1);
+             for (int f = 0; f < ATTACK_FRAMES; f++) attack[d][f] = load("attack", d, f + 1);
+             dead[d] = load("dead", d, 1);
++
++            int top = height;
++            for (BufferedImage[] set : new BufferedImage[][] { idle[d], walk[d], attack[d] })
++                for (BufferedImage img : set) top = Math.min(top, topRow(img));
++            topY[d] = top;
+         }
+     }
+ 
++    /** Baris pertama (dari atas) yang punya piksel tidak transparan. */
++    private static int topRow(BufferedImage img) {
++        for (int y = 0; y < img.getHeight(); y++)
++            for (int x = 0; x < img.getWidth(); x++)
++                if ((img.getRGB(x, y) >>> 24) != 0) return y;
++        return img.getHeight();
++    }
++
+     /** Muat satu frame lalu perbesar. Kalau file-nya gak ketemu: lapor ke log, pakai gambar kosong (game tetap jalan). */
+     private BufferedImage load(String action, int dir, int n) {
+         String path = "/Aset/wolf_" + action + "_" + DIR_NAMES[dir] + "_" + n + ".png";
+diff --git a/2DGame/tools/generate_wolf.py b/2DGame/tools/generate_wolf.py
+index 2dfa65d..93dc2f1 100644
+--- a/2DGame/tools/generate_wolf.py
++++ b/2DGame/tools/generate_wolf.py
+@@ -1,628 +1,417 @@
+ #!/usr/bin/env python3
+ """
+-Generator sprite "Wolf" (serigala malam) — pixel-art 4 arah (kanan, kiri, atas, bawah).
++Generator sprite "Wolf" — 4 arah (kanan, kiri, atas, bawah), DIAMBIL LANGSUNG dari gambar referensi
++(ring 8 arah serigala biru-abu). Tiap sprite di REF di bawah = salinan piksel-per-piksel dari gambar itu,
++gak digambar ulang. Frame animasi dibuat dengan menggeser / melipat bagian sprite aslinya (kaki, badan),
++atau ganti ke pose lain dari gambar yang sama.
+ 
+-Semua frame digambar langsung di resolusi aslinya (62x34 piksel, tanpa anti-alias), lalu diperbesar pakai nearest-neighbor
+-oleh Entitas/WolfSprite.java pas game jalan. Jadi file PNG-nya kecil dan tajam.
++Satu piksel referensi dilipat jadi blok 2x2 di PNG. Kanvas PNG 62x56, telapak kaki paling bawah di baris 52-53
++(WolfSprite.GROUND_Y = 52).
+ 
+ Output (per frame, transparan, BUKAN sprite sheet — sama kayak slime):
+     src/Aset/wolf_<aksi>_<arah>_<nomor>.png
+         aksi  : idle (2 frame) | walk (6) | attack (5, frame ke-3 = gigitan) | dead (1)
+         arah  : right | left | up | down
+         nomor : mulai dari 1
+-Mau ganti art sendiri? Timpa PNG-nya aja (ukuran tetap 62x34, kaki nempel di baris ke-30), kodenya gak perlu diubah.
+ 
+ Jalankan dari folder 2DGame:
+     pip install pillow
+     python tools/generate_wolf.py                       # tulis semua PNG ke src/Aset
+     python tools/generate_wolf.py --preview out.png     # cuma bikin contact sheet buat dicek mata (gak nulis PNG game)
+ 
+-Mau ganti warna bulu? Edit blok PALETTE lalu jalankan ulang.
++Kode warna sprite: a..f = 6 tone biru-abu (a hitam outline -> f terang), W = putih, R = merah (mulut pas gigit).
+ """
+ import math
+ import sys
+ from pathlib import Path
+ 
+-from PIL import Image, ImageDraw
++from PIL import Image
+ 
+ ASET = Path(__file__).resolve().parent.parent / 'src' / 'Aset'
+ 
+-W, H = 62, 34          # HARUS sama dengan WolfSprite.BASE_W / BASE_H
+-GROUND = 30            # baris terakhir telapak kaki
++Z = 2                       # 1 piksel referensi = Z x Z piksel PNG
++NW, NH = 31, 28             # grid kerja (piksel referensi)
++W, H = NW * Z, NH * Z       # 62 x 56 = WolfSprite.BASE_W / BASE_H
++GROUND = 26                 # baris grid terbawah telapak kaki (= baris PNG 52-53)
+ IDLE_N, WALK_N, ATTACK_N = 2, 6, 5
+ DIRS = ['right', 'left', 'up', 'down']   # urutan = indeks arah di WolfSprite
+ 
+-
+-# ───────────── PALETTE ─────────────
+-def rgb(h):
+-    h = h.lstrip('#')
+-    return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16), 255)
+-
+-
+-OUT = rgb('14161c')     # outline luar
+-FAR = rgb('2b303a')     # kaki / telinga sisi jauh
+-FD = rgb('3f4654')      # bulu gelap (punggung)
+-FM = rgb('626b7c')      # bulu utama
+-FL = rgb('8d97a9')      # sorot
+-FH = rgb('b6bfce')      # sorot terang
+-CR = rgb('d3d7de')      # perut / moncong / dada
+-CD = rgb('a2a9b6')      # bayangan krem
+-EYE = rgb('ffc43a')
+-EYH = rgb('fff3ae')
+-NOSE = rgb('0d0e11')
+-MOUTH = rgb('8a1b2d')
+-TONGUE = rgb('d9607a')
+-TEETH = rgb('f6f6f0')
+-EARIN = rgb('7d5868')
+-
+-PAL = {'D': FD, 'F': FM, 'L': FL, 'H': FH, 'C': CR, 'c': CD, 'K': NOSE, 'E': EYE, 'e': EYH, 'M': MOUTH,
+-       'T': TEETH, 'I': EARIN, 'B': OUT, 'A': FAR, 'S': TONGUE}
+-
+-
+-# ───────────── kanvas ─────────────
+-class Layer:
+-    def __init__(self):
+-        self.im = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+-        self.d = ImageDraw.Draw(self.im)
+-
+-    def px(self, x, y, c):
+-        x, y = int(round(x)), int(round(y))
+-        if 0 <= x < W and 0 <= y < H:
+-            self.im.putpixel((x, y), c)
+-
+-    def rect(self, x0, y0, x1, y1, c):
+-        self.d.rectangle([int(round(x0)), int(round(y0)), int(round(x1)), int(round(y1))], fill=c)
+-
+-    def poly(self, pts, c):
+-        self.d.polygon([(int(round(x)), int(round(y))) for x, y in pts], fill=c)
+-
+-    def ell(self, x0, y0, x1, y1, c):
+-        self.d.ellipse([int(round(x0)), int(round(y0)), int(round(x1)), int(round(y1))], fill=c)
+-
+-    def line(self, p0, p1, w, c):
+-        n = int(max(abs(p1[0] - p0[0]), abs(p1[1] - p0[1]))) * 2 + 1
+-        for i in range(n + 1):
+-            t = i / n
+-            cx = p0[0] + (p1[0] - p0[0]) * t
+-            cy = p0[1] + (p1[1] - p0[1]) * t
+-            a = int(round(cx - (w - 1) / 2.0))
+-            b = int(round(cy - (w - 1) / 2.0))
+-            self.d.rectangle([a, b, a + w - 1, b + w - 1], fill=c)
+-
+-    def bmp(self, rows, x, y, flip=False, pal=None):
+-        pal = pal or PAL
+-        for j, row in enumerate(rows):
+-            r = row[::-1] if flip else row
+-            for i, ch in enumerate(r):
+-                if ch != '.' and ch in pal:
+-                    self.px(x + i, y + j, pal[ch])
+-
+-    def banded(self, pts, bands):
+-        """Isi poligon per-kolom: bands = [(batas_t, warna), ...]; t = posisi vertikal 0 (atas) .. 1 (bawah) di kolom itu."""
+-        m = Image.new('L', (W, H), 0)
+-        ImageDraw.Draw(m).polygon([(int(round(x)), int(round(y))) for x, y in pts], fill=255)
+-        for x in range(W):
+-            ys = [y for y in range(H) if m.getpixel((x, y))]
+-            if not ys:
+-                continue
+-            top, bot = ys[0], ys[-1]
+-            span = bot - top + 1
+-            for y in ys:
+-                t = (y - top + 0.5) / span
+-                for lim, col in bands:
+-                    if t <= lim:
+-                        self.px(x, y, col)
+-                        break
+-
+-
+-def bez(p0, p1, p2, t):
+-    a = (1 - t) ** 2
+-    b = 2 * (1 - t) * t
+-    c = t * t
+-    return (a * p0[0] + b * p1[0] + c * p2[0], a * p0[1] + b * p1[1] + c * p2[1])
+-
+-
+-# ───────────── post-process ─────────────
+-def outline(img):
+-    src = img.copy()
+-    for y in range(H):
+-        for x in range(W):
+-            if src.getpixel((x, y))[3]:
+-                continue
+-            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+-                nx, ny = x + dx, y + dy
+-                if 0 <= nx < W and 0 <= ny < H and src.getpixel((nx, ny))[3]:
+-                    img.putpixel((x, y), OUT)
+-                    break
++PALETTE = {
++    'a': (3, 5, 9),
++    'b': (22, 24, 31),
++    'c': (50, 54, 62),
++    'd': (74, 78, 87),
++    'e': (112, 117, 133),
++    'f': (185, 188, 201),
++    'W': (250, 252, 253),
++    'R': (150, 28, 46),
++}
++
++# ───────────── SPRITE ASLI (disalin dari gambar referensi) ─────────────
++REF = {
++    'back': [
++        '..cc......ca...',
++        '..cedf...deb...',
++        '..cfedaacefc...',
++        '..cffeeeeffc...',
++        '..cccccccdcb...',
++        '..daceffecac...',
++        '.daaeffffeaac..',
++        '.baceeeeeecba..',
++        'bcaeeefeeeedcaf',
++        'baceeeffdeedaaf',
++        '.bccedfWdeccaf.',
++        '..dcedfWdeccf..',
++        '..ccecfebecb...',
++        '..ccfbfebfca...',
++        '..cefdaacfeb...',
++        '..deedaaceed...',
++        '..cfebaaaefc...',
++        '.deWfbaaafWfd..',
++        '.afbadbaebafa..',
++        '..ceebf.beecf..',
++    ],
++    'lie_l': [
++        '.......eb............',
++        '...bcfdea............',
++        '...addccc............',
++        '..daeeecacf..........',
++        'baeaefeecac..........',
++        'cffeeeeeecbc.........',
++        'befeeedefffecd.......',
++        '.ccacbceefffedc......',
++        '..acbaeeceeeeeece....',
++        '....ccedefeeeefWWeef.',
++        '.....bebfffecbcefWWdc',
++        '.....bcaffeeaaaaacffb',
++        '......ccefecaba...cbf',
++        '......affebacaf......',
++        '.......dWfdaaf.......',
++        '.......fcbaff........',
++    ],
++    'lie_r': [
++        '............bc.......',
++        '............add.db...',
++        '............ccccea...',
++        '...........daceefacf.',
++        '..........daceeffaeba',
++        '.........caceeeeeeffc',
++        '.......eceeffedeeefeb',
++        '......ccefffeecacacbf',
++        '....eceeeeeeceeaacaf.',
++        '..eefWfeeeefedecaf...',
++        'ccWWfecacefffbeaf....',
++        'affcaaaaaeeffbcaf....',
++        '.bc...acaccfeccf.....',
++        '.......bcaaefWb......',
++        '........bacfWdf......',
++        '........ffbbbf.......',
++    ],
++    'run_l': [
++        '.....cd.eb..................',
++        '.....dacea..................',
++        '....cceefa..................',
++        '...eeeefeabd................',
++        '..eeffeceacedcf.............',
++        '..dfccfebaeffeccaaacf.......',
++        'ccefbfeeeceeffffffeeeddd....',
++        'affWfffdbaeeeefefeeeefffddf.',
++        '.adffedccceeeeeeeeeedbaeffcf',
++        '..dccaacaeedceeeeeeeba.ccaaf',
++        '.......bceebcccbceffea......',
++        '.......cefcaaaaaacfffea.....',
++        '......befdaaf..baacefffc....',
++        '....ccefeb........baaeWc....',
++        '....cffed............deWc...',
++        '.....bfaa.............cfa...',
++        '......baf..............da...',
++    ],
++    'run_r': [
++        '.................bd.db......',
++        '.................addac......',
++        '.................aeeedc.....',
++        '...............ebaceeeed....',
++        '.............dcecadceffec...',
++        '.......daaacceffeaaefdcfa...',
++        '...edddedefffffeecdeefbWfccf',
++        '.ddfffeeeefefeeeeaacfffWWfaf',
++        'bffebaceeeeeeeeeecccceffea..',
++        'aacc.aaeeeeeeecceebcaacca...',
++        '.....aeffecacccbeeda........',
++        '....befffdaaaaaacfec........',
++        '...efffecaaaf..bacfeaf......',
++        '...efebaaf.......aefedc.....',
++        '..cfec............eefWd.....',
++        '..aed.............caWb......',
++        '..acf..............abf......',
++    ],
++    'front': [
++        '.cd......db.',
++        '.cecf...deb.',
++        '.cfedcbdefb.',
++        '.ccfeeeefcb.',
++        '.ceceeeeceb.',
++        '.cdffeeffdb.',
++        'ddfddffddfed',
++        'baeWcffbfeba',
++        '.caefWWfeaa.',
++        'bceafbafbedb',
++        'ceeebccaeeec',
++        'adfeeeeeefea',
++        'acfceeeecfda',
++        '.dfedcccefd.',
++        'dacfbccafcbc',
++        'aaafdaacfaaa',
++        '.ccfbaaafca.',
++        '.dWWcf.bWWe.',
++        '.ceccf.dceb.',
++    ],
++    'walk_down': [
++        '.....de........',
++        '.....dfe.......',
++        '.....efe.......',
++        '.....eWee......',
++        '.....dffd......',
++        '.....dfec......',
++        '....bcfedb.....',
++        '.dbcceefeccbc..',
++        '.bcaceeeecaca..',
++        '.acaceeeecaca..',
++        '..caceeeecaa...',
++        '..cdaceedbdb...',
++        '..cfecbacefc...',
++        '..ccfeeeefca...',
++        '..cedeeeedeb...',
++        '.bacffeeffcaa..',
++        '.cefccffdcfec..',
++        '.bbeWcffbfeca..',
++        '..caefWWfeaa...',
++        '..caafbafbaa...',
++        '..cbabcccacb...',
++        '.ddfebf.befed..',
++        'dfWWfdf.dfWWfcf',
++        'bfdbWcf.cfbbWaf',
++        '.bdebf...beeb..',
++    ],
++    'diag_l': [
++        '...................ec.',
++        '...................dfc',
++        '..................eeWc',
++        '.......dbf........efea',
++        '..acf.deaf......ccfeaf',
++        '..cbbdefaf.dcbbcefeba.',
++        '..cceefdaacefefefebf..',
++        '..adeedeacefffeeecf...',
++        '.dceffdbadeeeeeedbf...',
++        '.cafeceecceedefec.....',
++        'deWWbWeaaceccfffa.....',
++        'caWffebacdecbfffa.....',
++        'cfffdaaccefebefea.....',
++        '.baca..bacefdcfca.....',
++        '........acbebffea.....',
++        '.........ccaaeWfc.....',
++        '.............baa......',
++        '.............fff......',
++    ],
++    'diag_r': [
++        '.de...................',
++        'dfc...................',
++        'dfed..................',
++        'ceWe.........bdf......',
++        '.befdcf......aedf.da..',
++        '.baefedbbcd..afedbac..',
++        '...befefefecaacfeedc..',
++        '....ceeefffedaedeeea..',
++        '....bdeeeeeeeabcffeccf',
++        '.....cefedeedcefdcfbcf',
++        '.....aeffdcedaaeWafWec',
++        '.....aeffbceecabeffWaa',
++        '.....adfeaefeccbacfffc',
++        '.....acfccfecaaf.acaaf',
++        '.....adfWcebcaf.......',
++        '.....ceWeaaca.........',
++        '......daaf............',
++        '......fff.............',
++    ],
++}
++
++
++# ───────────── alat bantu (sprite = dict {(x, y): kode warna}) ─────────────
++def pix(name):
++    return {(x, y): ch for y, row in enumerate(REF[name]) for x, ch in enumerate(row) if ch != '.'}
++
++
++def dims(p):
++    return max(x for x, _ in p) + 1, max(y for _, y in p) + 1
++
++
++def shift(p, dx, dy):
++    return {(x + dx, y + dy): c for (x, y), c in p.items()}
++
++
++def merge(*ps):
++    out = {}
++    for q in ps:
++        out.update(q)
++    return out
++
++
++def split(p, pred):
++    a = {k: v for k, v in p.items() if pred(*k)}
++    b = {k: v for k, v in p.items() if not pred(*k)}
++    return a, b
++
++
++def breath(p, cut, dy=1):
++    """Badan "ngempis": semua baris di atas `cut` turun `dy`, bagian bawah (kaki) tetap."""
++    up, low = split(p, lambda x, y: y < cut)
++    return merge(low, shift(up, 0, dy))
++
++
++def shear(p, anchor, last, amp):
++    """Ayun anggota badan dari pangkalnya (baris `anchor`) sampai ujung (baris `last`): geser makin jauh makin banyak."""
++    out = {}
++    for (x, y), c in p.items():
++        dx = int(round(amp * max(0, y - anchor) / float(last - anchor)))
++        out[(x + dx, y)] = c
++    return out
++
++
++def place(p, cx=None, ox=0, oy=0):
++    """Taruh sprite: tengah horizontal, kaki paling bawah di GROUND. Balikin (sprite, offset x, offset y)."""
++    w, h = dims(p)
++    return p, (NW - w) // 2 + ox, GROUND - (h - 1) + oy
++
++
++def render(p, x0, y0):
++    img = Image.new('RGBA', (W, H), (0, 0, 0, 0))
++    px = img.load()
++    for (x, y), c in p.items():
++        gx, gy = x + x0, y + y0
++        if not (0 <= gx < NW and 0 <= gy < NH):
++            print('WARNING: piksel keluar kanvas', (gx, gy))
++            continue
++        r, g, b = PALETTE[c]
++        for j in range(Z):
++            for i in range(Z):
++                px[gx * Z + i, gy * Z + j] = (r, g, b, 255)
+     return img
+ 
+ 
+-def compose(*layers):
+-    base = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+-    for l in layers:
+-        base.alpha_composite(l.im)
+-    return outline(base)
+-
+-
+-def mirror(img):
+-    return img.transpose(Image.FLIP_LEFT_RIGHT)
+-
+-
+-# ───────────── POSE ─────────────
+-class Pose:
+-    def __init__(self, **kw):
+-        self.bob = 0          # badan naik(-) / turun(+)
+-        self.bx = 0           # badan maju(+) / mundur(-)
+-        self.hdx = 0          # kepala relatif ke badan
+-        self.hdy = 0
+-        self.jaw = 0.0        # 0 tutup .. 1 mangap lebar
+-        self.tail = 0.0       # -1 turun .. +1 naik
+-        self.ph = None        # fase jalan (radian); None = berdiri
+-        self.stride = 4.0
+-        self.reachF = 0       # geser kaki depan (pose serang)
+-        self.reachH = 0
+-        self.liftF = 0        # angkat kaki depan (loncat)
+-        self.liftH = 0
+-        self.ears_back = False
+-        self.eye = 'open'     # open | slit
+-        self.sway = 0         # goyang kiri-kanan (tampak depan / belakang)
+-        self.__dict__.update(kw)
+-
+-
+-def leg_pos(p, hip_x, ground, off):
+-    """Posisi telapak sebuah kaki saat jalan (trot): (x telapak, y telapak)."""
+-    a = p.ph + off
+-    return hip_x + math.sin(a) * p.stride, ground - max(0.0, math.cos(a)) * 3.0
+-
+-
+-# ═════════════════════════ TAMPAK SAMPING (hadap kanan) ═════════════════════════
+-
+-HEAD_SIDE = [   # kepala hadap kanan, tanpa telinga & rahang bawah. Titik (0,0) = pojok kiri-atas.
+-    "..DDFFFFLL......",
+-    ".DFFFFFFFFLL....",
+-    "DFFFFFFFFFFFLL..",
+-    "DFFFFFFFFFFFFFFK",
+-    "DFFFFFFFFFFFFFFK",
+-    ".DFFFFFFFCCCCCCC",
+-    ".DFFFFFFCCCCCCC.",
+-]
+-JAW_CLOSED = [   # rahang bawah tertutup
+-    "..DDFFFFCCCCCC..",
+-    "...DDFFFFFCCC...",
+-    "....DFFFFFFC....",
+-    ".....D.DDF.D....",
+-]
+-
+-
+-def side_leg(layer, hip, paw, kind, col, sock):
+-    """Kaki 2 ruas (paha -> betis -> telapak). Kaki belakang menekuk ke depan di lutut, kaki depan sedikit ke belakang."""
+-    hx, hy = hip
+-    px, py = paw
+-    if kind == 'hind':
+-        kx, ky = (hx + px) / 2 + 3.0, hy + (py - hy) * 0.50
+-    else:
+-        kx, ky = (hx + px) / 2 - 1.0, hy + (py - hy) * 0.50
+-    layer.line((hx, hy), (kx, ky), 4, col)
+-    layer.line((kx, ky), (px, py - 1), 3, col)
+-    layer.rect(px - 1, py - 1, px + 2, py, sock)     # "kaos kaki" terang
+-
+-
+-def side(p):
+-    far, tail, body, near, head, det = [Layer() for _ in range(6)]
+-    bx, by = 27 + p.bx, 14 + p.bob
+-    walking = p.ph is not None
+-
+-    hip_h, hip_f = bx - 10, bx + 9
+-    leg_top = by + 4
+-
+-    def paw(hip_x, off, reach, lift):
+-        if walking:
+-            return leg_pos(p, hip_x, GROUND, off)
+-        return hip_x + reach, GROUND - lift
+-
+-    # ── ekor: lebat, menggantung ke bawah-belakang, ujungnya terang ──
+-    root = (bx - 14, by - 4)
+-    ctrl = (bx - 23, by - 8 - p.tail * 3)
+-    tip = (bx - 24, by + 6 - p.tail * 15)
+-    widths = [4, 5, 6, 6, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3]
+-    pts = [bez(root, ctrl, tip, i / (len(widths) - 1)) for i in range(len(widths))]
+-    for i, (tx, ty) in enumerate(pts):
+-        tail.line((tx, ty), (tx, ty), widths[i], FM if i < 10 else FL)
+-    for i in (2, 4, 6, 8):
+-        tx, ty = pts[i]
+-        tail.px(tx, ty - widths[i] // 2 + 1, FD)        # garis gelap di punggung ekor
+-        tail.px(tx - 1, ty + widths[i] // 2 - 1, FL)    # bulu terang di bawah
+-    tail.px(pts[-1][0] - 1, pts[-1][1], CR)
+-
+-    # ── kaki sisi jauh ──
+-    fh = paw(hip_h, math.pi, p.reachH - 1, p.liftH)
+-    ff = paw(hip_f, 0.0, p.reachF - 1, p.liftF)
+-    side_leg(far, (hip_h + 2, leg_top), fh, 'hind', FAR, FD)
+-    side_leg(far, (hip_f - 2, leg_top), ff, 'front', FAR, FD)
+-
+-    # ── badan ──
+-    torso = [(bx - 15, by - 2), (bx - 12, by - 6), (bx - 4, by - 7), (bx + 6, by - 8), (bx + 12, by - 6),
+-             (bx + 16, by - 1), (bx + 15, by + 6), (bx + 10, by + 8), (bx + 3, by + 4), (bx - 5, by + 4),
+-             (bx - 12, by + 5), (bx - 16, by + 2)]
+-    body.banded(torso, [(0.20, FD), (0.66, FM), (1.0, CR)])
+-    # bulu punggung (sorot) & rusuk (garis gelap)
+-    for i in range(-12, 12, 3):
+-        body.px(bx + i, by - 7 + (1 if i < -4 else 0) - (1 if i > 3 else 0), FL)
+-    for (ox, oy) in ((-8, -1), (-4, 0), (0, 0), (4, -1)):
+-        body.px(bx + ox, by + oy, FD)
+-        body.px(bx + ox + 1, by + oy + 1, FD)
+-    body.ell(bx - 12, by - 3, bx - 6, by + 4, FM)          # paha belakang
+-    body.px(bx - 11, by - 2, FL)
+-    body.px(bx - 10, by - 2, FL)
+-    body.ell(bx + 6, by - 4, bx + 13, by + 4, FM)          # bahu
+-    body.px(bx + 8, by - 3, FL)
+-    body.px(bx + 9, by - 3, FL)
+-
+-    # ── kaki sisi dekat ──
+-    nh = paw(hip_h, 0.0, p.reachH, p.liftH)
+-    nf = paw(hip_f, math.pi, p.reachF, p.liftF)
+-    side_leg(near, (hip_h, leg_top), nh, 'hind', FM, FH)
+-    side_leg(near, (hip_f, leg_top), nf, 'front', FM, FH)
+-    # bayangan di bawah perut biar kaki "nempel" ke badan
+-    for ox in (-10, -9, 9, 10):
+-        near.px(bx + ox - 1, leg_top, FD)
+-
+-    # ── leher + dada ──
+-    hx = bx + 13 + p.hdx
+-    hy = by - 8 + p.hdy
+-    neck = [(bx + 5, by - 8), (hx + 3, hy), (hx + 10, hy + 6), (bx + 15, by + 4), (bx + 11, by + 4)]
+-    head.poly(neck, FM)
+-    head.poly([(bx + 6, by - 8), (hx + 4, hy + 1), (hx + 8, hy + 3), (bx + 10, by - 2)], FD)     # surai gelap
+-    for i in range(0, 5):
+-        head.px(bx + 7 + i * 2, by - 9 + (i // 2) + (1 if i > 3 else 0), FD)                     # surai berduri
+-    ruff = [(bx + 10, by + 2), (bx + 16, by - 3), (bx + 18, by + 3), (bx + 17, by + 7), (bx + 14, by + 9), (bx + 12, by + 7),
+-            (bx + 10, by + 8)]
+-    head.poly(ruff, CR)
+-    for (ox, oy) in ((17, 3), (16, 6), (14, 9), (12, 7)):
+-        head.px(bx + ox, by + oy, CD)
+-    head.px(bx + 13, by + 10, CD)
+-    head.px(bx + 16, by + 8, CD)
+-
+-    # ── telinga ──
+-    if p.ears_back:
+-        far_ear = [(hx + 6, hy + 1), (hx + 2, hy - 2), (hx + 9, hy + 1)]
+-        near_ear = [(hx + 2, hy + 2), (hx - 3, hy - 1), (hx + 7, hy + 2)]
+-    else:
+-        far_ear = [(hx + 7, hy + 1), (hx + 9, hy - 5), (hx + 11, hy + 1)]
+-        near_ear = [(hx + 2, hy + 1), (hx + 3, hy - 6), (hx + 8, hy + 1)]
+-    head.poly(far_ear, FAR)
+-    head.poly(near_ear, FM)
+-    if not p.ears_back:
+-        head.px(hx + 3, hy - 5, FD)
+-        head.px(hx + 4, hy - 4, FD)
+-        for (ox, oy) in ((4, -2), (4, -1), (4, 0), (5, 0)):
+-            head.px(hx + ox, hy + oy, EARIN)
+-    else:
+-        head.px(hx + 3, hy, EARIN)
+-
+-    # ── kepala ──
+-    head.bmp(HEAD_SIDE, hx, hy)
+-    ex, ey = hx + 9, hy + 3
+-    if p.eye == 'open':
+-        head.px(ex, ey, EYE)
+-        head.px(ex + 1, ey, EYH)
+-        head.px(ex - 1, ey - 1, OUT)
+-        head.px(ex, ey - 1, OUT)
+-        head.px(ex + 1, ey - 1, FD)
+-    else:
+-        head.px(ex, ey, EYE)
+-        head.px(ex + 1, ey, EYE)
+-        head.px(ex - 1, ey - 1, OUT)
+-        head.px(ex, ey - 1, OUT)
+-        head.px(ex + 1, ey - 1, OUT)
+-    head.px(hx + 15, hy + 3, NOSE)
+-    head.px(hx + 15, hy + 4, NOSE)
+-    head.px(hx + 14, hy + 3, NOSE)
+-    # rahang bawah
+-    j = int(round(p.jaw * 5))
+-    if j == 0:
+-        head.bmp(JAW_CLOSED, hx, hy + 7)
+-        for i in range(9, 15):
+-            head.px(hx + i, hy + 6, CD if i < 14 else FD)
+-        head.px(hx + 12, hy + 6, FD)
+-    else:
+-        tipy = hy + 6 + int(round(j * 1.6))
+-        # interior mulut (merah) = baji antara bibir atas dan rahang bawah
+-        head.poly([(hx + 7, hy + 6), (hx + 15, hy + 5), (hx + 15, tipy), (hx + 8, hy + 8)], MOUTH)
+-        head.poly([(hx + 9, hy + 5), (hx + 15, hy + 5), (hx + 15, hy + 6)], CR)
+-        # rahang bawah: baji krem yang engselnya di pipi
+-        head.poly([(hx + 4, hy + 7), (hx + 8, hy + 8), (hx + 15, tipy), (hx + 15, tipy + 3), (hx + 8, tipy + 2),
+-                   (hx + 3, hy + 10)], CR)
+-        head.poly([(hx + 3, hy + 7), (hx + 7, hy + 8), (hx + 6, hy + 11), (hx + 2, hy + 10)], FM)
+-        for ox in (10, 12, 14):                                  # taring atas
+-            head.px(hx + ox, hy + 6, TEETH)
+-        head.px(hx + 13, hy + 7, TEETH)
+-        head.px(hx + 14, tipy - 1, TEETH)                        # taring bawah
+-        head.px(hx + 11, tipy - 2 if tipy - 2 > hy + 8 else hy + 8, TEETH)
+-        if j >= 3:
+-            head.rect(hx + 10, hy + 8 + (tipy - hy - 8) // 2, hx + 13, hy + 9 + (tipy - hy - 8) // 2, TONGUE)
+-    return compose(far, tail, body, near, head, det)
+-
+-
+-def lying_side():
+-    """Serigala roboh miring (dipakai semua arah)."""
+-    far, tail, body, near, head, det = [Layer() for _ in range(6)]
+-    for i, (tx, ty) in enumerate([bez((12, 26), (6, 27), (2, 29), t / 9) for t in range(10)]):
+-        tail.line((tx, ty), (tx, ty), 5 if i < 6 else 4, FM if i < 8 else FL)
+-    far.line((16, 25), (9, 20), 3, FAR)
+-    far.line((30, 24), (37, 18), 3, FAR)
+-    body.banded([(10, 23), (14, 19), (26, 18), (34, 20), (36, 27), (30, 30), (15, 30), (9, 28)],
+-                [(0.22, FD), (0.7, FM), (1.0, CR)])
+-    for (a, b) in ((16, 22), (20, 23), (24, 22)):
+-        body.px(a, b, FD)
+-        body.px(a + 1, b + 1, FD)
+-    near.line((20, 27), (14, 22), 3, FM)
+-    near.line((28, 27), (34, 21), 3, FM)
+-    near.rect(12, 20, 14, 21, FH)
+-    near.rect(33, 19, 35, 20, FH)
+-    near.rect(8, 18, 10, 19, FL)
+-    near.rect(36, 16, 38, 17, FL)
+-    head.poly([(33, 22), (36, 17), (39, 22)], FD)
+-    head.ell(33, 21, 44, 30, FM)
+-    head.poly([(41, 25), (52, 27), (52, 30), (41, 30)], CR)
+-    for (a, b) in ((52, 27), (51, 27), (51, 28)):
+-        head.px(a, b, NOSE)
+-    head.rect(46, 30, 49, 30, TONGUE)
+-    for (a, b) in ((38, 24), (40, 24), (39, 25), (38, 26), (40, 26)):
+-        head.px(a, b, NOSE)
+-    return compose(far, tail, body, near, head, det)
+-
+-
+-# ═════════════════════════ TAMPAK DEPAN (hadap penonton) ═════════════════════════
+-
+-HEAD_FRONT_L = [   # separuh kiri kepala depan (9 kolom); sisi kanan = cermin. Lebar penuh 18, tinggi 15.
+-    ".....DFFF",
+-    "...DFFFFF",
+-    "..DFFFFFD",
+-    ".DFFFFFFD",
+-    ".DFFFFFFF",
+-    "DDFBBBFFF",
+-    ".DFFEeFFF",
+-    "DLFFFFFCC",
+-    "DDLFFFCCC",
+-    ".DDLFCCCC",
+-    "..DDLCCCC",
+-    "...DDCCCC",
+-    "....DCCCK",
+-    ".....CCCc",
+-    "......DDC",
+-]
+-HEAD_FRONT = [r + r[::-1] for r in HEAD_FRONT_L]
+-
+-
+-def front(p):
+-    far, tail, body, near, head, det = [Layer() for _ in range(6)]
+-    cx = 31 + p.sway
+-    bob = p.bob
+-    walking = p.ph is not None
+-
+-    # kaki belakang: cuma telapak + sedikit betis yang mengintip di samping kaki depan
+-    for sx in (-1, 1):
+-        x = cx + sx * 8
+-        far.rect(x - 1, 24 + bob, x + 1, 29, FAR)
+-        far.rect(x - 2, 28, x + 2, 29, FD)
+-
+-    # ekor mengintip di samping pinggul
+-    t = p.tail
+-    far.line((cx + 8, 20 + bob), (cx + 12, 18 + bob - t * 2), 3, FD)
+-    far.line((cx + 12, 18 + bob - t * 2), (cx + 13, 14 + bob - t * 4), 3, FM)
+-
+-    # badan: ramping, bahu sedikit lebih lebar dari dada
+-    body.banded([(cx - 8, 12 + bob), (cx - 5, 9 + bob), (cx + 5, 9 + bob), (cx + 8, 12 + bob), (cx + 8, 20 + bob),
+-                 (cx + 6, 24 + bob), (cx - 6, 24 + bob), (cx - 8, 20 + bob)],
+-                [(0.30, FD), (1.0, FM)])
+-    # dada putih berbulu (berhenti di atas kaki, bawahnya bergerigi)
+-    body.poly([(cx - 5, 14 + bob), (cx + 5, 14 + bob), (cx + 5, 20 + bob), (cx + 3, 23 + bob), (cx + 1, 21 + bob),
+-               (cx, 24 + bob), (cx - 1, 21 + bob), (cx - 3, 23 + bob), (cx - 5, 20 + bob)], CR)
+-    for ox, oy in ((-4, 19), (-2, 21), (0, 19), (2, 21), (4, 19), (-3, 16), (3, 16)):
+-        body.px(cx + ox, oy + bob, CD)
+-
+-    # kaki depan: panjang & ramping, ada celah di antaranya
+-    for sx, off in ((-1, 0.0), (1, math.pi)):
+-        lift = 0.0
+-        if walking:
+-            lift = max(0.0, math.cos(p.ph + off)) * 3.0
+-        lx = cx + sx * 5
+-        bot = GROUND - lift
+-        near.rect(lx - 1, 19 + bob, lx + 1, bot, FM)
+-        near.px(lx - 1 + (1 if sx > 0 else 0), 22 + bob, FL)
+-        near.px(lx - 1 + (1 if sx > 0 else 0), 25 + bob, FL)
+-        near.px(lx + (0 if sx > 0 else -1) + 1 if sx < 0 else lx - 1, 27 + bob, FD)
+-        near.rect(lx - 2, bot - 1, lx + 2, bot, FH)          # telapak terang
+-
+-    # telinga (di belakang kepala)
+-    hx = cx - 9 + p.hdx
+-    hy = 5 + p.hdy + bob
+-    if p.ears_back:
+-        head.poly([(hx + 1, hy + 4), (hx - 3, hy + 1), (hx + 6, hy + 1)], FM)
+-        head.poly([(hx + 17, hy + 4), (hx + 21, hy + 1), (hx + 12, hy + 1)], FM)
+-    else:
+-        head.poly([(hx + 1, hy + 4), (hx + 2, hy - 5), (hx + 8, hy + 1)], FM)
+-        head.poly([(hx + 17, hy + 4), (hx + 16, hy - 5), (hx + 10, hy + 1)], FM)
+-        head.poly([(hx + 3, hy + 2), (hx + 3, hy - 2), (hx + 6, hy + 1)], EARIN)
+-        head.poly([(hx + 15, hy + 2), (hx + 15, hy - 2), (hx + 12, hy + 1)], EARIN)
+-        head.px(hx + 2, hy - 4, FD)
+-        head.px(hx + 16, hy - 4, FD)
+-        head.px(hx + 2, hy - 3, FD)
+-        head.px(hx + 16, hy - 3, FD)
+-    head.bmp(HEAD_FRONT, hx, hy)
+-    if p.eye == 'slit':       # menyipit: mata cuma garis kuning
+-        for ox in (4, 5, 12, 13):
+-            head.px(hx + ox, hy + 6, EYE)
+-    j = int(round(p.jaw * 5))
+-    if j:
+-        head.rect(hx + 6, hy + 12, hx + 11, hy + 12 + j, MOUTH)
+-        head.rect(hx + 7, hy + 12 + j, hx + 10, hy + 13 + j, CR)
+-        for ox in (6, 11):
+-            head.px(hx + ox, hy + 12, TEETH)
+-            head.px(hx + ox, hy + 11 + j, TEETH)
+-        head.rect(hx + 8, hy + 11 + j, hx + 9, hy + 12 + j, TONGUE)
+-    return compose(far, tail, body, near, head, det)
+-
+-
+-# ═════════════════════════ TAMPAK BELAKANG (membelakangi penonton) ═════════════════════════
+-
+-def back(p):
+-    far, head, body, near, tail = [Layer() for _ in range(5)]
+-    cx = 31 + p.sway
+-    bob = p.bob
+-    walking = p.ph is not None
+-
+-    # kaki depan mengintip di samping badan
+-    for sx in (-1, 1):
+-        x = cx + sx * 8
+-        far.rect(x - 1, 15 + bob, x + 1, 27, FAR)
+-        far.rect(x - 2, 26, x + 2, 27, FD)
+-
+-    # kepala + telinga (jauh di depan => cuma atasnya yang kelihatan di atas pundak)
+-    hx = cx - 6 + p.hdx
+-    hy = 0 + p.hdy + bob
+-    if p.ears_back:
+-        head.poly([(hx, hy + 6), (hx - 1, hy + 1), (hx + 5, hy + 3)], FM)
+-        head.poly([(hx + 12, hy + 6), (hx + 13, hy + 1), (hx + 7, hy + 3)], FM)
++# ───────────── tampak samping ─────────────
++def side_legs(view):
++    """Kaki belakang & depan sprite lari (koordinat lokal sprite)."""
++    if view == 'right':
++        return (lambda x, y: y >= 11 and x <= 9), (lambda x, y: y >= 11 and x >= 15)
++    return (lambda x, y: y >= 11 and x >= 18), (lambda x, y: y >= 11 and x <= 12)
++
++
++def run_frame(view, a, amp=4.5, bob=0, fwd=0):
++    """Lari/jalan: dua kaki sprite aslinya diayun berlawanan dari pangkalnya, telapak yang lagi maju diangkat."""
++    base = pix('run_r' if view == 'right' else 'run_l')
++    hind_p, front_p = side_legs(view)
++    s = 1 if view == 'right' else -1
++    hind, rest = split(base, hind_p)
++    front, rest = split(rest, front_p)
++    legs = []
++    for leg, ph in ((hind, a + math.pi), (front, a)):
++        leg = shear(leg, 10, 16, s * amp * math.sin(ph))
++        if math.cos(ph) > 0.4:                      # lagi diayun ke depan -> telapak terangkat 1 piksel
++            foot, up = split(leg, lambda x, y: y >= 14)
++            leg = merge(up, shift(foot, 0, -1))
++        legs.append(leg)
++    return shift(merge(rest, *legs), fwd * s, bob)
++
++
++def bite(p, view):
++    """Mulut terbuka (frame gigitan): rahang bawah turun, isi merah + taring."""
++    if view == 'right':
++        xs, tip = range(20, 27), 27
+     else:
+-        head.poly([(hx, hy + 6), (hx + 1, hy), (hx + 6, hy + 4)], FM)
+-        head.poly([(hx + 12, hy + 6), (hx + 11, hy), (hx + 6, hy + 4)], FM)
+-        head.px(hx + 1, hy + 1, FD)
+-        head.px(hx + 11, hy + 1, FD)
+-    head.ell(hx, hy + 4, hx + 12, hy + 14, FM)
+-    head.rect(hx + 5, hy + 4, hx + 7, hy + 9, FD)
+-    for ox in (2, 3, 9, 10):
+-        head.px(hx + ox, hy + 7, FL)
+-
+-    # badan: punggung + pantat (lebih pendek, biar kaki belakang kelihatan panjang)
+-    body.banded([(cx - 10, 16 + bob), (cx - 8, 10 + bob), (cx - 4, 8 + bob), (cx + 4, 8 + bob), (cx + 8, 10 + bob),
+-                 (cx + 10, 16 + bob), (cx + 9, 23 + bob), (cx - 9, 23 + bob)],
+-                [(0.2, FL), (0.55, FD), (1.0, FM)])
+-    body.ell(cx - 9, 14 + bob, cx - 2, 23 + bob, FM)             # paha kiri
+-    body.ell(cx + 2, 14 + bob, cx + 9, 23 + bob, FM)             # paha kanan
+-    for ox in (-7, -6, 5, 6):
+-        body.px(cx + ox, 16 + bob, FL)
+-    for oy in (11, 13, 15):                                       # garis punggung
+-        body.px(cx, oy + bob, FD)
+-    for ox in (-6, -3, 0, 3, 6):                                  # surai
+-        body.px(cx + ox, 8 + bob + (abs(ox) // 5), FH)
+-
+-    # kaki belakang: panjang, ada tonjolan hock, telapak terang
+-    for sx, off in ((-1, 0.0), (1, math.pi)):
+-        lift = 0.0
+-        if walking:
+-            lift = max(0.0, math.cos(p.ph + off)) * 3.0
+-        lx = cx + sx * 6
+-        bot = GROUND - lift
+-        near.rect(lx - 1, 22 + bob, lx + 1, bot, FM)
+-        near.rect(lx - 2 if sx < 0 else lx + 2, 22 + bob, lx - 2 if sx < 0 else lx + 2, 25 + bob, FM)   # hock menonjol keluar
+-        near.px(lx - 1, 24 + bob, FL)
+-        near.rect(lx - 2, bot - 1, lx + 2, bot, FH)
+-
+-    # ekor menjuntai (paling dekat penonton) — diberi outline sendiri biar kebaca di atas pantat
+-    t = p.tail
+-    sw = int(round(p.sway)) + (1 if t > 0.6 else 0)
+-    tail_pts = [(cx, 17 + bob), (cx, 20 + bob), (cx + sw, 23 + bob - int(t * 2)), (cx + sw, 26 + bob - int(t * 3))]
+-    for i, (tx, ty) in enumerate(tail_pts):
+-        tail.line((tx, ty), (tx, ty), 7 if i < 3 else 6, OUT)
+-    for i, (tx, ty) in enumerate(tail_pts):
+-        tail.line((tx, ty), (tx, ty), 5 if i < 3 else 4, FD if i < 3 else FL)
+-    for oy in (19, 21, 23):
+-        tail.px(cx - 1, oy + bob, FM)
+-    tail.px(cx + 1, 22 + bob, FM)
+-    return compose(far, head, body, near, tail)
+-
+-
+-# ═════════════════════════ ANIMASI ═════════════════════════
+-
+-def idle_pose(i):
+-    p = Pose()
+-    p.tail = (0.2, -0.3)[i]
+-    p.hdy = (0, 1)[i]
+-    p.ears_back = False
+-    return p
+-
+-
+-def walk_pose(f):
+-    ph = f / WALK_N * math.pi * 2
+-    p = Pose(ph=ph)
+-    p.bob = -1 if f % 3 == 0 else 0
+-    p.hdy = 1 if f % 3 == 0 else 0
+-    p.tail = math.sin(ph) * 0.5
+-    p.stride = 4.0
+-    return p
+-
+-
+-def attack_poses():
+-    a0 = Pose(bob=2, hdx=-1, hdy=2, tail=0.8, reachH=-1, ears_back=True, eye='slit', jaw=0.0)
+-    a1 = Pose(bob=3, bx=-1, hdx=-3, hdy=3, jaw=0.25, tail=1.0, reachH=-2, reachF=-1, ears_back=True, eye='slit')
+-    a2 = Pose(bob=-1, bx=2, hdx=3, hdy=2, jaw=1.0, tail=1.0, reachH=-5, reachF=4, liftH=2, liftF=3, ears_back=True, eye='slit')
+-    a3 = Pose(bx=2, hdx=2, hdy=4, jaw=0.5, tail=0.5, reachH=-3, reachF=3, ears_back=True, eye='slit')
+-    a4 = Pose(bob=1, tail=0.2)
+-    return [a0, a1, a2, a3, a4]
+-
+-
+-def adapt_attack_for_front(p, i):
+-    q = Pose(**p.__dict__)
+-    q.bx = 0
+-    # loncat ke arah kamera: kepala + dada turun & maju, mulut mangap
+-    q.bob = (1, 2, -1, 0, 0)[i]
+-    q.hdy = (0, 2, 4, 5, 1)[i] + 0
+-    q.hdx = 0
+-    q.jaw = (0.0, 0.2, 1.0, 0.5, 0.0)[i]
+-    q.sway = 0
+-    q.tail = (0.5, 1.0, 1.0, 0.6, 0.2)[i]
+-    q.ears_back = i in (0, 1, 2, 3)
+-    q.eye = 'slit' if i in (0, 1, 2, 3) else 'open'
+-    return q
+-
+-
+-def adapt_attack_for_back(p, i):
+-    q = Pose(**p.__dict__)
+-    q.bx = 0
+-    q.bob = (1, 2, -2, -1, 0)[i]
+-    q.hdy = (1, 2, -1, 0, 0)[i]
+-    q.hdx = 0
+-    q.tail = (0.5, 1.0, 1.0, 0.6, 0.2)[i]
+-    q.ears_back = i in (0, 1, 2, 3)
+-    q.sway = 0
+-    return q
+-
+-
+-def pose_for(view, action, n):
++        xs, tip = range(1, 8), 0
++    out = dict(p)
++    jaw = {k: v for k, v in p.items() if k[1] in (8, 9) and k[0] in xs}
++    for k in jaw:
++        out.pop(k)
++    for (x, y), c in jaw.items():
++        out[(x, y + 1)] = c
++    for i, x in enumerate(xs):
++        out[(x, 8)] = 'W' if i % 2 == 0 else 'R'
++        out.setdefault((x, 9), 'R')
++    return out
++
++
++def side_frame(view, action, n):
++    if action == 'dead':
++        return place(pix('lie_r' if view == 'right' else 'lie_l'))
++    stand = pix('diag_r' if view == 'right' else 'diag_l')
+     if action == 'idle':
+-        p = idle_pose(n)
+-        if view in ('up', 'down'):
+-            p.sway = 0
+-            p.bob = (0, 0)[n]
+-        return p
++        return place(stand if n == 0 else breath(stand, 12))
+     if action == 'walk':
+-        p = walk_pose(n)
+-        if view in ('up', 'down'):
+-            p.sway = (1, 1, 0, -1, -1, 0)[n]
+-            p.stride = 0
+-        return p
+-    ps = attack_poses()
+-    if view == 'down':
+-        return adapt_attack_for_front(ps[n], n)
+-    if view == 'up':
+-        return adapt_attack_for_back(ps[n], n)
+-    return ps[n]
++        a = n * (2 * math.pi / WALK_N)
++        return place(run_frame(view, a, bob=(0, -1, -1, 0, -1, -1)[n]), ox=(1 if view == 'right' else 0))
++    # attack: berdiri -> lompat -> gigit -> mendarat -> berdiri
++    if n == 0:
++        return place(breath(stand, 12, 2), ox=(-1 if view == 'right' else 1))
++    if n == 1:
++        return place(run_frame(view, 0.6, amp=2.0, fwd=0, bob=0), ox=(1 if view == 'right' else 0))
++    if n == 2:
++        return place(bite(run_frame(view, 1.2, amp=3.0, fwd=1, bob=-1), view), ox=(1 if view == 'right' else 0))
++    if n == 3:
++        return place(run_frame(view, 2.2, amp=2.0, fwd=1, bob=0), ox=(1 if view == 'right' else 0))
++    return place(stand)
++
++
++# ───────────── tampak depan / belakang ─────────────
++def paws_walk(base, left_p, right_p, n):
++    """Jalan: telapak kiri / kanan keangkat gantian, badan turun 1 baris pas napak."""
++    lift = {1: 'L', 4: 'R'}.get(n)
++    p = base
++    if lift:
++        paw, rest = split(base, left_p if lift == 'L' else right_p)
++        p = merge(rest, shift(paw, 0, -1))
++    return p
+ 
+ 
+-def render(view, action, n):
++def vertical_frame(view, action, n):
+     if action == 'dead':
+-        img = lying_side()
+-        return mirror(img) if view in ('left', 'up') else img
+-    p = pose_for(view, action, n)
+-    if view == 'right':
+-        return side(p)
+-    if view == 'left':
+-        return mirror(side(p))
++        return place(pix('lie_r' if view == 'down' else 'lie_l'))
++    if view == 'up':
++        base, cut = pix('back'), 17
++        left_p, right_p = (lambda x, y: y >= 17 and x <= 6), (lambda x, y: y >= 17 and x >= 8)
++    else:
++        base, cut = pix('front'), 17
++        left_p, right_p = (lambda x, y: y >= 17 and x <= 5), (lambda x, y: y >= 17 and x >= 6)
++    if action == 'idle':
++        return place(base if n == 0 else breath(base, cut))
++    if action == 'walk':
++        p = paws_walk(base, left_p, right_p, n)
++        if n in (2, 5):
++            p = breath(p, cut)
++        return place(p)
++    # attack
+     if view == 'down':
+-        return front(p)
+-    return back(p)
++        tail = pix('walk_down')
++        if n == 0:
++            return place(breath(base, cut, 1))
++        if n == 1:
++            return place(tail)
++        if n == 2:
++            return place(tail, oy=-1)
++        if n == 3:
++            return place(tail)
++        return place(base)
++    dy = (0, -1, -2, -1, 0)[n]
++    p = breath(base, cut, 1) if n == 0 else shift(base, 0, dy)
++    return place(p)
++
++
++def render_frame(view, action, n):
++    if view in ('right', 'left'):
++        p, x0, y0 = side_frame(view, action, n)
++    else:
++        p, x0, y0 = vertical_frame(view, action, n)
++    return render(p, x0, y0)
+ 
+ 
+ COUNTS = {'idle': IDLE_N, 'walk': WALK_N, 'attack': ATTACK_N, 'dead': 1}
+@@ -630,28 +419,28 @@ COUNTS = {'idle': IDLE_N, 'walk': WALK_N, 'attack': ATTACK_N, 'dead': 1}
+ 
+ def main():
+     preview = '--preview' in sys.argv
+-    sheet_cells = {}
++    cells = {}
+     count = 0
+     if not preview:
+         ASET.mkdir(parents=True, exist_ok=True)
+     for action, total in COUNTS.items():
+         for view in DIRS:
+             for n in range(total):
+-                img = render(view, action, n)
+-                sheet_cells[(action, view, n)] = img
++                img = render_frame(view, action, n)
++                cells[(action, view, n)] = img
+                 if not preview:
+                     img.save(ASET / f'wolf_{action}_{view}_{n + 1}.png')
+                     count += 1
+     if preview:
+         out = Path(sys.argv[sys.argv.index('--preview') + 1])
+-        scale = 5
++        scale = 4
+         rows = [(a, v) for a in COUNTS for v in DIRS]
+         cols = max(COUNTS.values())
+         cw, ch = W * scale + 6, H * scale + 6
+         sheet = Image.new('RGBA', (cols * cw, len(rows) * ch), (38, 60, 52, 255))
+         for r, (a, v) in enumerate(rows):
+             for n in range(COUNTS[a]):
+-                im = sheet_cells[(a, v, n)].resize((W * scale, H * scale), Image.NEAREST)
++                im = cells[(a, v, n)].resize((W * scale, H * scale), Image.NEAREST)
+                 sheet.alpha_composite(im, (n * cw + 3, r * ch + 3))
+         sheet.save(out)
+         print('preview ->', out)

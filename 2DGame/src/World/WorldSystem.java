@@ -37,7 +37,7 @@ public class WorldSystem {
     public void update() {
 
         // TIME
-        secondCounter+=1;
+        secondCounter+=100;
         if (secondCounter >= 60) {
             secondCounter = 0;
             minute++;
