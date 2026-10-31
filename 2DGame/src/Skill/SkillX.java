@@ -79,12 +79,12 @@ public class SkillX extends Skill {
     }
 
     private void checkHit(AuraWave w) {
-        if (gp.monsters == null) return;
+        if (gp.outsideMonsters() == null) return;
 
         int px = owner.x + owner.solidArea.x + owner.solidArea.width / 2;
         int py = owner.y + owner.solidArea.y + owner.solidArea.height / 2;
 
-        for (Entity m : gp.monsters) {
+        for (Entity m : gp.outsideMonsters()) {
             if (m == null || m.isDead) continue;
             if (w.hitTargets.contains(m)) continue;
 

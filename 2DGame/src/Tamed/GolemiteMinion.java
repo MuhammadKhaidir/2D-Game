@@ -229,8 +229,8 @@ public class GolemiteMinion extends GolemMinion {
                 if (collisionOn) return;
             }
         }
-        if (gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (!isValidTarget(m)) continue;
                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
                 gp.colision.checkEntity(this, m, dx, dy);
@@ -285,8 +285,8 @@ public class GolemiteMinion extends GolemMinion {
             }
         }
 
-        if (gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (!isValidTarget(m)) continue;
                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
                 double d = distToPoint(m, plCX, plCY);

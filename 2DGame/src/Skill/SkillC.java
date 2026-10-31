@@ -184,10 +184,10 @@ public class SkillC extends Skill {
     }
 
     private void applyDamage() {
-        if (gp.monsters == null) return;
+        if (gp.outsideMonsters() == null) return;
         int cx = owner.x + owner.solidArea.x + owner.solidArea.width / 2;
         int cy = owner.y + owner.solidArea.y + owner.solidArea.height / 2;
-        for (Entity m : gp.monsters) {
+        for (Entity m : gp.outsideMonsters()) {
             if (m == null || m.isDead) continue;
             int mx = m.x + m.solidArea.x + m.solidArea.width / 2;
             int my = m.y + m.solidArea.y + m.solidArea.height / 2;

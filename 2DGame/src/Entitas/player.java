@@ -723,24 +723,23 @@ public class player extends Entity {
                         boolean hitSomething = false;
 
                         // HIT MONSTER
-                        if (gp.monsters != null) {
-                            for (Entity m : gp.monsters) {
-                                if (m == null || m.isDead) continue;
-                                Rectangle mBox = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
-                                if (attackBox.intersects(mBox)) {
-                                    int currentAtk = getTotalDamage();
-                                    int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
-                                    m.takeDamage(damageDealt);
-                                    if (m instanceof Entitas.Golemite) ((Entitas.Golemite) m).knockbackFrom(this);
-                                    hitSomething = true;
-                                    attackHit = true;
-                                    if (currentWeapon != null) {
-                                        currentWeapon.playAttackSound(attackType, isWeaponEquipped);
-                                    } else {
-                                        sound.playPunch();
-                                    }
-                                    break;
+                        // (monsters[] itu isi dunia luar; outsideMonsters() kosong kalau lagi di rumah / domain)
+                        for (Entity m : gp.outsideMonsters()) {
+                            if (m == null || m.isDead) continue;
+                            Rectangle mBox = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
+                            if (attackBox.intersects(mBox)) {
+                                int currentAtk = getTotalDamage();
+                                int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
+                                m.takeDamage(damageDealt);
+                                if (m instanceof Entitas.Golemite) ((Entitas.Golemite) m).knockbackFrom(this);
+                                hitSomething = true;
+                                attackHit = true;
+                                if (currentWeapon != null) {
+                                    currentWeapon.playAttackSound(attackType, isWeaponEquipped);
+                                } else {
+                                    sound.playPunch();
                                 }
+                                break;
                             }
                         }
 
@@ -835,8 +834,8 @@ public class player extends Entity {
                         }
 
                         // HIT NPC
-                        if (!attackHit && gp.npc != null) {
-                            for (Entity npc : gp.npc) {
+                        if (!attackHit) {
+                            for (Entity npc : gp.outsideNpcs()) {
                                 if (npc == null || npc.isDead) continue;
                                 Rectangle npcBox = new Rectangle(npc.x + npc.solidArea.x, npc.y + npc.solidArea.y, npc.solidArea.width, npc.solidArea.height);
                                 if (attackBox.intersects(npcBox)) {
@@ -852,7 +851,7 @@ public class player extends Entity {
                         }
 
                         // HIT BREAKABLE
-                        if (!attackHit && gp.tileM.breakables != null) {
+                        if (!attackHit && gp.inOutsideWorld() && gp.tileM.breakables != null) {   // breakable = objek dunia luar
                             for (breakable b : gp.tileM.breakables) {
                                 if (b == null || b.destroyed) continue;
                                 if (attackBox.intersects(b.solidArea)) {
@@ -942,21 +941,16 @@ public class player extends Entity {
                         case "right": jdx =  jumpSpeed; break;
                     }
                     collisionOn = false;
-                    if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null && gp.domainManager.isWaterDomain()) {
-                        // Water Domain: lompat tidak boleh nembus tebing / menyeberangi air dalam / masuk ke void.
-                        // (objCol itu collision dunia luar, koordinatnya gak ada hubungannya sama interior domain.)
-                        Rectangle jumpBox = new Rectangle(x + jdx + solidArea.x, y + jdy + solidArea.y, solidArea.width, solidArea.height);
-                        if (gp.domainManager.checkCollision(jumpBox)) collisionOn = true;
-                    } else {
-                        gp.colision.checkObject(this, jdx, jdy);
+                    // Pilih collision sesuai dunia yang aktif (luar / rumah / domain, termasuk Water Domain).
+                    // Dulu selain Water Domain jatuhnya ke checkObject() = collision dunia luar, jadi lompat di
+                    // domain atau rumah bisa mentok di benda tak terlihat milik dunia luar.
+                    if (gp.colision.isBlockedByWorld(this, x + jdx, y + jdy)) collisionOn = true;
+                    Entity[] jumpNpcs = gp.outsideNpcs();
+                    for (int i = 0; i < jumpNpcs.length; i++) {
+                        if (jumpNpcs[i] != null) gp.colision.checkEntity(this, jumpNpcs[i], jdx, jdy);
                     }
-                    for (int i = 0; i < gp.npc.length; i++) {
-                        if (gp.npc[i] != null) gp.colision.checkEntity(this, gp.npc[i], jdx, jdy);
-                    }
-                    if (gp.monsters != null) {
-                        for (Entity m : gp.monsters) {
-                            if (m != null && !m.isDead) gp.colision.checkEntity(this, m, jdx, jdy);
-                        }
+                    for (Entity m : gp.outsideMonsters()) {
+                        if (m != null && !m.isDead) gp.colision.checkEntity(this, m, jdx, jdy);
                     }
 
                  // 🔴 FIX: Cek tabrakan dengan GolemMinion saat melompat
@@ -1075,17 +1069,8 @@ public class player extends Entity {
                 }
             }
             
-            if (!collisionOn && gp.monsters != null) {
-                for (Entity m : gp.monsters) {
-                    if (m != null && !m.isDead) {
-                        Rectangle mBox = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
-                        if (nextPlayerBox.intersects(mBox)) {
-                            collisionOn = true;
-                            break;
-                        }
-                    }
-                }
-            }
+            // (Sengaja gak ngecek gp.monsters di sini: itu monster DUNIA LUAR, bukan isi domain. Musuh domain
+            //  - skeleton, golem, golemite, boss - sudah dicek di atas lewat DomainManager.)
 
             // 🔴 FIX: Tambahin collision antara player dan SkeletonKing (boss), biar gak saling tembus
             if (!collisionOn && gp.domainManager != null && gp.domainManager.getBossSkeleton() != null) {

@@ -423,6 +423,27 @@ public class GamePanel extends JPanel implements Runnable{
 
 	public GameState gameState = GameState.OUTSIDE;
 
+	// ── Isolasi dunia luar ──
+	// monsters[], npc[], breakables & objCol itu isinya dunia LUAR (koordinat dunia luar, cuma di-update/digambar pas OUTSIDE).
+	// Pas player di dalam rumah / domain, isinya tetap ada di memori. Kalau kode collision/serangan/skill masih nge-loop
+	// array itu, player nabrak/mukul/ngincar benda tak terlihat yang koordinatnya kebetulan sama dengan interior domain.
+	private static final Entity[] NO_ENTITIES = new Entity[0];
+
+	/** True kalau yang aktif sekarang dunia luar (bukan interior rumah / domain). */
+	public boolean inOutsideWorld() {
+	    return gameState == GameState.OUTSIDE || gameState == GameState.DIALOG;
+	}
+
+	/** Monster dunia luar yang valid buat dicek sekarang; kosong kalau lagi di rumah / domain. */
+	public Entity[] outsideMonsters() {
+	    return inOutsideWorld() ? monsters : NO_ENTITIES;
+	}
+
+	/** NPC dunia luar yang valid buat dicek sekarang; kosong kalau lagi di rumah / domain. */
+	public Entity[] outsideNpcs() {
+	    return inOutsideWorld() ? npc : NO_ENTITIES;
+	}
+
 	public void setupGame() {
 	    AS.setObject();
 

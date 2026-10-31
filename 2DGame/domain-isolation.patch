@@ -1,0 +1,286 @@
+diff --git a/2DGame/src/Entitas/player.java b/2DGame/src/Entitas/player.java
+index 04cde40..e4cf139 100644
+--- a/2DGame/src/Entitas/player.java
++++ b/2DGame/src/Entitas/player.java
+@@ -723,24 +723,23 @@ public class player extends Entity {
+                         boolean hitSomething = false;
+ 
+                         // HIT MONSTER
+-                        if (gp.monsters != null) {
+-                            for (Entity m : gp.monsters) {
+-                                if (m == null || m.isDead) continue;
+-                                Rectangle mBox = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
+-                                if (attackBox.intersects(mBox)) {
+-                                    int currentAtk = getTotalDamage();
+-                                    int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
+-                                    m.takeDamage(damageDealt);
+-                                    if (m instanceof Entitas.Golemite) ((Entitas.Golemite) m).knockbackFrom(this);
+-                                    hitSomething = true;
+-                                    attackHit = true;
+-                                    if (currentWeapon != null) {
+-                                        currentWeapon.playAttackSound(attackType, isWeaponEquipped);
+-                                    } else {
+-                                        sound.playPunch();
+-                                    }
+-                                    break;
++                        // (monsters[] itu isi dunia luar; outsideMonsters() kosong kalau lagi di rumah / domain)
++                        for (Entity m : gp.outsideMonsters()) {
++                            if (m == null || m.isDead) continue;
++                            Rectangle mBox = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
++                            if (attackBox.intersects(mBox)) {
++                                int currentAtk = getTotalDamage();
++                                int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
++                                m.takeDamage(damageDealt);
++                                if (m instanceof Entitas.Golemite) ((Entitas.Golemite) m).knockbackFrom(this);
++                                hitSomething = true;
++                                attackHit = true;
++                                if (currentWeapon != null) {
++                                    currentWeapon.playAttackSound(attackType, isWeaponEquipped);
++                                } else {
++                                    sound.playPunch();
+                                 }
++                                break;
+                             }
+                         }
+ 
+@@ -835,8 +834,8 @@ public class player extends Entity {
+                         }
+ 
+                         // HIT NPC
+-                        if (!attackHit && gp.npc != null) {
+-                            for (Entity npc : gp.npc) {
++                        if (!attackHit) {
++                            for (Entity npc : gp.outsideNpcs()) {
+                                 if (npc == null || npc.isDead) continue;
+                                 Rectangle npcBox = new Rectangle(npc.x + npc.solidArea.x, npc.y + npc.solidArea.y, npc.solidArea.width, npc.solidArea.height);
+                                 if (attackBox.intersects(npcBox)) {
+@@ -852,7 +851,7 @@ public class player extends Entity {
+                         }
+ 
+                         // HIT BREAKABLE
+-                        if (!attackHit && gp.tileM.breakables != null) {
++                        if (!attackHit && gp.inOutsideWorld() && gp.tileM.breakables != null) {   // breakable = objek dunia luar
+                             for (breakable b : gp.tileM.breakables) {
+                                 if (b == null || b.destroyed) continue;
+                                 if (attackBox.intersects(b.solidArea)) {
+@@ -942,21 +941,16 @@ public class player extends Entity {
+                         case "right": jdx =  jumpSpeed; break;
+                     }
+                     collisionOn = false;
+-                    if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null && gp.domainManager.isWaterDomain()) {
+-                        // Water Domain: lompat tidak boleh nembus tebing / menyeberangi air dalam / masuk ke void.
+-                        // (objCol itu collision dunia luar, koordinatnya gak ada hubungannya sama interior domain.)
+-                        Rectangle jumpBox = new Rectangle(x + jdx + solidArea.x, y + jdy + solidArea.y, solidArea.width, solidArea.height);
+-                        if (gp.domainManager.checkCollision(jumpBox)) collisionOn = true;
+-                    } else {
+-                        gp.colision.checkObject(this, jdx, jdy);
+-                    }
+-                    for (int i = 0; i < gp.npc.length; i++) {
+-                        if (gp.npc[i] != null) gp.colision.checkEntity(this, gp.npc[i], jdx, jdy);
++                    // Pilih collision sesuai dunia yang aktif (luar / rumah / domain, termasuk Water Domain).
++                    // Dulu selain Water Domain jatuhnya ke checkObject() = collision dunia luar, jadi lompat di
++                    // domain atau rumah bisa mentok di benda tak terlihat milik dunia luar.
++                    if (gp.colision.isBlockedByWorld(this, x + jdx, y + jdy)) collisionOn = true;
++                    Entity[] jumpNpcs = gp.outsideNpcs();
++                    for (int i = 0; i < jumpNpcs.length; i++) {
++                        if (jumpNpcs[i] != null) gp.colision.checkEntity(this, jumpNpcs[i], jdx, jdy);
+                     }
+-                    if (gp.monsters != null) {
+-                        for (Entity m : gp.monsters) {
+-                            if (m != null && !m.isDead) gp.colision.checkEntity(this, m, jdx, jdy);
+-                        }
++                    for (Entity m : gp.outsideMonsters()) {
++                        if (m != null && !m.isDead) gp.colision.checkEntity(this, m, jdx, jdy);
+                     }
+ 
+                  // 🔴 FIX: Cek tabrakan dengan GolemMinion saat melompat
+@@ -1075,17 +1069,8 @@ public class player extends Entity {
+                 }
+             }
+             
+-            if (!collisionOn && gp.monsters != null) {
+-                for (Entity m : gp.monsters) {
+-                    if (m != null && !m.isDead) {
+-                        Rectangle mBox = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
+-                        if (nextPlayerBox.intersects(mBox)) {
+-                            collisionOn = true;
+-                            break;
+-                        }
+-                    }
+-                }
+-            }
++            // (Sengaja gak ngecek gp.monsters di sini: itu monster DUNIA LUAR, bukan isi domain. Musuh domain
++            //  - skeleton, golem, golemite, boss - sudah dicek di atas lewat DomainManager.)
+ 
+             // 🔴 FIX: Tambahin collision antara player dan SkeletonKing (boss), biar gak saling tembus
+             if (!collisionOn && gp.domainManager != null && gp.domainManager.getBossSkeleton() != null) {
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index 7d0e707..1b14af9 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -423,6 +423,27 @@ public class GamePanel extends JPanel implements Runnable{
+ 
+ 	public GameState gameState = GameState.OUTSIDE;
+ 
++	// ── Isolasi dunia luar ──
++	// monsters[], npc[], breakables & objCol itu isinya dunia LUAR (koordinat dunia luar, cuma di-update/digambar pas OUTSIDE).
++	// Pas player di dalam rumah / domain, isinya tetap ada di memori. Kalau kode collision/serangan/skill masih nge-loop
++	// array itu, player nabrak/mukul/ngincar benda tak terlihat yang koordinatnya kebetulan sama dengan interior domain.
++	private static final Entity[] NO_ENTITIES = new Entity[0];
++
++	/** True kalau yang aktif sekarang dunia luar (bukan interior rumah / domain). */
++	public boolean inOutsideWorld() {
++	    return gameState == GameState.OUTSIDE || gameState == GameState.DIALOG;
++	}
++
++	/** Monster dunia luar yang valid buat dicek sekarang; kosong kalau lagi di rumah / domain. */
++	public Entity[] outsideMonsters() {
++	    return inOutsideWorld() ? monsters : NO_ENTITIES;
++	}
++
++	/** NPC dunia luar yang valid buat dicek sekarang; kosong kalau lagi di rumah / domain. */
++	public Entity[] outsideNpcs() {
++	    return inOutsideWorld() ? npc : NO_ENTITIES;
++	}
++
+ 	public void setupGame() {
+ 	    AS.setObject();
+ 
+diff --git a/2DGame/src/Skill/SkillC.java b/2DGame/src/Skill/SkillC.java
+index e018253..b7a4bb6 100644
+--- a/2DGame/src/Skill/SkillC.java
++++ b/2DGame/src/Skill/SkillC.java
+@@ -184,10 +184,10 @@ public class SkillC extends Skill {
+     }
+ 
+     private void applyDamage() {
+-        if (gp.monsters == null) return;
++        if (gp.outsideMonsters() == null) return;
+         int cx = owner.x + owner.solidArea.x + owner.solidArea.width / 2;
+         int cy = owner.y + owner.solidArea.y + owner.solidArea.height / 2;
+-        for (Entity m : gp.monsters) {
++        for (Entity m : gp.outsideMonsters()) {
+             if (m == null || m.isDead) continue;
+             int mx = m.x + m.solidArea.x + m.solidArea.width / 2;
+             int my = m.y + m.solidArea.y + m.solidArea.height / 2;
+diff --git a/2DGame/src/Skill/SkillMaw.java b/2DGame/src/Skill/SkillMaw.java
+index 26a327d..d099630 100644
+--- a/2DGame/src/Skill/SkillMaw.java
++++ b/2DGame/src/Skill/SkillMaw.java
+@@ -207,8 +207,8 @@ public class SkillMaw extends Skill {
+         int py = owner.y + owner.solidArea.y + owner.solidArea.height / 2;
+         double reach = R * 2.0;
+ 
+-        if (gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        if (gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (m == null || m.isDead || m.life <= 0 || m.solidArea == null) continue;
+                 if (!isTargetable(m)) continue;
+                 int mx = m.x + m.solidArea.x + m.solidArea.width / 2;
+diff --git a/2DGame/src/Skill/SkillX.java b/2DGame/src/Skill/SkillX.java
+index a9e346c..84e0a2c 100644
+--- a/2DGame/src/Skill/SkillX.java
++++ b/2DGame/src/Skill/SkillX.java
+@@ -79,12 +79,12 @@ public class SkillX extends Skill {
+     }
+ 
+     private void checkHit(AuraWave w) {
+-        if (gp.monsters == null) return;
++        if (gp.outsideMonsters() == null) return;
+ 
+         int px = owner.x + owner.solidArea.x + owner.solidArea.width / 2;
+         int py = owner.y + owner.solidArea.y + owner.solidArea.height / 2;
+ 
+-        for (Entity m : gp.monsters) {
++        for (Entity m : gp.outsideMonsters()) {
+             if (m == null || m.isDead) continue;
+             if (w.hitTargets.contains(m)) continue;
+ 
+diff --git a/2DGame/src/Tamed/GolemMinion.java b/2DGame/src/Tamed/GolemMinion.java
+index f3986e2..526619d 100644
+--- a/2DGame/src/Tamed/GolemMinion.java
++++ b/2DGame/src/Tamed/GolemMinion.java
+@@ -208,8 +208,8 @@ public class GolemMinion extends Entity {
+             }
+         }
+         
+-        if (!this.collisionOn && gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        if (!this.collisionOn && gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (m == null || m.isDead) continue;
+                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
+                 gp.colision.checkEntity(this, m, mdx, mdy);
+@@ -271,9 +271,9 @@ public class GolemMinion extends Entity {
+             }
+         }
+ 
+-        // 2. Golem liar & monster (slime) — sama-sama di gp.monsters
+-        if (gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        // 2. Golem liar & monster (slime) — sama-sama di gp.outsideMonsters()
++        if (gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (m == null || m.isDead) continue;
+                 if (m == this) continue; // jaga-jaga, jangan target diri sendiri
+                 if (!(m instanceof Golem) && !(m instanceof monster)) continue;
+@@ -283,8 +283,8 @@ public class GolemMinion extends Entity {
+             }
+         }
+         
+-        if (gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        if (gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (m == null || m.isDead) continue;
+                 if (m == this) continue; // jaga-jaga, jangan target diri sendiri
+                 if (!(m instanceof Golemite) && !(m instanceof monster)) continue;
+@@ -449,8 +449,8 @@ public class GolemMinion extends Entity {
+             }
+         }
+ 
+-        if (gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        if (gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (m == null || m.isDead) continue;
+                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
+                 if (distFromPoint(m, myCX, myCY) <= SMASH_RADIUS) {
+@@ -475,8 +475,8 @@ public class GolemMinion extends Entity {
+             }
+         }
+     
+-        if (gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        if (gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (m == null || m.isDead) continue;
+                 if (!(m instanceof Golem) && !(m instanceof monster)) continue;
+                 if (distFromPoint(m, myCX, myCY) <= SMASH_RADIUS) {
+diff --git a/2DGame/src/Tamed/GolemiteMinion.java b/2DGame/src/Tamed/GolemiteMinion.java
+index 81d3d32..639d1b5 100644
+--- a/2DGame/src/Tamed/GolemiteMinion.java
++++ b/2DGame/src/Tamed/GolemiteMinion.java
+@@ -229,8 +229,8 @@ public class GolemiteMinion extends GolemMinion {
+                 if (collisionOn) return;
+             }
+         }
+-        if (gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        if (gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (!isValidTarget(m)) continue;
+                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
+                 gp.colision.checkEntity(this, m, dx, dy);
+@@ -285,8 +285,8 @@ public class GolemiteMinion extends GolemMinion {
+             }
+         }
+ 
+-        if (gp.monsters != null) {
+-            for (Entity m : gp.monsters) {
++        if (gp.outsideMonsters() != null) {
++            for (Entity m : gp.outsideMonsters()) {
+                 if (!isValidTarget(m)) continue;
+                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
+                 double d = distToPoint(m, plCX, plCY);

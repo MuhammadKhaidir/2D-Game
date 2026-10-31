@@ -208,8 +208,8 @@ public class GolemMinion extends Entity {
             }
         }
         
-        if (!this.collisionOn && gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        if (!this.collisionOn && gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (m == null || m.isDead) continue;
                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
                 gp.colision.checkEntity(this, m, mdx, mdy);
@@ -271,9 +271,9 @@ public class GolemMinion extends Entity {
             }
         }
 
-        // 2. Golem liar & monster (slime) — sama-sama di gp.monsters
-        if (gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        // 2. Golem liar & monster (slime) — sama-sama di gp.outsideMonsters()
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (m == null || m.isDead) continue;
                 if (m == this) continue; // jaga-jaga, jangan target diri sendiri
                 if (!(m instanceof Golem) && !(m instanceof monster)) continue;
@@ -283,8 +283,8 @@ public class GolemMinion extends Entity {
             }
         }
         
-        if (gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (m == null || m.isDead) continue;
                 if (m == this) continue; // jaga-jaga, jangan target diri sendiri
                 if (!(m instanceof Golemite) && !(m instanceof monster)) continue;
@@ -449,8 +449,8 @@ public class GolemMinion extends Entity {
             }
         }
 
-        if (gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (m == null || m.isDead) continue;
                 if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
                 if (distFromPoint(m, myCX, myCY) <= SMASH_RADIUS) {
@@ -475,8 +475,8 @@ public class GolemMinion extends Entity {
             }
         }
     
-        if (gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (m == null || m.isDead) continue;
                 if (!(m instanceof Golem) && !(m instanceof monster)) continue;
                 if (distFromPoint(m, myCX, myCY) <= SMASH_RADIUS) {

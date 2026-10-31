@@ -207,8 +207,8 @@ public class SkillMaw extends Skill {
         int py = owner.y + owner.solidArea.y + owner.solidArea.height / 2;
         double reach = R * 2.0;
 
-        if (gp.monsters != null) {
-            for (Entity m : gp.monsters) {
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
                 if (m == null || m.isDead || m.life <= 0 || m.solidArea == null) continue;
                 if (!isTargetable(m)) continue;
                 int mx = m.x + m.solidArea.x + m.solidArea.width / 2;
