@@ -1,0 +1,3112 @@
+diff --git a/2DGame/src/Entitas/player.java b/2DGame/src/Entitas/player.java
+index be05fc0..04cde40 100644
+--- a/2DGame/src/Entitas/player.java
++++ b/2DGame/src/Entitas/player.java
+@@ -186,6 +186,52 @@ public class player extends Entity {
+     int jumpTimer = 0;
+     String jumpDirection;
+ 
++    // ── Lompat berskrip (portal Water Domain) ──
++    // Selama scripted = true, update() tidak membaca input / tidak menggerakkan player; World.WaterPortal yang mengatur
++    // posisi (x, y) dan pose lompatnya tiap frame. Gambar memakai sprite lompat yang sama dengan lompat biasa.
++    public boolean scripted = false;
++    public String scriptDir = "down";   // arah sprite lompat: up / down / left / right
++    public boolean scriptAir = false;   // false = pose jongkok (tolak / mendarat), true = pose melayang
++    public int scriptLift = 0;          // tinggi angkat di atas tanah, piksel layar
++    public int scriptSink = 0;          // seberapa dalam tenggelam di bawah garis air, piksel layar (0 = tidak tenggelam)
++    public int scriptWaterLine = 0;     // garis air dalam piksel layar relatif ke screenY (dipakai kalau scriptSink > 0)
++    public boolean scriptShadow = true; // bayangan di tanah
++
++    /** True kalau player sedang melompat (PREP / AIR / LAND). */
++    public boolean isJumping() { return jumpState != JumpState.NONE; }
++    /** True kalau player sedang melayang di udara (fase AIR lompat biasa). */
++    public boolean isJumpAirborne() { return jumpState == JumpState.AIR; }
++    /** Arah lompat yang sedang berjalan (null kalau tidak melompat). */
++    public String getJumpDirection() { return jumpState != JumpState.NONE ? jumpDirection : null; }
++
++    /** Ambil alih player untuk animasi lompat berskrip. Lompat biasa yang lagi jalan dibatalkan. */
++    public void beginScripted(String dir) {
++        jumpState = JumpState.NONE;
++        jumpTimer = 0;
++        staminaLocked = false;
++        cancelAttack();
++        isMoving = false;
++        isSprinting = false;
++        scripted = true;
++        scriptDir = dir;
++        direction = dir;
++        scriptAir = false;
++        scriptLift = 0;
++        scriptSink = 0;
++        scriptShadow = true;
++    }
++
++    /** Kembalikan kendali ke pemain. */
++    public void endScripted() {
++        scripted = false;
++        scriptLift = 0;
++        scriptSink = 0;
++        scriptAir = false;
++        scriptShadow = true;
++        isMoving = false;
++        jumpCooldown = 0;
++    }
++
+     public player(GamePanel gp, KeyHandler KeyH) {
+         super(gp);
+         this.KeyH = KeyH;
+@@ -408,6 +454,7 @@ public class player extends Entity {
+     /** Sama kayak takeDamage(int), tapi tau siapa yang mukul (dipakai set effect Dread Guardian). attacker boleh null. */
+     public void takeDamageFrom(int dmg, Entity attacker) {
+         if (isDead) return;
++        if (scripted) return; // lagi lompat masuk / keluar portal air: kebal sebentar
+         if (skillManager != null && skillManager.skillV.isActive) return; // SkillV: player kebal selama skill
+         if (dodge > 0) {
+             int chance = Math.min(dodge, 50);
+@@ -479,6 +526,7 @@ public class player extends Entity {
+     }
+ 
+     public void drawHPBar(Graphics2D g2) {
++        if (scripted && scriptSink > 0) return; // lagi tenggelam di air portal: HP bar ikut hilang
+         int barWidth = 40;
+         int barHeight = 5;
+         int x = screenX;
+@@ -551,6 +599,7 @@ public class player extends Entity {
+         buffs.update();
+         this.attack = getTotalDamage();
+         gp.initInspectButtons();
++        if (scripted) { isMoving = false; return; } // WaterPortal yang menggerakkan player selama lompat portal
+         if (jumpCooldown > 0) jumpCooldown--;
+         if (isHit) {
+             hitFlashTimer--;
+@@ -893,7 +942,14 @@ public class player extends Entity {
+                         case "right": jdx =  jumpSpeed; break;
+                     }
+                     collisionOn = false;
+-                    gp.colision.checkObject(this, jdx, jdy);
++                    if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null && gp.domainManager.isWaterDomain()) {
++                        // Water Domain: lompat tidak boleh nembus tebing / menyeberangi air dalam / masuk ke void.
++                        // (objCol itu collision dunia luar, koordinatnya gak ada hubungannya sama interior domain.)
++                        Rectangle jumpBox = new Rectangle(x + jdx + solidArea.x, y + jdy + solidArea.y, solidArea.width, solidArea.height);
++                        if (gp.domainManager.checkCollision(jumpBox)) collisionOn = true;
++                    } else {
++                        gp.colision.checkObject(this, jdx, jdy);
++                    }
+                     for (int i = 0; i < gp.npc.length; i++) {
+                         if (gp.npc[i] != null) gp.colision.checkEntity(this, gp.npc[i], jdx, jdy);
+                     }
+@@ -1267,45 +1323,50 @@ public class player extends Entity {
+             return;
+         }
+ 
+-        skillManager.draw(g2);
++        if (!(scripted && scriptSink > 0)) skillManager.draw(g2); // bar cooldown skill ikut hilang saat tenggelam di air portal
+ 
+-        if (jumpState != JumpState.NONE) {
+-            int jumpFrameIndex = 0;
+-            switch (jumpState) {
+-                case PREP: jumpFrameIndex = 0; break;
+-                case AIR:  jumpFrameIndex = 1; break;
+-                case LAND: jumpFrameIndex = 0; break;
+-                default:   jumpFrameIndex = 0; break;
+-            }
+-            switch (jumpDirection) {
++        if (jumpState != JumpState.NONE || scripted) {
++            // lompat biasa: pose ditentukan jumpState. Lompat berskrip (portal air): pose ditentukan WaterPortal.
++            boolean airPose = scripted ? scriptAir : (jumpState == JumpState.AIR);
++            String jumpDir = scripted ? scriptDir : jumpDirection;
++            int jumpFrameIndex = airPose ? 1 : 0;
++            switch (jumpDir) {
+                 case "up":    image = jumpUpFrames[jumpFrameIndex];    break;
+                 case "down":  image = jumpDownFrames[jumpFrameIndex];  break;
+                 case "left":  image = jumpLeftFrames[jumpFrameIndex];  break;
+                 case "right": image = jumpRightFrames[jumpFrameIndex]; break;
+             }
+-            drawStaminaBar(g2);
+-            drawShadow(g2);
++            if (!scripted) drawStaminaBar(g2);
++            if (!scripted || scriptShadow) drawShadow(g2);
+ 
+             int jumpDrawSize = gp.tileSize * 2;
+             int jumpDrawX = screenX - gp.tileSize / 2;
+             int jumpDrawY = screenY - (gp.tileSize / 3);
+-            if (jumpState == JumpState.AIR) jumpDrawY -= 16;
++            if (!scripted && airPose) jumpDrawY -= 16;
++            if (scripted) jumpDrawY += scriptSink - scriptLift;
++
++            // tenggelam: semua yang ada di bawah garis air dipotong, jadi badan "masuk" ke air
++            java.awt.Shape oldClip = g2.getClip();
++            if (scripted && scriptSink > 0) {
++                g2.clipRect(-20000, -20000, 40000, 20000 + screenY + scriptWaterLine);
++            }
+ 
+             g2.drawImage(image, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
+ 
+             if (currentArmor != null) {
+                 // sprite armor disimpan per index frame jump BODY (beda sama baju dasar yang indexnya kebalik)
+-                BufferedImage armorBody = currentArmor.getBody("jump", jumpFrameIndex, jumpDirection);
++                BufferedImage armorBody = currentArmor.getBody("jump", jumpFrameIndex, jumpDir);
+                 if (armorBody != null) g2.drawImage(armorBody, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
+-                BufferedImage armorHead = currentArmor.getHead("jump", jumpFrameIndex, jumpDirection);
++                BufferedImage armorHead = currentArmor.getHead("jump", jumpFrameIndex, jumpDir);
+                 if (armorHead != null) g2.drawImage(armorHead, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
+             } else if (currentCloth != null) {
+                 int clothJumpFrameIndex = (jumpFrameIndex == 0) ? 1 : 0;
+-                BufferedImage clothJump = currentCloth.getJumpFrame(clothJumpFrameIndex, jumpDirection);
++                BufferedImage clothJump = currentCloth.getJumpFrame(clothJumpFrameIndex, jumpDir);
+                 if (clothJump != null) {
+                     g2.drawImage(clothJump, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
+                 }
+             }
++            g2.setClip(oldClip);
+             return;
+         }
+ 
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index a2ce92f..7d0e707 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -98,7 +98,8 @@ public class GamePanel extends JPanel implements Runnable{
+ 	public HouseManager houseManager;
+ 	
+ 	public DomainManager domainManager;
+-	
++	public World.WaterPortal waterPortal;   // kolam portal Water Domain (lompat masuk / keluar)
++
+ 	// music
+ 	public MusicManager music = new MusicManager();
+ 	private MusicState lastMusicState = null; // untuk detect perubahan state BGM
+@@ -112,7 +113,8 @@ public class GamePanel extends JPanel implements Runnable{
+ 	private static final String MUSIC_OUTSIDE = "Amber Road Glee.wav";
+ 	private static final String MUSIC_INSIDE  = "Amber Road Glee.wav";
+ 	private static final String MUSIC_DOMAIN  = "Umbrae Surgunt.wav";
+-	
++	public  static final String MUSIC_WATER_DOMAIN = "Echoes of Ancient Wisdom.wav"; // Water Domain (file ada di /SFX/)
++
+ 	//backpack
+ 	public BackpackUI backpack;
+ 
+@@ -231,6 +233,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 		houseManager = new HouseManager(this);
+ 		mainMenu.active = true;
+ 		domainManager = new DomainManager(this);
++		waterPortal = new World.WaterPortal(this);
+ 		speechBubble = new Entitas.PlayerSpeechBubble(this);
+ 		totemUI = new UI.TotemUI(this);
+ 		SaveManager.init();
+@@ -826,6 +829,8 @@ public class GamePanel extends JPanel implements Runnable{
+ 	    } else if (gameState == GameState.DOMAIN) {
+ 	        if ("GolemHide".equals(domainManager.getActiveDomainId())) {
+ 	            track = MUSIC_GOLEM_HIDE;
++	        } else if (domainManager.isWaterDomain()) {
++	            track = MUSIC_WATER_DOMAIN;
+ 	        } else {
+ 	            track = MUSIC_DOMAIN; // Tomb
+ 	        }
+@@ -1255,6 +1260,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 	    // 2. UPDATE NORMAL
+ 	    if (fishing != null) fishing.update(); // timer gigitan ikan (berhenti sendiri pas dialog / toko, karena return di atas)
+ 	    player.update();
++	    if (waterPortal != null) waterPortal.update(); // portal Water Domain: pemicu + animasi lompat masuk / keluar
+ 
+ 	    if (!isWorldFrozen()) { // SkillV nge-freeze NPC juga
+ 	        for (int i = 0; i < npc.length; i++) {
+@@ -1475,6 +1481,7 @@ public void paintComponent(Graphics g) {
+         if (domainManager.getBossSkeleton() != null) {
+             sortList.add(domainManager.getBossSkeleton());
+         }
++        domainManager.collectWaterProps(sortList);   // pilar, patung, karang, dll di Water Domain (kosong di domain lain)
+ 
+         // ── TAMBAHAN: Masukkan minion ke list Y-Sort agar digambar di layar ──
+         if (deathTotemManager != null) {
+@@ -1493,12 +1500,16 @@ public void paintComponent(Graphics g) {
+         if (armorEffects != null) armorEffects.draw(g2);   // Ember Umbral / cincin Iron Will (domain)
+         if (damagePopups != null) damagePopups.draw(g2);   // angka damage (domain)
+         if (speechBubble != null) speechBubble.draw(g2);
++        if (waterPortal != null) waterPortal.drawOverlay(g2);   // percikan + riak saat lompat / nyebur
+         g2.setTransform(domainTx);
++        domainManager.drawWaterScreenFx(g2);                    // cahaya dari atas + partikel pendar + vinyet (Water Domain)
++        if (waterPortal != null) waterPortal.drawFade(g2);      // layar gelap transisi portal
+         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
+         if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
+ 
+         if (hotbar != null) hotbar.draw(g2);
+         if (buffBar != null) buffBar.draw(g2);
++        if (waterPortal != null) waterPortal.drawHint(g2);   // "[E] ... keluar" di dekat kolam keluar Water Domain
+ 
+         // UI merchant — setelah entity, biar overlay di atas segalanya
+         DarkMerchant dm = domainManager.darkMerchant;
+@@ -1522,6 +1533,7 @@ public void paintComponent(Graphics g) {
+ 
+         applyWorldZoom(g2);
+         tileM.draw(g2);
++        if (waterPortal != null) waterPortal.drawOutsidePool(g2);   // kolam portal Water Domain (rata di tanah, di bawah objek & pemain)
+         g2.setTransform(baseTx);
+         
+         if (world.isRaining && snow.intensity() < 0.5f) { // di tengah biome es hujan diganti badai salju
+@@ -1546,6 +1558,7 @@ public void paintComponent(Graphics g) {
+         }
+         
+         player.drawOverhead(g2);
++        if (waterPortal != null) waterPortal.drawOverlay(g2);   // percikan + riak saat lompat / nyebur
+         if (fishing != null) fishing.draw(g2); // joran + pelampung + tanda "!" pas ikan nyambar
+         if (speechBubble != null) speechBubble.draw(g2);
+         g2.setTransform(baseTx);
+@@ -1554,11 +1567,13 @@ public void paintComponent(Graphics g) {
+         snow.draw(g2);
+         drawDarkOverlay(g2);
+         drawSunsetOverlay(g2);
++        if (waterPortal != null) waterPortal.drawFade(g2);   // layar gelap transisi portal
+         if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
+ 
+         // UI saat OUTSIDE
+         if (hotbar != null) hotbar.draw(g2);
+         if (buffBar != null) buffBar.draw(g2);
++        if (waterPortal != null) waterPortal.drawHint(g2);   // "Lompat ke dalam air ..." di dekat kolam portal
+         if (dialogOn) drawDialog(g2);
+         if (inspectOn) drawInspectPanel(g2);
+         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
+diff --git a/2DGame/src/Main/SaveManager.java b/2DGame/src/Main/SaveManager.java
+index 5d8d679..1b99685 100644
+--- a/2DGame/src/Main/SaveManager.java
++++ b/2DGame/src/Main/SaveManager.java
+@@ -148,6 +148,7 @@ public class SaveManager {
+         gp.player.dodge         = data.dodge;
+         gp.player.maxStamina    = data.playerMaxStamina;
+ 
++        if (gp.waterPortal != null) gp.waterPortal.reset(); // batalkan lompat portal yang lagi jalan (kalau ada)
+         switch (data.gameState) {
+             case "DOMAIN":
+                 gp.domainManager.forceEnterDomain(data.activeDomainId != null ? data.activeDomainId : "Tomb");
+diff --git a/2DGame/src/World/DomainManager.java b/2DGame/src/World/DomainManager.java
+index d9d6183..4c3072d 100644
+--- a/2DGame/src/World/DomainManager.java
++++ b/2DGame/src/World/DomainManager.java
+@@ -55,6 +55,11 @@ public class DomainManager {
+     private SkeletonKing bossSkeleton = null;
+     private boolean bossDefeated = false; // sekali kalah, gak spawn lagi
+ 
++    // ── Water Domain: dibuka lewat kolam portal (lihat WaterPortal), petanya dibuat di thread latar ──
++    public static final String WATER_DOMAIN_ID = WaterPortal.DOMAIN_ID;
++    private bahan.WaterDomainMap waterMap = null;
++    private Thread waterBuildThread = null;
++
+     private int fadeAlpha = 0;
+     private boolean fading = false;
+     private boolean fadeIn = false;
+@@ -252,6 +257,60 @@ public class DomainManager {
+         // bisa juga di-edit manual. Tekan F3 buat lihat temboknya (merah). Pakai "Latar" sama persis kayak background.
+         .setWalkMask("/Latar/golemHide_walk.png");
+         domains.add(golemHide);
++
++        // ── Water Domain ──
++        // Masuknya lewat kolam portal di dunia luar (WaterPortal: lompat ke air), BUKAN tombol [E], jadi triggerArea
++        // sengaja ditaruh jauh di luar peta supaya checkEnterDomain() tidak pernah kena. Peta dibuat prosedural oleh
++        // bahan.WaterDomainMap (112 x 84 tile) dan tembok / propnya dicek lewat waterMap.isBlocked(), bukan `collisions`.
++        // spawn = titik mendarat di depan kolam keluar (kaki di landX / landY, dikurangi offset kaki 24 / 45).
++        // exit = cadangan kalau exitDomain() dipanggil tanpa lewat portal; keluar normal = kolam + [E] (WaterPortal).
++        DomainData waterDomain = new DomainData(
++            WATER_DOMAIN_ID,
++            new Rectangle(-100000, -100000, 1, 1),
++            bahan.WaterDomainMap.POOL_X - 24, bahan.WaterDomainMap.POOL_Y + bahan.WaterDomainMap.LAND_DY - 45,
++            bahan.WaterDomainMap.COLS * bahan.WaterDomainMap.T / 2, bahan.WaterDomainMap.ROWS * bahan.WaterDomainMap.T / 2,
++            "")
++        .setExit(WaterPortal.OUT_X - 24, WaterPortal.OUT_Y + 150 - 45);
++        domains.add(waterDomain);
++    }
++
++    /** True kalau domain yang lagi aktif adalah Water Domain. */
++    public boolean isWaterDomain() {
++        return activeDomain != null && WATER_DOMAIN_ID.equals(activeDomain.id);
++    }
++
++    /** Mulai membangun peta Water Domain di thread latar (aman dipanggil berkali-kali). Dipanggil begitu pemain mendekati kolam. */
++    public synchronized void prepareWaterDomain() {
++        if (waterMap != null || waterBuildThread != null) return;
++        waterBuildThread = new Thread(() -> {
++            try {
++                bahan.WaterDomainMap m = new bahan.WaterDomainMap(gp);
++                synchronized (DomainManager.this) { waterMap = m; }
++            } catch (Throwable t) {
++                t.printStackTrace();
++            }
++        }, "water-domain-build");
++        waterBuildThread.setDaemon(true);
++        waterBuildThread.start();
++    }
++
++    /** Peta Water Domain. Kalau belum selesai dibangun, ditunggu dulu (biasanya sudah siap sebelum pemain sampai di kolam). */
++    public bahan.WaterDomainMap getWaterMap() {
++        Thread t;
++        synchronized (this) {
++            if (waterMap != null) return waterMap;
++            prepareWaterDomain();
++            t = waterBuildThread;
++        }
++        try {
++            if (t != null) t.join();
++        } catch (InterruptedException e) {
++            Thread.currentThread().interrupt();
++        }
++        synchronized (this) {
++            if (waterMap == null) waterMap = new bahan.WaterDomainMap(gp); // thread latar gagal: bangun langsung
++            return waterMap;
++        }
+     }
+ 
+     public void forceEnterDomain(String domainId) {
+@@ -500,29 +559,44 @@ public class DomainManager {
+         final int exitX = returnWorldX >= 0 ? returnWorldX : activeDomain.exitWorldX;
+         final int exitY = returnWorldY >= 0 ? returnWorldY : activeDomain.exitWorldY;
+         startFade(false, () -> {
+-            gp.music.stop();
+-            insideDomain = false;
+-            activeDomain = null;
+-            gp.gameState = GamePanel.GameState.OUTSIDE;
+-            // bersihin sisa isi domain biar gak "bocor" ke dunia luar
+-            wallCollisions.clear();
+-            walkMask = null;
+-            skeletons.clear();
+-            golemites.clear();
+-            golems.clear();
+-            roomSkeletons.clear();
+-            bossSkeleton = null;
+-            gp.player.x = exitX;
+-            gp.player.y = exitY;
+-            darkMerchant = null;
++            leaveDomainTo(exitX, exitY);
+             startFade(true, null);
+         });
+     }
+ 
++    /**
++     * Keluar dari domain SEKARANG juga (tanpa fade bawaan) ke posisi dunia luar tertentu.
++     * Dipakai WaterPortal yang punya transisi sendiri (lompat ke air -> layar gelap -> muncul dari kolam di dunia luar).
++     */
++    public void exitDomainNow(int exitX, int exitY) {
++        if (activeDomain == null) return;
++        leaveDomainTo(exitX, exitY);
++    }
++
++    private void leaveDomainTo(int exitX, int exitY) {
++        gp.music.stop();
++        insideDomain = false;
++        activeDomain = null;
++        activeRoom = null;
++        gp.gameState = GamePanel.GameState.OUTSIDE;
++        // bersihin sisa isi domain biar gak "bocor" ke dunia luar
++        wallCollisions.clear();
++        walkMask = null;
++        skeletons.clear();
++        golemites.clear();
++        golems.clear();
++        roomSkeletons.clear();
++        bossSkeleton = null;
++        gp.player.x = exitX;
++        gp.player.y = exitY;
++        darkMerchant = null;
++    }
++
+     private void playDomainBGM(String domainId) {
+         switch (domainId) {
+             case "Tomb":      gp.music.play("Umbrae Surgunt.wav"); break;
+             case "GolemHide": gp.music.play("golemHideSound.wav"); break;
++            case WATER_DOMAIN_ID: gp.music.play(GamePanel.MUSIC_WATER_DOMAIN); break;
+             default:          gp.music.stop();
+         }
+     }
+@@ -598,11 +672,17 @@ public class DomainManager {
+             for (int[] p : GOLEMITE_SPAWNS) spawnGolemite(p[0], p[1]);
+         }
+ 
+-        try {
+-            java.net.URL url = getClass().getResource(d.backgroundPath);
+-            bgImage = url != null ? new ImageIcon(url) : null;
+-            if (url == null) System.out.println("[DomainManager] Background tidak ketemu: " + d.backgroundPath);
+-        } catch (Exception e) { bgImage = null; e.printStackTrace(); }
++        if (WATER_DOMAIN_ID.equals(d.id)) {
++            // Water Domain tidak pakai gambar latar: lantai / air / properti digambar dari WaterDomainMap
++            bgImage = null;
++            prepareWaterDomain();
++        } else {
++            try {
++                java.net.URL url = getClass().getResource(d.backgroundPath);
++                bgImage = url != null ? new ImageIcon(url) : null;
++                if (url == null) System.out.println("[DomainManager] Background tidak ketemu: " + d.backgroundPath);
++            } catch (Exception e) { bgImage = null; e.printStackTrace(); }
++        }
+ 
+         for (Rectangle r : d.collisions) wallCollisions.add(r);
+ 
+@@ -622,6 +702,7 @@ public class DomainManager {
+ 
+     public void drawBackground(Graphics2D g2) {
+         if (activeDomain == null) return;
++        if (isWaterDomain()) { drawWaterBackground(g2); return; }
+         g2.setColor(new Color(5, 5, 8));
+         g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+         int psx = gp.player.screenX, psy = gp.player.screenY;
+@@ -656,6 +737,27 @@ public class DomainManager {
+         drawFadeOverlay(g2);
+     }
+ 
++    /** Water Domain: lantai batu, air bergelombang, tepian, dekorasi rata, lalu kolam keluar (semua ikut zoom). Properti berdiri di-Y-sort GamePanel. */
++    private void drawWaterBackground(Graphics2D g2) {
++        g2.setColor(new Color(2, 10, 20));
++        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
++        bahan.WaterDomainMap m = getWaterMap();
++        java.awt.geom.AffineTransform baseTx = gp.applyWorldZoom(g2);
++        m.drawGround(g2, gp.tileM.waterAnim);
++        gp.waterPortal.drawDomainPool(g2);
++        g2.setTransform(baseTx);
++    }
++
++    /** Water Domain: properti berdiri yang kelihatan dimasukkan ke daftar urut-Y milik GamePanel. */
++    public void collectWaterProps(List<Entitas.Entity> out) {
++        if (isWaterDomain()) getWaterMap().collectProps(out);
++    }
++
++    /** Water Domain: cahaya dari atas, partikel pendar, vinyet (koordinat layar, tidak ikut zoom). */
++    public void drawWaterScreenFx(Graphics2D g2) {
++        if (isWaterDomain()) getWaterMap().drawScreenFx(g2);
++    }
++
+     public void drawEntities(Graphics2D g2) { /* Y-sort dihandle GamePanel */ }
+ 
+     /** Render sprite merchant (dipanggil GamePanel saat Y-sort) */
+@@ -1047,6 +1149,7 @@ public class DomainManager {
+ 
+     public boolean checkCollision(Rectangle playerBox) {
+         if (!insideDomain) return false; // di luar domain, tembok domain gak boleh ngaruh
++        if (isWaterDomain()) return getWaterMap().isBlocked(playerBox); // tebing, air dalam, pilar, patung, dll
+         // tembok gambar cuma buat interior utama; room (misal boss room) punya koordinat sendiri
+         if (activeRoom == null && walkMask != null && walkMask.isBlocked(playerBox)) return true;
+         for (Rectangle r : wallCollisions)
+diff --git a/2DGame/src/World/WaterPortal.java b/2DGame/src/World/WaterPortal.java
+new file mode 100644
+index 0000000..1267e9e
+--- /dev/null
++++ b/2DGame/src/World/WaterPortal.java
+@@ -0,0 +1,434 @@
++package World;
++
++import java.awt.AlphaComposite;
++import java.awt.BasicStroke;
++import java.awt.Color;
++import java.awt.Composite;
++import java.awt.Font;
++import java.awt.Graphics2D;
++import java.awt.Rectangle;
++import java.awt.image.BufferedImage;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Random;
++
++import Entitas.player;
++import Main.GamePanel;
++import bahan.WaterAnimator;
++import bahan.WaterDomainMap;
++import bahan.WaterPortalArt;
++
++/**
++ * Portal Water Domain: dua kolam air bergelombang + animasi lompat masuk / keluar.
++ *
++ *  - Kolam dunia luar ada di padang rumput timur laut dari titik awal ({@link #OUT_X}, {@link #OUT_Y}).
++ *    Air tidak bisa diinjak. MASUK = melompat ke air: dorong karakter ke arah air sebentar, atau tekan SPASI (lompat)
++ *    menuju air. Animasi lompat diputar otomatis: jongkok, melayang lewat busur ke tengah kolam, nyebur (percikan +
++ *    riak), tenggelam, layar gelap, lalu Water Domain tampil.
++ *  - Di Water Domain pemain muncul dari kolam keluar di Teluk Kedatangan dan melompat ke daratan di depannya.
++ *  - KELUAR = dekati kolam keluar, tekan [E]: pemain melompat ke air, layar gelap, lalu muncul dari kolam dunia luar
++ *    dan melompat dari air kembali ke daratan (di titik tempat dia tadi melompat masuk).
++ *
++ * Selama animasi, player.scripted = true (input dikunci, kebal) dan posisi / pose player diatur dari sini tiap frame
++ * (lihat player.beginScripted). Transisi layar gelap digambar sendiri oleh kelas ini (drawFade).
++ */
++public class WaterPortal {
++
++    /** Pusat kolam dunia luar (px dunia): tile (55, 45), padang rumput kosong di timur laut Tomb. */
++    public static final int OUT_X = 55 * 48 + 24, OUT_Y = 45 * 48 + 24;
++    public static final String DOMAIN_ID = "WaterDomain";
++
++    private static final int FOOT_X = 24, FOOT_Y = 45;   // titik pijak kaki relatif ke player.x / player.y
++    private static final int SCALE = WaterPortalArt.SCALE;
++    private static final int SINK_MAX = 72;              // kedalaman tenggelam sampai kepala hilang (px layar)
++
++    private enum St { IDLE, PREP, AIR, SINK, FADE_OUT, RISE, HOP, LAND }
++
++    private final GamePanel gp;
++    private volatile BufferedImage[] outFrames, inFrames;   // dibuat di thread latar (agak berat)
++
++    private St st = St.IDLE;
++    private boolean sinkInOutside;   // kolam yang sedang dipakai: true = kolam dunia luar
++    private int poolCx, poolCy;      // pusat kolam yang sedang dipakai (px dunia)
++    private double sFx, sFy, tFx, tFy;   // kaki: titik awal dan tujuan busur
++    // tempat melompat masuk dari dunia luar = tempat mendarat saat kembali (bawaan: depan kolam, mis. setelah load game di domain)
++    private double entryFx = OUT_X, entryFy = OUT_Y + 150;
++    private String dir = "down";
++    private int tick, airN, fade, cooldown, pushTimer;
++    private double peak = 60;
++
++    // ── percikan & riak ──
++    private static final class Pt { double x, y, vx, vy; int life, max, col, size; }
++    private static final class Ring { double x, y; int age, delay, max; }
++    private final List<Pt> pts = new ArrayList<>();
++    private final List<Ring> rings = new ArrayList<>();
++    private final Random rnd = new Random();
++
++    public WaterPortal(GamePanel gp) {
++        this.gp = gp;
++        // air kolam dunia luar tidak bisa diinjak (monster juga ikut menghindar karena memakai objCol yang sama)
++        for (Rectangle r : WaterPortalArt.blockerStrips(OUT_X, OUT_Y)) gp.objCol.add(r.x, r.y, r.width, r.height);
++        Thread th = new Thread(() -> {
++            outFrames = WaterPortalArt.build(WaterPortalArt.Style.PORTAL);
++            inFrames = WaterPortalArt.build(WaterPortalArt.Style.EXIT);
++        }, "water-portal-art");
++        th.setDaemon(true);
++        th.start();
++    }
++
++    // ================================================================== status
++
++    /** True selama animasi lompat masuk / keluar berjalan. */
++    public boolean isBusy() { return st != St.IDLE; }
++
++    /** Batalkan semuanya (dipanggil saat load game, mati, dll). */
++    public void reset() {
++        if (st != St.IDLE) gp.player.endScripted();
++        st = St.IDLE;
++        fade = 0;
++        pushTimer = 0;
++        pts.clear();
++        rings.clear();
++    }
++
++    // ================================================================== update
++
++    public void update() {
++        updateFx();
++        if (st == St.IDLE) {
++            if (cooldown > 0) cooldown--;
++            checkTriggers();
++            return;
++        }
++        player p = gp.player;
++        if (p.isDead) { reset(); return; }
++
++        switch (st) {
++            case PREP:
++                p.scriptAir = false;
++                p.scriptLift = 0;
++                if (++tick >= 8) beginAir(sFx, sFy, tFx, tFy, 58);
++                break;
++            case AIR:
++            case HOP: {
++                tick++;
++                double pr = Math.min(1.0, tick / (double) airN);
++                setFeet(sFx + (tFx - sFx) * pr, sFy + (tFy - sFy) * pr);
++                p.scriptLift = (int) Math.round(peak * 4 * pr * (1 - pr));
++                p.scriptAir = pr > 0.10 && pr < 0.90;
++                p.scriptShadow = true;
++                if (tick >= airN) {
++                    if (st == St.AIR) onImpact(); else { st = St.LAND; tick = 0; p.scriptLift = 0; p.scriptAir = false; }
++                }
++                break;
++            }
++            case SINK: {
++                tick++;
++                double pr = Math.min(1.0, tick / 16.0);
++                p.scriptLift = 0;
++                p.scriptAir = true;
++                p.scriptShadow = false;
++                p.scriptWaterLine = FOOT_Y + 3;
++                p.scriptSink = (int) Math.round(SINK_MAX * Math.pow(pr, 0.85));
++                if (tick >= 16) { st = St.FADE_OUT; tick = 0; }
++                break;
++            }
++            case FADE_OUT:
++                p.scriptSink = SINK_MAX;
++                fade = Math.min(255, fade + 15);
++                if (fade >= 255) doSwitch();
++                break;
++            case RISE: {
++                tick++;
++                fade = Math.max(0, fade - 17);
++                double pr = Math.min(1.0, tick / 14.0);
++                p.scriptSink = (int) Math.round(SINK_MAX * Math.pow(1.0 - pr, 1.2));
++                p.scriptAir = true;
++                p.scriptShadow = false;
++                if (tick >= 14) {
++                    p.scriptSink = 0;
++                    p.scriptShadow = true;
++                    splash(poolCx, poolCy + 8, 10, 0.75);
++                    gp.playSE("fishing/splash.wav");
++                    beginAir(poolCx, poolCy + 6, tFx, tFy, 72);
++                    st = St.HOP;   // lompatan keluar dari air ke daratan (pendaratan tidak memicu nyebur)
++                }
++                break;
++            }
++            case LAND:
++                tick++;
++                fade = Math.max(0, fade - 17);
++                p.scriptAir = false;
++                p.scriptLift = 0;
++                setFeet(tFx, tFy);
++                if (tick >= 9) finish();
++                break;
++            default:
++                break;
++        }
++    }
++
++    private void finish() {
++        player p = gp.player;
++        p.direction = dir;
++        p.endScripted();
++        st = St.IDLE;
++        fade = 0;
++        cooldown = 40;
++        pushTimer = 0;
++    }
++
++    private void setFeet(double fx, double fy) {
++        gp.player.x = (int) Math.round(fx) - FOOT_X;
++        gp.player.y = (int) Math.round(fy) - FOOT_Y;
++    }
++
++    private void beginAir(double fromX, double fromY, double toX, double toY, double peakPx) {
++        st = St.AIR;
++        sFx = fromX; sFy = fromY; tFx = toX; tFy = toY;
++        peak = peakPx;
++        tick = 0;
++        airN = (int) Math.max(18, Math.min(34, Math.hypot(toX - fromX, toY - fromY) / 6.5));
++        gp.playSE("ribhavagrawal-woosh-230554.wav");
++    }
++
++    /** Mulai menyelam ke kolam (masuk dari dunia luar, atau keluar dari Water Domain). */
++    private void startDive(boolean outsidePool, double fx, double fy, boolean airborne) {
++        player p = gp.player;
++        sinkInOutside = outsidePool;
++        if (outsidePool) { poolCx = OUT_X; poolCy = OUT_Y; entryFx = fx; entryFy = fy; }
++        else { WaterDomainMap m = gp.domainManager.getWaterMap(); poolCx = m.poolX; poolCy = m.poolY; }
++        double toX = poolCx, toY = poolCy + 6;
++        dir = dominant(toX - fx, toY - fy);
++        p.beginScripted(dir);
++        sFx = fx; sFy = fy; tFx = toX; tFy = toY;
++        pts.clear(); rings.clear();
++        tick = 0;
++        if (airborne) beginAir(fx, fy, toX, toY, 58); else st = St.PREP;
++        pushTimer = 0;
++    }
++
++    private void onImpact() {
++        st = St.SINK;
++        tick = 0;
++        splash(poolCx, poolCy + 8, 22, 1.0);
++        gp.playSE("fishing/splash.wav");
++    }
++
++    /** Layar sudah gelap penuh: pindah dunia (luar <-> domain), lalu pemain muncul dari kolam di sisi seberang. */
++    private void doSwitch() {
++        player p = gp.player;
++        pts.clear();
++        rings.clear();
++        if (sinkInOutside) {
++            gp.domainManager.forceEnterDomain(DOMAIN_ID);
++            WaterDomainMap m = gp.domainManager.getWaterMap();
++            poolCx = m.poolX; poolCy = m.poolY;
++            tFx = m.landX; tFy = m.landY;
++            sinkInOutside = false;
++        } else {
++            gp.domainManager.exitDomainNow(OUT_X - FOOT_X, OUT_Y - FOOT_Y);
++            poolCx = OUT_X; poolCy = OUT_Y;
++            double[] land = safeLanding(entryFx, entryFy);
++            tFx = land[0]; tFy = land[1];
++            sinkInOutside = true;
++        }
++        fade = 255;
++        setFeet(poolCx, poolCy + 6);
++        dir = dominant(tFx - poolCx, tFy - (poolCy + 6));
++        p.scriptDir = dir;
++        p.direction = dir;
++        p.scriptSink = SINK_MAX;
++        p.scriptWaterLine = FOOT_Y + 3;
++        p.scriptAir = true;
++        p.scriptLift = 0;
++        p.scriptShadow = false;
++        st = St.RISE;
++        tick = 0;
++        splash(poolCx, poolCy + 8, 14, 0.85);
++        gp.playSE("fishing/splash.wav");
++    }
++
++    /** Titik mendarat di dunia luar: tempat melompat masuk tadi, kecuali di situ sekarang tertutup (mis. monster / objek). */
++    private double[] safeLanding(double fx, double fy) {
++        Rectangle box = new Rectangle((int) Math.round(fx) - FOOT_X + 8, (int) Math.round(fy) - FOOT_Y + 16, 32, 32);
++        boolean blocked = false;
++        for (Rectangle r : gp.objCol.objects) if (box.intersects(r)) { blocked = true; break; }
++        if (!blocked) return new double[] {fx, fy};
++        return new double[] {OUT_X, OUT_Y + 150};   // depan kolam (selatan), pasti kosong
++    }
++
++    private static String dominant(double dx, double dy) {
++        if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? "right" : "left";
++        return dy > 0 ? "down" : "up";
++    }
++
++    // ================================================================== pemicu
++
++    private double sdAt(double px, double py, int cx, int cy) {
++        return WaterPortalArt.signedDist((px - cx) / SCALE, (py - cy) / SCALE) * SCALE;
++    }
++
++    /** Jarak terdekat (px) dari hitbox pemain ke tepi air kolam; negatif kalau ada bagian hitbox yang sudah di dalam air. */
++    private double boxDist(int cx, int cy) {
++        player p = gp.player;
++        int x0 = p.x + 8, y0 = p.y + 16, x1 = x0 + 32, y1 = y0 + 32, xm = (x0 + x1) / 2, ym = (y0 + y1) / 2;
++        int[][] pt = {{x0, y0}, {x1, y0}, {x0, y1}, {x1, y1}, {xm, y0}, {xm, y1}, {x0, ym}, {x1, ym}, {xm, ym}};
++        double best = Double.MAX_VALUE;
++        for (int[] q : pt) best = Math.min(best, sdAt(q[0], q[1], cx, cy));
++        return best;
++    }
++
++    private boolean canStartCutscene() {
++        player p = gp.player;
++        return !p.isDead && !p.scripted && p.isNotPunching() && !gp.dialogOn && !gp.inspectOn && !gp.chatMode
++            && !gp.isSkillVActive() && !gp.domainManager.isFading();
++    }
++
++    private void checkTriggers() {
++        if (cooldown > 0 || !canStartCutscene()) { pushTimer = 0; return; }
++        player p = gp.player;
++        double fx = p.x + FOOT_X, fy = p.y + FOOT_Y;
++
++        if (gp.gameState == GamePanel.GameState.OUTSIDE) {
++            double d = boxDist(OUT_X, OUT_Y);
++            if (d > 400) { pushTimer = 0; return; }
++            gp.domainManager.prepareWaterDomain();   // peta domain dibangun di thread latar selagi pemain mendekat
++            double bx = p.x + 24, by = p.y + 32;      // pusat hitbox
++            double tx = OUT_X - bx, ty = OUT_Y - by, tl = Math.max(1, Math.hypot(tx, ty));
++
++            // A. melompat (SPASI) ke arah air
++            if (p.isJumping()) {
++                String jd = p.getJumpDirection();
++                double jx = jd.equals("left") ? -1 : jd.equals("right") ? 1 : 0, jy = jd.equals("up") ? -1 : jd.equals("down") ? 1 : 0;
++                if (d < 44 && (jx * tx + jy * ty) / tl > 0.3) { startDive(true, fx, fy, p.isJumpAirborne()); return; }
++                pushTimer = 0;
++                return;
++            }
++            // B. mendorong karakter ke arah air sampai tertahan di tepinya
++            double mx = (gp.KeyH.rightPressed ? 1 : 0) - (gp.KeyH.leftPressed ? 1 : 0);
++            double my = (gp.KeyH.downPressed ? 1 : 0) - (gp.KeyH.upPressed ? 1 : 0);
++            double ml = Math.hypot(mx, my);
++            if (ml > 0 && d < 3 && (mx * tx + my * ty) / (ml * tl) > 0.4) {
++                if (++pushTimer >= 6) { startDive(true, fx, fy, false); return; }
++            } else {
++                pushTimer = 0;
++            }
++        } else if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager.isWaterDomain()) {
++            WaterDomainMap m = gp.domainManager.getWaterMap();
++            if (m == null) return;
++            double d = boxDist(m.poolX, m.poolY);
++            if (d < 72 && gp.KeyH.interactPressed) {
++                gp.KeyH.interactPressed = false;
++                startDive(false, fx, fy, false);
++            }
++        }
++    }
++
++    // ================================================================== percikan
++
++    private void splash(double wx, double wy, int count, double power) {
++        int[] cols = {0xFFFFFF, 0xDCF3FF, 0x9CD4F2, 0x60AADC};
++        for (int i = 0; i < count; i++) {
++            Pt q = new Pt();
++            double a = Math.toRadians(-90 + (rnd.nextDouble() - 0.5) * 130);
++            double sp = (3.2 + rnd.nextDouble() * 4.6) * power;
++            q.x = wx + (rnd.nextDouble() - 0.5) * 40;
++            q.y = wy + (rnd.nextDouble() - 0.5) * 10;
++            q.vx = Math.cos(a) * sp * 0.8;
++            q.vy = Math.sin(a) * sp * 1.25;
++            q.max = q.life = 22 + rnd.nextInt(16);
++            q.col = cols[rnd.nextInt(cols.length)];
++            q.size = rnd.nextInt(3) == 0 ? 6 : 3;
++            pts.add(q);
++        }
++        for (int k = 0; k < 3; k++) {
++            Ring r = new Ring();
++            r.x = wx; r.y = wy; r.delay = k * 5; r.max = 30 + k * 4;
++            rings.add(r);
++        }
++    }
++
++    private void updateFx() {
++        for (int i = pts.size() - 1; i >= 0; i--) {
++            Pt q = pts.get(i);
++            q.x += q.vx; q.y += q.vy; q.vy += 0.42; q.vx *= 0.985;
++            if (--q.life <= 0) pts.remove(i);
++        }
++        for (int i = rings.size() - 1; i >= 0; i--) {
++            Ring r = rings.get(i);
++            if (r.delay > 0) { r.delay--; continue; }
++            if (++r.age >= r.max) rings.remove(i);
++        }
++    }
++
++    // ================================================================== gambar
++
++    private void drawPoolAt(Graphics2D g2, BufferedImage[] frames, int cx, int cy) {
++        if (frames == null) return;
++        int sx = cx - gp.player.x + gp.player.screenX - WaterPortalArt.CX * SCALE;
++        int sy = cy - gp.player.y + gp.player.screenY - WaterPortalArt.CY * SCALE;
++        int w = WaterPortalArt.W * SCALE, h = WaterPortalArt.H * SCALE;
++        if (sx > gp.viewMaxX() || sx + w < gp.viewMinX() || sy > gp.viewMaxY() || sy + h < gp.viewMinY()) return;
++        int f = (int) ((System.nanoTime() / 1_000_000L / WaterAnimator.FRAME_MS) % WaterPortalArt.F);
++        g2.drawImage(frames[f], sx, sy, w, h, null);
++    }
++
++    /** Kolam dunia luar (dipanggil di dalam transform zoom, sebelum objek berdiri). */
++    public void drawOutsidePool(Graphics2D g2) { drawPoolAt(g2, outFrames, OUT_X, OUT_Y); }
++
++    /** Kolam keluar di Water Domain (dipanggil di dalam transform zoom, setelah lantai). */
++    public void drawDomainPool(Graphics2D g2) {
++        WaterDomainMap m = gp.domainManager.getWaterMap();
++        if (m != null) drawPoolAt(g2, inFrames, m.poolX, m.poolY);
++    }
++
++    /** Percikan dan riak (di dalam transform zoom, setelah semua entitas supaya ada di depan pemain). */
++    public void drawOverlay(Graphics2D g2) {
++        if (pts.isEmpty() && rings.isEmpty()) return;
++        int camX = gp.player.x, camY = gp.player.y, psx = gp.player.screenX, psy = gp.player.screenY;
++        g2.setStroke(new BasicStroke(3));
++        for (Ring r : rings) {
++            if (r.delay > 0) continue;
++            double p = r.age / (double) r.max;
++            int rx = (int) Math.round(10 + 78 * p), ry = (int) Math.round(rx * 0.42);
++            int sx = (int) Math.round(r.x) - camX + psx, sy = (int) Math.round(r.y) - camY + psy;
++            g2.setColor(new Color(0xEE, 0xF9, 0xFF, (int) Math.round((1 - p) * 210)));
++            g2.drawOval(sx - rx, sy - ry, rx * 2, ry * 2);
++        }
++        g2.setStroke(new BasicStroke(1));
++        for (Pt q : pts) {
++            int sx = (int) Math.round(q.x) - camX + psx, sy = (int) Math.round(q.y) - camY + psy;
++            int alpha = (int) Math.round(255 * Math.min(1.0, q.life / (q.max * 0.5)));
++            g2.setColor(new Color((q.col >> 16) & 255, (q.col >> 8) & 255, q.col & 255, Math.max(0, Math.min(255, alpha))));
++            g2.fillRect(sx, sy, q.size, q.size);
++        }
++    }
++
++    /** Petunjuk di bawah layar. */
++    public void drawHint(Graphics2D g2) {
++        if (st != St.IDLE || cooldown > 0 || gp.dialogOn) return;
++        String hint = null;
++        if (gp.gameState == GamePanel.GameState.OUTSIDE) {
++            if (boxDist(OUT_X, OUT_Y) < 170) hint = "Lompat ke dalam air untuk masuk Water Domain";
++        } else if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager.isWaterDomain()) {
++            WaterDomainMap m = gp.domainManager.getWaterMap();
++            if (m != null && boxDist(m.poolX, m.poolY) < 72) hint = "Tekan [E] untuk melompat ke air dan keluar";
++        }
++        if (hint == null) return;
++        g2.setFont(new Font("Monospaced", Font.BOLD, 13));
++        g2.setColor(new Color(255, 255, 150, 225));
++        g2.drawString(hint, gp.screenWidth / 2 - g2.getFontMetrics().stringWidth(hint) / 2,
++            gp.screenHeight - UI.Hotbar.RESERVED_HEIGHT - 40);
++    }
++
++    /** Layar gelap transisi (digambar paling akhir, menutupi semuanya). */
++    public void drawFade(Graphics2D g2) {
++        if (fade <= 0) return;
++        Composite old = g2.getComposite();
++        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, fade / 255f)));
++        g2.setColor(new Color(2, 8, 16));
++        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
++        g2.setComposite(old);
++    }
++}
+diff --git a/2DGame/src/bahan/WaterDomainArt.java b/2DGame/src/bahan/WaterDomainArt.java
+new file mode 100644
+index 0000000..1a51d5f
+--- /dev/null
++++ b/2DGame/src/bahan/WaterDomainArt.java
+@@ -0,0 +1,842 @@
++package bahan;
++
++import java.awt.image.BufferedImage;
++import java.util.Random;
++
++/**
++ * Seni piksel untuk Water Domain, semuanya dihitung di kode (tanpa file gambar baru), sama seperti WaterAnimator.
++ * 1 piksel seni = 3 piksel layar, 1 tile = 16 x 16 piksel seni = 48 piksel layar, jadi gayanya sama dengan tile dunia.
++ *
++ * Isinya:
++ *  - {@link Tiles}: tile lantai batu, pasir, batu tebing, dinding tebing, plus lapisan tepi (bibir batu, pasir basah, buih air).
++ *  - {@link Sprite}: properti berdiri / dekorasi (pilar, obelisk rune, patung penjaga, batu, karang, kristal, kerang,
++ *    daun teratai, gerbang kuil, lingkaran rune lantai, cahaya pendar).
++ * Semua dibuat sekali saat Water Domain pertama kali dimasuki (lihat WaterDomainMap).
++ */
++public final class WaterDomainArt {
++
++    private WaterDomainArt() {}
++
++    public static final int ART = 16, PX = 3, T = ART * PX;
++    public static final int FOAM_FRAMES = 8;
++    /** bit sisi tile: utara, timur, selatan, barat */
++    public static final int N = 1, E = 2, S = 4, W = 8;
++
++    private static final double TAU = Math.PI * 2.0;
++
++    // ------------------------------------------------------------------ palet
++    static final int FL_A = 0x4A7285, FL_B = 0x41657A, FL_C = 0x5A8497, SEAM = 0x24404F, HL = 0x7BA9BD;
++    static final int MOSS = 0x3F7D5E, MOSS_D = 0x2F5F49;
++    static final int SAND_A = 0xD2C394, SAND_D = 0xB7A777, SAND_L = 0xE6DAB2, SAND_R = 0xC6B787;
++    static final int ROCK_A = 0x0E1A26, ROCK_B = 0x122434, ROCK_C = 0x0A141E, ROCK_F = 0x1D3A52;
++    static final int STONE_L = 0xB4C8D2, STONE_M = 0x8AA3B3, STONE_D = 0x5F7A8E, STONE_DD = 0x42586B, STONE_OUT = 0x2B3C4C;
++    public static final int AQUA = 0x7DFCF0, AQUA_CORE = 0xE6FFFC;
++
++    // ------------------------------------------------------------------ alat bantu
++
++    static int rgb(int r, int g, int b) {
++        return (clamp(r) << 16) | (clamp(g) << 8) | clamp(b);
++    }
++
++    static int clamp(int v) { return v < 0 ? 0 : (v > 255 ? 255 : v); }
++
++    static int mix(int a, int b, double t) {
++        if (t <= 0) return a;
++        if (t >= 1) return b;
++        int ar = (a >> 16) & 255, ag = (a >> 8) & 255, ab = a & 255;
++        int br = (b >> 16) & 255, bg = (b >> 8) & 255, bb = b & 255;
++        return rgb((int) Math.round(ar + (br - ar) * t), (int) Math.round(ag + (bg - ag) * t), (int) Math.round(ab + (bb - ab) * t));
++    }
++
++    static int shade(int c, double f) {
++        return rgb((int) Math.round(((c >> 16) & 255) * f), (int) Math.round(((c >> 8) & 255) * f), (int) Math.round((c & 255) * f));
++    }
++
++    static int hash(int x, int y, int s) {
++        int h = x * 374761393 + y * 668265263 + s * 1274126177;
++        h = (h ^ (h >>> 13)) * 1274126177;
++        return h ^ (h >>> 16);
++    }
++
++    static double rnd01(int x, int y, int s) {
++        return (hash(x, y, s) & 0xFFFF) / 65535.0;
++    }
++
++    /** Kanvas piksel seni ARGB (0 = transparan). */
++    static final class Canvas {
++        final int w, h;
++        final int[] p;
++
++        Canvas(int w, int h) { this.w = w; this.h = h; this.p = new int[w * h]; }
++
++        boolean in(int x, int y) { return x >= 0 && y >= 0 && x < w && y < h; }
++
++        void set(int x, int y, int rgb) { if (in(x, y)) p[y * w + x] = 0xFF000000 | rgb; }
++
++        boolean solid(int x, int y) { return in(x, y) && (p[y * w + x] >>> 24) != 0; }
++
++        int get(int x, int y) { return in(x, y) ? p[y * w + x] & 0xFFFFFF : 0; }
++
++        /** campur warna di atas piksel yang ada (alpha 0..1) */
++        void blend(int x, int y, int rgb, double a) {
++            if (!in(x, y) || a <= 0) return;
++            int i = y * w + x;
++            int dst = p[i];
++            int da = (dst >>> 24) & 255;
++            if (a >= 0.999) { p[i] = 0xFF000000 | rgb; return; }
++            if (da == 0) { p[i] = ((int) Math.round(a * 255) << 24) | rgb; return; }
++            int na = Math.min(255, da + (int) Math.round((255 - da) * a));
++            p[i] = (na << 24) | mix(dst & 0xFFFFFF, rgb, a);
++        }
++
++        void rect(int x, int y, int rw, int rh, int rgb) {
++            for (int yy = y; yy < y + rh; yy++) for (int xx = x; xx < x + rw; xx++) set(xx, yy, rgb);
++        }
++
++        void line(int x0, int y0, int x1, int y1, int rgb) {
++            int dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1, err = dx + dy;
++            for (int guard = 0; guard < 4000; guard++) {
++                set(x0, y0, rgb);
++                if (x0 == x1 && y0 == y1) break;
++                int e2 = 2 * err;
++                if (e2 >= dy) { err += dy; x0 += sx; }
++                if (e2 <= dx) { err += dx; y0 += sy; }
++            }
++        }
++
++        void disc(double cx, double cy, double rx, double ry, int rgb) {
++            for (int y = (int) Math.floor(cy - ry); y <= (int) Math.ceil(cy + ry); y++) {
++                for (int x = (int) Math.floor(cx - rx); x <= (int) Math.ceil(cx + rx); x++) {
++                    double nx = (x + 0.5 - cx) / rx, ny = (y + 0.5 - cy) / ry;
++                    if (nx * nx + ny * ny <= 1.0) set(x, y, rgb);
++                }
++            }
++        }
++
++        /** Gelapkan piksel tepi (yang bertetangga dengan transparan) supaya sprite punya garis tepi. */
++        void outline(double f) {
++            int[] src = p.clone();
++            for (int y = 0; y < h; y++) {
++                for (int x = 0; x < w; x++) {
++                    int c = src[y * w + x];
++                    if ((c >>> 24) == 0) continue;
++                    boolean edge = !isSolid(src, x - 1, y) || !isSolid(src, x + 1, y) || !isSolid(src, x, y - 1) || !isSolid(src, x, y + 1);
++                    if (edge) p[y * w + x] = 0xFF000000 | shade(c & 0xFFFFFF, f);
++                }
++            }
++        }
++
++        private boolean isSolid(int[] a, int x, int y) { return in(x, y) && (a[y * w + x] >>> 24) != 0; }
++
++        BufferedImage image(int scale) {
++            int W2 = w * scale, H2 = h * scale;
++            BufferedImage img = new BufferedImage(W2, H2, BufferedImage.TYPE_INT_ARGB);
++            int[] d = new int[W2 * H2];
++            for (int y = 0; y < H2; y++) {
++                int row = (y / scale) * w;
++                for (int x = 0; x < W2; x++) d[y * W2 + x] = p[row + x / scale];
++            }
++            img.setRGB(0, 0, W2, H2, d, 0, W2);
++            return img;
++        }
++    }
++
++    /** Sprite dengan titik pijak (kaki) di dalam gambar, dalam piksel layar. */
++    public static final class Sprite {
++        public final BufferedImage img;
++        public final int w, h, footX, footY;
++
++        Sprite(BufferedImage img, int footArtX, int footArtY) {
++            this.img = img;
++            this.w = img.getWidth();
++            this.h = img.getHeight();
++            this.footX = footArtX * PX;
++            this.footY = footArtY * PX;
++        }
++    }
++
++    // ================================================================== TILE
++
++    public static final class Tiles {
++        public final BufferedImage[] floor = new BufferedImage[4];
++        public final BufferedImage[] sand = new BufferedImage[3];
++        public final BufferedImage[] rock = new BufferedImage[4];
++        public final BufferedImage[] face = new BufferedImage[3];
++        /** lapisan tepi batu (sisi terbuka N/E/W), per bitmask */
++        public final BufferedImage[] rockEdge = new BufferedImage[16];
++        /** bibir lantai batu yang menghadap air dalam, per bitmask sisi berair */
++        public final BufferedImage[] floorLip = new BufferedImage[16];
++        /** tepi tipis lantai batu yang menghadap air dangkal (bisa dilangkahi), per bitmask */
++        public final BufferedImage[] floorEdge = new BufferedImage[16];
++        /** tepi pasir basah, per bitmask sisi berair */
++        public final BufferedImage[] sandWet = new BufferedImage[16];
++        /** buih di tile air, per bitmask sisi yang berbatasan dengan darat, per frame */
++        public final BufferedImage[][] foam = new BufferedImage[16][FOAM_FRAMES];
++    }
++
++    public static Tiles buildTiles() {
++        Tiles t = new Tiles();
++        for (int v = 0; v < t.floor.length; v++) t.floor[v] = floorTile(v).image(PX);
++        for (int v = 0; v < t.sand.length; v++) t.sand[v] = sandTile(v).image(PX);
++        for (int v = 0; v < t.rock.length; v++) t.rock[v] = rockTile(v).image(PX);
++        for (int v = 0; v < t.face.length; v++) t.face[v] = faceTile(v).image(PX);
++        for (int m = 0; m < 16; m++) {
++            t.rockEdge[m] = rockEdge(m).image(PX);
++            t.floorLip[m] = floorLip(m).image(PX);
++            t.floorEdge[m] = floorEdge(m).image(PX);
++            t.sandWet[m] = sandWet(m).image(PX);
++            for (int f = 0; f < FOAM_FRAMES; f++) t.foam[m][f] = foam(m, f).image(PX);
++        }
++        return t;
++    }
++
++    private static void slab(Canvas c, int x0, int y0, int w, int h) {
++        for (int x = x0; x < x0 + w; x++) { c.set(x, y0, HL); c.set(x, y0 + h - 1, SEAM); }
++        for (int y = y0; y < y0 + h; y++) { c.set(x0, y, HL); c.set(x0 + w - 1, y, SEAM); }
++        c.set(x0 + w - 1, y0, FL_C);
++        c.set(x0, y0 + h - 1, FL_B);
++    }
++
++    static Canvas floorTile(int v) {
++        Canvas c = new Canvas(ART, ART);
++        int seed = 100 + v * 7;
++        for (int y = 0; y < ART; y++) {
++            for (int x = 0; x < ART; x++) {
++                double n = rnd01(x, y, seed);
++                c.set(x, y, n < 0.20 ? FL_B : (n > 0.86 ? FL_C : FL_A));
++            }
++        }
++        switch (v) {
++            case 0: slab(c, 0, 0, 8, 16); slab(c, 8, 0, 8, 16); break;
++            case 1: slab(c, 0, 0, 16, 8); slab(c, 0, 8, 16, 8); break;
++            case 2: slab(c, 0, 0, 8, 8); slab(c, 8, 0, 8, 8); slab(c, 0, 8, 8, 8); slab(c, 8, 8, 8, 8); break;
++            default:
++                slab(c, 0, 0, 16, 16);
++                for (int i = 0; i < 9; i++) c.set(3 + i, 12 - (int) (i * 0.9), SEAM);       // retakan diagonal
++                c.set(5, 12, FL_B); c.set(9, 6, FL_B);
++                break;
++        }
++        // lumut di sekitar sambungan
++        for (int y = 0; y < ART; y++) {
++            for (int x = 0; x < ART; x++) {
++                if (rnd01(x, y, seed + 3) > 0.935) c.set(x, y, rnd01(x, y, seed + 4) > 0.5 ? MOSS : MOSS_D);
++            }
++        }
++        return c;
++    }
++
++    static Canvas sandTile(int v) {
++        Canvas c = new Canvas(ART, ART);
++        int seed = 200 + v * 11;
++        for (int y = 0; y < ART; y++) {
++            for (int x = 0; x < ART; x++) {
++                double n = rnd01(x, y, seed);
++                int col = n < 0.12 ? SAND_D : (n > 0.90 ? SAND_L : SAND_A);
++                // riak pasir: garis landai putus-putus
++                double wave = Math.sin(TAU * (x / 16.0 + v * 0.31) + y * 0.7);
++                if ((y == 4 + v || y == 11 - v) && wave > 0.15) col = SAND_R;
++                c.set(x, y, col);
++            }
++        }
++        // kerikil kecil
++        for (int k = 0; k < 2 + v; k++) {
++            int x = 1 + (int) (rnd01(k, v, seed + 9) * 13), y = 1 + (int) (rnd01(v, k, seed + 10) * 13);
++            c.set(x, y, 0x9A8B63); c.set(x + 1, y, 0xB9AA7F); c.set(x, y + 1, 0x85774F);
++        }
++        return c;
++    }
++
++    static Canvas rockTile(int v) {
++        Canvas c = new Canvas(ART, ART);
++        int seed = 300 + v * 13;
++        for (int y = 0; y < ART; y++) {
++            for (int x = 0; x < ART; x++) {
++                double n = rnd01(x, y, seed);
++                int col = n < 0.22 ? ROCK_C : (n > 0.80 ? ROCK_B : ROCK_A);
++                if (n > 0.975) col = ROCK_F;
++                c.set(x, y, col);
++            }
++        }
++        // retakan gelap
++        int sx = 2 + (int) (rnd01(v, 1, seed) * 10), sy = 2 + (int) (rnd01(v, 2, seed) * 10);
++        for (int i = 0; i < 5; i++) c.set(sx + i, sy + (i % 2), 0x070E15);
++        return c;
++    }
++
++    static Canvas faceTile(int v) {
++        Canvas c = new Canvas(ART, ART);
++        int seed = 400 + v * 17;
++        int[] strip = {0x1D4260, 0x183850, 0x20496A, 0x15324A};
++        for (int x = 0; x < ART; x++) {
++            int col = strip[(int) (rnd01(x / 3, v, seed) * strip.length) % strip.length];
++            for (int y = 2; y < 13; y++) {
++                double n = rnd01(x, y, seed + 1);
++                int cc = n > 0.9 ? shade(col, 1.25) : (n < 0.18 ? shade(col, 0.82) : col);
++                if (y > 8) cc = shade(cc, 0.86);
++                c.set(x, y, cc);
++            }
++        }
++        for (int x = 0; x < ART; x++) {
++            c.set(x, 0, 0x4C86AA);                                 // bibir atas tebing
++            c.set(x, 1, rnd01(x, 0, seed + 2) > 0.5 ? 0x336A8C : 0x2D5F80);
++            c.set(x, 13, 0x102739);
++            c.set(x, 14, 0x0D2132);
++            c.set(x, 15, 0x0A1B29);
++        }
++        // rembesan air: garis terang tipis yang turun
++        for (int k = 0; k < 2; k++) {
++            int x = 2 + (int) (rnd01(k, v, seed + 5) * 12), len = 4 + (int) (rnd01(v, k, seed + 6) * 5);
++            for (int y = 3; y < 3 + len; y++) c.set(x, y, 0x3A7396);
++        }
++        return c;
++    }
++
++    static Canvas rockEdge(int mask) {
++        Canvas c = new Canvas(ART, ART);
++        for (int i = 0; i < ART; i++) {
++            if ((mask & N) != 0) { c.set(i, 0, 0x2F5C7B); c.set(i, 1, 0x1F3F57); }
++            if ((mask & E) != 0) { c.set(ART - 1, i, 0x2F5C7B); c.set(ART - 2, i, 0x1F3F57); }
++            if ((mask & W) != 0) { c.set(0, i, 0x2F5C7B); c.set(1, i, 0x1F3F57); }
++        }
++        return c;
++    }
++
++    static Canvas floorLip(int mask) {
++        Canvas c = new Canvas(ART, ART);
++        for (int i = 0; i < ART; i++) {
++            if ((mask & N) != 0) { c.set(i, 0, 0x28444F); c.set(i, 1, 0x6A98AC); }
++            if ((mask & E) != 0) { c.set(ART - 1, i, 0x28444F); c.set(ART - 2, i, 0x5C8A9E); }
++            if ((mask & W) != 0) { c.set(0, i, 0x28444F); c.set(1, i, 0x5C8A9E); }
++        }
++        if ((mask & S) != 0) {   // sisi depan peron: dinding batu yang turun ke air
++            for (int x = 0; x < ART; x++) {
++                c.set(x, 11, 0x7FAEC2);
++                c.set(x, 12, 0x3E6377);
++                c.set(x, 13, 0x2F4F62);
++                c.set(x, 14, 0x243F51);
++                c.set(x, 15, 0x1A3040);
++            }
++            for (int y = 12; y < ART; y++) { c.set(0, y, 0x1A3040); c.set(8, y, 0x1A3040); }
++        }
++        return c;
++    }
++
++    static Canvas floorEdge(int mask) {
++        Canvas c = new Canvas(ART, ART);
++        for (int i = 0; i < ART; i++) {
++            if ((mask & N) != 0) { c.set(i, 0, 0x2F5A6B); c.set(i, 1, 0x5E8EA3); }
++            if ((mask & S) != 0) { c.set(i, ART - 1, 0x2F5A6B); c.set(i, ART - 2, 0x3E6B80); }
++            if ((mask & E) != 0) { c.set(ART - 1, i, 0x2F5A6B); c.set(ART - 2, i, 0x3E6B80); }
++            if ((mask & W) != 0) { c.set(0, i, 0x2F5A6B); c.set(1, i, 0x5E8EA3); }
++        }
++        return c;
++    }
++
++    static Canvas sandWet(int mask) {
++        Canvas c = new Canvas(ART, ART);
++        for (int i = 0; i < ART; i++) {
++            for (int d = 0; d < 3; d++) {
++                double a = d == 0 ? 0.95 : (d == 1 ? 0.7 : 0.4);
++                if ((mask & N) != 0) c.blend(i, d, 0x9A8D66, a);
++                if ((mask & S) != 0) c.blend(i, ART - 1 - d, 0x9A8D66, a);
++                if ((mask & E) != 0) c.blend(ART - 1 - d, i, 0x9A8D66, a);
++                if ((mask & W) != 0) c.blend(d, i, 0x9A8D66, a);
++            }
++        }
++        return c;
++    }
++
++    /** Buih di tile air: pita putus-putus di sisi yang berbatasan dengan darat, lebarnya maju-mundur mengikuti frame f. */
++    static Canvas foam(int mask, int f) {
++        Canvas c = new Canvas(ART, ART);
++        double phi = (double) f / FOAM_FRAMES;
++        for (int i = 0; i < ART; i++) {
++            double wv = 0.5 + 0.5 * Math.sin(TAU * (i / 16.0 * 2.0 - phi));
++            int depth = 1 + (int) Math.round(1.4 * wv);
++            for (int d = 0; d < depth; d++) {
++                int col = d == 0 ? 0xEEF9FF : 0x9CD4F2;
++                if (d > 0 && rnd01(i, d, f % 4) > 0.72) continue;
++                if (d == 0 && rnd01(i, 0, 17 + (f >> 1)) > 0.86) continue;
++                if ((mask & N) != 0) c.set(i, d, col);
++                if ((mask & S) != 0) c.set(i, ART - 1 - d, col);
++                if ((mask & E) != 0) c.set(ART - 1 - d, i, col);
++                if ((mask & W) != 0) c.set(d, i, col);
++            }
++        }
++        return c;
++    }
++
++    // ================================================================== SPRITE
++
++    private static Sprite sprite(Canvas c, int footX, int footY) {
++        return new Sprite(c.image(PX), footX, footY);
++    }
++
++    // ---- pilar -------------------------------------------------------
++
++    public static Sprite pillar(int seed, boolean broken) {
++        Canvas c = new Canvas(20, 46);
++        Random rnd = new Random(seed * 7919L + (broken ? 13 : 5));
++        int[] col = {STONE_L, STONE_L, STONE_M, STONE_M, STONE_M, STONE_M, STONE_D, STONE_D, STONE_DD, STONE_DD};
++        int top = broken ? 15 + rnd.nextInt(10) : 10;
++        // kaki pilar
++        c.rect(3, 39, 14, 5, STONE_M);
++        c.rect(3, 39, 14, 1, STONE_L);
++        c.rect(14, 39, 3, 5, STONE_D);
++        c.rect(3, 43, 14, 1, STONE_DD);
++        // batang
++        for (int y = top; y < 39; y++) {
++            for (int x = 5; x < 15; x++) {
++                int cc = col[x - 5];
++                if ((x == 8 || x == 12) && y % 2 == 0) cc = shade(cc, 0.88);     // alur
++                c.set(x, y, cc);
++            }
++        }
++        if (!broken) {
++            c.rect(3, 6, 14, 4, STONE_M);                                          // kepala pilar
++            c.rect(3, 6, 14, 1, STONE_L);
++            c.rect(14, 6, 3, 4, STONE_D);
++            c.rect(2, 3, 16, 3, STONE_L);
++            c.rect(14, 3, 4, 3, STONE_M);
++            c.rect(2, 5, 16, 1, STONE_D);
++        } else {
++            for (int x = 5; x < 15; x++) {                                         // puncak patah bergerigi
++                int cut = top + rnd.nextInt(4);
++                for (int y = top; y < cut; y++) { if (c.solid(x, y)) c.p[y * c.w + x] = 0; }
++                c.set(x, cut, STONE_L);
++            }
++            for (int k = 0; k < 3; k++) {                                          // serpihan di kaki
++                int rx = 1 + rnd.nextInt(16), ry = 41 + rnd.nextInt(3);
++                c.rect(rx, ry, 2 + rnd.nextInt(2), 2, rnd.nextBoolean() ? STONE_M : STONE_D);
++            }
++        }
++        // lumut + noda air di bagian bawah
++        for (int y = top; y < 44; y++) {
++            for (int x = 3; x < 17; x++) {
++                if (!c.solid(x, y)) continue;
++                double bottom = (y - 28) / 16.0;
++                if (bottom > 0 && rnd.nextDouble() < bottom * 0.5) c.set(x, y, rnd.nextBoolean() ? MOSS : MOSS_D);
++                else if (rnd.nextDouble() < 0.035) c.set(x, y, STONE_OUT);
++            }
++        }
++        c.outline(0.62);
++        return sprite(c, 10, 44);
++    }
++
++    /** Kotak tabrakan kaki pilar relatif ke titik pijak (piksel layar): {dx, dy, lebar, tinggi}. */
++    public static int[] pillarFoot() { return new int[] {-18, -20, 36, 17}; }
++
++    // ---- obelisk rune ------------------------------------------------
++
++    private static final String[] GLYPHS = {
++        ".#.|###|.#.|#.#|...", "#.#|.#.|###|.#.|...", "##.|.##|#.#|.#.|...", ".##|#..|.#.|##.|...",
++    };
++
++    /** {badan, lapisan rune bersinar} */
++    public static Sprite[] obelisk(int seed) {
++        Canvas body = new Canvas(16, 46);
++        Canvas glow = new Canvas(16, 46);
++        for (int y = 6; y < 41; y++) {
++            int half = 3 + (y - 6) * 3 / 35;                                       // makin ke bawah makin lebar
++            for (int x = 8 - half; x <= 7 + half; x++) {
++                double n = rnd01(x, y, seed);
++                int cc = x < 8 ? (n > 0.8 ? 0x4A647B : 0x3A546A) : (n > 0.8 ? 0x2B4054 : 0x1F3041);
++                body.set(x, y, cc);
++            }
++        }
++        for (int y = 0; y < 6; y++) {                                              // puncak piramida
++            int half = 1 + y / 2;
++            for (int x = 8 - half; x <= 7 + half; x++) body.set(x, y, x < 8 ? 0x5B7B94 : 0x34495C);
++        }
++        body.rect(3, 41, 10, 3, 0x2A3F52);                                         // alas
++        body.rect(2, 43, 12, 2, 0x1D2D3C);
++        body.rect(3, 41, 10, 1, 0x4A647B);
++        for (int g = 0; g < 4; g++) {
++            String[] rows = GLYPHS[(seed + g) % GLYPHS.length].split("\\|");
++            int gy = 11 + g * 7;
++            for (int ry = 0; ry < 4; ry++) {
++                for (int rx = 0; rx < 3; rx++) {
++                    if (rows[ry].charAt(rx) == '#') {
++                        body.set(6 + rx, gy + ry, 0x2A5E78);                       // rune padam
++                        glow.set(6 + rx, gy + ry, AQUA);
++                    }
++                }
++            }
++        }
++        body.outline(0.6);
++        return new Sprite[] {sprite(body, 8, 44), sprite(glow, 8, 44)};
++    }
++
++    // ---- patung penjaga ---------------------------------------------
++
++    /** {badan, mata bersinar}; menghadap ke bawah, memegang trisula. */
++    public static Sprite[] statue(int seed) {
++        Canvas c = new Canvas(28, 56);
++        Canvas g = new Canvas(28, 56);
++        // alas
++        c.rect(3, 46, 22, 8, STONE_M);
++        c.rect(3, 46, 22, 1, STONE_L);
++        c.rect(17, 46, 8, 8, STONE_D);
++        c.rect(3, 53, 22, 1, STONE_DD);
++        c.rect(5, 44, 18, 2, STONE_L);
++        // jubah (trapesium)
++        for (int y = 18; y < 44; y++) {
++            int half = 4 + (y - 18) * 5 / 26;
++            for (int x = 13 - half; x <= 14 + half; x++) {
++                int cc = x < 11 ? STONE_L : (x < 15 ? STONE_M : (x < 19 ? STONE_D : STONE_DD));
++                if (rnd01(x, y, seed) > 0.93) cc = shade(cc, 0.85);
++                c.set(x, y, cc);
++            }
++        }
++        for (int y = 30; y < 44; y += 3) c.set(13, y, STONE_DD);                  // lipatan
++        // bahu + lengan
++        c.rect(7, 18, 14, 4, STONE_M);
++        c.rect(7, 18, 14, 1, STONE_L);
++        // kepala berkerudung
++        c.disc(14, 12, 5.2, 6.0, STONE_M);
++        c.disc(13, 11, 3.6, 4.4, STONE_L);
++        c.rect(11, 11, 6, 4, STONE_DD);                                            // bayangan wajah di dalam kerudung
++        g.set(12, 12, AQUA); g.set(15, 12, AQUA);
++        c.set(12, 12, 0x2A5E78); c.set(15, 12, 0x2A5E78);
++        // trisula di tangan kanan (sisi kiri layar)
++        c.rect(3, 6, 2, 40, 0x6B8396);
++        c.set(3, 6, STONE_L); c.set(3, 7, STONE_L);
++        c.rect(1, 4, 1, 5, 0x8FB4C6); c.rect(3, 2, 2, 5, 0xA9CBDA); c.rect(6, 4, 1, 5, 0x8FB4C6);
++        c.rect(1, 8, 6, 1, 0x8FB4C6);
++        // lumut di alas
++        for (int x = 3; x < 25; x++) for (int y = 46; y < 54; y++) if (rnd01(x, y, seed + 3) > 0.9) c.set(x, y, MOSS);
++        c.outline(0.6);
++        return new Sprite[] {sprite(c, 14, 54), sprite(g, 14, 54)};
++    }
++
++    // ---- batu --------------------------------------------------------
++
++    public static Sprite boulder(int seed, int wArt, int hArt) {
++        Canvas c = new Canvas(wArt + 4, hArt + 5);
++        double cx = (wArt + 4) / 2.0, cy = hArt * 0.55 + 1;
++        // bayangan
++        for (int y = 0; y < c.h; y++) for (int x = 0; x < c.w; x++) {
++            double nx = (x + 0.5 - cx - 0.5) / (wArt / 2.0 + 1.5), ny = (y + 0.5 - (c.h - 2.5)) / 2.2;
++            if (nx * nx + ny * ny <= 1.0) c.blend(x, y, 0x0B1822, 0.45);
++        }
++        for (int y = 0; y < c.h; y++) {
++            for (int x = 0; x < c.w; x++) {
++                double ang = Math.atan2(y + 0.5 - cy, x + 0.5 - cx);
++                double r = 1.0 + 0.10 * Math.sin(3 * ang + seed) + 0.06 * Math.sin(5 * ang + seed * 0.7);
++                double nx = (x + 0.5 - cx) / (wArt / 2.0 * r), ny = (y + 0.5 - cy) / (hArt * 0.5 * r);
++                double d2 = nx * nx + ny * ny;
++                if (d2 > 1.0) continue;
++                double lum = -0.55 * nx - 0.85 * ny + (rnd01(x, y, seed) - 0.5) * 0.35;
++                int cc = lum > 0.42 ? 0x6E8799 : (lum > -0.05 ? 0x516B7E : 0x374E60);
++                if (d2 > 0.8) cc = shade(cc, 0.78);
++                if (ny < -0.2 && rnd01(x, y, seed + 7) > 0.55 && d2 < 0.85) cc = rnd01(x, y, seed + 8) > 0.5 ? MOSS : MOSS_D;   // lumut di atas
++                c.set(x, y, cc);
++            }
++        }
++        c.outline(0.6);
++        return sprite(c, (wArt + 4) / 2, hArt + 2);
++    }
++
++    // ---- karang ------------------------------------------------------
++
++    static final int[][] CORAL_PAL = {
++        {0xFF8FB1, 0xFFC0D4, 0xC8527C},   // merah muda
++        {0xFFA24D, 0xFFCB8C, 0xC4671F},   // jingga
++        {0xA070E8, 0xCDAEFF, 0x6B3FB0},   // ungu
++        {0x35C9B5, 0x86F3E2, 0x1F8C80},   // toska
++    };
++
++    public static Sprite coral(int kind, int pal, int seed) {
++        int[] p = CORAL_PAL[Math.floorMod(pal, CORAL_PAL.length)];
++        Random rnd = new Random(seed * 31L + kind * 977L + pal);
++        Canvas c;
++        int fx, fy;
++        switch (Math.floorMod(kind, 4)) {
++            case 0: {   // bercabang
++                c = new Canvas(30, 32);
++                branch(c, 15, 30, -Math.PI / 2, 9.5, 2.2, 3, p, rnd);
++                fx = 15; fy = 30;
++                break;
++            }
++            case 1: {   // kipas
++                c = new Canvas(28, 26);
++                int bx = 14, by = 24;
++                for (int a = -72; a <= 72; a += 3) {
++                    double ang = Math.toRadians(a - 90);
++                    double len = 13 + 3 * Math.sin(a * 0.23 + seed) + (a % 12 == 0 ? 2 : 0);
++                    for (double r = 2; r <= len; r += 0.5) {
++                        int x = (int) Math.round(bx + Math.cos(ang) * r), y = (int) Math.round(by + Math.sin(ang) * r * 0.95);
++                        boolean rib = (a % 12 == 0);
++                        if (rib || (x + y) % 3 != 0) c.set(x, y, rib ? p[1] : (r > len - 2 ? p[1] : p[0]));
++                    }
++                }
++                c.rect(12, 23, 4, 3, p[2]);
++                fx = 14; fy = 25;
++                break;
++            }
++            case 2: {   // tabung
++                c = new Canvas(24, 24);
++                int[] xs = {3, 8, 13, 18};
++                for (int i = 0; i < xs.length; i++) {
++                    int h = 9 + rnd.nextInt(10);
++                    int x0 = xs[i] + rnd.nextInt(2);
++                    for (int y = 23 - h; y < 23; y++) {
++                        for (int x = x0; x < x0 + 4; x++) c.set(x, y, x == x0 ? p[1] : (x >= x0 + 3 ? p[2] : p[0]));
++                    }
++                    c.disc(x0 + 2, 23 - h, 2.2, 1.6, p[1]);
++                    c.disc(x0 + 2, 23 - h, 1.4, 0.9, shade(p[2], 0.6));
++                }
++                fx = 12; fy = 23;
++                break;
++            }
++            default: {  // bulat beralur
++                c = new Canvas(22, 14);
++                for (int y = 0; y < 13; y++) {
++                    for (int x = 0; x < 22; x++) {
++                        double nx = (x + 0.5 - 11) / 10.5, ny = (y + 0.5 - 12) / 11.0;
++                        if (nx * nx + ny * ny > 1.0 || y > 12) continue;
++                        double groove = Math.sin(x * 0.95 + Math.sin(y * 0.8) * 2.2 + seed);
++                        double lum = -0.5 * nx - 0.9 * ny;
++                        int cc = groove > 0.35 ? p[2] : (lum > 0.25 ? p[1] : p[0]);
++                        c.set(x, y, cc);
++                    }
++                }
++                fx = 11; fy = 12;
++                break;
++            }
++        }
++        c.outline(0.58);
++        return sprite(c, fx, fy);
++    }
++
++    private static void branch(Canvas c, double x, double y, double ang, double len, double thick, int depth, int[] p, Random rnd) {
++        double ex = x + Math.cos(ang) * len, ey = y + Math.sin(ang) * len;
++        int steps = (int) Math.ceil(len * 2);
++        for (int i = 0; i <= steps; i++) {
++            double t = i / (double) steps;
++            double px = x + (ex - x) * t, py = y + (ey - y) * t;
++            double rad = thick * (1.0 - 0.35 * t) / 2.0;
++            c.disc(px, py, rad + 0.35, rad + 0.35, p[0]);
++            c.set((int) Math.round(px - rad * 0.6), (int) Math.round(py), p[1]);
++            c.set((int) Math.round(px + rad * 0.8), (int) Math.round(py), p[2]);
++        }
++        if (depth <= 0) { c.set((int) Math.round(ex), (int) Math.round(ey), p[1]); return; }
++        int kids = depth == 3 ? 3 : 2;
++        for (int k = 0; k < kids; k++) {
++            double off = (k - (kids - 1) / 2.0) * (0.55 + 0.15 * rnd.nextDouble()) + (rnd.nextDouble() - 0.5) * 0.25;
++            branch(c, ex, ey, ang + off, len * (0.68 + 0.1 * rnd.nextDouble()), Math.max(1.0, thick * 0.72), depth - 1, p, rnd);
++        }
++    }
++
++    // ---- kristal -----------------------------------------------------
++
++    public static final int[][] CRYSTAL_PAL = {
++        {0xA6F6EE, 0x4FD8C8, 0x239C9A},   // aqua
++        {0xD9C6FF, 0x9C7BF0, 0x5B3FB5},   // ungu
++        {0xFFD6EA, 0xF58FC0, 0xB0467F},   // merah muda
++    };
++
++    public static Sprite crystal(int pal, int seed) {
++        int[] p = CRYSTAL_PAL[Math.floorMod(pal, CRYSTAL_PAL.length)];
++        Random rnd = new Random(seed * 131L + pal);
++        Canvas c = new Canvas(26, 30);
++        int n = 3 + rnd.nextInt(3);
++        int[][] spec = new int[n][3];
++        for (int i = 0; i < n; i++) {
++            spec[i][0] = 5 + (int) ((i + 0.5) * 16.0 / n) + rnd.nextInt(3) - 1;        // x tengah
++            spec[i][1] = 9 + rnd.nextInt(14);                                           // tinggi
++            spec[i][2] = 4 + rnd.nextInt(2);                                            // lebar
++        }
++        // yang pendek digambar dulu
++        java.util.Arrays.sort(spec, (a, b) -> Integer.compare(a[1], b[1]));
++        for (int[] s : spec) {
++            int bx = s[0], h = s[1], w = s[2], by = 28;
++            for (int dx = -w / 2; dx <= w / 2; dx++) {
++                int top = by - h + (Math.abs(dx) * 2 > w ? 3 : (Math.abs(dx) > 0 ? 1 : 0)) + (dx == 0 ? 0 : 1);
++                for (int y = top; y <= by; y++) {
++                    int cc = dx < 0 ? p[0] : (dx == 0 ? p[1] : p[2]);
++                    if (dx == 0 && y > by - 3) cc = p[2];
++                    c.set(bx + dx, y, cc);
++                }
++            }
++            c.set(bx - 1, by - h + 3, 0xFFFFFF);                                        // kilau
++        }
++        c.outline(0.55);
++        return sprite(c, 13, 28);
++    }
++
++    // ---- kerang, daun teratai ---------------------------------------
++
++    public static Sprite shell(int seed) {
++        Canvas c = new Canvas(10, 9);
++        boolean conch = seed % 3 == 0;
++        if (!conch) {
++            for (int y = 0; y < 7; y++) {
++                for (int x = 0; x < 10; x++) {
++                    double nx = (x + 0.5 - 5) / 4.6, ny = (y + 0.5 - 6.2) / 6.0;
++                    if (nx * nx + ny * ny > 1.0 || y > 6) continue;
++                    c.set(x, y, (x % 2 == 0) ? 0xE6CFC6 : 0xF6E7E0);
++                }
++            }
++            c.rect(3, 6, 4, 1, 0xB98E86);
++        } else {
++            c.disc(4.5, 5, 3.6, 2.8, 0xF2D6BE);
++            c.disc(7.5, 4.2, 1.6, 1.4, 0xE0B79A);
++            for (int x = 2; x < 7; x += 2) c.set(x, 3 + (x % 3), 0xC9977A);
++        }
++        c.outline(0.7);
++        return sprite(c, 5, 7);
++    }
++
++    public static Sprite lilyPad(int seed, boolean flower) {
++        Canvas c = new Canvas(14, 9);
++        int sz = 5 + seed % 2;
++        c.disc(7, 4.5, sz + 0.5, 3.2, 0x3F9A55);
++        c.disc(7, 4.2, sz - 0.5, 2.5, 0x58B96B);
++        int notch = Math.floorMod(seed, 4);
++        for (int i = 0; i < 6; i++) {                                                  // takik bentuk V
++            int x = 7 + (notch < 2 ? i : -i), y = 4 + (notch % 2 == 0 ? -(i / 3) : (i / 3));
++            c.p[Math.max(0, Math.min(c.h - 1, y)) * c.w + Math.max(0, Math.min(c.w - 1, x))] = 0;
++        }
++        if (flower) { c.set(7, 4, 0xFFFFFF); c.set(6, 4, 0xF6A6C8); c.set(8, 4, 0xF6A6C8); c.set(7, 3, 0xF6A6C8); c.set(7, 5, 0xF6A6C8); }
++        c.outline(0.72);
++        return sprite(c, 7, 5);
++    }
++
++    // ---- cahaya pendar ----------------------------------------------
++
++    /** Pendar bundar berundak (gaya piksel) dengan warna rgb. Radius dalam piksel seni. */
++    public static Sprite glow(int rgb, int radius) {
++        int size = radius * 2 + 1;
++        Canvas c = new Canvas(size, size);
++        double[] alpha = {0.34, 0.22, 0.13, 0.07};
++        for (int y = 0; y < size; y++) {
++            for (int x = 0; x < size; x++) {
++                double d = Math.hypot(x - radius, y - radius) / radius;
++                if (d >= 1.0) continue;
++                int band = Math.min(3, (int) (d * 4));
++                c.blend(x, y, rgb, alpha[band]);
++            }
++        }
++        return sprite(c, radius, radius);
++    }
++
++    // ---- gerbang kuil ------------------------------------------------
++
++    /** {badan, rune pintu bersinar}. Gerbang besar yang disegel, lebar 56 piksel seni. */
++    public static Sprite[] templeGate() {
++        Canvas c = new Canvas(56, 64);
++        Canvas g = new Canvas(56, 64);
++        // pintu (gelap) di antara tiang
++        c.rect(12, 15, 32, 43, 0x0B1A2A);
++        for (int y = 15; y < 58; y++) {
++            for (int x = 12; x < 44; x++) {
++                double n = rnd01(x, y, 91);
++                if (n > 0.93) c.set(x, y, 0x12283C);
++            }
++            c.set(27, y, 0x050E17); c.set(28, y, 0x16314A);
++        }
++        for (int x = 12; x < 44; x += 4) { c.set(x, 20, 0x2A4E68); c.set(x, 50, 0x2A4E68); }
++        // tiang kiri & kanan
++        int[] col = {STONE_L, STONE_L, STONE_M, STONE_M, STONE_M, STONE_D, STONE_D, STONE_DD, STONE_DD, STONE_DD};
++        for (int y = 14; y < 58; y++) {
++            for (int x = 0; x < 10; x++) {
++                int cc = col[x];
++                if ((x == 3 || x == 7) && y % 2 == 0) cc = shade(cc, 0.88);
++                c.set(2 + x, y, cc);
++                c.set(44 + x, y, col[x]);
++            }
++        }
++        // balok atas (lintel)
++        c.rect(0, 3, 56, 11, STONE_M);
++        c.rect(0, 3, 56, 2, STONE_L);
++        c.rect(0, 12, 56, 2, STONE_D);
++        c.rect(40, 5, 16, 7, STONE_D);
++        for (int x = 4; x < 52; x += 8) c.set(x, 8, STONE_DD);
++        // batu kunci di tengah
++        c.rect(22, 0, 12, 15, STONE_L);
++        c.rect(30, 0, 4, 15, STONE_M);
++        c.rect(22, 14, 12, 1, STONE_D);
++        // tangga
++        c.rect(0, 58, 56, 3, STONE_M);
++        c.rect(0, 58, 56, 1, STONE_L);
++        c.rect(3, 56, 50, 2, STONE_L);
++        c.rect(0, 61, 56, 3, STONE_D);
++        c.rect(0, 63, 56, 1, STONE_DD);
++        // lumut dan noda
++        for (int y = 14; y < 64; y++) for (int x = 0; x < 56; x++)
++            if (c.solid(x, y) && y > 44 && rnd01(x, y, 5) > 0.88) c.set(x, y, rnd01(x, y, 6) > 0.5 ? MOSS : MOSS_D);
++        // segel rune: lingkaran + gelombang
++        int cx = 28, cy = 36;
++        for (int y = 0; y < 64; y++) {
++            for (int x = 0; x < 56; x++) {
++                double d = Math.hypot(x + 0.5 - cx, (y + 0.5 - cy) * 1.0);
++                boolean ring = Math.abs(d - 11) < 0.8 || Math.abs(d - 7) < 0.6;
++                boolean spoke = d < 11 && d > 2 && (Math.abs((x - cx)) < 0.6 || Math.abs((y - cy)) < 0.6);
++                boolean wave = d < 6 && Math.abs((y - cy) - 2.0 * Math.sin((x - cx) * 0.9)) < 0.8;
++                if (ring || spoke || wave) {
++                    c.set(x, y, 0x2A5E78);
++                    g.set(x, y, AQUA);
++                }
++            }
++        }
++        // kilau glyph di batu kunci
++        String[] rows = GLYPHS[1].split("\\|");
++        for (int ry = 0; ry < 4; ry++) for (int rx = 0; rx < 3; rx++) if (rows[ry].charAt(rx) == '#') {
++            c.set(27 + rx, 4 + ry, 0x2A5E78);
++            g.set(27 + rx, 4 + ry, AQUA);
++        }
++        c.outline(0.62);
++        return new Sprite[] {sprite(c, 28, 62), sprite(g, 28, 62)};
++    }
++
++    // ---- lingkaran rune di lantai -----------------------------------
++
++    /** {dasar, pendar}: lingkaran rune berjari-jari R piksel seni. Gambar bertransparan, digambar di atas lantai. */
++    public static Sprite[] runeCircle(int R) {
++        int size = R * 2 + 5, cx = R + 2, cy = R + 2;
++        Canvas base = new Canvas(size, size);
++        Canvas glow = new Canvas(size, size);
++        int marks = Math.max(12, R / 5);
++        for (int y = 0; y < size; y++) {
++            for (int x = 0; x < size; x++) {
++                double dx = x + 0.5 - cx, dy = y + 0.5 - cy;
++                double d = Math.hypot(dx, dy);
++                if (d > R + 1.5) continue;
++                double ang = Math.atan2(dy, dx);
++                boolean on = false;
++                if (Math.abs(d - R) <= 1.1) on = true;                                          // cincin luar
++                if (Math.abs(d - (R - 7)) <= 0.7) on = true;                                    // cincin dalam
++                if (d > R * 0.6 - 0.7 && d < R * 0.6 + 0.7) on = true;                          // cincin tengah
++                if (d < R - 8 && d > R - 14) {                                                  // tanda rune berkeliling
++                    double seg = TAU / marks;
++                    double a = Math.floorMod((long) Math.round((ang + Math.PI) / seg * 1000), 1000L) / 1000.0;
++                    double within = Math.abs(((ang + Math.PI) % seg) - seg / 2) * d;
++                    int k = (int) Math.floor((ang + Math.PI) / seg);
++                    if (within < 1.15 && (k % 2 == 0 || d < R - 10)) on = true;
++                }
++                double lim = R * 0.6;
++                if (d < lim) {                                                                  // bintang 8 sudut
++                    for (int k = 0; k < 8; k++) {
++                        double a = k * Math.PI / 4;
++                        double perp = Math.abs(-Math.sin(a) * dx + Math.cos(a) * dy);
++                        double along = Math.cos(a) * dx + Math.sin(a) * dy;
++                        if (perp < 0.65 && along > 0) on = true;
++                    }
++                }
++                double dais = R * 0.2;
++                if (Math.abs(d - dais) <= 0.9) on = true;                                       // dais tengah
++                if (d < dais - 1.5) {
++                    for (int k = -1; k <= 1; k++) {
++                        if (Math.abs(dy - k * 4.5 - 1.8 * Math.sin(dx * 0.65)) < 0.7) on = true; // tiga gelombang
++                    }
++                }
++                if (on) {
++                    base.set(x, y, 0x2E6279);
++                    glow.set(x, y, AQUA);
++                }
++            }
++        }
++        return new Sprite[] {sprite(base, cx, cy), sprite(glow, cx, cy)};
++    }
++}
+diff --git a/2DGame/src/bahan/WaterDomainMap.java b/2DGame/src/bahan/WaterDomainMap.java
+new file mode 100644
+index 0000000..0540ad4
+--- /dev/null
++++ b/2DGame/src/bahan/WaterDomainMap.java
+@@ -0,0 +1,903 @@
++package bahan;
++
++import java.awt.AlphaComposite;
++import java.awt.BasicStroke;
++import java.awt.Color;
++import java.awt.Composite;
++import java.awt.GradientPaint;
++import java.awt.Graphics2D;
++import java.awt.Polygon;
++import java.awt.Rectangle;
++import java.awt.image.BufferedImage;
++import java.util.ArrayDeque;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.Random;
++
++import Entitas.Entity;
++import Main.GamePanel;
++import bahan.WaterDomainArt.Sprite;
++
++/**
++ * Peta "Water Domain": gua bawah tanah berisi reruntuhan kuil yang terendam, 112 x 84 tile (5376 x 4032 px, kira-kira
++ * 11 kali luas Tomb). Semuanya dibuat prosedural di kode dengan seed tetap, jadi bentuknya selalu sama.
++ *
++ * Tata letak (koordinat tile):
++ *  - Teluk Kedatangan (selatan, 56,72): peron batu + kolam keluar. Pemain muncul dari sini dan lompat ke daratan.
++ *  - Jalan batu ke utara menuju Plaza Pasang-Surut (56,44) dengan lingkaran rune besar, 8 pilar, 4 obelisk.
++ *  - Utara: Kuil Pasang-Surut (56,10), gerbang besar bersegel rune, dua patung penjaga, kolam air mancur.
++ *  - Barat: Gua Karang (20,44) -> Taman Rumput Laut (22,21) dan Pantai Kerang (20,68).
++ *  - Timur: Pelataran Pilar (92,44, digenangi air dangkal) -> Gua Kristal (92,20) dan Taman Terendam (92,68).
++ *  - Danau dalam (tidak bisa dilewati) memisahkan semuanya; air dangkal bisa diseberangi.
++ * Tile: lantai batu, pasir, air dangkal (bisa dilewati), air dalam (penghalang), tebing (penghalang).
++ */
++public final class WaterDomainMap {
++
++    public static final int COLS = 112, ROWS = 84, T = WaterDomainArt.T;
++    public static final int ROCK = 0, FLOOR = 1, SAND = 2, SHALLOW = 3, DEEP = 4, FACE = 5;
++
++    /** Pusat kolam keluar (px dunia domain) dan jarak ke titik mendarat kaki pemain di depannya (selatan kolam). */
++    public static final int POOL_X = 56 * T + T / 2, POOL_Y = 70 * T + T / 2, LAND_DY = 153;
++    public final int poolX, poolY, landX, landY;
++    public final int pxW = COLS * T, pxH = ROWS * T;
++
++    private final GamePanel gp;
++    private final WaterDomainArt.Tiles tiles;
++    private final byte[] type = new byte[COLS * ROWS];
++    private final byte[] var = new byte[COLS * ROWS];
++    private final byte[] mask = new byte[COLS * ROWS];      // ROCK: sisi terbuka | FLOOR/SAND: sisi berair dalam | air: sisi darat
++    private final byte[] mask2 = new byte[COLS * ROWS];     // FLOOR: sisi berair dangkal | SAND: sisi berair
++    private final boolean[] occ = new boolean[COLS * ROWS];
++    private final int[] landDist = new int[COLS * ROWS];
++
++    private final List<Prop> props = new ArrayList<>();
++    private final List<Rectangle>[] buckets;
++    private final List<Halo> halos = new ArrayList<>();
++    private final List<Circle> circles = new ArrayList<>();
++    private final List<Lily> lilies = new ArrayList<>();
++    private final List<Fish> fish = new ArrayList<>();
++    private final List<int[]> bubbleSpots = new ArrayList<>();
++    private final List<int[]> jumpFishSpots = new ArrayList<>();
++    private final Map<String, Sprite> cache = new HashMap<>();
++    private FishJumpManager jumpFish;
++    private BufferedImage vignette;
++
++    private final int[] deepSX = new int[2600], deepSY = new int[2600], deepI = new int[2600];
++    private final int[] shalSX = new int[2600], shalSY = new int[2600], shalI = new int[2600];
++
++    // ================================================================== bangun
++
++    @SuppressWarnings("unchecked")
++    public WaterDomainMap(GamePanel gp) {
++        this.gp = gp;
++        this.buckets = (List<Rectangle>[]) new List[COLS * ROWS];
++        this.tiles = WaterDomainArt.buildTiles();
++
++        generateLayout();
++        deriveTiles();
++
++        poolX = POOL_X;
++        poolY = POOL_Y;
++        landX = poolX;
++        landY = poolY + LAND_DY;
++
++        buildPoolBlockers();
++        buildProps();
++        buildAmbient();
++    }
++
++    // ---- bentuk dasar ------------------------------------------------
++
++    private int at(int x, int y) {
++        return (x < 0 || y < 0 || x >= COLS || y >= ROWS) ? ROCK : type[y * COLS + x];
++    }
++
++    private void put(int x, int y, int v) {
++        if (x >= 0 && y >= 0 && x < COLS && y < ROWS) type[y * COLS + x] = (byte) v;
++    }
++
++    private static double wob(double th, int s) {
++        return 1.0 + 0.085 * Math.sin(3 * th + s * 1.3) + 0.055 * Math.sin(5 * th + s * 2.1) + 0.03 * Math.sin(8 * th + s * 0.7);
++    }
++
++    /** Bentuk bulat tak beraturan, dibuat dengan cara menggoyang jari-jari menurut sudut. */
++    private void blob(int v, double cx, double cy, double rx, double ry, int seed) {
++        for (int y = (int) Math.floor(cy - ry * 1.25) - 1; y <= (int) Math.ceil(cy + ry * 1.25) + 1; y++) {
++            for (int x = (int) Math.floor(cx - rx * 1.25) - 1; x <= (int) Math.ceil(cx + rx * 1.25) + 1; x++) {
++                double dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry;
++                double r = Math.sqrt(dx * dx + dy * dy);
++                if (r <= wob(Math.atan2(dy, dx), seed)) put(x, y, v);
++            }
++        }
++    }
++
++    private void rect(int v, int x0, int y0, int x1, int y1) {
++        for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++) put(x, y, v);
++    }
++
++    private void roundRect(int v, int x0, int y0, int x1, int y1, int rad) {
++        for (int y = y0; y <= y1; y++) {
++            for (int x = x0; x <= x1; x++) {
++                int ddx = Math.max(0, Math.max(x0 + rad - x, x - (x1 - rad)));
++                int ddy = Math.max(0, Math.max(y0 + rad - y, y - (y1 - rad)));
++                if (ddx * ddx + ddy * ddy <= rad * rad) put(x, y, v);
++            }
++        }
++    }
++
++    private boolean isLand(int v) { return v == FLOOR || v == SAND; }
++    private boolean isWater(int v) { return v == SHALLOW || v == DEEP; }
++    public static boolean walkable(int v) { return v == FLOOR || v == SAND || v == SHALLOW; }
++
++    private void generateLayout() {
++        Arrays.fill(type, (byte) ROCK);
++        blob(DEEP, 56, 42, 53, 39, 1);                       // seluruh gua: danau dalam
++
++        // jalur air dangkal di atas danau (digambar dulu, daratan menimpanya)
++        rect(SHALLOW, 30, 42, 46, 46);
++        rect(SHALLOW, 66, 42, 82, 46);
++
++        // Teluk Kedatangan + jalan utara + plaza + kuil
++        blob(SAND, 56, 72, 17.5, 10.5, 2);
++        blob(FLOOR, 56, 72, 15, 8.5, 3);
++        rect(FLOOR, 52, 48, 60, 66);
++        blob(FLOOR, 56, 44, 12.5, 10.5, 4);
++        rect(FLOOR, 52, 19, 60, 34);
++        roundRect(FLOOR, 42, 6, 70, 20, 3);
++
++        // barat
++        blob(SAND, 20, 44, 13.5, 11.5, 5);
++        blob(FLOOR, 22, 40, 6.5, 4.8, 6);
++        blob(SAND, 22, 21, 12.5, 9.5, 8);
++        rect(SAND, 18, 29, 23, 34);
++        blob(SAND, 20, 68, 13.5, 9.5, 10);
++        rect(SAND, 18, 54, 23, 60);
++        rect(SAND, 33, 69, 42, 74);
++
++        // timur
++        roundRect(FLOOR, 80, 36, 104, 52, 3);
++        blob(SAND, 92, 20, 14, 11, 12);
++        blob(FLOOR, 92, 20, 12, 9, 11);
++        rect(FLOOR, 90, 28, 94, 36);
++        blob(SAND, 92, 68, 14.5, 10, 13);
++        blob(FLOOR, 92, 68, 8.5, 6, 14);
++        rect(FLOOR, 90, 52, 94, 60);
++        rect(SAND, 70, 69, 80, 74);
++
++        // batu loncatan di jalur air dangkal
++        for (int x = 32; x <= 44; x += 4) rect(FLOOR, x, 43, x + 1, 44);
++        for (int x = 68; x <= 80; x += 4) rect(FLOOR, x, 43, x + 1, 44);
++
++        // air di dalam daratan: kolam rumput laut, laguna, genangan pelataran
++        blob(SHALLOW, 22, 22, 7, 4.5, 9);
++        blob(SHALLOW, 15, 49, 5, 3.5, 7);
++        rect(SHALLOW, 83, 42, 101, 46);
++
++        // cincin air dangkal di sekeliling daratan (transisi ke air dalam)
++        List<int[]> ring = new ArrayList<>();
++        for (int y = 0; y < ROWS; y++) {
++            for (int x = 0; x < COLS; x++) {
++                if (!isLand(at(x, y))) continue;
++                for (int dy = -2; dy <= 2; dy++) {
++                    for (int dx = -2; dx <= 2; dx++) {
++                        if (dx * dx + dy * dy <= 5 && at(x + dx, y + dy) == DEEP) ring.add(new int[] {x + dx, y + dy});
++                    }
++                }
++            }
++        }
++        for (int[] p : ring) put(p[0], p[1], SHALLOW);
++
++        // air mancur di depan kuil (air dalam, dikelilingi lantai)
++        blob(DEEP, 56, 16, 4.6, 2.5, 15);
++    }
++
++    private void deriveTiles() {
++        // tebing: batu yang di selatannya ada ruang terbuka menjadi dinding muka
++        for (int y = 0; y < ROWS; y++) {
++            for (int x = 0; x < COLS; x++) {
++                if (type[y * COLS + x] == ROCK && y + 1 < ROWS && at(x, y + 1) != ROCK && at(x, y + 1) != FACE) {
++                    type[y * COLS + x] = (byte) FACE;
++                }
++            }
++        }
++        for (int y = 0; y < ROWS; y++) {
++            for (int x = 0; x < COLS; x++) {
++                int i = y * COLS + x;
++                int t = type[i];
++                switch (t) {
++                    case ROCK: {
++                        int m = 0;
++                        if (open(x, y - 1)) m |= WaterDomainArt.N;
++                        if (open(x + 1, y)) m |= WaterDomainArt.E;
++                        if (open(x - 1, y)) m |= WaterDomainArt.W;
++                        mask[i] = (byte) m;
++                        var[i] = (byte) (hash3(x, y, 1) % 4);
++                        break;
++                    }
++                    case FACE: var[i] = (byte) (hash3(x, y, 2) % 3); break;
++                    case FLOOR: {
++                        int deep = 0, shal = 0;
++                        int[][] nb = {{0, -1, WaterDomainArt.N}, {1, 0, WaterDomainArt.E}, {0, 1, WaterDomainArt.S}, {-1, 0, WaterDomainArt.W}};
++                        for (int[] n : nb) {
++                            int a = at(x + n[0], y + n[1]);
++                            if (a == DEEP) deep |= n[2];
++                            else if (a == SHALLOW) shal |= n[2];
++                        }
++                        mask[i] = (byte) deep;
++                        mask2[i] = (byte) shal;
++                        var[i] = (byte) (hash3(x, y, 3) % 4);
++                        break;
++                    }
++                    case SAND: {
++                        int w = 0;
++                        int[][] nb = {{0, -1, WaterDomainArt.N}, {1, 0, WaterDomainArt.E}, {0, 1, WaterDomainArt.S}, {-1, 0, WaterDomainArt.W}};
++                        for (int[] n : nb) if (isWater(at(x + n[0], y + n[1]))) w |= n[2];
++                        mask2[i] = (byte) w;
++                        var[i] = (byte) (hash3(x, y, 4) % 3);
++                        break;
++                    }
++                    default: {   // SHALLOW / DEEP: sisi yang berbatasan dengan bukan-air
++                        int m = 0;
++                        int[][] nb = {{0, -1, WaterDomainArt.N}, {1, 0, WaterDomainArt.E}, {0, 1, WaterDomainArt.S}, {-1, 0, WaterDomainArt.W}};
++                        for (int[] n : nb) if (!isWater(at(x + n[0], y + n[1]))) m |= n[2];
++                        mask[i] = (byte) m;
++                        break;
++                    }
++                }
++            }
++        }
++        // jarak ke daratan terdekat lewat air (untuk menaruh teratai di tengah danau)
++        Arrays.fill(landDist, 99);
++        ArrayDeque<Integer> q = new ArrayDeque<>();
++        for (int i = 0; i < type.length; i++) if (isLand(type[i])) { landDist[i] = 0; q.add(i); }
++        while (!q.isEmpty()) {
++            int i = q.poll();
++            int x = i % COLS, y = i / COLS;
++            int[][] nb = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
++            for (int[] n : nb) {
++                int nx = x + n[0], ny = y + n[1];
++                if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) continue;
++                int j = ny * COLS + nx;
++                if (landDist[j] != 99 || !isWater(type[j])) continue;
++                landDist[j] = landDist[i] + 1;
++                q.add(j);
++            }
++        }
++    }
++
++    private boolean open(int x, int y) {
++        int v = at(x, y);
++        return v != ROCK && v != FACE;
++    }
++
++    private static int hash3(int x, int y, int s) {
++        return Math.abs(WaterDomainArt.hash(x, y, s));
++    }
++
++    // ---- tabrakan ----------------------------------------------------
++
++    private void addBlocker(Rectangle r) {
++        int x0 = Math.max(0, Math.floorDiv(r.x, T)), x1 = Math.min(COLS - 1, Math.floorDiv(r.x + r.width - 1, T));
++        int y0 = Math.max(0, Math.floorDiv(r.y, T)), y1 = Math.min(ROWS - 1, Math.floorDiv(r.y + r.height - 1, T));
++        for (int y = y0; y <= y1; y++) {
++            for (int x = x0; x <= x1; x++) {
++                int i = y * COLS + x;
++                if (buckets[i] == null) buckets[i] = new ArrayList<>(2);
++                buckets[i].add(r);
++            }
++        }
++    }
++
++    /** Kolam keluar: air tidak bisa diinjak. Dibuat dari pita-pita persegi mengikuti bentuk elips air (menyusut 2 piksel seni). */
++    private void buildPoolBlockers() {
++        for (Rectangle r : WaterPortalArt.blockerStrips(poolX, poolY)) addBlocker(r);
++    }
++
++    /** Jarak bertanda (px dunia) dari titik ke tepi air kolam keluar: negatif = di dalam air. */
++    public double poolSignedDist(double wx, double wy) {
++        return WaterPortalArt.signedDist((wx - poolX) / 3.0, (wy - poolY) / 3.0) * 3.0;
++    }
++
++    public int tileAt(int tx, int ty) { return at(tx, ty); }
++
++    /**
++     * True kalau hitbox (koordinat dunia domain) nabrak penghalang. Yang dicek cuma separuh bawah hitbox (kaki),
++     * sama seperti WalkMask, supaya kepala karakter boleh menimpa dinding tebing di depannya.
++     */
++    public boolean isBlocked(Rectangle b) {
++        int footH = Math.max(1, b.height / 2);
++        int top = b.y + b.height - footH, bottom = b.y + b.height;
++        int x0 = Math.floorDiv(b.x, T), x1 = Math.floorDiv(b.x + b.width - 1, T);
++        int y0 = Math.floorDiv(top, T), y1 = Math.floorDiv(bottom - 1, T);
++        for (int ty = y0; ty <= y1; ty++) {
++            for (int tx = x0; tx <= x1; tx++) {
++                if (!walkable(at(tx, ty))) return true;
++            }
++        }
++        Rectangle foot = new Rectangle(b.x, top, b.width, footH);
++        for (int ty = y0; ty <= y1; ty++) {
++            for (int tx = x0; tx <= x1; tx++) {
++                List<Rectangle> l = buckets[ty * COLS + tx];
++                if (l == null) continue;
++                for (Rectangle r : l) if (foot.intersects(r)) return true;
++            }
++        }
++        return false;
++    }
++
++    // ================================================================== properti
++
++    private static final int[] FOOT_PILLAR = WaterDomainArt.pillarFoot();
++    private static final int[] FOOT_OBELISK = {-18, -16, 36, 13};
++    private static final int[] FOOT_STATUE = {-30, -16, 60, 14};
++    private static final int[] FOOT_GATE = {-84, -45, 168, 42};
++
++    private static final class Halo {
++        final Sprite s; final int px, py; final double phase;
++        Halo(Sprite s, int px, int py, double phase) { this.s = s; this.px = px; this.py = py; this.phase = phase; }
++    }
++
++    private static final class Circle {
++        final Sprite base, glow; final int px, py;
++        Circle(Sprite[] s, int px, int py) { this.base = s[0]; this.glow = s[1]; this.px = px; this.py = py; }
++    }
++
++    private static final class Lily {
++        final Sprite s; final int px, py; final double phase;
++        Lily(Sprite s, int px, int py, double phase) { this.s = s; this.px = px; this.py = py; this.phase = phase; }
++    }
++
++    private static final class Fish {
++        final double cx, cy, rx, ry, speed, phase;
++        final int size;
++        Fish(double cx, double cy, double rx, double ry, double speed, double phase, int size) {
++            this.cx = cx; this.cy = cy; this.rx = rx; this.ry = ry; this.speed = speed; this.phase = phase; this.size = size;
++        }
++    }
++
++    /** Properti berdiri (urut Y bersama pemain). */
++    private static final class Prop extends Entity {
++        static final int SPRITE = 0, KELP = 1;
++        final GamePanel g;
++        final Sprite spr, glow;
++        final int wx, wy, kind;
++        final double phase;
++        final double glowRate;
++        int kelpH;
++
++        Prop(GamePanel g, Sprite spr, Sprite glow, int wx, int wy, int kind, double phase, double glowRate) {
++            super(g);
++            this.g = g; this.spr = spr; this.glow = glow; this.wx = wx; this.wy = wy; this.kind = kind;
++            this.phase = phase; this.glowRate = glowRate;
++            this.x = wx; this.y = wy;
++        }
++
++        @Override public int getSortY() { return wy; }
++
++        @Override public void draw(Graphics2D g2) {
++            int sx = wx - g.player.x + g.player.screenX;
++            int sy = wy - g.player.y + g.player.screenY;
++            if (kind == KELP) { drawKelp(g2, sx, sy); return; }
++            int dx = sx - spr.footX, dy = sy - spr.footY;
++            if (dx > g.viewMaxX() || dx + spr.w < g.viewMinX() || dy > g.viewMaxY() || dy + spr.h < g.viewMinY()) return;
++            g2.drawImage(spr.img, dx, dy, null);
++            if (glow != null) {
++                double t = System.nanoTime() / 1e9;
++                double pulse = 0.5 + 0.5 * Math.sin(t * glowRate + phase);
++                Composite old = g2.getComposite();
++                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (0.35 + 0.65 * pulse)));
++                g2.drawImage(glow.img, dx, dy, null);
++                g2.setComposite(old);
++            }
++        }
++
++        private void drawKelp(Graphics2D g2, int sx, int sy) {
++            if (sx > g.viewMaxX() + 60 || sx < g.viewMinX() - 60 || sy > g.viewMaxY() + 20 || sy < g.viewMinY() - kelpH * 3 - 20) return;
++            double t = System.nanoTime() / 1e9;
++            int[] cols = {0x1F6B45, 0x2E8F5C, 0x49B873};
++            for (int s = 0; s < 3; s++) {
++                int bx = sx + (s - 1) * 9;
++                int h = kelpH - s * 3 + (s == 1 ? 4 : 0);
++                for (int i = 0; i < h; i++) {
++                    double tt = i / (double) h;
++                    double sway = Math.sin(t * 1.7 + phase + s * 1.9 + i * 0.23) * (0.8 + 3.0 * tt);
++                    int x = bx + (int) Math.round(sway) * 3;
++                    int y = sy - i * 3;
++                    int w = tt < 0.7 ? 6 : 3;
++                    g2.setColor(new Color(cols[0]));
++                    g2.fillRect(x - w / 2, y - 3, w, 3);
++                    g2.setColor(new Color(cols[(i + s) % 7 == 0 ? 2 : 1]));
++                    g2.fillRect(x - w / 2, y - 3, Math.max(3, w / 2), 3);
++                }
++            }
++        }
++    }
++
++    private Sprite cached(String key, java.util.function.Supplier<Sprite> make) {
++        Sprite s = cache.get(key);
++        if (s == null) { s = make.get(); cache.put(key, s); }
++        return s;
++    }
++
++    private Prop addSprite(Sprite s, Sprite glow, double tx, double ty, int[] foot, double glowRate) {
++        int wx = (int) Math.round(tx * T), wy = (int) Math.round(ty * T);
++        Prop p = new Prop(gp, s, glow, wx, wy, Prop.SPRITE, (wx * 0.013 + wy * 0.007), glowRate);
++        props.add(p);
++        if (foot != null) addBlocker(new Rectangle(wx + foot[0], wy + foot[1], foot[2], foot[3]));
++        return p;
++    }
++
++    private void occupy(double tx, double ty, int r) {
++        int cx = (int) Math.floor(tx), cy = (int) Math.floor(ty);
++        for (int y = cy - r; y <= cy + r; y++) for (int x = cx - r; x <= cx + r; x++)
++            if (x >= 0 && y >= 0 && x < COLS && y < ROWS) occ[y * COLS + x] = true;
++    }
++
++    private void pillarAt(double tx, double ty, boolean broken, int seed) {
++        final int sd = seed;
++        Sprite s = cached("pil" + broken + (seed % 3), () -> WaterDomainArt.pillar(sd % 3 + 1, broken));
++        addSprite(s, null, tx, ty, FOOT_PILLAR, 0);
++        occupy(tx, ty, 0);
++    }
++
++    private void obeliskAt(double tx, double ty, int seed) {
++        final int sd = seed % 3;
++        Sprite[] o = {null, null};
++        cachedPair("obe" + sd, () -> WaterDomainArt.obelisk(sd), o);
++        addSprite(o[0], o[1], tx, ty, FOOT_OBELISK, 1.7);
++        halo(WaterDomainArt.AQUA, 8, tx, ty - 0.25, 0.5 * seed);
++        occupy(tx, ty, 0);
++    }
++
++    private void cachedPair(String key, java.util.function.Supplier<Sprite[]> make, Sprite[] out) {
++        Sprite a = cache.get(key + "a"), b = cache.get(key + "b");
++        if (a == null) { Sprite[] p = make.get(); a = p[0]; b = p[1]; cache.put(key + "a", a); cache.put(key + "b", b); }
++        out[0] = a; out[1] = b;
++    }
++
++    private void statueAt(double tx, double ty) {
++        Sprite[] o = {null, null};
++        cachedPair("statue", () -> WaterDomainArt.statue(5), o);
++        addSprite(o[0], o[1], tx, ty, FOOT_STATUE, 1.3);
++        occupy(tx, ty, 1);
++    }
++
++    private void boulderAt(double tx, double ty, int seed) {
++        final int sd = seed;
++        int wArt = 18 + (seed % 3) * 4, hArt = 12 + (seed % 3) * 2;
++        Sprite s = cached("bld" + (seed % 6), () -> WaterDomainArt.boulder(sd, wArt, hArt));
++        int fw = wArt * 3 - 12, fh = hArt * 3 / 2;
++        addSprite(s, null, tx, ty, new int[] {-fw / 2, -fh, fw, fh}, 0);
++        occupy(tx, ty, 0);
++    }
++
++    private void coralAt(double tx, double ty, int kind, int pal, int seed) {
++        final int sd = seed % 3;
++        Sprite s = cached("cor" + kind + "_" + pal + "_" + sd, () -> WaterDomainArt.coral(kind, pal, sd));
++        addSprite(s, null, tx, ty, null, 0);
++        occupy(tx, ty, 0);
++    }
++
++    private void crystalAt(double tx, double ty, int pal, int seed) {
++        final int sd = seed % 4;
++        Sprite s = cached("cry" + pal + "_" + sd, () -> WaterDomainArt.crystal(pal, sd));
++        addSprite(s, null, tx, ty, null, 0);
++        int[] rgb = {0x59F5E3, 0xA98BFF, 0xFF8CC4};
++        halo(rgb[pal % 3], 9, tx, ty - 0.3, seed * 0.9);
++        occupy(tx, ty, 0);
++    }
++
++    private void shellAt(double tx, double ty, int seed) {
++        final int sd = seed % 6;
++        Sprite s = cached("shl" + sd, () -> WaterDomainArt.shell(sd));
++        addSprite(s, null, tx, ty, null, 0);
++        occupy(tx, ty, 0);
++    }
++
++    private void kelpAt(double tx, double ty, int seed) {
++        int wx = (int) Math.round(tx * T), wy = (int) Math.round(ty * T);
++        Sprite dummy = cached("shl0", () -> WaterDomainArt.shell(0));
++        Prop p = new Prop(gp, dummy, null, wx, wy, Prop.KELP, seed * 1.7, 0);
++        p.kelpH = 11 + (seed % 5) * 3;
++        props.add(p);
++        occupy(tx, ty, 0);
++    }
++
++    private void lilyAt(double tx, double ty, int seed) {
++        final int sd = seed;
++        boolean flower = seed % 4 == 0;
++        Sprite s = cached("lil" + (seed % 8) + flower, () -> WaterDomainArt.lilyPad(sd, flower));
++        lilies.add(new Lily(s, (int) Math.round(tx * T), (int) Math.round(ty * T), seed * 0.77));
++        occupy(tx, ty, 0);
++    }
++
++    private void halo(int rgb, int radius, double tx, double ty, double phase) {
++        final int fr = rgb, rd = radius;
++        Sprite s = cached("halo" + Integer.toHexString(rgb) + radius, () -> WaterDomainArt.glow(fr, rd));
++        halos.add(new Halo(s, (int) Math.round(tx * T), (int) Math.round(ty * T), phase));
++    }
++
++    private void circleAt(int R, double tx, double ty) {
++        circles.add(new Circle(WaterDomainArt.runeCircle(R), (int) Math.round(tx * T), (int) Math.round(ty * T)));
++    }
++
++    private void buildProps() {
++        Random rnd = new Random(1031L);
++
++        // ---- Teluk Kedatangan: tiang gerbang di mulut jalan utara, kristal di ujung peron
++        pillarAt(51.2, 64.8, false, 0);
++        pillarAt(61.8, 64.8, false, 1);
++        crystalAt(45.5, 76.0, 0, 1);
++        crystalAt(66.8, 76.4, 0, 2);
++        crystalAt(50.5, 79.0, 1, 3);
++        crystalAt(62.0, 79.2, 2, 4);
++
++        // ---- Plaza Pasang-Surut
++        circleAt(120, 56.5, 44.5);
++        for (int k = 0; k < 8; k++) {
++            double a = Math.toRadians(22.5 + k * 45);
++            pillarAt(56.5 + 9.0 * Math.cos(a), 44.5 + 8.0 * Math.sin(a) + 0.4, k % 2 == 1, k);
++        }
++        obeliskAt(52.0, 41.8, 0);
++        obeliskAt(61.0, 41.8, 1);
++        obeliskAt(52.0, 47.8, 2);
++        obeliskAt(61.0, 47.8, 3);
++
++        // ---- Kuil Pasang-Surut (utara)
++        {
++            Sprite[] gate = {null, null};
++            cachedPair("gate", WaterDomainArt::templeGate, gate);
++            addSprite(gate[0], gate[1], 56.5, 8.2, FOOT_GATE, 1.1);
++            halo(WaterDomainArt.AQUA, 26, 56.5, 6.0, 0.0);
++        }
++        statueAt(46.0, 10.8);
++        statueAt(67.0, 10.8);
++        circleAt(40, 56.5, 10.9);
++        pillarAt(45.0, 15.5, false, 0);
++        pillarAt(45.0, 19.5, true, 1);
++        pillarAt(68.0, 15.5, true, 2);
++        pillarAt(68.0, 19.5, false, 0);
++        pillarAt(49.5, 7.6, true, 2);
++        pillarAt(63.5, 7.6, false, 1);
++        crystalAt(50.5, 12.5, 0, 1);
++        crystalAt(62.5, 12.5, 0, 2);
++
++        // ---- Pelataran Pilar (timur), digenangi air dangkal di tengah
++        for (int i = 0; i < 5; i++) {
++            double x = 84.5 + i * 4.0;
++            pillarAt(x, 40.2, (i == 1 || i == 3), i);
++            pillarAt(x, 49.6, (i == 0 || i == 2), i + 1);
++        }
++        statueAt(102.2, 44.8);
++
++        // ---- Gua Kristal (timur laut)
++        for (int k = 0; k < 15; k++) {
++            double a = rnd.nextDouble() * Math.PI * 2, r = 0.25 + rnd.nextDouble() * 0.6;
++            double x = 92.5 + Math.cos(a) * r * 10.5, y = 20.5 + Math.sin(a) * r * 7.5;
++            if (at((int) x, (int) y) == FLOOR && !occ[(int) y * COLS + (int) x]) crystalAt(x, y + 0.5, k % 3 == 2 ? 1 : (k % 7 == 0 ? 2 : 0), k);
++        }
++        boulderAt(83.0, 22.5, 3);
++        boulderAt(101.5, 19.0, 4);
++        boulderAt(95.5, 13.0, 5);
++
++        // ---- Taman Terendam (tenggara): lingkaran obelisk
++        for (int k = 0; k < 6; k++) {
++            double a = Math.toRadians(k * 60 + 15);
++            obeliskAt(92.5 + 6.3 * Math.cos(a), 68.8 + 4.2 * Math.sin(a), k);
++        }
++        circleAt(56, 92.5, 68.7);
++        boulderAt(104.0, 70.5, 1);
++        boulderAt(80.5, 64.0, 2);
++
++        // ---- Gua Karang (barat): reruntuhan melingkar
++        for (int k = 0; k < 6; k++) {
++            double a = Math.toRadians(k * 60 + 30);
++            pillarAt(22.5 + 5.0 * Math.cos(a), 40.5 + 3.3 * Math.sin(a) + 0.5, k % 3 != 0, k);
++        }
++        obeliskAt(22.5, 40.8, 1);
++        boulderAt(10.5, 40.0, 0);
++        boulderAt(12.0, 52.5, 3);
++        boulderAt(30.5, 51.0, 4);
++
++        // ---- Pantai Kerang (barat daya)
++        boulderAt(12.0, 64.0, 0);
++        boulderAt(14.0, 73.0, 1);
++        boulderAt(25.5, 74.0, 2);
++        boulderAt(9.5, 69.0, 3);
++        boulderAt(27.0, 63.0, 4);
++        boulderAt(18.0, 76.0, 5);
++
++        // ---- Taman Rumput Laut (barat laut)
++        crystalAt(11.5, 20.5, 0, 1);
++        crystalAt(32.5, 20.0, 1, 2);
++        crystalAt(18.0, 12.8, 0, 3);
++        crystalAt(26.0, 12.5, 2, 0);
++
++        // ---- Sebaran: karang, kerang, rumput laut, teratai, kristal dinding
++        for (int y = 1; y < ROWS - 1; y++) {
++            for (int x = 1; x < COLS - 1; x++) {
++                int i = y * COLS + x;
++                if (occ[i]) continue;
++                double h1 = WaterDomainArt.rnd01(x, y, 901), h2 = WaterDomainArt.rnd01(x, y, 902), h3 = WaterDomainArt.rnd01(x, y, 903);
++                int t = type[i];
++                double px = x + 0.2 + 0.6 * h2, py = y + 0.55 + 0.4 * h3;
++                if (t == SAND) {
++                    boolean nearWater = mask2[i] != 0 || waterNear(x, y);
++                    if (nearWater && h1 < 0.20) {
++                        coralAt(px, py, (int) (h2 * 4) % 4, (int) (h3 * 4) % 4, hash3(x, y, 7));
++                    } else if (h1 > 0.93) {
++                        shellAt(px, py, hash3(x, y, 8));
++                    } else if (nearWater && h1 > 0.88) {
++                        shellAt(px, py, hash3(x, y, 9));
++                    }
++                } else if (t == SHALLOW) {
++                    boolean nearDeep = false;
++                    for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) if (at(x + dx, y + dy) == DEEP) nearDeep = true;
++                    if (nearDeep && h1 < 0.07 && landDist[i] <= 3) kelpAt(px, py, hash3(x, y, 10));
++                    else if (h1 > 0.985) lilyAt(px, py, hash3(x, y, 11));
++                } else if (t == DEEP) {
++                    if (landDist[i] >= 3 && h1 < 0.022) lilyAt(px, py, hash3(x, y, 12));
++                } else if (t == FLOOR) {
++                    boolean nearWall = at(x, y - 1) == FACE || at(x - 1, y) == ROCK || at(x + 1, y) == ROCK;
++                    if (nearWall && h1 < 0.035) crystalAt(px, py, h2 < 0.7 ? 0 : 1, hash3(x, y, 13));
++                }
++            }
++        }
++        // kolam rumput laut & laguna: rumput laut lebih rapat
++        denseKelp(22.5, 22.5, 6.5, 4.0, 14, rnd);
++        denseKelp(15.5, 49.5, 4.5, 3.0, 7, rnd);
++    }
++
++    private boolean waterNear(int x, int y) {
++        for (int dy = -1; dy <= 1; dy++) for (int dx = -1; dx <= 1; dx++) if (isWater(at(x + dx, y + dy))) return true;
++        return false;
++    }
++
++    private void denseKelp(double cx, double cy, double rx, double ry, int n, Random rnd) {
++        for (int k = 0; k < n; k++) {
++            double a = rnd.nextDouble() * Math.PI * 2, r = Math.sqrt(rnd.nextDouble()) * 0.85;
++            double x = cx + Math.cos(a) * rx * r, y = cy + Math.sin(a) * ry * r;
++            if (at((int) x, (int) y) == SHALLOW && !occ[(int) y * COLS + (int) x]) kelpAt(x, y + 0.5, rnd.nextInt(1000));
++        }
++    }
++
++    // ================================================================== suasana
++
++    private void buildAmbient() {
++        Random rnd = new Random(77L);
++
++        // siluet ikan: berputar di area air dalam yang luas
++        for (int tries = 0; tries < 900 && fish.size() < 34; tries++) {
++            int x = 4 + rnd.nextInt(COLS - 8), y = 4 + rnd.nextInt(ROWS - 8);
++            if (!allWater(x - 3, y - 2, x + 3, y + 2, DEEP)) continue;
++            double rx = 1.4 + rnd.nextDouble() * 1.5, ry = 0.7 + rnd.nextDouble() * 0.9;
++            fish.add(new Fish((x + 0.5) * T, (y + 0.5) * T, rx * T, ry * T,
++                (0.35 + rnd.nextDouble() * 0.45) * (rnd.nextBoolean() ? 1 : -1), rnd.nextDouble() * Math.PI * 2, 1 + rnd.nextInt(2)));
++        }
++        // gelembung
++        for (int tries = 0; tries < 1200 && bubbleSpots.size() < 90; tries++) {
++            int x = 2 + rnd.nextInt(COLS - 4), y = 2 + rnd.nextInt(ROWS - 4);
++            if (at(x, y) == DEEP) bubbleSpots.add(new int[] {x * T + rnd.nextInt(T), y * T + rnd.nextInt(T), rnd.nextInt(1000)});
++        }
++        // ikan kuning yang meloncat (aset yang sama dengan danau dunia luar): butuh air dalam 7 x 5 tile
++        for (int y = 5; y < ROWS - 3 && jumpFishSpots.size() < 12; y += 2) {
++            for (int x = 6; x < COLS - 6 && jumpFishSpots.size() < 12; x += 2) {
++                if (!allWater(x - 3, y - 3, x + 3, y + 1, DEEP)) continue;
++                boolean far = true;
++                for (int[] s : jumpFishSpots) if (Math.abs(s[0] / T - x) < 12 && Math.abs(s[1] / T - y) < 9) { far = false; break; }
++                if (far) jumpFishSpots.add(new int[] {x * T + T / 2, y * T + T / 2, jumpFishSpots.size() % 2});
++            }
++        }
++        jumpFish = new FishJumpManager(getClass(), jumpFishSpots.toArray(new int[0][]));
++
++        // vinyet gelap kebiruan di tepi layar
++        int w = gp.screenWidth, h = gp.screenHeight;
++        vignette = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
++        int[] data = new int[w * h];
++        for (int y = 0; y < h; y++) {
++            for (int x = 0; x < w; x++) {
++                double nx = (x - w / 2.0) / (w / 2.0), ny = (y - h / 2.0) / (h / 2.0);
++                double d = Math.sqrt(nx * nx * 0.8 + ny * ny);
++                double a = Math.max(0, Math.min(1, (d - 0.55) / 0.85));
++                int alpha = (int) Math.round(a * a * 150);
++                data[y * w + x] = (alpha << 24) | 0x040C18;
++            }
++        }
++        vignette.setRGB(0, 0, w, h, data, 0, w);
++    }
++
++    private boolean allWater(int x0, int y0, int x1, int y1, int kind) {
++        for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++) if (at(x, y) != kind) return false;
++        return true;
++    }
++
++    // ================================================================== gambar
++
++    private static final Color DEEP_TINT = new Color(0x06, 0x1E, 0x3A);
++    private static final Color SHALLOW_TINT = new Color(0xC4, 0xF4, 0xFF);
++
++    /** Lantai, air bergelombang, tepian, lalu dekorasi rata (lingkaran rune, teratai, pendar, ikan, gelembung). */
++    public void drawGround(Graphics2D g2, WaterAnimator wa) {
++        int camX = gp.player.x, camY = gp.player.y, psx = gp.player.screenX, psy = gp.player.screenY;
++        int left = camX - psx, top = camY - psy;
++        int vminX = gp.viewMinX(), vmaxX = gp.viewMaxX(), vminY = gp.viewMinY(), vmaxY = gp.viewMaxY();
++        int c0 = Math.max(0, Math.floorDiv(left + vminX, T) - 1), c1 = Math.min(COLS - 1, Math.floorDiv(left + vmaxX, T) + 1);
++        int r0 = Math.max(0, Math.floorDiv(top + vminY, T) - 1), r1 = Math.min(ROWS - 1, Math.floorDiv(top + vmaxY, T) + 1);
++        double t = System.nanoTime() / 1e9;
++        int foamFrame = (int) ((System.nanoTime() / 1_000_000L / 160) % WaterDomainArt.FOAM_FRAMES);
++        if (wa != null) wa.beginFrame();
++
++        int nd = 0, ns = 0;
++        for (int r = r0; r <= r1; r++) {
++            for (int c = c0; c <= c1; c++) {
++                int i = r * COLS + c;
++                int sx = c * T - left, sy = r * T - top;
++                switch (type[i]) {
++                    case ROCK:
++                        g2.drawImage(tiles.rock[var[i]], sx, sy, null);
++                        if (mask[i] != 0) g2.drawImage(tiles.rockEdge[mask[i]], sx, sy, null);
++                        break;
++                    case FACE:
++                        g2.drawImage(tiles.face[var[i]], sx, sy, null);
++                        break;
++                    case FLOOR:
++                        g2.drawImage(tiles.floor[var[i]], sx, sy, null);
++                        if (mask2[i] != 0) g2.drawImage(tiles.floorEdge[mask2[i]], sx, sy, null);
++                        if (mask[i] != 0) g2.drawImage(tiles.floorLip[mask[i]], sx, sy, null);
++                        break;
++                    case SAND:
++                        g2.drawImage(tiles.sand[var[i]], sx, sy, null);
++                        if (mask2[i] != 0) g2.drawImage(tiles.sandWet[mask2[i]], sx, sy, null);
++                        break;
++                    case SHALLOW:
++                        if (wa != null) wa.drawTile(g2, 1, c, r, sx, sy, T);
++                        shalSX[ns] = sx; shalSY[ns] = sy; shalI[ns++] = i;
++                        break;
++                    default:
++                        if (wa != null) wa.drawTile(g2, 1, c, r, sx, sy, T);
++                        deepSX[nd] = sx; deepSY[nd] = sy; deepI[nd++] = i;
++                        break;
++                }
++            }
++        }
++        Composite old = g2.getComposite();
++        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.44f));
++        g2.setColor(DEEP_TINT);
++        for (int k = 0; k < nd; k++) g2.fillRect(deepSX[k], deepSY[k], T, T);
++        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.17f));
++        g2.setColor(SHALLOW_TINT);
++        for (int k = 0; k < ns; k++) g2.fillRect(shalSX[k], shalSY[k], T, T);
++        g2.setComposite(old);
++        for (int k = 0; k < nd; k++) if (mask[deepI[k]] != 0) g2.drawImage(tiles.foam[mask[deepI[k]]][foamFrame], deepSX[k], deepSY[k], null);
++        for (int k = 0; k < ns; k++) if (mask[shalI[k]] != 0) g2.drawImage(tiles.foam[mask[shalI[k]]][foamFrame], shalSX[k], shalSY[k], null);
++
++        // ---- dekorasi rata
++        for (Circle ci : circles) {
++            int sx = ci.px - ci.base.footX - left, sy = ci.py - ci.base.footY - top;
++            if (sx > vmaxX || sx + ci.base.w < vminX || sy > vmaxY || sy + ci.base.h < vminY) continue;
++            g2.drawImage(ci.base.img, sx, sy, null);
++            double pulse = 0.5 + 0.5 * Math.sin(t * 1.1 + ci.px * 0.001);
++            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (0.15 + 0.7 * pulse * pulse)));
++            g2.drawImage(ci.glow.img, sx, sy, null);
++            g2.setComposite(old);
++        }
++        for (Halo h : halos) {
++            int sx = h.px - h.s.footX - left, sy = h.py - h.s.footY - top;
++            if (sx > vmaxX || sx + h.s.w < vminX || sy > vmaxY || sy + h.s.h < vminY) continue;
++            double pulse = 0.5 + 0.5 * Math.sin(t * 1.6 + h.phase);
++            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) (0.45 + 0.4 * pulse)));
++            g2.drawImage(h.s.img, sx, sy, null);
++        }
++        g2.setComposite(old);
++        for (Lily l : lilies) {
++            int sx = l.px - l.s.footX - left, sy = l.py - l.s.footY - top + (int) Math.round(Math.sin(t * 1.3 + l.phase) * 1.4);
++            if (sx > vmaxX || sx + l.s.w < vminX || sy > vmaxY || sy + l.s.h < vminY) continue;
++            g2.drawImage(l.s.img, sx, sy, null);
++        }
++
++        // ---- siluet ikan di bawah permukaan
++        for (Fish f : fish) {
++            double a = f.speed * t + f.phase;
++            double wx = f.cx + Math.cos(a) * f.rx, wy = f.cy + Math.sin(a) * f.ry;
++            int sx = (int) Math.round(wx) - left, sy = (int) Math.round(wy) - top;
++            if (sx > vmaxX + 20 || sx < vminX - 20 || sy > vmaxY + 20 || sy < vminY - 20) continue;
++            boolean right = (-Math.sin(a) * f.speed) > 0;
++            int dir = right ? 1 : -1;
++            int u = 3 * f.size;
++            g2.setColor(new Color(0x04, 0x22, 0x3C, 120));
++            g2.fillRect(sx - 3 * u / 3, sy - u / 2, 4 * u, u);
++            g2.fillRect(sx + dir * 2 * u - (dir < 0 ? u : 0), sy - u, u, 2 * u);
++            int wag = (int) Math.round(Math.sin(t * 7 + f.phase) * u / 2.0);
++            g2.fillRect(sx - dir * 2 * u - (dir > 0 ? u : 0), sy - u / 2 + wag - u / 2, u, 2 * u);
++            g2.setColor(new Color(0x8A, 0xE8, 0xFF, 70));
++            g2.fillRect(sx + dir * u, sy - u / 2, u, u / 2 + 1);
++        }
++
++        // ---- gelembung
++        for (int[] b : bubbleSpots) {
++            int sx = b[0] - left, sy = b[1] - top;
++            if (sx > vmaxX + 10 || sx < vminX - 10 || sy > vmaxY + 70 || sy < vminY - 10) continue;
++            for (int k = 0; k < 3; k++) {
++                double p = (t * 0.45 + b[2] * 0.37 + k / 3.0) % 1.0;
++                int x = sx + (int) Math.round(Math.sin(p * 9 + b[2]) * 4);
++                int y = sy - (int) Math.round(p * 70);
++                int alpha = (int) Math.round(Math.sin(Math.PI * p) * 170);
++                int sz = k == 0 ? 6 : 3;
++                g2.setColor(new Color(0xD6, 0xF6, 0xFF, Math.max(0, Math.min(255, alpha))));
++                g2.fillRect(x, y, sz, sz);
++                if (sz == 6) { g2.setColor(new Color(0x4F, 0xA8, 0xD6, Math.max(0, Math.min(255, alpha / 2)))); g2.fillRect(x + 3, y + 3, 3, 3); }
++            }
++        }
++
++        // ---- ikan kuning loncat
++        if (jumpFish != null) jumpFish.draw(g2, camX, camY, psx, psy, vminX, vminY, vmaxX, vmaxY);
++
++        // ---- riak di kaki saat berdiri di air dangkal
++        int ftx = Math.floorDiv(camX + 24, T), fty = Math.floorDiv(camY + 45, T);
++        if (!gp.player.scripted && at(ftx, fty) == SHALLOW) {
++            g2.setStroke(new BasicStroke(3));
++            for (int k = 0; k < 2; k++) {
++                double p = (t * 0.9 + k * 0.5) % 1.0;
++                int rad = (int) Math.round(7 + 20 * p);
++                g2.setColor(new Color(0xD6, 0xF6, 0xFF, (int) Math.round((1 - p) * 140)));
++                g2.drawOval(psx + 24 - rad, psy + 45 - (int) (rad * 0.42), rad * 2, (int) (rad * 0.84));
++            }
++            g2.setStroke(new BasicStroke(1));
++        }
++    }
++
++    /** Masukkan properti yang kelihatan ke daftar urut-Y milik GamePanel. */
++    public void collectProps(List<Entity> out) {
++        int camX = gp.player.x, camY = gp.player.y, psx = gp.player.screenX, psy = gp.player.screenY;
++        int minX = gp.viewMinX() - 260, maxX = gp.viewMaxX() + 260, minY = gp.viewMinY() - 120, maxY = gp.viewMaxY() + 320;
++        for (Prop p : props) {
++            int sx = p.wx - camX + psx, sy = p.wy - camY + psy;
++            if (sx < minX || sx > maxX || sy < minY || sy > maxY) continue;
++            out.add(p);
++        }
++    }
++
++    /** Cahaya dari atas, partikel pendar dan vinyet. Digambar di koordinat layar (tidak ikut zoom). */
++    public void drawScreenFx(Graphics2D g2) {
++        int w = gp.screenWidth, h = gp.screenHeight;
++        double t = System.nanoTime() / 1e9;
++
++        // tiang cahaya dari celah di langit-langit
++        for (int k = 0; k < 5; k++) {
++            double x0 = ((k * 0.23 + 0.06 + 0.012 * Math.sin(t * 0.25 + k)) % 1.0) * (w + 200) - 160;
++            int bw = 70 + (k * 37) % 60;
++            int skew = (int) (h * 0.55);
++            float a = (float) (0.075 + 0.045 * Math.sin(t * 0.45 + k * 1.7));
++            Polygon poly = new Polygon(
++                new int[] {(int) x0, (int) x0 + bw, (int) x0 + bw + skew, (int) x0 + skew},
++                new int[] {0, 0, h, h}, 4);
++            g2.setPaint(new GradientPaint(0, 0, new Color(0.62f, 0.95f, 1f, Math.max(0f, a)), 0, h * 0.9f, new Color(0.62f, 0.95f, 1f, 0f)));
++            g2.fill(poly);
++        }
++        g2.setPaint(null);
++
++        // partikel pendar yang melayang pelan (parallax terhadap kamera)
++        int camX = gp.player.x, camY = gp.player.y;
++        for (int i = 0; i < 38; i++) {
++            double bx = WaterDomainArt.rnd01(i, 1, 55) * (w + 80), by = WaterDomainArt.rnd01(i, 2, 55) * (h + 80);
++            double sx = ((bx + t * (6 + (i % 5) * 3) - camX * 0.7) % (w + 80) + (w + 80)) % (w + 80) - 40;
++            double sy = ((by - t * (8 + (i % 4) * 4) - camY * 0.7) % (h + 80) + (h + 80)) % (h + 80) - 40;
++            double pulse = 0.5 + 0.5 * Math.sin(t * (0.8 + (i % 4) * 0.4) + i);
++            int alpha = (int) Math.round(40 + 150 * pulse);
++            g2.setColor(i % 3 == 0 ? new Color(0xFF, 0xFF, 0xFF, alpha) : new Color(0x7D, 0xFC, 0xF0, alpha));
++            int sz = (i % 4 == 0) ? 6 : 3;
++            g2.fillRect((int) sx, (int) sy, sz, sz);
++        }
++        g2.drawImage(vignette, 0, 0, null);
++    }
++
++    // ================================================================== untuk pengujian / tooling
++
++    /** Salinan tipe tile per sel (indeks y * COLS + x), dipakai alat uji untuk mengecek keterhubungan jalur. */
++    public byte[] debugTypes() { return type.clone(); }
++
++    public int propCount() { return props.size(); }
++}
+diff --git a/2DGame/src/bahan/WaterPortalArt.java b/2DGame/src/bahan/WaterPortalArt.java
+new file mode 100644
+index 0000000..9c445c8
+--- /dev/null
++++ b/2DGame/src/bahan/WaterPortalArt.java
+@@ -0,0 +1,425 @@
++package bahan;
++
++import java.awt.image.BufferedImage;
++import java.util.Random;
++
++/**
++ * Seni piksel kolam portal air (tanpa file gambar baru, semuanya dihitung di kode, sama kayak WaterAnimator).
++ *
++ * Satu kolam = F frame (sama dengan WaterAnimator.F, jadi loop-nya mulus). Ukuran dalam "piksel seni":
++ * 1 piksel seni = 3 piksel layar, 1 tile = 16 piksel seni, persis kayak tile aslinya.
++ *
++ * Isi satu frame (dari bawah ke atas):
++ *  1. permukaan air: rumus gelombang yang SAMA dengan air dunia (WaterAnimator.artPixel), jadi riak dan kilau
++ *     di kolam kelihatan satu keluarga dengan danau di sekitarnya;
++ *  2. pusaran dua lengan yang berputar pelan + tiga cincin riak yang mengembang dari tengah + inti yang berdenyut;
++ *  3. buih putih di tepi air yang maju-mundur (sama gayanya dengan buih pantai);
++ *  4. tepi tanah berlumut + batu-batu bulat, dan empat batu rune yang berpendar bergantian;
++ *  5. percikan kecil yang naik dari permukaan.
++ * Bentuk kolam sengaja tidak elips polos: radiusnya digoyang beberapa gelombang sudut supaya kelihatan alami.
++ */
++public final class WaterPortalArt {
++
++    private WaterPortalArt() {}
++
++    public enum Style { PORTAL, EXIT }
++
++    /** kanvas (piksel seni): 9 x 7 tile */
++    public static final int W = 144, H = 112;
++    public static final int CX = W / 2, CY = H / 2;
++    /** radius air (piksel seni) -> kolam kira-kira 5,75 x 3,75 tile */
++    public static final int RX = 46, RY = 30;
++    /** tebal tepi tanah/batu */
++    public static final int RIM = 9;
++    public static final int F = WaterAnimator.F;
++    /** piksel layar per piksel seni */
++    public static final int SCALE = 3;
++
++    private static final double TAU = Math.PI * 2.0;
++    private static final int[] BAYER = {0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5};
++
++    // ------------------------------------------------------------------ geometri (dipakai juga oleh World.WaterPool)
++
++    /** Bentuk air: radius ternormalisasi pada sudut th (1.0 = elips polos). */
++    public static double waterShape(double th) {
++        return 1.0 + 0.045 * Math.sin(3 * th + 0.6) + 0.035 * Math.sin(5 * th + 2.1) + 0.022 * Math.sin(7 * th + 4.0);
++    }
++
++    /** Panjang (piksel seni) satu satuan radius ternormalisasi pada sudut th. */
++    private static double radiusAt(double th) {
++        double c = RX * Math.cos(th), s = RY * Math.sin(th);
++        return Math.sqrt(c * c + s * s);
++    }
++
++    /**
++     * Jarak bertanda ke tepi air, dalam piksel seni. Negatif = di dalam air, positif = di luar.
++     * (dx, dy) = posisi relatif terhadap pusat kolam, dalam piksel seni.
++     */
++    public static double signedDist(double dx, double dy) {
++        double nx = dx / RX, ny = dy / RY;
++        double rho = Math.sqrt(nx * nx + ny * ny);
++        if (rho < 1e-6) return -RY;
++        double th = Math.atan2(ny, nx);
++        return (rho - waterShape(th)) * radiusAt(th);
++    }
++
++    /**
++     * Penghalang jalan untuk air kolam yang berpusat di (cx, cy) piksel dunia: pita-pita persegi setebal 6 px yang mengikuti
++     * bentuk elips air, menyusut 2 piksel seni dari tepi. Tepi tanah dan batu di sekelilingnya tetap bisa diinjak.
++     */
++    public static java.util.List<java.awt.Rectangle> blockerStrips(int cx, int cy) {
++        java.util.List<java.awt.Rectangle> out = new java.util.ArrayList<>();
++        int band = 6;
++        for (int dy = -RY * SCALE; dy < RY * SCALE; dy += band) {
++            double yc = dy + band / 2.0;
++            int ext = 0;
++            for (int dx = 0; dx < RX * SCALE + 30; dx++) {
++                if (signedDist(dx / (double) SCALE, yc / SCALE) < -2.0) ext = dx; else break;
++            }
++            if (ext > 0) out.add(new java.awt.Rectangle(cx - ext, cy + dy, ext * 2, band));
++        }
++        return out;
++    }
++
++    private static double rimThickness(double th) {
++        return RIM * (0.88 + 0.14 * Math.sin(3 * th + 0.9) + 0.10 * Math.sin(5 * th + 2.0));
++    }
++
++    // ------------------------------------------------------------------ palet
++
++    private static final int MOSS_A = 0x4A6B3F, MOSS_B = 0x3E5C36, MOSS_C = 0x5F8548, MOSS_D = 0x2F4A2E;
++    private static final int[] STONE_PORTAL = {0xB4BCC8, 0x8E9AAC, 0x606E88, 0x3A4560};   // terang, sedang, gelap, garis tepi
++    private static final int[] STONE_EXIT   = {0xD6CDB6, 0xAEA48C, 0x7E7462, 0x4E463A};
++    private static final int AQUA = 0x58E6D8;
++
++    private static int rgb(int r, int g, int b) {
++        return (Math.max(0, Math.min(255, r)) << 16) | (Math.max(0, Math.min(255, g)) << 8) | Math.max(0, Math.min(255, b));
++    }
++
++    private static int mix(int a, int b, double t) {
++        if (t <= 0) return a;
++        if (t >= 1) return b;
++        int ar = (a >> 16) & 255, ag = (a >> 8) & 255, ab = a & 255;
++        int br = (b >> 16) & 255, bg = (b >> 8) & 255, bb = b & 255;
++        return rgb((int) Math.round(ar + (br - ar) * t), (int) Math.round(ag + (bg - ag) * t), (int) Math.round(ab + (bb - ab) * t));
++    }
++
++    /** Satu tingkat lebih terang di palet air (tetap di palet, jadi gayanya tetap piksel seni). */
++    private static int lift(int c) {
++        switch (c) {
++            case WaterAnimator.DEEP:    return WaterAnimator.BASE;
++            case WaterAnimator.SWELL_D: return WaterAnimator.BASE;
++            case WaterAnimator.BASE:    return WaterAnimator.LIGHT;
++            case WaterAnimator.SWELL_L: return WaterAnimator.LIGHT;
++            case WaterAnimator.LIGHT:   return WaterAnimator.CREST;
++            case WaterAnimator.CREST:   return WaterAnimator.SPARK;
++            default:                    return 0xFFFFFF;
++        }
++    }
++
++    private static int dim(int c) {
++        switch (c) {
++            case WaterAnimator.SPARK: return WaterAnimator.CREST;
++            case WaterAnimator.CREST: return WaterAnimator.LIGHT;
++            case WaterAnimator.LIGHT: return WaterAnimator.BASE;
++            case WaterAnimator.SWELL_L: return WaterAnimator.BASE;
++            case WaterAnimator.BASE:  return WaterAnimator.DEEP;
++            default:                  return 0x2A6FA8;
++        }
++    }
++
++    private static double bayer(int x, int y) {
++        return (BAYER[(y & 3) * 4 + (x & 3)] + 0.5) / 16.0;
++    }
++
++    private static int hash(int x, int y, int s) {
++        int h = x * 374761393 + y * 668265263 + s * 1274126177;
++        h = (h ^ (h >>> 13)) * 1274126177;
++        return h ^ (h >>> 16);
++    }
++
++    private static double rnd01(int x, int y, int s) {
++        return (hash(x, y, s) & 0xFFFF) / 65535.0;
++    }
++
++    // ------------------------------------------------------------------ pembuatan frame
++
++    public static BufferedImage[] build(Style style) {
++        final int n = W * H;
++        double[] sd = new double[n];     // jarak bertanda ke tepi air (piksel seni)
++        double[] rr = new double[n];     // radius ternormalisasi terhadap bentuk kolam (0 pusat, 1 tepi)
++        double[] ang = new double[n];
++        double[] thick = new double[n];
++        for (int y = 0; y < H; y++) {
++            for (int x = 0; x < W; x++) {
++                double dx = x + 0.5 - CX, dy = y + 0.5 - CY;
++                double nx = dx / RX, ny = dy / RY;
++                double rho = Math.sqrt(nx * nx + ny * ny);
++                double th = Math.atan2(ny, nx);
++                int i = y * W + x;
++                ang[i] = th;
++                double ws = waterShape(th);
++                rr[i] = rho / ws;
++                sd[i] = (rho - ws) * radiusAt(th);
++                thick[i] = rimThickness(th);
++            }
++        }
++
++        // batu tepi: sama untuk semua frame (digambar ulang tiap frame di atas dasar tepi, bersama rune yang berpendar)
++        Stone[] stones = makeStones(style);
++
++        BufferedImage[] out = new BufferedImage[F];
++        for (int f = 0; f < F; f++) out[f] = renderFrame(style, f, sd, rr, ang, thick, stones);
++        return out;
++    }
++
++    private static final class Stone {
++        double x, y, a, b;
++        int rune = -1;        // -1 = batu biasa, 0..3 = batu rune (indeks glyph)
++        int seed;
++    }
++
++    private static Stone[] makeStones(Style style) {
++        Random rnd = new Random(style == Style.PORTAL ? 4107L : 9301L);
++        java.util.List<Stone> list = new java.util.ArrayList<>();
++        int count = 30;
++        for (int k = 0; k < count; k++) {
++            double ph = TAU * k / count + (rnd.nextDouble() - 0.5) * 0.12;
++            double ws = waterShape(ph);
++            double t = rimThickness(ph);
++            double mid = (t * (0.45 + 0.2 * rnd.nextDouble())) / radiusAt(ph);   // lebih sedikit ke tengah tepi
++            double rho = ws + mid;
++            Stone s = new Stone();
++            s.x = CX + RX * rho * Math.cos(ph);
++            s.y = CY + RY * rho * Math.sin(ph);
++            s.a = 3.1 + rnd.nextDouble() * 2.3;
++            s.b = 2.5 + rnd.nextDouble() * 1.7;
++            s.seed = rnd.nextInt();
++            list.add(s);
++        }
++        // empat batu rune di diagonal (arah mata angin dibiarkan kosong supaya player bisa berdiri di tepi)
++        double[] runeAngles = {Math.PI / 4 + 0.05, 3 * Math.PI / 4 - 0.04, 5 * Math.PI / 4 + 0.03, 7 * Math.PI / 4 - 0.05};
++        for (int k = 0; k < 4; k++) {
++            double ph = runeAngles[k];
++            double ws = waterShape(ph);
++            double t = rimThickness(ph);
++            double rho = ws + (t * 0.55) / radiusAt(ph);
++            Stone s = new Stone();
++            s.x = CX + RX * rho * Math.cos(ph);
++            s.y = CY + RY * rho * Math.sin(ph);
++            s.a = 6.2;
++            s.b = 5.2;
++            s.rune = k;
++            s.seed = 1000 + k;
++            list.add(s);
++        }
++        list.sort((p, q) -> Double.compare(p.y, q.y));   // yang di bawah menimpa yang di atas
++        return list.toArray(new Stone[0]);
++    }
++
++    private static BufferedImage renderFrame(Style style, int f, double[] sd, double[] rr, double[] ang, double[] thick, Stone[] stones) {
++        BufferedImage img = new BufferedImage(W, H, BufferedImage.TYPE_INT_ARGB);
++        int[] px = new int[W * H];                         // ARGB, 0 = transparan
++        double phi = (double) f / F;
++        double swell = 0.5 - 0.5 * Math.cos(TAU * phi);
++        boolean portal = style == Style.PORTAL;
++
++        for (int y = 0; y < H; y++) {
++            for (int x = 0; x < W; x++) {
++                int i = y * W + x;
++                double s = sd[i];
++                if (s < 0) {
++                    px[i] = 0xFF000000 | waterPixel(x, y, f, s, rr[i], ang[i], phi, swell, portal);
++                } else if (s < thick[i]) {
++                    px[i] = ringPixel(x, y, s, thick[i], style);
++                }
++            }
++        }
++
++        // batu dan rune
++        for (Stone st : stones) drawStone(px, st, style, f);
++
++        // percikan naik dari permukaan
++        drawSparks(px, f, style);
++
++        img.setRGB(0, 0, W, H, px, 0, W);
++        return img;
++    }
++
++    private static int waterPixel(int x, int y, int f, double s, double r, double th, double phi, double swell, boolean portal) {
++        int c = WaterAnimator.artPixel(x + 17, y + 41, f);
++        double dy = y + 0.5 - CY;
++
++        // bayangan di bawah tepi atas (tepi bagian utara menaungi air)
++        if (dy < -4 && -s < 3.0 * (-dy / RY)) c = dim(c);
++
++        // pusaran dua lengan, berputar setengah putaran per loop (simetris 2x, jadi mulus)
++        if (r < 0.82) {
++            double arm = Math.sin(2 * th + 3.4 * r - TAU * phi);
++            double edgeFade = r > 0.62 ? (0.82 - r) / 0.20 : 1.0;
++            double thr = 0.80 + (1.0 - edgeFade) * 0.2;
++            if (arm > thr) c = lift(c);
++            else if (arm > thr - 0.12 && bayer(x, y) < (arm - (thr - 0.12)) / 0.12) c = lift(c);
++        }
++
++        // tiga cincin riak yang mengembang dari tengah dan memudar
++        for (int k = 0; k < 3; k++) {
++            double ph = (phi + k / 3.0) % 1.0;
++            double radius = 0.10 + 0.82 * ph;
++            double d = Math.abs(r - radius);
++            if (d < 0.045) {
++                double inten = 1.0 - ph;
++                if (bayer(x, y) < inten * 1.25) c = (inten > 0.55 && d < 0.022) ? WaterAnimator.SPARK : WaterAnimator.CREST;
++            }
++        }
++
++        // cahaya radial: tengah lebih terang (didither, bukan gradasi halus)
++        double g = Math.pow(Math.max(0, 1.0 - r), 1.6) * 0.62;
++        if (bayer(x, y) < g) c = lift(c);
++
++        // inti yang berdenyut
++        double coreR = 0.10 + 0.035 * Math.sin(TAU * phi);
++        if (r < coreR * 0.55) c = 0xFFFFFF;
++        else if (r < coreR) c = WaterAnimator.SPARK;
++        else if (r < coreR + 0.07 && bayer(x, y) < 0.45) c = WaterAnimator.CREST;
++
++        // warna khas portal: sedikit lebih toska dari air biasa
++        c = mix(c, portal ? AQUA : 0xFFE9A8, portal ? 0.16 + 0.12 * Math.max(0, 1 - r) : 0.10 + 0.10 * Math.max(0, 1 - r));
++
++        // buih di tepi air, maju-mundur (gaya sama dengan buih pantai)
++        double edge = -s;
++        double lim = 1.05 + 1.5 * swell;
++        if (edge < lim) {
++            double brk = Math.sin(TAU * ((2.0 * x + 3.0 * y) / 16.0 - 2.0 * phi));
++            if (edge <= 1.05) {
++                if (brk > 0.9 - 1.5 * swell) c = WaterAnimator.SPARK;
++            } else if (brk > -0.2) {
++                c = WaterAnimator.CREST;
++            }
++        }
++        return c;
++    }
++
++    private static int ringPixel(int x, int y, double s, double thick, Style style) {
++        double q = rnd01(x, y, 7);
++        // tepi luar berumbai: makin ke luar makin jarang, jadi menyatu dengan rumput di sekitarnya
++        double fray = (thick - s) / 2.4;
++        if (fray < 1.0 && rnd01(x, y, 11) > fray) return 0;
++        int base;
++        if (style == Style.PORTAL) {
++            base = q < 0.10 ? MOSS_D : q < 0.38 ? MOSS_B : q < 0.90 ? MOSS_A : MOSS_C;
++            if (s < 1.6) base = mix(base, MOSS_D, 0.55);                    // bibir basah dekat air
++        } else {
++            base = q < 0.12 ? 0x8E8062 : q < 0.40 ? 0xA89A78 : q < 0.92 ? 0xB8AA86 : 0xCABC98;
++            if (s < 1.6) base = mix(base, 0x7A6E52, 0.5);
++        }
++        return 0xFF000000 | base;
++    }
++
++    private static void put(int[] px, int x, int y, int rgb, double alpha) {
++        if (x < 0 || y < 0 || x >= W || y >= H) return;
++        int i = y * W + x;
++        int dst = px[i];
++        int da = (dst >>> 24) & 255;
++        if (alpha >= 0.999) { px[i] = 0xFF000000 | rgb; return; }
++        int a = (int) Math.round(alpha * 255);
++        if (da == 0) { px[i] = (a << 24) | rgb; return; }
++        int mixed = mix(dst & 0xFFFFFF, rgb, alpha);
++        int na = Math.min(255, da + (int) Math.round((255 - da) * alpha));
++        px[i] = (na << 24) | mixed;
++    }
++
++    private static final String[] GLYPHS = {
++        ".#.|###|.#.|#.#",
++        "#.#|.#.|###|.#.",
++        "##.|.##|#.#|.#.",
++        ".##|#..|.#.|##.",
++    };
++
++    private static void drawStone(int[] px, Stone st, Style style, int f) {
++        int[] pal = style == Style.PORTAL ? STONE_PORTAL : STONE_EXIT;
++        int x0 = (int) Math.floor(st.x - st.a - 2), x1 = (int) Math.ceil(st.x + st.a + 2);
++        int y0 = (int) Math.floor(st.y - st.b - 3), y1 = (int) Math.ceil(st.y + st.b + 3);
++
++        // bayangan jatuh di bawah-kanan batu
++        for (int y = y0; y <= y1; y++) {
++            for (int x = x0; x <= x1; x++) {
++                double nx = (x + 0.5 - (st.x + 1.0)) / (st.a + 0.4), ny = (y + 0.5 - (st.y + 1.6)) / (st.b + 0.3);
++                if (nx * nx + ny * ny <= 1.0) {
++                    int i = y * W + x;
++                    if (x >= 0 && y >= 0 && x < W && y < H && ((px[i] >>> 24) & 255) != 0) put(px, x, y, 0x1B2A24, 0.42);
++                }
++            }
++        }
++        // badan batu
++        for (int y = y0; y <= y1; y++) {
++            for (int x = x0; x <= x1; x++) {
++                double nx = (x + 0.5 - st.x) / st.a, ny = (y + 0.5 - st.y) / st.b;
++                double d2 = nx * nx + ny * ny;
++                if (d2 > 1.0) continue;
++                double lum = -0.62 * nx - 0.80 * ny + (rnd01(x, y, st.seed) - 0.5) * 0.35;
++                int c;
++                if (d2 > 0.74) c = lum > 0.38 ? pal[0] : pal[3];
++                else if (lum > 0.42) c = pal[0];
++                else if (lum > -0.12) c = pal[1];
++                else c = pal[2];
++                // lumut menempel di bagian atas beberapa batu
++                if (style == Style.PORTAL && st.rune < 0 && ny < -0.15 && ((st.seed >> 3) & 1) == 0 && rnd01(x, y, st.seed + 5) > 0.55 && d2 < 0.8) c = MOSS_C;
++                put(px, x, y, c, 1.0);
++            }
++        }
++        if (st.rune >= 0) drawRune(px, st, style, f);
++    }
++
++    private static void drawRune(int[] px, Stone st, Style style, int f) {
++        double pulse = 0.5 + 0.5 * Math.sin(TAU * f / F + st.rune * Math.PI / 2.0);   // bergantian searah jarum jam
++        int glow = style == Style.PORTAL ? 0x7DFCF0 : 0xFFD866;
++        int core = style == Style.PORTAL ? 0xE6FFFC : 0xFFF3C4;
++
++        // pendar di sekeliling batu
++        for (int y = (int) (st.y - st.b - 5); y <= (int) (st.y + st.b + 5); y++) {
++            for (int x = (int) (st.x - st.a - 5); x <= (int) (st.x + st.a + 5); x++) {
++                double nx = (x + 0.5 - st.x) / st.a, ny = (y + 0.5 - st.y) / st.b;
++                double d = Math.sqrt(nx * nx + ny * ny);
++                if (d > 1.0 && d < 1.85) {
++                    double a = (1.0 - (d - 1.0) / 0.85) * (0.12 + 0.46 * pulse);
++                    if (bayer(x, y) < a * 1.6) put(px, x, y, glow, Math.min(0.75, a * 1.5));
++                }
++            }
++        }
++        // glyph di tengah batu (4 baris x 3 kolom)
++        String[] rows = GLYPHS[st.rune % GLYPHS.length].split("\\|");
++        int gx = (int) Math.round(st.x) - 1, gy = (int) Math.round(st.y) - 2;
++        for (int ry = 0; ry < rows.length; ry++) {
++            for (int rx = 0; rx < 3; rx++) {
++                if (rows[ry].charAt(rx) == '#') put(px, gx + rx, gy + ry, pulse > 0.45 ? core : glow, 1.0);
++            }
++        }
++    }
++
++    private static void drawSparks(int[] px, int f, Style style) {
++        Random rnd = new Random(style == Style.PORTAL ? 77L : 78L);
++        int n = 14;
++        for (int k = 0; k < n; k++) {
++            double ang = rnd.nextDouble() * TAU;
++            double rad = Math.sqrt(rnd.nextDouble()) * 0.92;
++            double sx = CX + RX * rad * Math.cos(ang);
++            double sy = CY + RY * rad * Math.sin(ang);
++            double speed = (k % 3 == 0) ? 2.0 : 1.0;                       // bilangan bulat -> loop mulus
++            double ph = ((double) f / F * speed + rnd.nextDouble()) % 1.0;
++            double rise = 18.0 * ph;
++            double a = Math.sin(Math.PI * ph);
++            int x = (int) Math.round(sx + 1.5 * Math.sin(TAU * (ph + k * 0.13)));
++            int y = (int) Math.round(sy - rise);
++            if (a < 0.12) continue;
++            int col = (k % 4 == 0) ? 0xFFFFFF : (style == Style.PORTAL ? 0xBFFFF8 : 0xFFF0B8);
++            put(px, x, y, col, Math.min(1.0, a * 1.1));
++            if (k % 4 == 0 && a > 0.6) {                                    // beberapa percikan berbentuk tanda tambah kecil
++                put(px, x - 1, y, col, a * 0.55);
++                put(px, x + 1, y, col, a * 0.55);
++                put(px, x, y - 1, col, a * 0.55);
++                put(px, x, y + 1, col, a * 0.55);
++            }
++        }
++    }
++}

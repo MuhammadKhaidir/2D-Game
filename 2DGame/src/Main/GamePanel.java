@@ -98,7 +98,8 @@ public class GamePanel extends JPanel implements Runnable{
 	public HouseManager houseManager;
 	
 	public DomainManager domainManager;
-	
+	public World.WaterPortal waterPortal;   // kolam portal Water Domain (lompat masuk / keluar)
+
 	// music
 	public MusicManager music = new MusicManager();
 	private MusicState lastMusicState = null; // untuk detect perubahan state BGM
@@ -112,7 +113,8 @@ public class GamePanel extends JPanel implements Runnable{
 	private static final String MUSIC_OUTSIDE = "Amber Road Glee.wav";
 	private static final String MUSIC_INSIDE  = "Amber Road Glee.wav";
 	private static final String MUSIC_DOMAIN  = "Umbrae Surgunt.wav";
-	
+	public  static final String MUSIC_WATER_DOMAIN = "Echoes of Ancient Wisdom.wav"; // Water Domain (file ada di /SFX/)
+
 	//backpack
 	public BackpackUI backpack;
 
@@ -231,6 +233,7 @@ public class GamePanel extends JPanel implements Runnable{
 		houseManager = new HouseManager(this);
 		mainMenu.active = true;
 		domainManager = new DomainManager(this);
+		waterPortal = new World.WaterPortal(this);
 		speechBubble = new Entitas.PlayerSpeechBubble(this);
 		totemUI = new UI.TotemUI(this);
 		SaveManager.init();
@@ -826,6 +829,8 @@ public class GamePanel extends JPanel implements Runnable{
 	    } else if (gameState == GameState.DOMAIN) {
 	        if ("GolemHide".equals(domainManager.getActiveDomainId())) {
 	            track = MUSIC_GOLEM_HIDE;
+	        } else if (domainManager.isWaterDomain()) {
+	            track = MUSIC_WATER_DOMAIN;
 	        } else {
 	            track = MUSIC_DOMAIN; // Tomb
 	        }
@@ -1255,6 +1260,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    // 2. UPDATE NORMAL
 	    if (fishing != null) fishing.update(); // timer gigitan ikan (berhenti sendiri pas dialog / toko, karena return di atas)
 	    player.update();
+	    if (waterPortal != null) waterPortal.update(); // portal Water Domain: pemicu + animasi lompat masuk / keluar
 
 	    if (!isWorldFrozen()) { // SkillV nge-freeze NPC juga
 	        for (int i = 0; i < npc.length; i++) {
@@ -1475,6 +1481,7 @@ public void paintComponent(Graphics g) {
         if (domainManager.getBossSkeleton() != null) {
             sortList.add(domainManager.getBossSkeleton());
         }
+        domainManager.collectWaterProps(sortList);   // pilar, patung, karang, dll di Water Domain (kosong di domain lain)
 
         // ── TAMBAHAN: Masukkan minion ke list Y-Sort agar digambar di layar ──
         if (deathTotemManager != null) {
@@ -1493,12 +1500,16 @@ public void paintComponent(Graphics g) {
         if (armorEffects != null) armorEffects.draw(g2);   // Ember Umbral / cincin Iron Will (domain)
         if (damagePopups != null) damagePopups.draw(g2);   // angka damage (domain)
         if (speechBubble != null) speechBubble.draw(g2);
+        if (waterPortal != null) waterPortal.drawOverlay(g2);   // percikan + riak saat lompat / nyebur
         g2.setTransform(domainTx);
+        domainManager.drawWaterScreenFx(g2);                    // cahaya dari atas + partikel pendar + vinyet (Water Domain)
+        if (waterPortal != null) waterPortal.drawFade(g2);      // layar gelap transisi portal
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
         if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
 
         if (hotbar != null) hotbar.draw(g2);
         if (buffBar != null) buffBar.draw(g2);
+        if (waterPortal != null) waterPortal.drawHint(g2);   // "[E] ... keluar" di dekat kolam keluar Water Domain
 
         // UI merchant — setelah entity, biar overlay di atas segalanya
         DarkMerchant dm = domainManager.darkMerchant;
@@ -1522,6 +1533,7 @@ public void paintComponent(Graphics g) {
 
         applyWorldZoom(g2);
         tileM.draw(g2);
+        if (waterPortal != null) waterPortal.drawOutsidePool(g2);   // kolam portal Water Domain (rata di tanah, di bawah objek & pemain)
         g2.setTransform(baseTx);
         
         if (world.isRaining && snow.intensity() < 0.5f) { // di tengah biome es hujan diganti badai salju
@@ -1546,6 +1558,7 @@ public void paintComponent(Graphics g) {
         }
         
         player.drawOverhead(g2);
+        if (waterPortal != null) waterPortal.drawOverlay(g2);   // percikan + riak saat lompat / nyebur
         if (fishing != null) fishing.draw(g2); // joran + pelampung + tanda "!" pas ikan nyambar
         if (speechBubble != null) speechBubble.draw(g2);
         g2.setTransform(baseTx);
@@ -1554,11 +1567,13 @@ public void paintComponent(Graphics g) {
         snow.draw(g2);
         drawDarkOverlay(g2);
         drawSunsetOverlay(g2);
+        if (waterPortal != null) waterPortal.drawFade(g2);   // layar gelap transisi portal
         if (player.skillManager != null) player.skillManager.drawOverlay(g2); // atmosfer SkillV (di bawah UI)
 
         // UI saat OUTSIDE
         if (hotbar != null) hotbar.draw(g2);
         if (buffBar != null) buffBar.draw(g2);
+        if (waterPortal != null) waterPortal.drawHint(g2);   // "Lompat ke dalam air ..." di dekat kolam portal
         if (dialogOn) drawDialog(g2);
         if (inspectOn) drawInspectPanel(g2);
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);

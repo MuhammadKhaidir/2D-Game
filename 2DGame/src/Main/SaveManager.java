@@ -148,6 +148,7 @@ public class SaveManager {
         gp.player.dodge         = data.dodge;
         gp.player.maxStamina    = data.playerMaxStamina;
 
+        if (gp.waterPortal != null) gp.waterPortal.reset(); // batalkan lompat portal yang lagi jalan (kalau ada)
         switch (data.gameState) {
             case "DOMAIN":
                 gp.domainManager.forceEnterDomain(data.activeDomainId != null ? data.activeDomainId : "Tomb");

@@ -55,6 +55,11 @@ public class DomainManager {
     private SkeletonKing bossSkeleton = null;
     private boolean bossDefeated = false; // sekali kalah, gak spawn lagi
 
+    // ── Water Domain: dibuka lewat kolam portal (lihat WaterPortal), petanya dibuat di thread latar ──
+    public static final String WATER_DOMAIN_ID = WaterPortal.DOMAIN_ID;
+    private bahan.WaterDomainMap waterMap = null;
+    private Thread waterBuildThread = null;
+
     private int fadeAlpha = 0;
     private boolean fading = false;
     private boolean fadeIn = false;
@@ -252,6 +257,60 @@ public class DomainManager {
         // bisa juga di-edit manual. Tekan F3 buat lihat temboknya (merah). Pakai "Latar" sama persis kayak background.
         .setWalkMask("/Latar/golemHide_walk.png");
         domains.add(golemHide);
+
+        // ── Water Domain ──
+        // Masuknya lewat kolam portal di dunia luar (WaterPortal: lompat ke air), BUKAN tombol [E], jadi triggerArea
+        // sengaja ditaruh jauh di luar peta supaya checkEnterDomain() tidak pernah kena. Peta dibuat prosedural oleh
+        // bahan.WaterDomainMap (112 x 84 tile) dan tembok / propnya dicek lewat waterMap.isBlocked(), bukan `collisions`.
+        // spawn = titik mendarat di depan kolam keluar (kaki di landX / landY, dikurangi offset kaki 24 / 45).
+        // exit = cadangan kalau exitDomain() dipanggil tanpa lewat portal; keluar normal = kolam + [E] (WaterPortal).
+        DomainData waterDomain = new DomainData(
+            WATER_DOMAIN_ID,
+            new Rectangle(-100000, -100000, 1, 1),
+            bahan.WaterDomainMap.POOL_X - 24, bahan.WaterDomainMap.POOL_Y + bahan.WaterDomainMap.LAND_DY - 45,
+            bahan.WaterDomainMap.COLS * bahan.WaterDomainMap.T / 2, bahan.WaterDomainMap.ROWS * bahan.WaterDomainMap.T / 2,
+            "")
+        .setExit(WaterPortal.OUT_X - 24, WaterPortal.OUT_Y + 150 - 45);
+        domains.add(waterDomain);
+    }
+
+    /** True kalau domain yang lagi aktif adalah Water Domain. */
+    public boolean isWaterDomain() {
+        return activeDomain != null && WATER_DOMAIN_ID.equals(activeDomain.id);
+    }
+
+    /** Mulai membangun peta Water Domain di thread latar (aman dipanggil berkali-kali). Dipanggil begitu pemain mendekati kolam. */
+    public synchronized void prepareWaterDomain() {
+        if (waterMap != null || waterBuildThread != null) return;
+        waterBuildThread = new Thread(() -> {
+            try {
+                bahan.WaterDomainMap m = new bahan.WaterDomainMap(gp);
+                synchronized (DomainManager.this) { waterMap = m; }
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }, "water-domain-build");
+        waterBuildThread.setDaemon(true);
+        waterBuildThread.start();
+    }
+
+    /** Peta Water Domain. Kalau belum selesai dibangun, ditunggu dulu (biasanya sudah siap sebelum pemain sampai di kolam). */
+    public bahan.WaterDomainMap getWaterMap() {
+        Thread t;
+        synchronized (this) {
+            if (waterMap != null) return waterMap;
+            prepareWaterDomain();
+            t = waterBuildThread;
+        }
+        try {
+            if (t != null) t.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        synchronized (this) {
+            if (waterMap == null) waterMap = new bahan.WaterDomainMap(gp); // thread latar gagal: bangun langsung
+            return waterMap;
+        }
     }
 
     public void forceEnterDomain(String domainId) {
@@ -500,29 +559,44 @@ public class DomainManager {
         final int exitX = returnWorldX >= 0 ? returnWorldX : activeDomain.exitWorldX;
         final int exitY = returnWorldY >= 0 ? returnWorldY : activeDomain.exitWorldY;
         startFade(false, () -> {
-            gp.music.stop();
-            insideDomain = false;
-            activeDomain = null;
-            gp.gameState = GamePanel.GameState.OUTSIDE;
-            // bersihin sisa isi domain biar gak "bocor" ke dunia luar
-            wallCollisions.clear();
-            walkMask = null;
-            skeletons.clear();
-            golemites.clear();
-            golems.clear();
-            roomSkeletons.clear();
-            bossSkeleton = null;
-            gp.player.x = exitX;
-            gp.player.y = exitY;
-            darkMerchant = null;
+            leaveDomainTo(exitX, exitY);
             startFade(true, null);
         });
+    }
+
+    /**
+     * Keluar dari domain SEKARANG juga (tanpa fade bawaan) ke posisi dunia luar tertentu.
+     * Dipakai WaterPortal yang punya transisi sendiri (lompat ke air -> layar gelap -> muncul dari kolam di dunia luar).
+     */
+    public void exitDomainNow(int exitX, int exitY) {
+        if (activeDomain == null) return;
+        leaveDomainTo(exitX, exitY);
+    }
+
+    private void leaveDomainTo(int exitX, int exitY) {
+        gp.music.stop();
+        insideDomain = false;
+        activeDomain = null;
+        activeRoom = null;
+        gp.gameState = GamePanel.GameState.OUTSIDE;
+        // bersihin sisa isi domain biar gak "bocor" ke dunia luar
+        wallCollisions.clear();
+        walkMask = null;
+        skeletons.clear();
+        golemites.clear();
+        golems.clear();
+        roomSkeletons.clear();
+        bossSkeleton = null;
+        gp.player.x = exitX;
+        gp.player.y = exitY;
+        darkMerchant = null;
     }
 
     private void playDomainBGM(String domainId) {
         switch (domainId) {
             case "Tomb":      gp.music.play("Umbrae Surgunt.wav"); break;
             case "GolemHide": gp.music.play("golemHideSound.wav"); break;
+            case WATER_DOMAIN_ID: gp.music.play(GamePanel.MUSIC_WATER_DOMAIN); break;
             default:          gp.music.stop();
         }
     }
@@ -598,11 +672,17 @@ public class DomainManager {
             for (int[] p : GOLEMITE_SPAWNS) spawnGolemite(p[0], p[1]);
         }
 
-        try {
-            java.net.URL url = getClass().getResource(d.backgroundPath);
-            bgImage = url != null ? new ImageIcon(url) : null;
-            if (url == null) System.out.println("[DomainManager] Background tidak ketemu: " + d.backgroundPath);
-        } catch (Exception e) { bgImage = null; e.printStackTrace(); }
+        if (WATER_DOMAIN_ID.equals(d.id)) {
+            // Water Domain tidak pakai gambar latar: lantai / air / properti digambar dari WaterDomainMap
+            bgImage = null;
+            prepareWaterDomain();
+        } else {
+            try {
+                java.net.URL url = getClass().getResource(d.backgroundPath);
+                bgImage = url != null ? new ImageIcon(url) : null;
+                if (url == null) System.out.println("[DomainManager] Background tidak ketemu: " + d.backgroundPath);
+            } catch (Exception e) { bgImage = null; e.printStackTrace(); }
+        }
 
         for (Rectangle r : d.collisions) wallCollisions.add(r);
 
@@ -622,6 +702,7 @@ public class DomainManager {
 
     public void drawBackground(Graphics2D g2) {
         if (activeDomain == null) return;
+        if (isWaterDomain()) { drawWaterBackground(g2); return; }
         g2.setColor(new Color(5, 5, 8));
         g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
         int psx = gp.player.screenX, psy = gp.player.screenY;
@@ -654,6 +735,27 @@ public class DomainManager {
             drawExitHintIfNear(g2);
         }
         drawFadeOverlay(g2);
+    }
+
+    /** Water Domain: lantai batu, air bergelombang, tepian, dekorasi rata, lalu kolam keluar (semua ikut zoom). Properti berdiri di-Y-sort GamePanel. */
+    private void drawWaterBackground(Graphics2D g2) {
+        g2.setColor(new Color(2, 10, 20));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        bahan.WaterDomainMap m = getWaterMap();
+        java.awt.geom.AffineTransform baseTx = gp.applyWorldZoom(g2);
+        m.drawGround(g2, gp.tileM.waterAnim);
+        gp.waterPortal.drawDomainPool(g2);
+        g2.setTransform(baseTx);
+    }
+
+    /** Water Domain: properti berdiri yang kelihatan dimasukkan ke daftar urut-Y milik GamePanel. */
+    public void collectWaterProps(List<Entitas.Entity> out) {
+        if (isWaterDomain()) getWaterMap().collectProps(out);
+    }
+
+    /** Water Domain: cahaya dari atas, partikel pendar, vinyet (koordinat layar, tidak ikut zoom). */
+    public void drawWaterScreenFx(Graphics2D g2) {
+        if (isWaterDomain()) getWaterMap().drawScreenFx(g2);
     }
 
     public void drawEntities(Graphics2D g2) { /* Y-sort dihandle GamePanel */ }
@@ -1047,6 +1149,7 @@ public class DomainManager {
 
     public boolean checkCollision(Rectangle playerBox) {
         if (!insideDomain) return false; // di luar domain, tembok domain gak boleh ngaruh
+        if (isWaterDomain()) return getWaterMap().isBlocked(playerBox); // tebing, air dalam, pilar, patung, dll
         // tembok gambar cuma buat interior utama; room (misal boss room) punya koordinat sendiri
         if (activeRoom == null && walkMask != null && walkMask.isBlocked(playerBox)) return true;
         for (Rectangle r : wallCollisions)

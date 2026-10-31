@@ -186,6 +186,52 @@ public class player extends Entity {
     int jumpTimer = 0;
     String jumpDirection;
 
+    // ── Lompat berskrip (portal Water Domain) ──
+    // Selama scripted = true, update() tidak membaca input / tidak menggerakkan player; World.WaterPortal yang mengatur
+    // posisi (x, y) dan pose lompatnya tiap frame. Gambar memakai sprite lompat yang sama dengan lompat biasa.
+    public boolean scripted = false;
+    public String scriptDir = "down";   // arah sprite lompat: up / down / left / right
+    public boolean scriptAir = false;   // false = pose jongkok (tolak / mendarat), true = pose melayang
+    public int scriptLift = 0;          // tinggi angkat di atas tanah, piksel layar
+    public int scriptSink = 0;          // seberapa dalam tenggelam di bawah garis air, piksel layar (0 = tidak tenggelam)
+    public int scriptWaterLine = 0;     // garis air dalam piksel layar relatif ke screenY (dipakai kalau scriptSink > 0)
+    public boolean scriptShadow = true; // bayangan di tanah
+
+    /** True kalau player sedang melompat (PREP / AIR / LAND). */
+    public boolean isJumping() { return jumpState != JumpState.NONE; }
+    /** True kalau player sedang melayang di udara (fase AIR lompat biasa). */
+    public boolean isJumpAirborne() { return jumpState == JumpState.AIR; }
+    /** Arah lompat yang sedang berjalan (null kalau tidak melompat). */
+    public String getJumpDirection() { return jumpState != JumpState.NONE ? jumpDirection : null; }
+
+    /** Ambil alih player untuk animasi lompat berskrip. Lompat biasa yang lagi jalan dibatalkan. */
+    public void beginScripted(String dir) {
+        jumpState = JumpState.NONE;
+        jumpTimer = 0;
+        staminaLocked = false;
+        cancelAttack();
+        isMoving = false;
+        isSprinting = false;
+        scripted = true;
+        scriptDir = dir;
+        direction = dir;
+        scriptAir = false;
+        scriptLift = 0;
+        scriptSink = 0;
+        scriptShadow = true;
+    }
+
+    /** Kembalikan kendali ke pemain. */
+    public void endScripted() {
+        scripted = false;
+        scriptLift = 0;
+        scriptSink = 0;
+        scriptAir = false;
+        scriptShadow = true;
+        isMoving = false;
+        jumpCooldown = 0;
+    }
+
     public player(GamePanel gp, KeyHandler KeyH) {
         super(gp);
         this.KeyH = KeyH;
@@ -408,6 +454,7 @@ public class player extends Entity {
     /** Sama kayak takeDamage(int), tapi tau siapa yang mukul (dipakai set effect Dread Guardian). attacker boleh null. */
     public void takeDamageFrom(int dmg, Entity attacker) {
         if (isDead) return;
+        if (scripted) return; // lagi lompat masuk / keluar portal air: kebal sebentar
         if (skillManager != null && skillManager.skillV.isActive) return; // SkillV: player kebal selama skill
         if (dodge > 0) {
             int chance = Math.min(dodge, 50);
@@ -479,6 +526,7 @@ public class player extends Entity {
     }
 
     public void drawHPBar(Graphics2D g2) {
+        if (scripted && scriptSink > 0) return; // lagi tenggelam di air portal: HP bar ikut hilang
         int barWidth = 40;
         int barHeight = 5;
         int x = screenX;
@@ -551,6 +599,7 @@ public class player extends Entity {
         buffs.update();
         this.attack = getTotalDamage();
         gp.initInspectButtons();
+        if (scripted) { isMoving = false; return; } // WaterPortal yang menggerakkan player selama lompat portal
         if (jumpCooldown > 0) jumpCooldown--;
         if (isHit) {
             hitFlashTimer--;
@@ -893,7 +942,14 @@ public class player extends Entity {
                         case "right": jdx =  jumpSpeed; break;
                     }
                     collisionOn = false;
-                    gp.colision.checkObject(this, jdx, jdy);
+                    if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null && gp.domainManager.isWaterDomain()) {
+                        // Water Domain: lompat tidak boleh nembus tebing / menyeberangi air dalam / masuk ke void.
+                        // (objCol itu collision dunia luar, koordinatnya gak ada hubungannya sama interior domain.)
+                        Rectangle jumpBox = new Rectangle(x + jdx + solidArea.x, y + jdy + solidArea.y, solidArea.width, solidArea.height);
+                        if (gp.domainManager.checkCollision(jumpBox)) collisionOn = true;
+                    } else {
+                        gp.colision.checkObject(this, jdx, jdy);
+                    }
                     for (int i = 0; i < gp.npc.length; i++) {
                         if (gp.npc[i] != null) gp.colision.checkEntity(this, gp.npc[i], jdx, jdy);
                     }
@@ -1267,45 +1323,50 @@ public class player extends Entity {
             return;
         }
 
-        skillManager.draw(g2);
+        if (!(scripted && scriptSink > 0)) skillManager.draw(g2); // bar cooldown skill ikut hilang saat tenggelam di air portal
 
-        if (jumpState != JumpState.NONE) {
-            int jumpFrameIndex = 0;
-            switch (jumpState) {
-                case PREP: jumpFrameIndex = 0; break;
-                case AIR:  jumpFrameIndex = 1; break;
-                case LAND: jumpFrameIndex = 0; break;
-                default:   jumpFrameIndex = 0; break;
-            }
-            switch (jumpDirection) {
+        if (jumpState != JumpState.NONE || scripted) {
+            // lompat biasa: pose ditentukan jumpState. Lompat berskrip (portal air): pose ditentukan WaterPortal.
+            boolean airPose = scripted ? scriptAir : (jumpState == JumpState.AIR);
+            String jumpDir = scripted ? scriptDir : jumpDirection;
+            int jumpFrameIndex = airPose ? 1 : 0;
+            switch (jumpDir) {
                 case "up":    image = jumpUpFrames[jumpFrameIndex];    break;
                 case "down":  image = jumpDownFrames[jumpFrameIndex];  break;
                 case "left":  image = jumpLeftFrames[jumpFrameIndex];  break;
                 case "right": image = jumpRightFrames[jumpFrameIndex]; break;
             }
-            drawStaminaBar(g2);
-            drawShadow(g2);
+            if (!scripted) drawStaminaBar(g2);
+            if (!scripted || scriptShadow) drawShadow(g2);
 
             int jumpDrawSize = gp.tileSize * 2;
             int jumpDrawX = screenX - gp.tileSize / 2;
             int jumpDrawY = screenY - (gp.tileSize / 3);
-            if (jumpState == JumpState.AIR) jumpDrawY -= 16;
+            if (!scripted && airPose) jumpDrawY -= 16;
+            if (scripted) jumpDrawY += scriptSink - scriptLift;
+
+            // tenggelam: semua yang ada di bawah garis air dipotong, jadi badan "masuk" ke air
+            java.awt.Shape oldClip = g2.getClip();
+            if (scripted && scriptSink > 0) {
+                g2.clipRect(-20000, -20000, 40000, 20000 + screenY + scriptWaterLine);
+            }
 
             g2.drawImage(image, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
 
             if (currentArmor != null) {
                 // sprite armor disimpan per index frame jump BODY (beda sama baju dasar yang indexnya kebalik)
-                BufferedImage armorBody = currentArmor.getBody("jump", jumpFrameIndex, jumpDirection);
+                BufferedImage armorBody = currentArmor.getBody("jump", jumpFrameIndex, jumpDir);
                 if (armorBody != null) g2.drawImage(armorBody, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
-                BufferedImage armorHead = currentArmor.getHead("jump", jumpFrameIndex, jumpDirection);
+                BufferedImage armorHead = currentArmor.getHead("jump", jumpFrameIndex, jumpDir);
                 if (armorHead != null) g2.drawImage(armorHead, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
             } else if (currentCloth != null) {
                 int clothJumpFrameIndex = (jumpFrameIndex == 0) ? 1 : 0;
-                BufferedImage clothJump = currentCloth.getJumpFrame(clothJumpFrameIndex, jumpDirection);
+                BufferedImage clothJump = currentCloth.getJumpFrame(clothJumpFrameIndex, jumpDir);
                 if (clothJump != null) {
                     g2.drawImage(clothJump, jumpDrawX, jumpDrawY, jumpDrawSize, jumpDrawSize, null);
                 }
             }
+            g2.setClip(oldClip);
             return;
         }
 
