@@ -62,8 +62,8 @@ public class DrownedSoldier extends Entity {
     private static final int HEAD_PX = 22;             // puncak kepala dari atas sprite (px layar), buat HP bar
 
     // ═══════════ STAT (gampang di-tune) ═══════════
-    public static final int    MAX_LIFE        = 1100;
-    public static final int    ATTACK_DAMAGE   = 40;
+    public static final int    MAX_LIFE        = 4000;
+    public static final int    ATTACK_DAMAGE   = 150;
     public static final double MOVE_SPEED      = 1.4;    // px / frame saat ngejar
     private static final double WANDER_SPEED   = 0.7;
     public static final int    EXP_VALUE       = 150;
@@ -77,9 +77,13 @@ public class DrownedSoldier extends Entity {
     private static final int ATTACK_SPREAD     = 18;     // setengah lebar hitbox tusukan (sempit: cuma kena yang tepat di depan)
     private static final int ATTACK_FRAME_TICKS = 7;     // 4 frame x 7 tick; tusukan kena ~14 tick (~0.23 dtk) setelah mulai
     private static final int ATTACK_COOLDOWN   = 70;
+    private static final int NO_HIT_HEAL_SECONDS = 8;   // tanpa kena hit selama ini (detik, dikali gp.FPS) -> HP langsung full lagi
     private static final int HURT_TICKS        = 16;
     private static final int HURT_IMMUNITY     = 56;     // jeda sesudah terhuyung di mana pukulan gak bikin dia terhuyung lagi
     private static final int WANDER_RADIUS     = 200;
+    private static final int WALK_TICKS_CHASE  = 8;      // tick per frame jalan saat ngejar / pulang (sama kayak player)
+    private static final int WALK_TICKS_WANDER = 12;     // roaming speed-nya cuma 0.7 px/tick, jadi frame diganti lebih pelan biar langkah gak "ngesot"
+    private static final int WALK_GRACE        = 3;      // toleransi tick tanpa gerak sebelum animasi jalan dianggap berhenti
 
     // ═══════════ DROP / RESPAWN ═══════════
     private static final double BONE_CHANCE    = 0.70;   // 1-4 Bone
@@ -94,6 +98,7 @@ public class DrownedSoldier extends Entity {
     private int dirIdx = 0;                              // 0 down, 1 up, 2 left, 3 right
     private int idleFrame = 0, idleTimer = 0;
     private int walkFrame = 0, walkTimer = 0;
+    private int walkGrace = 0;                           // sisa tick "masih dianggap jalan" (anti reset animasi pas ada tick tanpa gerak)
     private int atkFrame = 0, atkTimer = 0, atkCooldown = 0;
     private boolean swingHitDone = false;
     private int hurtTimer = 0, hurtImmunity = 0;
@@ -302,6 +307,7 @@ public class DrownedSoldier extends Entity {
         }
 
         int ix = takeStep(vx * spd, true), iy = takeStep(vy * spd, false);
+        if (ix == 0 && iy == 0) return true;   // masih ngumpulin pecahan langkah (diagonal ~0.99 px): tetap jalan, bukan macet
         boolean mx = ix != 0 && tryMove(ix, 0);
         boolean my = iy != 0 && tryMove(0, iy);
         moved = mx || my;
@@ -365,7 +371,7 @@ public class DrownedSoldier extends Entity {
                 idleAnim();
                 if (targetValid && dist <= DETECTION_RANGE && spawnDist <= SPAWN_LEASH) { state = State.CHASE; break; }
                 wanderIdleTimer++;
-                if (wanderIdleTimer >= 90 + RNG.nextInt(90)) { wanderIdleTimer = 0; pickWander(); state = State.WANDER; }
+                if (wanderIdleTimer >= 90 + RNG.nextInt(90)) { wanderIdleTimer = 0; pickWander(); state = State.WANDER; doWander(); }   // doWander() langsung: tick pertama gak boleh nampilin pose idle
                 break;
 
             case WANDER:
@@ -382,7 +388,7 @@ public class DrownedSoldier extends Entity {
                 }
                 faceToward(tx - centerX(), ty - centerY());
                 if (dist <= ATTACK_RANGE && atkCooldown == 0) {
-                    state = State.ATTACK; atkFrame = 0; atkTimer = 0; swingHitDone = false;
+                    state = State.ATTACK; atkFrame = 0; atkTimer = 0; swingHitDone = false; walkGrace = 0;
                     break;
                 }
                 if (dist > ATTACK_RANGE * 0.8) movedThisTick = steerTowards(tx, ty, speed);
@@ -410,8 +416,17 @@ public class DrownedSoldier extends Entity {
                 break;
         }
 
-        if (movedThisTick) walkAnim();
-        else if (state != State.ATTACK) { walkFrame = 0; walkTimer = 0; }
+        // Animasi jalan jangan digantung ke "geser >= 1 px tick ini": speed pecahan (roaming 0.7 px/tick) bikin tiap
+        // beberapa tick langkahnya 0 px, dan dulu itu langsung mereset walkFrame/walkTimer ke 0 -> timer gak pernah
+        // nyampe batas, frame cuma 0 terus dan sprite kedip antara pose jalan-0 dan idle (kelihatan patah-patah).
+        if (movedThisTick) {
+            walkGrace = WALK_GRACE;
+            walkAnim();
+        } else if (state != State.ATTACK) {
+            if (walkGrace > 0) walkGrace--;
+            if (walkGrace > 0) walkAnim();            // hiccup sesaat (belok / geser): lanjutkan siklus
+            else { walkFrame = 0; walkTimer = 0; }    // benar-benar berhenti
+        }
     }
 
     private void idleAnim() {
@@ -421,7 +436,8 @@ public class DrownedSoldier extends Entity {
 
     private void walkAnim() {
         walkTimer++;
-        if (walkTimer >= 8) { walkTimer = 0; walkFrame = (walkFrame + 1) % FRAME_COUNT[A_WALK]; }
+        int len = state == State.WANDER ? WALK_TICKS_WANDER : WALK_TICKS_CHASE;
+        if (walkTimer >= len) { walkTimer = 0; walkFrame = (walkFrame + 1) % FRAME_COUNT[A_WALK]; }
     }
 
     private void pickWander() {
@@ -436,11 +452,13 @@ public class DrownedSoldier extends Entity {
             wanderDx = d[0]; wanderDy = d[1];
         }
         wanderTimer = 40 + RNG.nextInt(70);
+        accX = 0; accY = 0;               // buang sisa pecahan dari arah sebelumnya (bisa bernilai negatif -> langkah pertama meleset)
         faceAxis(wanderDx, wanderDy);
     }
 
     private void doWander() {
         int ix = takeStep(wanderDx * WANDER_SPEED, true), iy = takeStep(wanderDy * WANDER_SPEED, false);
+        if (ix == 0 && iy == 0) { movedThisTick = true; return; }   // tick tanpa pergeseran px (0.7 px/tick): tetap jalan, jangan dihitung diam
         boolean moved = (ix != 0 && tryMove(ix, 0)) | (iy != 0 && tryMove(0, iy));
         if (moved) movedThisTick = true;
         else if (ix != 0 || iy != 0) { state = State.IDLE; wanderIdleTimer = 0; }   // mentok: berhenti dulu
@@ -484,7 +502,10 @@ public class DrownedSoldier extends Entity {
     private void updateRegen() {
         if (life >= maxLife) { noDamageTimer = 0; return; }
         noDamageTimer++;
-        if (noDamageTimer >= 480 && noDamageTimer % 6 == 0) life = Math.min(maxLife, life + 2);   // 8 detik tanpa dipukul
+        if (noDamageTimer >= NO_HIT_HEAL_SECONDS * gp.FPS) {   // tidak dipukul NO_HIT_HEAL_SECONDS detik -> HP langsung penuh
+            life = maxLife;
+            noDamageTimer = 0;
+        }
     }
 
     // ═══════════ DAMAGE ═══════════
@@ -503,7 +524,7 @@ public class DrownedSoldier extends Entity {
             state = State.HURT;
             hurtTimer = HURT_TICKS;
             hurtImmunity = HURT_TICKS + HURT_IMMUNITY;
-            atkFrame = 0; atkTimer = 0;
+            atkFrame = 0; atkTimer = 0; walkGrace = 0;
         } else if (state != State.HURT) {
             state = State.CHASE;        // tetap marah, cuma gak terhuyung lagi
         }
@@ -602,7 +623,7 @@ public class DrownedSoldier extends Entity {
         state = State.IDLE;
         dirIdx = 0;
         direction = "down";
-        idleFrame = 0; idleTimer = 0; walkFrame = 0; walkTimer = 0;
+        idleFrame = 0; idleTimer = 0; walkFrame = 0; walkTimer = 0; walkGrace = 0;
         atkFrame = 0; atkTimer = 0; atkCooldown = 0; swingHitDone = false;
         hurtTimer = 0; hurtImmunity = 0;
         deathFrame = 0; deathTimer = 0; deathHold = 0; fadeTimer = 0;
@@ -664,7 +685,7 @@ public class DrownedSoldier extends Entity {
             case HURT:   return FRAMES[A_HURT][dirIdx][hurtTimer > HURT_TICKS / 2 ? 0 : 1];
             case ATTACK: return FRAMES[A_ATTACK][dirIdx][Math.min(atkFrame, FRAME_COUNT[A_ATTACK] - 1)];
             default:
-                if (movedThisTick) return FRAMES[A_WALK][dirIdx][walkFrame % FRAME_COUNT[A_WALK]];
+                if (movedThisTick || walkGrace > 0) return FRAMES[A_WALK][dirIdx][walkFrame % FRAME_COUNT[A_WALK]];
                 return FRAMES[A_IDLE][dirIdx][idleFrame % FRAME_COUNT[A_IDLE]];
         }
     }
