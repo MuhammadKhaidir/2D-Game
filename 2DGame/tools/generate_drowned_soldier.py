@@ -18,7 +18,7 @@ Output:
 Tata letak sheet (HARUS sama dengan DrownedSoldier.java):
     kolom  = nomor frame (maks 6, sel 48 px)
     baris  = ANIM_INDEX * 4 + ARAH_INDEX
-    anim   : 0 idle (4) | 1 walk (6) | 2 attack (6, frame ke-4 = tebasan kena) | 3 hurt (2) | 4 death (6)
+    anim   : 0 idle (4) | 1 walk (6) | 2 attack (4, TUSUKAN lurus; frame ke-3 = tusukan kena) | 3 hurt (2) | 4 death (6)
     arah   : 0 down(depan) | 1 up(belakang) | 2 left | 3 right (cermin dari left)
     kaki   : menapak di baris ke-44 tiap sel (GROUND)
 
@@ -43,7 +43,7 @@ ICON_PATH = ROOT / 'drop' / 'DrownedEmblem.png'
 CELL = 48
 GROUND = 44
 COLS = 6
-ANIMS = [('idle', 4), ('walk', 6), ('attack', 6), ('hurt', 2), ('death', 6)]
+ANIMS = [('idle', 4), ('walk', 6), ('attack', 4), ('hurt', 2), ('death', 6)]
 DIRS = ['down', 'up', 'left', 'right']
 
 
@@ -185,31 +185,25 @@ def sword(cv, hand, ang, slen=SW, seed=3):
     cv.px(round(hx - ux * 3), round(hy - uy * 3), P['gold'])
 
 
-def sweep(cv, prev, cur, b=0, slen=SW):
-    """Smear tebasan pucat berbentuk bulan sabit: area yang disapu ujung bilah dari pose sebelumnya ke pose sekarang."""
-    (h0, a0), (h1, a1) = prev, cur
-    da = ((a1 - a0 + 180) % 360) - 180                 # selisih sudut lewat jalur terpendek
-    da = max(-75, min(75, da))                         # batasi supaya sabitnya tetap ramping
-    steps = 10
-    outer, inner = [], []
-    for i in range(steps + 1):
-        t = i / steps
-        hx = h0[0] + (h1[0] - h0[0]) * t
-        hy = h0[1] + (h1[1] - h0[1]) * t + b
-        a = math.radians(a1 - da + da * t)
-        ux, uy = math.cos(a), math.sin(a)
-        outer.append((hx + ux * (slen + 3), hy + uy * (slen + 3)))
-        inner.append((hx + ux * (slen * 0.72), hy + uy * (slen * 0.72)))
-    cv.poly(outer + inner[::-1], P['trail2'])
-    for i in range(steps):                              # tepi luar lebih terang
-        cv.line((round(outer[i][0]), round(outer[i][1])), (round(outer[i + 1][0]), round(outer[i + 1][1])), P['trail'], 1)
+def thrust_streak(cv, hand, ang, slen=SW):
+    """Garis kecepatan pucat sejajar bilah (dua di sisi kiri-kanan) + kilau di ujung: kesan tusukan yang melesat lurus."""
+    hx, hy = hand
+    a = math.radians(ang)
+    ux, uy = math.cos(a), math.sin(a)
+    nx, ny = -uy, ux
+    tx, ty = hx + ux * (slen + 2), hy + uy * (slen + 2)
+    for off, t0 in ((-3.2, 0.35), (3.2, 0.5)):
+        p0 = (round(hx + ux * slen * t0 + nx * off), round(hy + uy * slen * t0 + ny * off))
+        p1 = (round(tx + nx * off * 0.8), round(ty + ny * off * 0.8))
+        cv.line(p0, p1, P['trail'], 1)
+    cv.px(round(tx), round(ty), P['water_l'])
 
 
 def finish_weapon(cv, pose, hx, hy, b, seed):
     if 'ang' not in pose:
         return
-    if pose.get('sweep'):
-        sweep(cv, pose['sweep'], (pose['hand'], pose['ang']), b, pose.get('slen', SW))
+    if pose.get('streak'):
+        thrust_streak(cv, (hx, hy), pose['ang'], pose.get('slen', SW))
     sword(cv, (hx, hy), pose['ang'], pose.get('slen', SW), seed)
 
 
@@ -567,8 +561,6 @@ def mirror_pose(p):
             q[k] = mx(q[k])
     if 'ang' in q:
         q['ang'] = (180 - q['ang']) % 360
-    if 'sweep' in q:
-        q['sweep'] = (mx(q['sweep'][0]), (180 - q['sweep'][1]) % 360)
     if 'legs' in q:
         q['legs'] = [(-d, l) for d, l in reversed(q['legs'])]
     if 'head' in q:
@@ -609,26 +601,32 @@ def pose_walk(view, f):
 
 
 def pose_attack(view, f):
-    """6 frame: 0-1 angkat pedang, 2 awal ayun, 3 tebasan kena (frame hit), 4-5 pulih. Tiap pose = (tangan, sudut pedang)."""
-    if view == 'up':
-        return mirror_pose(pose_attack('down', f))
-    p = {'bob': (0, 0, 1, 1, 1, 0)[f], 'sway': f % 4, 'seed': 0}
+    """TUSUKAN lurus, 4 frame (gak ada ayunan): 0 tarik pedang ke belakang (aba-aba), 1 melesat maju,
+    2 tangan lurus penuh = TUSUKAN KENA (frame hit), 3 tarik balik. Tiap pose = (tangan, sudut pedang, panjang bilah).
+    Tampak depan: bilah mengarah ke penonton (memendek karena perspektif); tampak belakang: bilah mengarah ke atas
+    (menjauhi penonton); tampak samping: bilah lurus mendatar ke depan. Tampak kanan = cermin tampak kiri."""
+    p = {'bob': 0, 'sway': f % 4, 'seed': 0, 'streak': f in (1, 2)}
     if view == 'down':
-        hands = [(14, 27), (15, 20), (19, 21), (24, 28), (25, 30), (18, 31)]
-        angs = [262, 282, 320, 50, 65, 245]
-        arm2 = [(32, 30), (33, 28), (33, 27), (31, 30), (31, 31), (32, 31)]
-        head = [(0, 0), (0, -1), (0, 0), (0, 1), (0, 1), (0, 0)][f]
-        p.update(legs=[(0, 0), (0, 0)] if f < 3 else [(-1, 0), (1, 0)], hand=hands[f], ang=angs[f], arm2=arm2[f], head=head)
-        if f in (2, 3):
-            p['sweep'] = (hands[f - 1], angs[f - 1])
+        hands = [(13, 27), (12, 29), (11, 31), (14, 30)]
+        angs = [258, 105, 118, 235]
+        slens = [16, 13, 14, 15]
+        arm2 = [(33, 30), (33, 28), (32, 27), (32, 30)]
+        p.update(bob=(0, 1, 1, 0)[f], legs=[(0, 0), (0, 0)] if f == 0 else [(-1, 0), (1, 0)],
+                 hand=hands[f], ang=angs[f], slen=slens[f], arm2=arm2[f], head=[(0, -1), (0, 1), (0, 2), (0, 1)][f])
+    elif view == 'up':
+        hands = [(32, 28), (33, 23), (34, 17), (33, 22)]
+        angs = [270, 272, 272, 275]
+        slens = [14, 14, 12, 14]
+        arm2 = [(15, 30), (15, 29), (14, 28), (15, 30)]
+        p.update(bob=(0, -1, -1, 0)[f], legs=[(0, 0), (0, 0)] if f == 0 else [(1, 0), (-1, 0)],
+                 hand=hands[f], ang=angs[f], slen=slens[f], arm2=arm2[f], head=[(0, 1), (0, -1), (0, -2), (0, -1)][f])
     else:
-        hands = [(25, 21), (27, 17), (22, 17), (18, 24), (17, 29), (18, 29)]
-        angs = [292, 318, 255, 185, 150, 195]
-        arm2 = [(28, 29), (29, 27), (29, 26), (27, 29), (27, 30), (27, 30)]
-        p.update(stride=(0, 0, 0, 2, 2, 0)[f], lifts=(0, 0), hand=hands[f], ang=angs[f], arm2=arm2[f],
-                 head=[(0, 0), (0, -1), (0, 0), (-1, 1), (-1, 1), (0, 0)][f], lean=[0, -1, 0, 2, 2, 1][f])
-        if f in (2, 3):
-            p['sweep'] = (hands[f - 1], angs[f - 1])
+        hands = [(25, 27), (17, 26), (13, 26), (18, 27)]
+        angs = [182, 181, 180, 182]
+        slens = [14, 14, 11, 14]
+        arm2 = [(28, 30), (29, 30), (30, 30), (29, 30)]
+        p.update(stride=(0, 1, 2, 1)[f], lifts=(0, 0), hand=hands[f], ang=angs[f], slen=slens[f], arm2=arm2[f],
+                 head=[(0, 0), (0, 0), (-1, 1), (0, 0)][f], lean=[-1, 1, 2, 1][f])
     return p
 
 

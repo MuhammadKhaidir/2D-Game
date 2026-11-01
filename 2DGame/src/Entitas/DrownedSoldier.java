@@ -24,7 +24,8 @@ import javax.imageio.ImageIO;
  * Perilaku:
  *   IDLE / WANDER  patroli kecil di sekitar titik spawn
  *   CHASE          melihat player (DETECTION_RANGE) -> mengejar, menyusuri dinding kalau mentok
- *   ATTACK         tebasan pedang 6 frame; tebasan kena di frame ke-4 (HIT_FRAME), hitbox di depan badan
+ *   ATTACK         tusukan pedang lurus 4 frame (tarik -> melesat -> tusukan kena -> tarik balik); tusukan kena di
+ *                  frame ke-3 (HIT_FRAME), hitbox memanjang sempit lurus di depan badan
  *   HURT           terhuyung sebentar kalau kena pukul (tidak bisa di-stunlock: ada jeda kebal-stagger)
  *   RETURN         kalau player kabur terlalu jauh, balik ke titik spawn sambil pulih
  *   DYING          animasi mati (jatuh berlutut -> jadi tumpukan zirah di genangan), memudar, lalu respawn
@@ -45,8 +46,8 @@ public class DrownedSoldier extends Entity {
 
     // indeks animasi (baris = ANIM * 4 + arah)
     private static final int A_IDLE = 0, A_WALK = 1, A_ATTACK = 2, A_HURT = 3, A_DEATH = 4;
-    private static final int[] FRAME_COUNT = {4, 6, 6, 2, 6};
-    private static final int HIT_FRAME = 3;            // frame ke-4 attack = tebasan kena
+    private static final int[] FRAME_COUNT = {4, 6, 4, 2, 6};
+    private static final int HIT_FRAME = 2;            // frame ke-3 attack = tusukan kena (tangan lurus penuh)
 
     private static final BufferedImage[][][] FRAMES = new BufferedImage[5][4][];   // [anim][arah][frame]
     private static boolean framesLoaded = false;
@@ -66,10 +67,10 @@ public class DrownedSoldier extends Entity {
     private static final int DETECTION_RANGE   = 270;    // jarak (pusat ke pusat) mulai mengejar
     private static final int LEASH_RANGE       = 480;    // lewat ini dia menyerah dan pulang
     private static final int SPAWN_LEASH       = 650;    // jarak maksimal dari titik spawn
-    private static final int ATTACK_RANGE      = 58;     // jarak mulai menebas
-    private static final int ATTACK_REACH      = 54;     // panjang hitbox tebasan
-    private static final int ATTACK_SPREAD     = 28;     // setengah lebar hitbox tebasan
-    private static final int ATTACK_FRAME_TICKS = 6;
+    private static final int ATTACK_RANGE      = 62;     // jarak mulai menusuk
+    private static final int ATTACK_REACH      = 56;     // panjang hitbox tusukan (tusukan menjangkau lebih jauh dari tebasan)
+    private static final int ATTACK_SPREAD     = 18;     // setengah lebar hitbox tusukan (sempit: cuma kena yang tepat di depan)
+    private static final int ATTACK_FRAME_TICKS = 7;     // 4 frame x 7 tick; tusukan kena ~14 tick (~0.23 dtk) setelah mulai
     private static final int ATTACK_COOLDOWN   = 70;
     private static final int HURT_TICKS        = 16;
     private static final int HURT_IMMUNITY     = 56;     // jeda sesudah terhuyung di mana pukulan gak bikin dia terhuyung lagi
@@ -452,7 +453,7 @@ public class DrownedSoldier extends Entity {
         }
     }
 
-    /** Hitbox tebasan di depan badan (searah hadap). */
+    /** Hitbox tusukan di depan badan (searah hadap): panjang dan sempit. */
     private Rectangle attackBox() {
         int cx = centerX(), cy = centerY();
         int hw = solidArea.width / 2, hh = solidArea.height / 2;
@@ -486,7 +487,7 @@ public class DrownedSoldier extends Entity {
         if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
         if (life <= 0) { startDying(); return; }
 
-        // sedang menebas: jangan diinterupsi (animasinya dibiarkan selesai)
+        // sedang menusuk: jangan diinterupsi (animasinya dibiarkan selesai)
         if (state == State.ATTACK) return;
         if (hurtImmunity == 0) {
             state = State.HURT;
