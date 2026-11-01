@@ -598,6 +598,7 @@ public class SkillV extends Skill {
         if (m instanceof Entitas.Wolf) return ((Entitas.Wolf) m).isAlive();
         if (m instanceof Skeleton)     return ((Skeleton) m).alive;
         if (m instanceof SkeletonKing) return ((SkeletonKing) m).alive;
+        if (m instanceof Entitas.DrownedSoldier) return ((Entitas.DrownedSoldier) m).isAlive();
         return true;
     }
 
@@ -616,6 +617,7 @@ public class SkillV extends Skill {
             list.addAll(gp.domainManager.getSkeletons());      // kosong kalau lagi di dalam room
             list.addAll(gp.domainManager.getGolemites());      // kosong kalau lagi di dalam room
             list.addAll(gp.domainManager.getGolems());         // kosong kalau lagi di dalam room
+            list.addAll(gp.domainManager.getDrownedSoldiers()); // Water Domain (kosong di domain lain / di dalam room)
             list.addAll(gp.domainManager.getRoomSkeletons());  // cuma ada di dalam room
             if (gp.domainManager.getBossSkeleton() != null) list.add(gp.domainManager.getBossSkeleton());
         }

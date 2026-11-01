@@ -244,6 +244,7 @@ public class SaveManager {
             case "Coin":                                  // CURRENCY
             case "Gold":         return im.COIN;          // nama lama, biar save lama tetap kebaca
             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
+            case "Drowned Royal Emblem": return im.DROWNED_EMBLEM; // DROP DROWNED SOLDIER (Water Domain)
             case "Dread Armor":  return im.DREAD_ARMOR;   // DARK MERCHANT (set armor utuh)
             case "Iron Armor":   return im.IRON_ARMOR;    // ARMOR MERCHANT (set armor utuh)
             case "Umbral Armor": return im.UMBRAL_ARMOR;  // DARK MERCHANT (set armor utuh)

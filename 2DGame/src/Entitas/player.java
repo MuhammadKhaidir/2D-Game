@@ -797,6 +797,24 @@ public class player extends Entity {
                                 }
                             }
                         }
+                        // HIT DROWNED SOLDIER DI WATER DOMAIN
+                        if (!attackHit && gp.domainManager != null) {
+                            for (Entitas.DrownedSoldier ds : gp.domainManager.getDrownedSoldiers()) {
+                                if (ds == null || !ds.isAlive()) continue;
+                                Rectangle dsBox = new Rectangle(ds.x + ds.solidArea.x, ds.y + ds.solidArea.y, ds.solidArea.width, ds.solidArea.height);
+                                if (attackBox.intersects(dsBox)) {
+                                    int currentAtk = getTotalDamage();
+                                    int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
+                                    ds.takeDamage(damageDealt);
+                                    ds.knockbackFrom(this);
+                                    hitSomething = true;
+                                    attackHit = true;
+                                    if (currentWeapon != null) currentWeapon.playAttackSound(attackType, isWeaponEquipped);
+                                    else sound.playPunch();
+                                    break;
+                                }
+                            }
+                        }
                      // HIT SKELETON SUMMONAN BOSS (di dalam boss room) — NEW
                         if (!attackHit && gp.domainManager != null) {
                             for (Entitas.Skeleton sk : gp.domainManager.getRoomSkeletons()) {
@@ -1063,6 +1081,16 @@ public class player extends Entity {
                     if (gl == null || !gl.isAlive()) continue;
                     Rectangle glBox = new Rectangle(gl.x + gl.solidArea.x, gl.y + gl.solidArea.y, gl.solidArea.width, gl.solidArea.height);
                     if (nextPlayerBox.intersects(glBox)) {
+                        collisionOn = true;
+                        break;
+                    }
+                }
+            }
+            if (!collisionOn && gp.domainManager != null) {   // Drowned Soldier (Water Domain)
+                for (Entitas.DrownedSoldier ds : gp.domainManager.getDrownedSoldiers()) {
+                    if (ds == null || !ds.isAlive()) continue;
+                    Rectangle dsBox = new Rectangle(ds.x + ds.solidArea.x, ds.y + ds.solidArea.y, ds.solidArea.width, ds.solidArea.height);
+                    if (nextPlayerBox.intersects(dsBox)) {
                         collisionOn = true;
                         break;
                     }

@@ -104,6 +104,7 @@ public class MobIndexUI {
         mobList.add(new MobData("SLIME", "COMMON", "A bouncy, gelatinous creature. Mildly aggressive but dangerously sticky. Drops chemically reactive gel.", 50, 5, 2, "Coin (100%)", gp.setup("slime_idle_down_1")));
         mobList.add(new MobData("WOLF", "COMMON", "A lean predator that only prowls after dusk (18:00 - 05:59). It stalks travelers from the dark, then charges and bites once they stray too close. Fades away at dawn and returns at full strength the next night.", 80, 10, 2.8, "Coin (100%)", squareIcon(gp.setup("wolf_idle_right_1"))));
         mobList.add(new MobData("GOLEMITE", "RARE", "A small offshoot of the Stone Golem, chipped off its parent's body. Fast on its feet and hits harder than it looks. Nests in the Golem Hide, can be tamed.", 1500, 80, 1, "Coin (100%)", gp.setup("golemiteFrontWalk (1)")));
+        mobList.add(new MobData("DROWNED SOLDIER", "RARE", "A royal guard of the Sunken Kingdom who never left his post when the sea took the city. Rust-eaten blade, patina-green armor, seaweed in his helm - he still patrols the flooded ruins and cuts down anything that walks the halls. Found in the Water Domain.", 1100, 40, 1.4, "Coin (100%), Bone (70%), Drowned Royal Emblem (35%)", squareIcon(Entitas.DrownedSoldier.getIconFrame())));
         mobList.add(new MobData("STONE GOLEM", "EPIC", "A massive, powerful construct carved from living solid stone. Awakens from deep underground to crush intruders, can be tamed.", 5000, 200, 1, "Coin (100%)", gp.setup("GolemFrontWalk (6)")));
     }
 

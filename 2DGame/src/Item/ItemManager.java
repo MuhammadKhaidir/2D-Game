@@ -28,6 +28,8 @@ public class ItemManager {
     public Item SKELETON_KEY;
     // DROP SKELETON KING (boss)
     public Item SOUL_OF_SKELETON;
+    // DROP DROWNED SOLDIER (Water Domain)
+    public Item DROWNED_EMBLEM;
     // ITEM DARI DARK MERCHANT
     public Item BONE_SWORD;
     // EQUIPMENT (armor = satu set utuh per item, data-nya di ArmorSet)
@@ -86,6 +88,7 @@ public class ItemManager {
             SKELETON_KEY = new Item("Skeleton Key",  safeLoad("/drop/SkeletonKey.png", "/drop/Ore.png"));
             // TODO: pastikan file "Soul of Skeleton.png" ada di folder /drop/ (resources)
             SOUL_OF_SKELETON = new Item("Soul of Skeleton", safeLoad("/drop/Soul of Skeleton.png", "/drop/Ore.png"));
+            DROWNED_EMBLEM = new Item("Drowned Royal Emblem", safeLoad("/drop/DrownedEmblem.png", "/drop/Ore.png")); // lambang perunggu prajurit Sunken Kingdom
             BONE_SWORD = new Item("Bone Sword", safeLoad("/Aset/BoneSword.png", "/Aset/BasicSword.png"));
             DREAD_ARMOR = new Item(ArmorSet.DREAD.itemName, safeLoad("/Aset/DreadArmor.png", "/drop/Ore.png"));
             DREAD_ARMOR.maxStack = 1; // armor gak numpuk

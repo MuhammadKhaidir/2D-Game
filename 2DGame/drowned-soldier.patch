@@ -1,0 +1,2867 @@
+diff --git a/2DGame/src/Aset/DrownedSoldier/drowned_soldier_sheet.png b/2DGame/src/Aset/DrownedSoldier/drowned_soldier_sheet.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..e131cb09e02d83dace67915525721e6f59b313bd
+GIT binary patch
+literal 62348
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/2DGame/src/Entitas/DrownedSoldier.java b/2DGame/src/Entitas/DrownedSoldier.java
+new file mode 100644
+index 0000000..9a9e6ed
+--- /dev/null
++++ b/2DGame/src/Entitas/DrownedSoldier.java
+@@ -0,0 +1,704 @@
++package Entitas;
++
++import Item.ItemManager;
++import Main.GamePanel;
++import Tamed.GolemMinion;
++import Tamed.GolemiteMinion;
++import Tamed.UndeadMinion;
++
++import java.awt.AlphaComposite;
++import java.awt.Color;
++import java.awt.Composite;
++import java.awt.Graphics2D;
++import java.awt.Rectangle;
++import java.awt.image.BufferedImage;
++import java.io.InputStream;
++import java.util.Random;
++import javax.imageio.ImageIO;
++
++/**
++ * Drowned Soldier — mantan prajurit penjaga kerajaan bawah laut (Sunken Kingdom), sekarang undead.
++ * Regular mob tingkat menengah buat Water Domain: lebih tebal dan lebih sakit dari Skeleton (400 HP / 15 dmg),
++ * tapi masih di bawah Golemite (1500 HP / 80 dmg).
++ *
++ * Perilaku:
++ *   IDLE / WANDER  patroli kecil di sekitar titik spawn
++ *   CHASE          melihat player (DETECTION_RANGE) -> mengejar, menyusuri dinding kalau mentok
++ *   ATTACK         tebasan pedang 6 frame; tebasan kena di frame ke-4 (HIT_FRAME), hitbox di depan badan
++ *   HURT           terhuyung sebentar kalau kena pukul (tidak bisa di-stunlock: ada jeda kebal-stagger)
++ *   RETURN         kalau player kabur terlalu jauh, balik ke titik spawn sambil pulih
++ *   DYING          animasi mati (jatuh berlutut -> jadi tumpukan zirah di genangan), memudar, lalu respawn
++ *
++ * Sprite: sprite sheet ORIGINAL src/Aset/DrownedSoldier/drowned_soldier_sheet.png (dibuat tools/generate_drowned_soldier.py).
++ * Tata letak sheet: kolom = nomor frame, baris = anim * 4 + arah. Lihat konstanta di bawah.
++ *
++ * Mob ini hanya hidup di Water Domain (DomainManager yang nge-spawn, nge-update, dan membersihkannya waktu keluar).
++ * Targetnya cuma player: minion hasil Death Totem belum bisa melawan mob ini, jadi mob ini tidak mengincar mereka.
++ */
++public class DrownedSoldier extends Entity {
++
++    // ═══════════ SPRITE SHEET ═══════════
++    private static final String SHEET_PATH = "/Aset/DrownedSoldier/drowned_soldier_sheet.png";
++    private static final int CELL  = 48;               // ukuran satu sel di sheet (px)
++    private static final int SCALE = 2;                // diperbesar 2x (nearest) saat load -> 96 px di layar
++    private static final int DRAW  = CELL * SCALE;
++
++    // indeks animasi (baris = ANIM * 4 + arah)
++    private static final int A_IDLE = 0, A_WALK = 1, A_ATTACK = 2, A_HURT = 3, A_DEATH = 4;
++    private static final int[] FRAME_COUNT = {4, 6, 6, 2, 6};
++    private static final int HIT_FRAME = 3;            // frame ke-4 attack = tebasan kena
++
++    private static final BufferedImage[][][] FRAMES = new BufferedImage[5][4][];   // [anim][arah][frame]
++    private static boolean framesLoaded = false;
++
++    // posisi sprite relatif ke (x, y) entity: kaki di baris ke-44 sel -> sejajar dengan dasar hitbox
++    private static final int SPRITE_OFF_X = -24;
++    private static final int SPRITE_OFF_Y = -38;
++
++    // ═══════════ STAT (gampang di-tune) ═══════════
++    public static final int    MAX_LIFE        = 1100;
++    public static final int    ATTACK_DAMAGE   = 40;
++    public static final double MOVE_SPEED      = 1.4;    // px / frame saat ngejar
++    private static final double WANDER_SPEED   = 0.7;
++    public static final int    EXP_VALUE       = 150;
++    public static final int    COIN_VALUE      = 6;
++
++    private static final int DETECTION_RANGE   = 270;    // jarak (pusat ke pusat) mulai mengejar
++    private static final int LEASH_RANGE       = 480;    // lewat ini dia menyerah dan pulang
++    private static final int SPAWN_LEASH       = 650;    // jarak maksimal dari titik spawn
++    private static final int ATTACK_RANGE      = 58;     // jarak mulai menebas
++    private static final int ATTACK_REACH      = 54;     // panjang hitbox tebasan
++    private static final int ATTACK_SPREAD     = 28;     // setengah lebar hitbox tebasan
++    private static final int ATTACK_FRAME_TICKS = 6;
++    private static final int ATTACK_COOLDOWN   = 70;
++    private static final int HURT_TICKS        = 16;
++    private static final int HURT_IMMUNITY     = 56;     // jeda sesudah terhuyung di mana pukulan gak bikin dia terhuyung lagi
++    private static final int WANDER_RADIUS     = 200;
++
++    // ═══════════ DROP / RESPAWN ═══════════
++    private static final double BONE_CHANCE    = 0.70;   // 1-4 Bone
++    private static final double EMBLEM_CHANCE  = 0.35;   // Drowned Royal Emblem (1, kadang 2)
++    private static final int    RESPAWN_DELAY  = 25 * 60;
++    private static final int    RESPAWN_CLEAR  = 220;    // respawn ditunda kalau player masih sedekat ini dari titik spawn
++
++    // ═══════════ STATE ═══════════
++    private enum State { IDLE, WANDER, CHASE, ATTACK, HURT, RETURN, DYING }
++    private State state = State.IDLE;
++
++    private int dirIdx = 0;                              // 0 down, 1 up, 2 left, 3 right
++    private int idleFrame = 0, idleTimer = 0;
++    private int walkFrame = 0, walkTimer = 0;
++    private int atkFrame = 0, atkTimer = 0, atkCooldown = 0;
++    private boolean swingHitDone = false;
++    private int hurtTimer = 0, hurtImmunity = 0;
++    private int deathFrame = 0, deathTimer = 0, deathHold = 0, fadeTimer = 0;
++    private static final int DEATH_FRAME_TICKS = 7, DEATH_HOLD_TICKS = 100, DEATH_FADE_TICKS = 40;
++
++    private int wanderTimer = 0, wanderIdleTimer = 0;
++    private int wanderDx = 0, wanderDy = 0;
++    private int stuckTicks = 0, slideTicks = 0, slideSign = 1;
++    private int returnTicks = 0;
++    private int noDamageTimer = 0;
++    private double accX = 0, accY = 0;                   // sisa pecahan langkah (speed 1.4 px/frame)
++    private boolean movedThisTick = false;
++
++    private boolean spawnSet = false, spawnChecked = false;
++    private boolean active = true;                       // false = lagi menunggu respawn (gak digambar, gak bisa kena)
++    private int respawnCounter = 0;
++
++    private static final int HIT_FLASH_FRAMES = 5;
++    private int whiteFlashTimer = 0;
++    private static final Random RNG = new Random();
++
++    public DrownedSoldier(GamePanel gp) {
++        super(gp);
++        this.name = "Drowned Soldier";
++        this.maxLife = MAX_LIFE;
++        this.life = maxLife;
++        this.speed = MOVE_SPEED;
++        this.direction = "down";
++        this.solidArea = new Rectangle(14, 30, 20, 18);
++        this.solidAreaDefaultX = solidArea.x;
++        this.solidAreaDefaultY = solidArea.y;
++        this.getExpValue = EXP_VALUE;
++        this.coinDrop = COIN_VALUE;
++        this.alive = true;
++        loadFrames();
++    }
++
++    // ═══════════ STATUS (dipakai player, skill, DomainManager, GamePanel) ═══════════
++    /** True selama masih bisa dipukul / mengincar player (tidak sedang mati atau menunggu respawn). */
++    public boolean isAlive() { return active && state != State.DYING && life > 0; }
++
++    /** True selama masih perlu digambar (termasuk animasi mati dan fade-out). */
++    public boolean isVisible() { return active; }
++
++    @Override
++    public int getSortY() {
++        // pakai nilai default: solidArea dipindah ke -9999 pas mati, jangan sampai urutan gambarnya loncat
++        return y + solidAreaDefaultY + solidArea.height;
++    }
++
++    // ═══════════ LOAD SPRITE ═══════════
++    public static synchronized void preloadImages() { loadFrames(); }
++
++    /** Frame idle menghadap depan (sudah diperbesar), buat ikon Mob Index. */
++    public static BufferedImage getIconFrame() {
++        loadFrames();
++        return FRAMES[A_IDLE][0][0];
++    }
++
++    private static synchronized void loadFrames() {
++        if (framesLoaded) return;
++        BufferedImage sheet = null;
++        try (InputStream is = DrownedSoldier.class.getResourceAsStream(SHEET_PATH)) {
++            if (is == null) System.out.println("[DrownedSoldier] Sprite sheet tidak ketemu: " + SHEET_PATH);
++            else sheet = ImageIO.read(is);
++        } catch (Exception e) {
++            System.out.println("[DrownedSoldier] Gagal load sprite sheet: " + e.getMessage());
++        }
++        for (int a = 0; a < 5; a++) {
++            for (int d = 0; d < 4; d++) {
++                FRAMES[a][d] = new BufferedImage[FRAME_COUNT[a]];
++                for (int f = 0; f < FRAME_COUNT[a]; f++) {
++                    FRAMES[a][d][f] = sheet != null && sheet.getHeight() >= (a * 4 + d + 1) * CELL
++                            ? scaleUp(sheet.getSubimage(f * CELL, (a * 4 + d) * CELL, CELL, CELL))
++                            : placeholder();
++                }
++            }
++        }
++        framesLoaded = true;
++        Main.Log.d("[DrownedSoldier] Selesai load sprite sheet.");
++    }
++
++    /** Perbesar SCALE x dengan nearest-neighbor (tajam, tanpa interpolasi). */
++    private static BufferedImage scaleUp(BufferedImage src) {
++        BufferedImage out = new BufferedImage(DRAW, DRAW, BufferedImage.TYPE_INT_ARGB);
++        for (int py = 0; py < CELL; py++) {
++            for (int px = 0; px < CELL; px++) {
++                int argb = src.getRGB(px, py);
++                if ((argb >>> 24) == 0) continue;
++                for (int oy = 0; oy < SCALE; oy++) {
++                    for (int ox = 0; ox < SCALE; ox++) out.setRGB(px * SCALE + ox, py * SCALE + oy, argb);
++                }
++            }
++        }
++        return out;
++    }
++
++    /** Kotak teal polos kalau sprite sheet hilang, supaya game tetap jalan (dan mob tetap kelihatan). */
++    private static BufferedImage placeholder() {
++        BufferedImage img = new BufferedImage(DRAW, DRAW, BufferedImage.TYPE_INT_ARGB);
++        Graphics2D g = img.createGraphics();
++        g.setColor(new Color(70, 140, 130, 200));
++        g.fillRect(DRAW / 2 - 16, DRAW / 2 - 36, 32, 72);
++        g.dispose();
++        return img;
++    }
++
++    // ═══════════ GEOMETRI ═══════════
++    private int centerX() { return x + solidArea.x + solidArea.width / 2; }
++    private int centerY() { return y + solidArea.y + solidArea.height / 2; }
++
++    private static int cx(Entity e) { return e.x + e.solidArea.x + e.solidArea.width / 2; }
++    private static int cy(Entity e) { return e.y + e.solidArea.y + e.solidArea.height / 2; }
++
++    private static Rectangle box(Entity e) {
++        return new Rectangle(e.x + e.solidArea.x, e.y + e.solidArea.y, e.solidArea.width, e.solidArea.height);
++    }
++
++    private void faceToward(int dx, int dy) {
++        // hysteresis kecil supaya hadapnya gak berkedip kalau |dx| ~ |dy|
++        int ax = Math.abs(dx), ay = Math.abs(dy);
++        boolean horizontal = (dirIdx >= 2) ? ax + 6 >= ay : ax > ay + 6;
++        if (horizontal) dirIdx = dx >= 0 ? 3 : 2;
++        else dirIdx = dy >= 0 ? 0 : 1;
++        direction = new String[]{"down", "up", "left", "right"}[dirIdx];
++    }
++
++    // ═══════════ COLLISION ═══════════
++    /** Apakah langkah (dx, dy) terhalang: dinding / air dalam / pilar domain, player, atau prajurit lain. */
++    private boolean blockedBy(int dx, int dy) {
++        Rectangle cur = box(this);
++        Rectangle next = new Rectangle(cur.x + dx, cur.y + dy, cur.width, cur.height);
++        if (gp.domainManager != null && gp.domainManager.checkCollision(next)) return true;
++        // tidak boleh masuk ke badan player / prajurit lain (kalau sudah terlanjur numpuk, tetap boleh menjauh)
++        Rectangle pb = box(gp.player);
++        if (next.intersects(pb) && !cur.intersects(pb)) return true;
++        if (gp.domainManager != null) {
++            for (DrownedSoldier o : gp.domainManager.getDrownedSoldiers()) {
++                if (o == this || !o.isAlive()) continue;
++                Rectangle ob = box(o);
++                if (next.intersects(ob) && !cur.intersects(ob)) return true;
++            }
++        }
++        if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
++            for (Entity m : gp.deathTotemManager.getMinions()) {
++                if (!minionAlive(m)) continue;
++                Rectangle mb = box(m);
++                if (next.intersects(mb) && !cur.intersects(mb)) return true;
++            }
++        }
++        return false;
++    }
++
++    /** Minion Death Totem menyembunyikan field `alive` milik Entity, jadi dicek per tipe (sama kayak Skeleton). */
++    private static boolean minionAlive(Entity m) {
++        if (m == null) return false;
++        if (m instanceof UndeadMinion)   return ((UndeadMinion) m).alive;
++        if (m instanceof GolemiteMinion) return m.alive;
++        if (m instanceof GolemMinion)    return ((GolemMinion) m).alive;
++        return false;
++    }
++
++    private boolean tryMove(int dx, int dy) {
++        if (dx == 0 && dy == 0) return false;
++        if (blockedBy(dx, dy)) return false;
++        x += dx;
++        y += dy;
++        return true;
++    }
++
++    /** Pecahan langkah: speed 1.4 px/frame jadi 1 atau 2 px per frame secara bergantian. */
++    private int takeStep(double v, boolean horizontal) {
++        double acc = (horizontal ? accX : accY) + v;
++        int s = (int) acc;               // dibulatkan ke arah nol
++        acc -= s;
++        if (horizontal) accX = acc; else accY = acc;
++        return s;
++    }
++
++    /**
++     * Gerak satu langkah ke titik (tx, ty). Kalau mentok dinding, merambat menyamping (slide) ke arah acak
++     * selama ~30 frame; kalau macet lama, return false terus supaya pemanggil bisa menyerah.
++     */
++    private boolean steerTowards(int tx, int ty, double spd) {
++        int distX = tx - centerX(), distY = ty - centerY();
++        double vx = Math.abs(distX) < 3 ? 0 : Integer.signum(distX);
++        double vy = Math.abs(distY) < 3 ? 0 : Integer.signum(distY);
++        if (vx == 0 && vy == 0) return false;
++        if (vx != 0 && vy != 0) { vx *= 0.707; vy *= 0.707; }
++
++        boolean moved = false;
++        if (slideTicks > 0) {
++            slideTicks--;
++            // merambat tegak lurus arah utama yang tadi mentok
++            boolean mainHorizontal = Math.abs(distX) >= Math.abs(distY);
++            int s = (int) Math.round(spd) * slideSign;
++            moved = mainHorizontal ? tryMove(0, s) : tryMove(s, 0);
++            if (moved) { stuckTicks = 0; return true; }
++            slideSign = -slideSign;
++        }
++
++        int ix = takeStep(vx * spd, true), iy = takeStep(vy * spd, false);
++        boolean mx = ix != 0 && tryMove(ix, 0);
++        boolean my = iy != 0 && tryMove(0, iy);
++        moved = mx || my;
++        if (moved) {
++            stuckTicks = 0;
++        } else if (ix != 0 || iy != 0) {
++            stuckTicks++;
++            if (stuckTicks >= 6 && slideTicks == 0) {
++                slideTicks = 30;
++                slideSign = RNG.nextBoolean() ? 1 : -1;
++            }
++        }
++        return moved;
++    }
++
++    // ═══════════ UPDATE ═══════════
++    @Override
++    public void update() {
++        if (!spawnSet) { spawnX = x; spawnY = y; spawnSet = true; }
++        movedThisTick = false;
++        if (whiteFlashTimer > 0) whiteFlashTimer--;
++        if (hurtImmunity > 0) hurtImmunity--;
++
++        // ── menunggu respawn ──
++        if (!active) {
++            respawnCounter++;
++            if (respawnCounter >= RESPAWN_DELAY && playerFarFromSpawn()) respawn();
++            return;
++        }
++
++        // ── jaga-jaga: posisi spawn ternyata nyangkut di tembok / air dalam -> geser ke tempat bebas terdekat ──
++        if (!spawnChecked) {
++            spawnChecked = true;
++            relocateIfBlocked();
++        }
++
++        if (state == State.DYING) { updateDying(); return; }
++        if (life <= 0) { startDying(); return; }       // mati lewat jalur selain takeDamage()
++
++        updateRegen();
++
++        // ── terhuyung ──
++        if (state == State.HURT) {
++            if (isKnockback) updateKnockback();
++            hurtTimer--;
++            if (hurtTimer <= 0) state = State.CHASE;
++            return;
++        }
++        if (isKnockback) updateKnockback();
++
++        if (atkCooldown > 0) atkCooldown--;
++
++        Entity target = gp.player;
++        boolean targetValid = !gp.player.isDead;
++        int tx = cx(target), ty = cy(target);
++        double dist = Math.hypot(tx - centerX(), ty - centerY());
++        double spawnDist = Math.hypot(spawnX + 24 - centerX(), spawnY + 39 - centerY());
++
++        switch (state) {
++            case IDLE:
++                idleAnim();
++                if (targetValid && dist <= DETECTION_RANGE && spawnDist <= SPAWN_LEASH) { state = State.CHASE; break; }
++                wanderIdleTimer++;
++                if (wanderIdleTimer >= 90 + RNG.nextInt(90)) { wanderIdleTimer = 0; pickWander(); state = State.WANDER; }
++                break;
++
++            case WANDER:
++                if (targetValid && dist <= DETECTION_RANGE && spawnDist <= SPAWN_LEASH) { state = State.CHASE; break; }
++                wanderTimer--;
++                if (wanderTimer <= 0) { state = State.IDLE; wanderIdleTimer = 0; break; }
++                doWander();
++                break;
++
++            case CHASE:
++                if (!targetValid || dist > LEASH_RANGE || spawnDist > SPAWN_LEASH || stuckTicks > 150) {
++                    state = State.RETURN; returnTicks = 0; stuckTicks = 0;
++                    break;
++                }
++                faceToward(tx - centerX(), ty - centerY());
++                if (dist <= ATTACK_RANGE && atkCooldown == 0) {
++                    state = State.ATTACK; atkFrame = 0; atkTimer = 0; swingHitDone = false;
++                    break;
++                }
++                if (dist > ATTACK_RANGE * 0.8) movedThisTick = steerTowards(tx, ty, speed);
++                break;
++
++            case ATTACK:
++                updateAttack(target, targetValid);
++                break;
++
++            case RETURN:
++                returnTicks++;
++                if (targetValid && dist <= DETECTION_RANGE * 0.7 && spawnDist <= SPAWN_LEASH * 0.8) { state = State.CHASE; break; }
++                if (spawnDist <= 24 || returnTicks > 600) {
++                    if (returnTicks > 600) { x = spawnX; y = spawnY; }   // macet di jalan pulang: langsung dikembalikan
++                    state = State.IDLE; wanderIdleTimer = 0; stuckTicks = 0;
++                    break;
++                }
++                faceToward(spawnX + 24 - centerX(), spawnY + 39 - centerY());
++                movedThisTick = steerTowards(spawnX + 24, spawnY + 39, speed * 1.2);
++                life = Math.min(maxLife, life + 1);                       // pulih pelan selama pulang
++                break;
++
++            case HURT:
++            case DYING:
++                break;
++        }
++
++        if (movedThisTick) walkAnim();
++        else if (state != State.ATTACK) { walkFrame = 0; walkTimer = 0; }
++    }
++
++    private void idleAnim() {
++        idleTimer++;
++        if (idleTimer >= 14) { idleTimer = 0; idleFrame = (idleFrame + 1) % FRAME_COUNT[A_IDLE]; }
++    }
++
++    private void walkAnim() {
++        walkTimer++;
++        if (walkTimer >= 8) { walkTimer = 0; walkFrame = (walkFrame + 1) % FRAME_COUNT[A_WALK]; }
++    }
++
++    private void pickWander() {
++        int[][] dirs = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
++        // kalau sudah jauh dari spawn, jalan balik ke arah spawn
++        int bx = spawnX + 24 - centerX(), by = spawnY + 39 - centerY();
++        if (Math.hypot(bx, by) > WANDER_RADIUS) {
++            if (Math.abs(bx) > Math.abs(by)) { wanderDx = Integer.signum(bx); wanderDy = 0; }
++            else { wanderDx = 0; wanderDy = Integer.signum(by); }
++        } else {
++            int[] d = dirs[RNG.nextInt(4)];
++            wanderDx = d[0]; wanderDy = d[1];
++        }
++        wanderTimer = 40 + RNG.nextInt(70);
++        faceToward(wanderDx, wanderDy);
++    }
++
++    private void doWander() {
++        int ix = takeStep(wanderDx * WANDER_SPEED, true), iy = takeStep(wanderDy * WANDER_SPEED, false);
++        boolean moved = (ix != 0 && tryMove(ix, 0)) | (iy != 0 && tryMove(0, iy));
++        if (moved) movedThisTick = true;
++        else if (ix != 0 || iy != 0) { state = State.IDLE; wanderIdleTimer = 0; }   // mentok: berhenti dulu
++    }
++
++    private void updateAttack(Entity target, boolean targetValid) {
++        atkTimer++;
++        if (atkTimer < ATTACK_FRAME_TICKS) return;
++        atkTimer = 0;
++        atkFrame++;
++        if (atkFrame == HIT_FRAME && !swingHitDone) {
++            swingHitDone = true;
++            gp.playSE("SwordSfx2.wav");
++            if (targetValid) hitTarget(target);
++        }
++        if (atkFrame >= FRAME_COUNT[A_ATTACK]) {
++            atkFrame = 0;
++            atkCooldown = ATTACK_COOLDOWN;
++            state = State.CHASE;
++        }
++    }
++
++    /** Hitbox tebasan di depan badan (searah hadap). */
++    private Rectangle attackBox() {
++        int cx = centerX(), cy = centerY();
++        int hw = solidArea.width / 2, hh = solidArea.height / 2;
++        switch (dirIdx) {
++            case 1:  return new Rectangle(cx - ATTACK_SPREAD, cy - hh - ATTACK_REACH, ATTACK_SPREAD * 2, ATTACK_REACH);
++            case 2:  return new Rectangle(cx - hw - ATTACK_REACH, cy - ATTACK_SPREAD, ATTACK_REACH, ATTACK_SPREAD * 2);
++            case 3:  return new Rectangle(cx + hw, cy - ATTACK_SPREAD, ATTACK_REACH, ATTACK_SPREAD * 2);
++            default: return new Rectangle(cx - ATTACK_SPREAD, cy + hh, ATTACK_SPREAD * 2, ATTACK_REACH);
++        }
++    }
++
++    private void hitTarget(Entity target) {
++        if (!attackBox().intersects(box(target))) return;
++        if (target instanceof player) ((player) target).takeDamageFrom(ATTACK_DAMAGE, this);
++        else target.takeDamage(ATTACK_DAMAGE);
++    }
++
++    private void updateRegen() {
++        if (life >= maxLife) { noDamageTimer = 0; return; }
++        noDamageTimer++;
++        if (noDamageTimer >= 480 && noDamageTimer % 6 == 0) life = Math.min(maxLife, life + 2);   // 8 detik tanpa dipukul
++    }
++
++    // ═══════════ DAMAGE ═══════════
++    @Override
++    public void takeDamage(int dmg) {
++        if (!isAlive()) return;
++        noDamageTimer = 0;
++        life -= dmg;
++        whiteFlashTimer = HIT_FLASH_FRAMES;
++        if (gp.damagePopups != null) gp.damagePopups.spawn(this, dmg, Main.DamagePopup.Type.ENEMY);
++        if (life <= 0) { startDying(); return; }
++
++        // sedang menebas: jangan diinterupsi (animasinya dibiarkan selesai)
++        if (state == State.ATTACK) return;
++        if (hurtImmunity == 0) {
++            state = State.HURT;
++            hurtTimer = HURT_TICKS;
++            hurtImmunity = HURT_TICKS + HURT_IMMUNITY;
++            atkFrame = 0; atkTimer = 0;
++        } else if (state != State.HURT) {
++            state = State.CHASE;        // tetap marah, cuma gak terhuyung lagi
++        }
++    }
++
++    @Override
++    public void takeDamage(int dmg, player attacker) {
++        takeDamage(dmg);
++    }
++
++    // ── Knockback: kedorong sedikit lalu balik ke titik tempat dia kena (sama kayak Skeleton / Golemite) ──
++    private static final int KB_DISTANCE = 6, KB_OUT_STEP = 3, KB_BACK_STEP = 2;
++    private int kbOriginX, kbOriginY, kbTargetX, kbTargetY;
++    private boolean kbReturning = false;
++
++    /** Dipanggil SETELAH takeDamage() oleh yang memukul. Arah dorong dari posisi relatif attacker. */
++    public void knockbackFrom(Entity attacker) {
++        if (attacker == null || !isAlive()) return;
++        int dx = centerX() - cx(attacker), dy = centerY() - cy(attacker);
++        String pushDir;
++        if (dx == 0 && dy == 0) pushDir = attacker.direction != null ? attacker.direction : "down";
++        else if (Math.abs(dx) > Math.abs(dy)) pushDir = dx > 0 ? "right" : "left";
++        else pushDir = dy > 0 ? "down" : "up";
++
++        if (!isKnockback) { kbOriginX = x; kbOriginY = y; }
++        applyKnockback(pushDir);
++        kbTargetX = kbOriginX + knockbackDirectionX * KB_DISTANCE;
++        kbTargetY = kbOriginY + knockbackDirectionY * KB_DISTANCE;
++        kbReturning = false;
++    }
++
++    private void updateKnockback() {
++        int goalX = kbReturning ? kbOriginX : kbTargetX, goalY = kbReturning ? kbOriginY : kbTargetY;
++        int step = kbReturning ? KB_BACK_STEP : KB_OUT_STEP;
++        int dx = Integer.compare(goalX, x) * Math.min(step, Math.abs(goalX - x));
++        int dy = Integer.compare(goalY, y) * Math.min(step, Math.abs(goalY - y));
++        if (dx != 0 || dy != 0) {
++            Rectangle next = new Rectangle(x + solidArea.x + dx, y + solidArea.y + dy, solidArea.width, solidArea.height);
++            if (gp.domainManager != null && gp.domainManager.checkCollision(next)) {
++                if (kbReturning) endKnockback(); else kbReturning = true;   // mentok: balik / berhenti
++                return;
++            }
++            x += dx;
++            y += dy;
++        }
++        if (x == goalX && y == goalY) {
++            if (kbReturning) endKnockback(); else kbReturning = true;
++        }
++    }
++
++    private void endKnockback() {
++        isKnockback = false;
++        knockbackCounter = 0;
++        kbReturning = false;
++    }
++
++    // ═══════════ MATI / RESPAWN ═══════════
++    private void startDying() {
++        state = State.DYING;
++        alive = false;
++        isKnockback = false;
++        kbReturning = false;
++        deathFrame = 0; deathTimer = 0; deathHold = 0; fadeTimer = 0;
++        solidArea.x = -9999;                 // gak bisa dipukul / ditabrak lagi
++        solidArea.y = -9999;
++        dropItems();
++        gp.player.killMonster(this);         // EXP + Coin (coinDrop) + peluang potion (+ capture Death Totem kalau ada tipenya)
++    }
++
++    private void updateDying() {
++        if (deathFrame < FRAME_COUNT[A_DEATH] - 1) {
++            deathTimer++;
++            if (deathTimer >= DEATH_FRAME_TICKS) { deathTimer = 0; deathFrame++; }
++        } else if (deathHold < DEATH_HOLD_TICKS) {
++            deathHold++;
++        } else {
++            fadeTimer++;
++            if (fadeTimer >= DEATH_FADE_TICKS) {
++                active = false;              // hilang sampai respawn
++                respawnCounter = 0;
++            }
++        }
++    }
++
++    private boolean playerFarFromSpawn() {
++        return Math.hypot(cx(gp.player) - (spawnX + 24), cy(gp.player) - (spawnY + 39)) >= RESPAWN_CLEAR;
++    }
++
++    /** Bangkit lagi di titik spawn dengan HP penuh. */
++    public void respawn() {
++        active = true;
++        alive = true;
++        life = maxLife;
++        x = spawnX;
++        y = spawnY;
++        state = State.IDLE;
++        dirIdx = 0;
++        direction = "down";
++        idleFrame = 0; idleTimer = 0; walkFrame = 0; walkTimer = 0;
++        atkFrame = 0; atkTimer = 0; atkCooldown = 0; swingHitDone = false;
++        hurtTimer = 0; hurtImmunity = 0;
++        deathFrame = 0; deathTimer = 0; deathHold = 0; fadeTimer = 0;
++        wanderTimer = 0; wanderIdleTimer = 0; stuckTicks = 0; slideTicks = 0; returnTicks = 0;
++        noDamageTimer = 0; accX = 0; accY = 0;
++        isKnockback = false; kbReturning = false; isDead = false;
++        whiteFlashTimer = 0;
++        solidArea.x = solidAreaDefaultX;
++        solidArea.y = solidAreaDefaultY;
++        respawnCounter = 0;
++    }
++
++    /** Kalau titik spawn terblokir (peta berubah / salah koordinat), cari titik bebas terdekat (spiral, langkah 16 px). */
++    private void relocateIfBlocked() {
++        if (gp.domainManager == null || !blockedAtOrigin()) return;
++        for (int r = 16; r <= 192; r += 16) {
++            for (int dy = -r; dy <= r; dy += 16) {
++                for (int dx = -r; dx <= r; dx += 16) {
++                    if (Math.max(Math.abs(dx), Math.abs(dy)) != r) continue;
++                    Rectangle b = new Rectangle(x + dx + solidArea.x, y + dy + solidArea.y, solidArea.width, solidArea.height);
++                    if (!gp.domainManager.checkCollision(b)) {
++                        x += dx; y += dy;
++                        spawnX = x; spawnY = y;
++                        return;
++                    }
++                }
++            }
++        }
++    }
++
++    private boolean blockedAtOrigin() {
++        return gp.domainManager.checkCollision(box(this));
++    }
++
++    // ═══════════ DROP ═══════════
++    private void dropItems() {
++        ItemManager im = ItemManager.get();
++        if (RNG.nextDouble() < BONE_CHANCE) {
++            int n = 1 + RNG.nextInt(4);
++            im.add(im.BONE, n);
++            say("Obtained " + n + "x Bone");
++        }
++        if (RNG.nextDouble() < EMBLEM_CHANCE && im.DROWNED_EMBLEM != null) {
++            int n = RNG.nextDouble() < 0.15 ? 2 : 1;
++            im.add(im.DROWNED_EMBLEM, n);
++            say("Obtained " + n + "x Drowned Royal Emblem");
++        }
++        // Coin (coinDrop), EXP, dan peluang potion diurus player.killMonster() di startDying()
++    }
++
++    private void say(String msg) {
++        if (gp.speechBubble != null) gp.speechBubble.show(msg);
++    }
++
++    // ═══════════ GAMBAR ═══════════
++    private BufferedImage currentFrame() {
++        switch (state) {
++            case DYING:  return FRAMES[A_DEATH][dirIdx][Math.min(deathFrame, FRAME_COUNT[A_DEATH] - 1)];
++            case HURT:   return FRAMES[A_HURT][dirIdx][hurtTimer > HURT_TICKS / 2 ? 0 : 1];
++            case ATTACK: return FRAMES[A_ATTACK][dirIdx][Math.min(atkFrame, FRAME_COUNT[A_ATTACK] - 1)];
++            default:
++                if (movedThisTick) return FRAMES[A_WALK][dirIdx][walkFrame % FRAME_COUNT[A_WALK]];
++                return FRAMES[A_IDLE][dirIdx][idleFrame % FRAME_COUNT[A_IDLE]];
++        }
++    }
++
++    @Override
++    public void draw(Graphics2D g2) {
++        if (!active) return;
++
++        int sx = x - gp.player.x + gp.player.screenX + SPRITE_OFF_X;
++        int sy = y - gp.player.y + gp.player.screenY + SPRITE_OFF_Y;
++        if (sx + DRAW < gp.viewMinX() || sx > gp.viewMaxX() || sy + DRAW < gp.viewMinY() || sy > gp.viewMaxY()) return;
++
++        boolean dying = state == State.DYING;
++        Composite old = g2.getComposite();
++
++        // bayangan di kaki (gak dipakai pas mati: tumpukan sisanya sudah punya genangan sendiri)
++        if (!dying) {
++            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f));
++            g2.setColor(Color.BLACK);
++            int shadowW = 34, shadowH = 11;
++            g2.fillOval(sx + DRAW / 2 - shadowW / 2, sy + 88 - shadowH / 2 - 2, shadowW, shadowH);
++            g2.setComposite(old);
++        }
++
++        // HP bar di atas kepala, cuma muncul kalau sudah terluka
++        if (!dying && life < maxLife) {
++            int barW = 44, barH = 5;
++            int fill = (int) ((double) Math.max(0, life) / maxLife * barW);
++            int bx = sx + DRAW / 2 - barW / 2, by = sy + 4;
++            g2.setColor(Color.DARK_GRAY);
++            g2.fillRect(bx, by, barW, barH);
++            g2.setColor(new Color(200, 50, 50));
++            g2.fillRect(bx, by, fill, barH);
++        }
++
++        // memudar di akhir animasi mati
++        if (dying && fadeTimer > 0) {
++            float a = Math.max(0f, 1f - (float) fadeTimer / DEATH_FADE_TICKS);
++            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, a));
++        }
++
++        BufferedImage img = currentFrame();
++        if (img != null) {
++            g2.drawImage(whiteFlashTimer > 0 ? HitFlash.whiteVersion(img) : img, sx, sy, null);
++        }
++        g2.setComposite(old);
++    }
++}
+diff --git a/2DGame/src/Entitas/player.java b/2DGame/src/Entitas/player.java
+index e4cf139..5ea6fb5 100644
+--- a/2DGame/src/Entitas/player.java
++++ b/2DGame/src/Entitas/player.java
+@@ -797,6 +797,24 @@ public class player extends Entity {
+                                 }
+                             }
+                         }
++                        // HIT DROWNED SOLDIER DI WATER DOMAIN
++                        if (!attackHit && gp.domainManager != null) {
++                            for (Entitas.DrownedSoldier ds : gp.domainManager.getDrownedSoldiers()) {
++                                if (ds == null || !ds.isAlive()) continue;
++                                Rectangle dsBox = new Rectangle(ds.x + ds.solidArea.x, ds.y + ds.solidArea.y, ds.solidArea.width, ds.solidArea.height);
++                                if (attackBox.intersects(dsBox)) {
++                                    int currentAtk = getTotalDamage();
++                                    int damageDealt = (attackType >= 2) ? (int)(currentAtk * 1.5) : currentAtk;
++                                    ds.takeDamage(damageDealt);
++                                    ds.knockbackFrom(this);
++                                    hitSomething = true;
++                                    attackHit = true;
++                                    if (currentWeapon != null) currentWeapon.playAttackSound(attackType, isWeaponEquipped);
++                                    else sound.playPunch();
++                                    break;
++                                }
++                            }
++                        }
+                      // HIT SKELETON SUMMONAN BOSS (di dalam boss room) — NEW
+                         if (!attackHit && gp.domainManager != null) {
+                             for (Entitas.Skeleton sk : gp.domainManager.getRoomSkeletons()) {
+@@ -1068,6 +1086,16 @@ public class player extends Entity {
+                     }
+                 }
+             }
++            if (!collisionOn && gp.domainManager != null) {   // Drowned Soldier (Water Domain)
++                for (Entitas.DrownedSoldier ds : gp.domainManager.getDrownedSoldiers()) {
++                    if (ds == null || !ds.isAlive()) continue;
++                    Rectangle dsBox = new Rectangle(ds.x + ds.solidArea.x, ds.y + ds.solidArea.y, ds.solidArea.width, ds.solidArea.height);
++                    if (nextPlayerBox.intersects(dsBox)) {
++                        collisionOn = true;
++                        break;
++                    }
++                }
++            }
+             
+             // (Sengaja gak ngecek gp.monsters di sini: itu monster DUNIA LUAR, bukan isi domain. Musuh domain
+             //  - skeleton, golem, golemite, boss - sudah dicek di atas lewat DomainManager.)
+diff --git a/2DGame/src/Item/DreadGuardian.java b/2DGame/src/Item/DreadGuardian.java
+index c4a698b..5af6d48 100644
+--- a/2DGame/src/Item/DreadGuardian.java
++++ b/2DGame/src/Item/DreadGuardian.java
+@@ -220,6 +220,7 @@ public class DreadGuardian {
+             if (gp.domainManager.getRoomSkeletons() != null) list.addAll(gp.domainManager.getRoomSkeletons());
+             if (gp.domainManager.getGolemites() != null) list.addAll(gp.domainManager.getGolemites());
+             if (gp.domainManager.getGolems() != null) list.addAll(gp.domainManager.getGolems());
++            if (gp.domainManager.getDrownedSoldiers() != null) list.addAll(gp.domainManager.getDrownedSoldiers());
+             if (gp.domainManager.getBossSkeleton() != null) list.add(gp.domainManager.getBossSkeleton());
+         }
+         return list;
+@@ -236,6 +237,7 @@ public class DreadGuardian {
+         if (e instanceof SkeletonKing) return ((SkeletonKing) e).alive;
+         if (e instanceof Golemite)     return ((Golemite) e).isAlive() && e.life > 0;
+         if (e instanceof Entitas.Golem) return ((Entitas.Golem) e).isAlive() && e.life > 0;
++        if (e instanceof Entitas.DrownedSoldier) return ((Entitas.DrownedSoldier) e).isAlive();
+         return true;
+     }
+ 
+diff --git a/2DGame/src/Item/ItemManager.java b/2DGame/src/Item/ItemManager.java
+index 358d064..ee88cf0 100644
+--- a/2DGame/src/Item/ItemManager.java
++++ b/2DGame/src/Item/ItemManager.java
+@@ -28,6 +28,8 @@ public class ItemManager {
+     public Item SKELETON_KEY;
+     // DROP SKELETON KING (boss)
+     public Item SOUL_OF_SKELETON;
++    // DROP DROWNED SOLDIER (Water Domain)
++    public Item DROWNED_EMBLEM;
+     // ITEM DARI DARK MERCHANT
+     public Item BONE_SWORD;
+     // EQUIPMENT (armor = satu set utuh per item, data-nya di ArmorSet)
+@@ -86,6 +88,7 @@ public class ItemManager {
+             SKELETON_KEY = new Item("Skeleton Key",  safeLoad("/drop/SkeletonKey.png", "/drop/Ore.png"));
+             // TODO: pastikan file "Soul of Skeleton.png" ada di folder /drop/ (resources)
+             SOUL_OF_SKELETON = new Item("Soul of Skeleton", safeLoad("/drop/Soul of Skeleton.png", "/drop/Ore.png"));
++            DROWNED_EMBLEM = new Item("Drowned Royal Emblem", safeLoad("/drop/DrownedEmblem.png", "/drop/Ore.png")); // lambang perunggu prajurit Sunken Kingdom
+             BONE_SWORD = new Item("Bone Sword", safeLoad("/Aset/BoneSword.png", "/Aset/BasicSword.png"));
+             DREAD_ARMOR = new Item(ArmorSet.DREAD.itemName, safeLoad("/Aset/DreadArmor.png", "/drop/Ore.png"));
+             DREAD_ARMOR.maxStack = 1; // armor gak numpuk
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index 1b14af9..a8ab201 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -1496,6 +1496,9 @@ public void paintComponent(Graphics g) {
+         for (Entitas.Golem gl : domainManager.getGolems()) {
+             if (gl != null && gl.isAlive()) sortList.add(gl);
+         }
++        for (Entitas.DrownedSoldier ds : domainManager.getDrownedSoldiers()) {   // Water Domain (termasuk animasi mati / fade)
++            if (ds != null && ds.isVisible()) sortList.add(ds);
++        }
+         if (domainManager.darkMerchant != null) {
+             sortList.add(domainManager.darkMerchant);
+         }
+diff --git a/2DGame/src/Main/SaveManager.java b/2DGame/src/Main/SaveManager.java
+index 1b99685..5bcfd42 100644
+--- a/2DGame/src/Main/SaveManager.java
++++ b/2DGame/src/Main/SaveManager.java
+@@ -244,6 +244,7 @@ public class SaveManager {
+             case "Coin":                                  // CURRENCY
+             case "Gold":         return im.COIN;          // nama lama, biar save lama tetap kebaca
+             case "Soul of Skeleton": return im.SOUL_OF_SKELETON;
++            case "Drowned Royal Emblem": return im.DROWNED_EMBLEM; // DROP DROWNED SOLDIER (Water Domain)
+             case "Dread Armor":  return im.DREAD_ARMOR;   // DARK MERCHANT (set armor utuh)
+             case "Iron Armor":   return im.IRON_ARMOR;    // ARMOR MERCHANT (set armor utuh)
+             case "Umbral Armor": return im.UMBRAL_ARMOR;  // DARK MERCHANT (set armor utuh)
+diff --git a/2DGame/src/Skill/SkillV.java b/2DGame/src/Skill/SkillV.java
+index 0975335..13ff72a 100644
+--- a/2DGame/src/Skill/SkillV.java
++++ b/2DGame/src/Skill/SkillV.java
+@@ -598,6 +598,7 @@ public class SkillV extends Skill {
+         if (m instanceof Entitas.Wolf) return ((Entitas.Wolf) m).isAlive();
+         if (m instanceof Skeleton)     return ((Skeleton) m).alive;
+         if (m instanceof SkeletonKing) return ((SkeletonKing) m).alive;
++        if (m instanceof Entitas.DrownedSoldier) return ((Entitas.DrownedSoldier) m).isAlive();
+         return true;
+     }
+ 
+@@ -616,6 +617,7 @@ public class SkillV extends Skill {
+             list.addAll(gp.domainManager.getSkeletons());      // kosong kalau lagi di dalam room
+             list.addAll(gp.domainManager.getGolemites());      // kosong kalau lagi di dalam room
+             list.addAll(gp.domainManager.getGolems());         // kosong kalau lagi di dalam room
++            list.addAll(gp.domainManager.getDrownedSoldiers()); // Water Domain (kosong di domain lain / di dalam room)
+             list.addAll(gp.domainManager.getRoomSkeletons());  // cuma ada di dalam room
+             if (gp.domainManager.getBossSkeleton() != null) list.add(gp.domainManager.getBossSkeleton());
+         }
+diff --git a/2DGame/src/UI/MobIndexUI.java b/2DGame/src/UI/MobIndexUI.java
+index 85ceccf..3adc3ea 100644
+--- a/2DGame/src/UI/MobIndexUI.java
++++ b/2DGame/src/UI/MobIndexUI.java
+@@ -104,6 +104,7 @@ public class MobIndexUI {
+         mobList.add(new MobData("SLIME", "COMMON", "A bouncy, gelatinous creature. Mildly aggressive but dangerously sticky. Drops chemically reactive gel.", 50, 5, 2, "Coin (100%)", gp.setup("slime_idle_down_1")));
+         mobList.add(new MobData("WOLF", "COMMON", "A lean predator that only prowls after dusk (18:00 - 05:59). It stalks travelers from the dark, then charges and bites once they stray too close. Fades away at dawn and returns at full strength the next night.", 80, 10, 2.8, "Coin (100%)", squareIcon(gp.setup("wolf_idle_right_1"))));
+         mobList.add(new MobData("GOLEMITE", "RARE", "A small offshoot of the Stone Golem, chipped off its parent's body. Fast on its feet and hits harder than it looks. Nests in the Golem Hide, can be tamed.", 1500, 80, 1, "Coin (100%)", gp.setup("golemiteFrontWalk (1)")));
++        mobList.add(new MobData("DROWNED SOLDIER", "RARE", "A royal guard of the Sunken Kingdom who never left his post when the sea took the city. Rust-eaten blade, patina-green armor, seaweed in his helm - he still patrols the flooded ruins and cuts down anything that walks the halls. Found in the Water Domain.", 1100, 40, 1.4, "Coin (100%), Bone (70%), Drowned Royal Emblem (35%)", squareIcon(Entitas.DrownedSoldier.getIconFrame())));
+         mobList.add(new MobData("STONE GOLEM", "EPIC", "A massive, powerful construct carved from living solid stone. Awakens from deep underground to crush intruders, can be tamed.", 5000, 200, 1, "Coin (100%)", gp.setup("GolemFrontWalk (6)")));
+     }
+ 
+diff --git a/2DGame/src/World/DomainManager.java b/2DGame/src/World/DomainManager.java
+index 4c3072d..3ace124 100644
+--- a/2DGame/src/World/DomainManager.java
++++ b/2DGame/src/World/DomainManager.java
+@@ -10,6 +10,7 @@ import Entitas.DarkMerchant;
+ import Entitas.Skeleton;
+ import Entitas.Golem;
+ import Entitas.Golemite;
++import Entitas.DrownedSoldier;
+ import Entitas.SkeletonKing;
+ import Item.ItemManager;
+ import Item.ItemStack;
+@@ -95,6 +96,25 @@ public class DomainManager {
+         return activeRoom != null ? java.util.Collections.emptyList() : golems;
+     }
+ 
++    // ── Water Domain: Drowned Soldier (prajurit kerajaan bawah laut yang tenggelam) ──
++    private final List<DrownedSoldier> drownedSoldiers = new ArrayList<>();
++    public List<DrownedSoldier> getDrownedSoldiers() {
++        return activeRoom != null ? java.util.Collections.emptyList() : drownedSoldiers;
++    }
++
++    // Titik spawn Drowned Soldier (x, y entity, px koordinat domain). Semuanya sudah dicek di peta WaterDomainMap:
++    // tile lantai / pasir / air dangkal yang bebas dari tebing, air dalam, dan properti, terhubung ke titik pendaratan,
++    // dan jaraknya >= 750 px dari kolam kedatangan supaya player gak langsung dikeroyok pas muncul.
++    // Tersebar per area: jalan batu, Plaza Pasang-Surut, Kuil, Gua Karang, Taman Rumput Laut, Pantai Kerang,
++    // Pelataran Pilar, Gua Kristal, Taman Terendam.
++    private static final int[][] DROWNED_SOLDIER_SPAWNS = {
++        {2688, 2769}, {2688, 1425},                         // jalan batu selatan & utara
++        {2688, 1905}, {2976, 2097}, {2400, 2097},           // Plaza Pasang-Surut
++        {2688,  849}, {2352,  609}, {3024,  609},           // depan Kuil & dua sisinya
++        { 960, 2097}, {1152, 1953}, {1056,  993}, { 960, 3249},   // barat: Gua Karang, Taman Rumput Laut, Pantai Kerang
++        {4416, 2097}, {4224, 2241}, {4416,  945}, {4416, 3249}    // timur: Pelataran Pilar, Gua Kristal, Taman Terendam
++    };
++
+     // ── Isi GolemHide: SEMUA golem ada di sini (koordinat interior, px) ──
+     // Posisinya sudah dicek ada di lantai gua (bukan di tebing / di luar peta), jarak antar mob >= ~100 px,
+     // dan jauh dari titik spawn player (730,330) biar gak langsung dikeroyok pas masuk.
+@@ -382,6 +402,7 @@ public class DomainManager {
+                 for (Skeleton sk : skeletons) sk.update();
+                 for (Golemite g : golemites) g.update();
+                 for (Golem g : golems) g.update();
++                for (DrownedSoldier d : drownedSoldiers) d.update();
+             }
+             if (darkMerchant != null) {
+                 darkMerchant.update();
+@@ -585,6 +606,7 @@ public class DomainManager {
+         skeletons.clear();
+         golemites.clear();
+         golems.clear();
++        drownedSoldiers.clear();
+         roomSkeletons.clear();
+         bossSkeleton = null;
+         gp.player.x = exitX;
+@@ -626,11 +648,19 @@ public class DomainManager {
+         golemites.add(g);
+     }
+ 
++    private void spawnDrownedSoldier(int wx, int wy) {
++        DrownedSoldier d = new DrownedSoldier(gp);
++        d.x = wx; d.y = wy;
++        d.spawnX = wx; d.spawnY = wy;
++        drownedSoldiers.add(d);
++    }
++
+     private void buildInteriorFor(DomainData d) {
+         wallCollisions.clear();
+         skeletons.clear();
+         golemites.clear();
+         golems.clear();
++        drownedSoldiers.clear();
+         activeRoom = null;
+         roomBgImage = null;
+         nearDoorRoom = null;
+@@ -676,6 +706,7 @@ public class DomainManager {
+             // Water Domain tidak pakai gambar latar: lantai / air / properti digambar dari WaterDomainMap
+             bgImage = null;
+             prepareWaterDomain();
++            for (int[] p : DROWNED_SOLDIER_SPAWNS) spawnDrownedSoldier(p[0], p[1]);
+         } else {
+             try {
+                 java.net.URL url = getClass().getResource(d.backgroundPath);
+diff --git a/2DGame/src/drop/DrownedEmblem.png b/2DGame/src/drop/DrownedEmblem.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..8a513769c678b60897d116a4ac77d0eab194b232
+GIT binary patch
+literal 572
+zcmeAS@N?(olHy`uVBq!ia0vp^4j|0I1|(Ny7T#lEU}E-kaSW-L^LF+|@52EC#};?!
+zJ-U>|9(Y3Hg$kc67c2YpM{kyt6a=Y%Jb%G=?$Wt)n!B4XxXK(^84&X(MRAhOqVDc<
+z<p<{+&;FtDzV7zdrSEHH%BNRXdJ0IiJv25>)!z^j{kQPvfA>#etB&0?QlHOuhB1RN
+z<5`UQgrb_|`(BvT%ZQwRAEmsfpP`r`ib1NB_kpGU(;wxN`{Y})cd=F<K9m@zyv6k3
+zZw>?Y1*{7Mvm2&-&fM(#=Huy(8*_CQ3b!47%{%X2=U&0kj=iNduKx?Rc>Cn~ez0Q#
+zTQlc7llnvLzl~2TwohOAtXl5U>+j!{lJ3XL2>t%@sqIE#_cayH_sR!k8pImZ!kL%+
+zwtN5fXYKBNJA-y8oG;|t|K9t<tOH-YY8$@`Ch$3MJ1l<3EOpcAp~ZU6n)L@xeib}a
+zGx-?QVTJd&J#y0fk4*c;qWOINWvPwUSD*B2|8Ixt46fpxVY1Hh{70z6icA~cPha}E
+z^6kIaN9!&rn7voF`18}r=7-9*x!fExm@hD0Sn-?TpUl6Wxo1619bbJtuIYVK%XDda
+zR}?IuzFL?4xwGK@e$~gfW+`0!J4^jr)fS&O|9&!Wd@HM{`ix-<gUKtqhUXEhua^Ci
+zb4WT;Rqfd?2KDQ)eUe(mpE5!IPLOD8d?NmdxnqH!@Kj)OU|{fc^>bP0l+XkKY26IN
+
+literal 0
+HcmV?d00001
+
+diff --git a/2DGame/tools/generate_drowned_soldier.py b/2DGame/tools/generate_drowned_soldier.py
+new file mode 100644
+index 0000000..8c8ca26
+--- /dev/null
++++ b/2DGame/tools/generate_drowned_soldier.py
+@@ -0,0 +1,761 @@
++#!/usr/bin/env python3
++"""
++Generator sprite "Drowned Soldier" (Water Domain / Sunken Kingdom) — pixel-art 4 arah, SATU sprite sheet.
++
++Desainnya ORIGINAL, digambar dari nol di script ini (bukan hasil recolor / edit sprite mob lain):
++  prajurit kerajaan bawah laut yang sudah mati tenggelam. Kulit biru-keabuan yang lembap, mata cekung berpendar
++  cyan, helm kettle penyok dengan rumput laut menjuntai, baju zirah perunggu yang berkarat jadi hijau patina
++  (lambang mahkota-trisula yang sudah pudar), jubah biru kerajaan yang compang-camping, lumut di bahu, dan
++  pedang berkarat yang gripil di ujungnya.
++
++Semua frame digambar langsung di resolusi aslinya (48x48 per sel, tanpa anti-alias), lalu diperbesar 2x
++(nearest-neighbor, tajam) oleh Entitas/DrownedSoldier.java pas game jalan.
++
++Output:
++    src/Aset/DrownedSoldier/drowned_soldier_sheet.png   sprite sheet (288 x 960)
++    src/drop/DrownedEmblem.png                           ikon item drop "Drowned Royal Emblem" (64 x 64)
++
++Tata letak sheet (HARUS sama dengan DrownedSoldier.java):
++    kolom  = nomor frame (maks 6, sel 48 px)
++    baris  = ANIM_INDEX * 4 + ARAH_INDEX
++    anim   : 0 idle (4) | 1 walk (6) | 2 attack (6, frame ke-4 = tebasan kena) | 3 hurt (2) | 4 death (6)
++    arah   : 0 down(depan) | 1 up(belakang) | 2 left | 3 right (cermin dari left)
++    kaki   : menapak di baris ke-44 tiap sel (GROUND)
++
++Jalankan dari folder 2DGame:
++    pip install pillow
++    python tools/generate_drowned_soldier.py                    # tulis sheet + ikon drop ke src/
++    python tools/generate_drowned_soldier.py --preview out.png  # contact sheet diperbesar 4x buat dicek mata
++
++Mau ganti warna? Edit blok PALETTE lalu jalankan ulang.
++"""
++import math
++import random
++import sys
++from pathlib import Path
++
++from PIL import Image, ImageDraw
++
++ROOT = Path(__file__).resolve().parent.parent / 'src'
++SHEET_PATH = ROOT / 'Aset' / 'DrownedSoldier' / 'drowned_soldier_sheet.png'
++ICON_PATH = ROOT / 'drop' / 'DrownedEmblem.png'
++
++CELL = 48
++GROUND = 44
++COLS = 6
++ANIMS = [('idle', 4), ('walk', 6), ('attack', 6), ('hurt', 2), ('death', 6)]
++DIRS = ['down', 'up', 'left', 'right']
++
++
++# ───────────── PALETTE ─────────────
++def rgb(h, a=255):
++    h = h.lstrip('#')
++    return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16), a)
++
++
++PALETTE = {
++    'line':      rgb('#0e171b'),
++    # kulit mayat tenggelam
++    'skin':      rgb('#6f9a96'), 'skin_l': rgb('#93bdb3'), 'skin_d': rgb('#486e6d'), 'skin_dd': rgb('#314e52'),
++    'bone':      rgb('#c7d3c6'),
++    'eye':       rgb('#9cf7ff'), 'eye_d': rgb('#3fb7c9'), 'socket': rgb('#16262b'),
++    # zirah perunggu berpatina
++    'arm':       rgb('#477f72'), 'arm_l': rgb('#78b8a0'), 'arm_d': rgb('#2d5851'), 'arm_dd': rgb('#1f3d3b'),
++    'bronze':    rgb('#8d6c3a'), 'bronze_d': rgb('#5b4327'), 'gold': rgb('#b9a050'),
++    # kain tabard / jubah kerajaan yang pudar
++    'cloth':     rgb('#35558a'), 'cloth_l': rgb('#4d73ab'), 'cloth_d': rgb('#223a63'), 'cloth_dd': rgb('#17264a'),
++    # kulit sepatu / sabuk
++    'leather':   rgb('#3b2f2a'), 'leather_l': rgb('#5a493d'),
++    # lumut & rumput laut
++    'moss':      rgb('#557f33'), 'moss_l': rgb('#7aa447'), 'kelp': rgb('#2f6140'), 'kelp_l': rgb('#4d8a55'),
++    'barn':      rgb('#cfd8d0'),
++    # pedang berkarat
++    'rust':      rgb('#a3552d'), 'rust_l': rgb('#cf8348'), 'rust_d': rgb('#5f2f1b'), 'steel': rgb('#8f9fa3'),
++    # air
++    'water':     rgb('#6cc4e8'), 'water_l': rgb('#d6f6ff'), 'puddle': rgb('#2b6f95'), 'puddle_l': rgb('#4aa0c4'),
++    'trail':     rgb('#bfefff', 150), 'trail2': rgb('#7fd3ee', 110),
++}
++P = PALETTE
++
++
++# ───────────── KANVAS ─────────────
++class Canvas:
++    def __init__(self):
++        self.im = Image.new('RGBA', (CELL, CELL), (0, 0, 0, 0))
++        self.d = ImageDraw.Draw(self.im)
++
++    def px(self, x, y, c):
++        if 0 <= x < CELL and 0 <= y < CELL:
++            self.im.putpixel((int(x), int(y)), c)
++
++    def rect(self, x0, y0, x1, y1, c):
++        self.d.rectangle([x0, y0, x1, y1], fill=c)
++
++    def ell(self, x0, y0, x1, y1, c):
++        self.d.ellipse([x0, y0, x1, y1], fill=c)
++
++    def poly(self, pts, c):
++        self.d.polygon(pts, fill=c)
++
++    def line(self, p0, p1, c, w=1):
++        if w <= 1:
++            self.d.line([p0, p1], fill=c)
++        else:
++            self.d.line([p0, p1], fill=c, width=w)
++
++    def get(self, x, y):
++        if 0 <= x < CELL and 0 <= y < CELL:
++            return self.im.getpixel((x, y))
++        return (0, 0, 0, 0)
++
++    def bevel(self, x0, y0, x1, y1, base, light, dark):
++        """Kotak dengan sorotan atas-kiri dan bayangan bawah-kanan (kesan logam)."""
++        self.rect(x0, y0, x1, y1, base)
++        self.d.line([(x0, y0), (x1, y0)], fill=light)
++        self.d.line([(x0, y0), (x0, y1)], fill=light)
++        self.d.line([(x0, y1), (x1, y1)], fill=dark)
++        self.d.line([(x1, y0 + 1), (x1, y1)], fill=dark)
++
++    def speckle(self, x0, y0, x1, y1, colors, n, seed):
++        """Bintik acak di atas piksel yang sudah terisi (karat / lumut / bopeng)."""
++        r = random.Random(seed)
++        x0, y0, x1, y1 = int(x0), int(y0), int(x1), int(y1)
++        for _ in range(n):
++            x, y = r.randint(x0, x1), r.randint(y0, y1)
++            if self.get(x, y)[3] > 0:
++                self.px(x, y, r.choice(colors))
++
++    def outline(self):
++        """Garis tepi 1 px di seluruh siluet (warna gelap kehijauan), supaya semua frame konsisten."""
++        src = self.im.copy()
++        out = self.im
++        for y in range(CELL):
++            for x in range(CELL):
++                if src.getpixel((x, y))[3] > 40:
++                    continue
++                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
++                    nx, ny = x + dx, y + dy
++                    if 0 <= nx < CELL and 0 <= ny < CELL and src.getpixel((nx, ny))[3] > 200:
++                        out.putpixel((x, y), P['line'])
++                        break
++
++
++# ───────────── BAGIAN-BAGIAN TUBUH ─────────────
++def kelp_strand(cv, x, y, length, sway, seed, thick=False):
++    """Rumput laut menjuntai: zig-zag kecil ke bawah, ikut bergoyang."""
++    r = random.Random(seed)
++    cx = x
++    for i in range(length):
++        off = int(round(math.sin((i * 0.9) + sway * 1.3 + seed) * 1.2))
++        c = P['kelp_l'] if (i + seed) % 3 == 0 else P['kelp']
++        cv.px(cx + off, y + i, c)
++        if thick and i % 2 == 0:
++            cv.px(cx + off + 1, y + i, P['kelp'])
++    return cv
++
++
++SW = 16   # panjang bilah pedang (px)
++
++
++def sword(cv, hand, ang, slen=SW, seed=3):
++    """Pedang berkarat (bilah ramping, mata pedang gripil, pelindung tangan perunggu). ang dalam derajat layar:
++    0 = kanan, 90 = bawah, 180 = kiri, 270 = atas."""
++    hx, hy = hand
++    a = math.radians(ang)
++    ux, uy = math.cos(a), math.sin(a)
++    nx, ny = -uy, ux
++    gx, gy = hx + ux * 2, hy + uy * 2                      # pangkal bilah (tepat di atas pelindung)
++    tx, ty = hx + ux * slen, hy + uy * slen                # ujung bilah
++    mx, my = gx + (tx - gx) * 0.72, gy + (ty - gy) * 0.72
++    # bilah: separuh pangkal 2 px (berkarat), ujung meruncing 1 px (gripil)
++    cv.line((round(gx), round(gy)), (round(mx), round(my)), P['rust_d'], 3)
++    cv.line((round(gx), round(gy)), (round(mx), round(my)), P['rust'], 2)
++    cv.line((round(mx), round(my)), (round(tx), round(ty)), P['rust'], 1)
++    # mata pedang yang masih agak mengkilap + bintik karat
++    cv.line((round(gx + nx * 0.6), round(gy + ny * 0.6)), (round(tx + nx * 0.6), round(ty + ny * 0.6)), P['steel'], 1)
++    r = random.Random(seed)
++    for _ in range(7):                                  # bintik karat HANYA di sepanjang bilah
++        t = r.uniform(0.15, 0.95)
++        cv.px(round(gx + (tx - gx) * t), round(gy + (ty - gy) * t), r.choice([P['rust_d'], P['rust_l'], P['rust_d']]))
++    cv.px(round(tx - ux * 3 + nx), round(ty - uy * 3 + ny), (0, 0, 0, 0))   # gigi gripil di tepi
++    # pelindung tangan (perunggu, tampak jelas), gagang kulit, pommel
++    cv.line((round(gx - nx * 3), round(gy - ny * 3)), (round(gx + nx * 3), round(gy + ny * 3)), P['bronze'], 1)
++    cv.px(round(gx - nx * 3), round(gy - ny * 3), P['gold']); cv.px(round(gx + nx * 3), round(gy + ny * 3), P['gold'])
++    cv.line((round(hx), round(hy)), (round(hx - ux * 2), round(hy - uy * 2)), P['leather'], 2)
++    cv.px(round(hx - ux * 3), round(hy - uy * 3), P['gold'])
++
++
++def sweep(cv, prev, cur, b=0, slen=SW):
++    """Smear tebasan pucat berbentuk bulan sabit: area yang disapu ujung bilah dari pose sebelumnya ke pose sekarang."""
++    (h0, a0), (h1, a1) = prev, cur
++    da = ((a1 - a0 + 180) % 360) - 180                 # selisih sudut lewat jalur terpendek
++    da = max(-75, min(75, da))                         # batasi supaya sabitnya tetap ramping
++    steps = 10
++    outer, inner = [], []
++    for i in range(steps + 1):
++        t = i / steps
++        hx = h0[0] + (h1[0] - h0[0]) * t
++        hy = h0[1] + (h1[1] - h0[1]) * t + b
++        a = math.radians(a1 - da + da * t)
++        ux, uy = math.cos(a), math.sin(a)
++        outer.append((hx + ux * (slen + 3), hy + uy * (slen + 3)))
++        inner.append((hx + ux * (slen * 0.72), hy + uy * (slen * 0.72)))
++    cv.poly(outer + inner[::-1], P['trail2'])
++    for i in range(steps):                              # tepi luar lebih terang
++        cv.line((round(outer[i][0]), round(outer[i][1])), (round(outer[i + 1][0]), round(outer[i + 1][1])), P['trail'], 1)
++
++
++def finish_weapon(cv, pose, hx, hy, b, seed):
++    if 'ang' not in pose:
++        return
++    if pose.get('sweep'):
++        sweep(cv, pose['sweep'], (pose['hand'], pose['ang']), b, pose.get('slen', SW))
++    sword(cv, (hx, hy), pose['ang'], pose.get('slen', SW), seed)
++
++
++def clamp_hand(shoulder, hand, reach=11):
++    """Tangan gak boleh lebih jauh dari `reach` px dari bahu (biar lengan gak kelihatan memanjang)."""
++    dx, dy = hand[0] - shoulder[0], hand[1] - shoulder[1]
++    d = math.hypot(dx, dy)
++    if d <= reach:
++        return hand
++    return (round(shoulder[0] + dx * reach / d), round(shoulder[1] + dy * reach / d))
++
++
++def drips(cv, pts, phase):
++    for i, (x, y) in enumerate(pts):
++        yy = y + (phase * 2 + i * 3) % 7
++        if yy < GROUND + 1:
++            cv.px(x, yy, P['water'])
++            if (phase + i) % 2 == 0:
++                cv.px(x, yy - 1, P['water_l'])
++
++
++# ───────────── TAMPAK DEPAN (down) ─────────────
++def draw_front(pose):
++    cv = Canvas()
++    b = pose.get('bob', 0)
++    sway = pose.get('sway', 0)
++    legs = pose.get('legs', [(0, 0), (0, 0)])     # (dx, angkat) untuk kaki kiri / kanan layar
++    hx, hy = pose.get('head', (0, 0))
++    sink = pose.get('sink', 0)                     # badan turun (berlutut)
++    kneel = pose.get('kneel', 0)                   # kaki ditekuk (pendek)
++    b += sink
++    lean = pose.get('lean', 0)
++
++    # jubah / lembaran kain di belakang badan
++    cv.poly([(17 + lean, 20 + b), (30 + lean, 20 + b), (31 + lean, 33 + b), (29 + sway - 1, 38 + b), (26, 36 + b), (23, 39 + b),
++             (20, 36 + b), (17 - sway, 38 + b), (16 + lean, 31 + b)], P['cloth_d'])
++    cv.px(20, 37 + b, P['cloth_dd']); cv.px(26, 37 + b, P['cloth_dd'])
++
++    # kaki: paha berkain, greaves berpatina, sepatu kulit
++    for i, bx in enumerate((19, 25)):
++        dx, lift = legs[i]
++        top = 31 + b
++        bot = GROUND - lift - kneel
++        if bot < top + 3:
++            bot = top + 3
++        x0 = bx + dx
++        cv.rect(x0, top, x0 + 3, min(bot - 3, top + 4), P['cloth_d'])                # paha / rok kain
++        cv.bevel(x0, min(bot - 3, top + 4) + 1, x0 + 3, bot - 2, P['arm'], P['arm_l'], P['arm_d'])   # greave
++        cv.rect(x0 - 1, bot - 1, x0 + 4, bot, P['leather'])                           # sepatu
++        cv.px(x0 - 1, bot - 1, P['leather_l']); cv.px(x0 + 4, bot, P['moss'])
++        cv.px(x0 + 1, min(bot - 3, top + 4) + 2, P['bronze_d'])
++
++    # lengan jauh (kanan layar), turun santai
++    ax, ay = pose.get('arm2', (32, 31))
++    cv.line((31 + lean, 22 + b), (ax, ay + b), P['arm_d'], 3)
++    cv.rect(ax - 1, ay + b - 1, ax + 1, ay + b + 1, P['skin_d'])
++
++    # badan: breastplate + tabard + sabuk
++    cv.bevel(18 + lean, 20 + b, 29 + lean, 29 + b, P['arm'], P['arm_l'], P['arm_d'])
++    cv.rect(19 + lean, 27 + b, 28 + lean, 28 + b, P['arm_d'])                          # bagian bawah pelat
++    # lambang mahkota-trisula yang pudar (emas kusam)
++    cv.px(23 + lean, 22 + b, P['gold']); cv.px(24 + lean, 22 + b, P['gold'])
++    cv.px(21 + lean, 23 + b, P['gold']); cv.px(26 + lean, 23 + b, P['gold'])
++    cv.px(22 + lean, 24 + b, P['gold']); cv.px(25 + lean, 24 + b, P['gold'])
++    cv.px(23 + lean, 24 + b, P['bronze']); cv.px(24 + lean, 24 + b, P['bronze'])
++    cv.px(23 + lean, 25 + b, P['bronze_d']); cv.px(24 + lean, 25 + b, P['bronze_d'])
++    cv.px(23 + lean, 26 + b, P['bronze_d']); cv.px(24 + lean, 26 + b, P['bronze_d'])
++    cv.px(19 + lean, 21 + b, P['arm_l']); cv.px(28 + lean, 24 + b, P['arm_dd'])       # retak
++    cv.px(28 + lean, 25 + b, P['arm_dd']); cv.px(27 + lean, 26 + b, P['arm_dd'])
++    cv.rect(18 + lean, 29 + b, 29 + lean, 30 + b, P['leather'])                        # sabuk
++    cv.px(23 + lean, 29 + b, P['gold']); cv.px(24 + lean, 29 + b, P['bronze'])
++    # tabard menjuntai (compang-camping)
++    cv.rect(21 + lean, 31 + b, 26 + lean, 34 + b, P['cloth'])
++    cv.px(21 + lean, 35 + b, P['cloth']); cv.px(23 + lean, 36 + b, P['cloth']); cv.px(25 + lean, 35 + b, P['cloth'])
++    cv.px(24 + lean, 33 + b, P['cloth_d']); cv.px(22 + lean, 32 + b, P['cloth_l'])
++    # lumut & bopeng di zirah
++    cv.speckle(18 + lean, 20 + b, 29 + lean, 28 + b, [P['moss'], P['arm_dd'], P['moss_l']], 7, 11 + pose.get('seed', 0))
++
++    # bahu (pauldron) — kiri layar utuh berlumut, kanan layar sompel
++    cv.bevel(13 + lean, 19 + b, 18 + lean, 23 + b, P['arm'], P['arm_l'], P['arm_d'])
++    cv.px(13 + lean, 19 + b, (0, 0, 0, 0))
++    cv.rect(14 + lean, 19 + b, 17 + lean, 19 + b, P['moss'])
++    cv.px(15 + lean, 18 + b, P['moss_l']); cv.px(16 + lean, 18 + b, P['moss'])
++    cv.bevel(29 + lean, 19 + b, 34 + lean, 23 + b, P['arm'], P['arm_l'], P['arm_d'])
++    cv.px(34 + lean, 19 + b, (0, 0, 0, 0)); cv.px(34 + lean, 20 + b, (0, 0, 0, 0)); cv.px(33 + lean, 19 + b, P['arm_dd'])
++    cv.px(31 + lean, 22 + b, P['barn']); cv.px(32 + lean, 21 + b, P['barn'])           # teritip
++
++    # lengan dekat (kiri layar) — tangan pemegang pedang
++    wx, wy = clamp_hand((15 + lean, 22), pose.get('hand', (14, 31)))
++    cv.line((15 + lean, 22 + b), (wx, wy + b), P['arm'], 3)
++    cv.line((15 + lean, 22 + b), (wx, wy + b), P['arm_d'], 1)
++    cv.rect(wx - 1, wy + b - 1, wx + 1, wy + b + 1, P['skin'])
++    cv.px(wx, wy + b, P['skin_l'])
++
++    # leher + kepala
++    cv.rect(21 + lean, 18 + b, 26 + lean, 19 + b, P['skin_d'])
++    ox, oy = hx + lean, hy + b
++    cv.rect(19 + ox, 12 + oy, 28 + ox, 19 + oy, P['skin'])                              # wajah
++    cv.rect(19 + ox, 12 + oy, 28 + ox, 12 + oy, P['skin_d'])
++    cv.px(19 + ox, 18 + oy, P['skin_d']); cv.px(28 + ox, 18 + oy, P['skin_d'])
++    # mata cekung berpendar
++    eye = P['eye'] if not pose.get('hurt') else P['water_l']
++    cv.rect(20 + ox, 14 + oy, 22 + ox, 16 + oy, P['socket']); cv.rect(25 + ox, 14 + oy, 27 + ox, 16 + oy, P['socket'])
++    cv.px(21 + ox, 15 + oy, eye); cv.px(26 + ox, 15 + oy, eye)
++    if not pose.get('dim'):
++        cv.px(21 + ox, 14 + oy, P['eye_d']); cv.px(26 + ox, 14 + oy, P['eye_d'])
++    cv.px(23 + ox, 16 + oy, P['skin_dd']); cv.px(24 + ox, 16 + oy, P['skin_dd'])         # lubang hidung
++    # mulut & gigi
++    if pose.get('hurt'):
++        cv.rect(22 + ox, 17 + oy, 25 + ox, 19 + oy, P['socket'])
++        cv.px(22 + ox, 17 + oy, P['bone']); cv.px(25 + ox, 17 + oy, P['bone'])
++    else:
++        cv.line((21 + ox, 18 + oy), (26 + ox, 18 + oy), P['skin_dd'])
++        cv.px(22 + ox, 18 + oy, P['bone']); cv.px(24 + ox, 18 + oy, P['bone'])
++    cv.px(20 + ox, 17 + oy, P['skin_d']); cv.px(27 + ox, 17 + oy, P['skin_d'])
++    # helm kettle penyok + retak
++    cv.ell(17 + ox, 4 + oy, 30 + ox, 14 + oy, P['arm'])
++    cv.rect(17 + ox, 11 + oy, 30 + ox, 13 + oy, P['arm'])
++    cv.line((17 + ox, 13 + oy), (30 + ox, 13 + oy), P['arm_d'])                          # bibir helm
++    cv.line((18 + ox, 5 + oy), (26 + ox, 4 + oy), P['arm_l'])
++    cv.px(19 + ox, 6 + oy, P['arm_l']); cv.px(20 + ox, 6 + oy, P['arm_l'])
++    cv.rect(23 + ox, 5 + oy, 24 + ox, 12 + oy, P['bronze'])                              # jambul / strip tengah
++    cv.px(23 + ox, 5 + oy, P['gold']); cv.px(24 + ox, 8 + oy, P['bronze_d'])
++    cv.px(27 + ox, 7 + oy, P['arm_dd']); cv.px(28 + ox, 8 + oy, P['arm_dd']); cv.px(28 + ox, 9 + oy, P['arm_dd'])   # retak
++    cv.px(17 + ox, 11 + oy, (0, 0, 0, 0)); cv.px(30 + ox, 5 + oy, (0, 0, 0, 0))         # penyok
++    cv.speckle(18 + ox, 5 + oy, 29 + ox, 12 + oy, [P['moss'], P['arm_dd'], P['moss_l']], 6, 21 + pose.get('seed', 0))
++    # rumput laut menjuntai dari helm
++    kelp_strand(cv, 17 + ox, 13 + oy, 9 + (sway % 2), sway, 1)
++    kelp_strand(cv, 30 + ox, 12 + oy, 7, sway + 1, 2)
++    kelp_strand(cv, 29 + ox, 14 + oy, 5, sway + 2, 4)
++
++    finish_weapon(cv, pose, wx, wy + b, b, 3)
++    if pose.get('drips'):
++        drips(cv, [(16, 36), (31, 33), (23, 40)], pose['drips'])
++    return cv
++
++
++# ───────────── TAMPAK BELAKANG (up) ─────────────
++def draw_back(pose):
++    cv = Canvas()
++    b = pose.get('bob', 0)
++    sway = pose.get('sway', 0)
++    legs = pose.get('legs', [(0, 0), (0, 0)])
++    hx, hy = pose.get('head', (0, 0))
++    sink = pose.get('sink', 0)
++    kneel = pose.get('kneel', 0)
++    b += sink
++    lean = pose.get('lean', 0)
++
++    for i, bx in enumerate((19, 25)):
++        dx, lift = legs[i]
++        top = 31 + b
++        bot = max(GROUND - lift - kneel, top + 3)
++        x0 = bx + dx
++        cv.rect(x0, top, x0 + 3, min(bot - 3, top + 4), P['cloth_d'])
++        cv.bevel(x0, min(bot - 3, top + 4) + 1, x0 + 3, bot - 2, P['arm_d'], P['arm'], P['arm_dd'])
++        cv.rect(x0 - 1, bot - 1, x0 + 4, bot, P['leather'])
++        cv.px(x0 + 4, bot - 1, P['leather_l'])
++
++    # lengan jauh (kiri layar)
++    ax, ay = pose.get('arm2', (15, 31))
++    cv.line((16 + lean, 22 + b), (ax, ay + b), P['arm_d'], 3)
++    cv.rect(ax - 1, ay + b - 1, ax + 1, ay + b + 1, P['skin_d'])
++
++    # badan: punggung dibungkus jubah compang-camping
++    cv.bevel(18 + lean, 20 + b, 29 + lean, 29 + b, P['arm_d'], P['arm'], P['arm_dd'])
++    cv.poly([(17 + lean, 21 + b), (30 + lean, 21 + b), (31 + lean, 33 + b), (29 + sway - 1, 39 + b), (26, 36 + b), (23, 40 + b),
++             (20, 37 + b), (17 - sway, 39 + b), (16 + lean, 32 + b)], P['cloth'])
++    cv.rect(17 + lean, 21 + b, 30 + lean, 22 + b, P['cloth_l'])
++    cv.line((23 + lean, 23 + b), (23 + lean, 37 + b), P['cloth_d'])                         # lipatan jubah
++    cv.line((26 + lean, 24 + b), (27 + lean, 36 + b), P['cloth_d'])
++    cv.line((20 + lean, 25 + b), (19 + lean, 35 + b), P['cloth_d'])
++    cv.px(22 + lean, 28 + b, P['gold']); cv.px(24 + lean, 28 + b, P['gold']); cv.px(23 + lean, 29 + b, P['gold'])   # lambang pudar
++    cv.px(23 + lean, 30 + b, P['bronze_d'])
++    cv.px(19 + lean, 38 + b, (0, 0, 0, 0)); cv.px(27 + lean, 38 + b, (0, 0, 0, 0))
++    cv.speckle(17 + lean, 21 + b, 30 + lean, 38 + b, [P['cloth_dd'], P['moss'], P['cloth_l']], 8, 31)
++    cv.rect(18 + lean, 29 + b, 29 + lean, 29 + b, P['leather'])
++
++    # bahu
++    cv.bevel(13 + lean, 19 + b, 18 + lean, 23 + b, P['arm'], P['arm_l'], P['arm_d'])
++    cv.rect(14 + lean, 19 + b, 17 + lean, 19 + b, P['moss']); cv.px(15 + lean, 18 + b, P['moss_l'])
++    cv.bevel(29 + lean, 19 + b, 34 + lean, 23 + b, P['arm'], P['arm_l'], P['arm_d'])
++    cv.px(34 + lean, 19 + b, (0, 0, 0, 0)); cv.px(34 + lean, 20 + b, (0, 0, 0, 0))
++    cv.px(30 + lean, 22 + b, P['barn']); cv.px(31 + lean, 21 + b, P['barn'])
++
++    # lengan dekat (kanan layar) — pemegang pedang
++    wx, wy = clamp_hand((32 + lean, 22), pose.get('hand', (33, 31)))
++    cv.line((32 + lean, 22 + b), (wx, wy + b), P['arm'], 3)
++    cv.line((32 + lean, 22 + b), (wx, wy + b), P['arm_d'], 1)
++    cv.rect(wx - 1, wy + b - 1, wx + 1, wy + b + 1, P['skin'])
++
++    # kepala dari belakang: helm menutupi seluruh kepala + rumput laut panjang
++    cv.rect(21 + lean, 18 + b, 26 + lean, 19 + b, P['skin_d'])
++    ox, oy = hx + lean, hy + b
++    cv.ell(17 + ox, 4 + oy, 30 + ox, 15 + oy, P['arm'])
++    cv.rect(17 + ox, 11 + oy, 30 + ox, 14 + oy, P['arm'])
++    cv.line((17 + ox, 14 + oy), (30 + ox, 14 + oy), P['arm_d'])
++    cv.line((18 + ox, 5 + oy), (26 + ox, 4 + oy), P['arm_l'])
++    cv.rect(23 + ox, 5 + oy, 24 + ox, 13 + oy, P['bronze'])
++    cv.px(23 + ox, 5 + oy, P['gold'])
++    cv.px(19 + ox, 8 + oy, P['arm_dd']); cv.px(20 + ox, 9 + oy, P['arm_dd']); cv.px(20 + ox, 10 + oy, P['arm_dd'])
++    cv.speckle(18 + ox, 5 + oy, 29 + ox, 13 + oy, [P['moss'], P['arm_dd'], P['moss_l']], 7, 41)
++    cv.rect(20 + ox, 15 + oy, 27 + ox, 17 + oy, P['skin_d'])                             # tengkuk
++    kelp_strand(cv, 19 + ox, 14 + oy, 12 + (sway % 2), sway, 5, True)
++    kelp_strand(cv, 24 + ox, 15 + oy, 10, sway + 1, 6)
++    kelp_strand(cv, 28 + ox, 14 + oy, 9, sway + 2, 7)
++
++    finish_weapon(cv, pose, wx, wy + b, b, 5)
++    if pose.get('drips'):
++        drips(cv, [(17, 37), (30, 34), (24, 41)], pose['drips'])
++    return cv
++
++
++# ───────────── TAMPAK SAMPING (left) ─────────────
++def draw_side(pose):
++    cv = Canvas()
++    b = pose.get('bob', 0)
++    sway = pose.get('sway', 0)
++    stride = pose.get('stride', 0)                  # + = kaki depan (kiri layar) maju
++    lifts = pose.get('lifts', (0, 0))               # angkat kaki depan / belakang
++    hx, hy = pose.get('head', (0, 0))
++    sink = pose.get('sink', 0)
++    kneel = pose.get('kneel', 0)
++    lean = pose.get('lean', 0)                      # + = condong ke depan (kiri layar)
++    b += sink
++    L = -lean
++
++    # jubah menjuntai di belakang (kanan layar), ikut bergoyang
++    cv.poly([(27 + L, 20 + b), (30 + L, 21 + b), (33 + sway + L, 30 + b), (34 + sway * 2 + L, 38 + b), (31 + sway + L, 36 + b),
++             (29 + L, 40 + b), (26 + L, 34 + b)], P['cloth_d'])
++    cv.px(32 + sway + L, 36 + b, P['cloth_dd']); cv.px(30 + L, 38 + b, P['cloth_dd'])
++
++    # kaki belakang (gelap), lalu kaki depan
++    for i, (sx, col, hi) in enumerate(((26 - stride, P['arm_d'], P['arm']), (21 + stride, P['arm'], P['arm_l']))):
++        lift = lifts[i]
++        top = 31 + b
++        bot = max(GROUND - lift - kneel, top + 3)
++        cv.rect(sx, top, sx + 3, min(bot - 3, top + 4), P['cloth_d'] if i == 0 else P['cloth'])
++        cv.bevel(sx, min(bot - 3, top + 4) + 1, sx + 3, bot - 2, col, hi, P['arm_dd'])
++        cv.rect(sx - 2, bot - 1, sx + 3, bot, P['leather'])         # sepatu menghadap kiri
++        cv.px(sx - 2, bot - 1, P['leather_l']); cv.px(sx + 3, bot, P['moss'])
++        cv.px(sx + 1, min(bot - 3, top + 4) + 1, P['bronze_d'])
++
++    # lengan jauh (belakang badan)
++    ax, ay = pose.get('arm2', (27, 31))
++    cv.line((26 + L, 22 + b), (ax + L, ay + b), P['arm_dd'], 3)
++    cv.rect(ax + L - 1, ay + b - 1, ax + L + 1, ay + b + 1, P['skin_dd'])
++
++    # badan
++    cv.bevel(21 + L, 20 + b, 29 + L, 29 + b, P['arm'], P['arm_l'], P['arm_d'])
++    cv.rect(21 + L, 20 + b, 22 + L, 29 + b, P['arm_l'])
++    cv.px(22 + L, 22 + b, P['gold']); cv.px(21 + L, 23 + b, P['gold']); cv.px(22 + L, 24 + b, P['bronze'])   # lambang dari samping
++    cv.px(28 + L, 23 + b, P['arm_dd']); cv.px(27 + L, 24 + b, P['arm_dd']); cv.px(28 + L, 26 + b, P['arm_dd'])
++    cv.rect(21 + L, 29 + b, 29 + L, 30 + b, P['leather'])
++    cv.px(21 + L, 29 + b, P['gold'])
++    cv.rect(21 + L, 31 + b, 25 + L, 34 + b, P['cloth'])                          # tabard depan
++    cv.px(21 + L, 35 + b, P['cloth']); cv.px(23 + L, 36 + b, P['cloth']); cv.px(22 + L, 33 + b, P['cloth_l'])
++    cv.speckle(21 + L, 20 + b, 29 + L, 28 + b, [P['moss'], P['arm_dd'], P['moss_l']], 6, 51)
++
++    # bahu
++    cv.bevel(21 + L, 18 + b, 27 + L, 23 + b, P['arm'], P['arm_l'], P['arm_d'])
++    cv.px(27 + L, 18 + b, (0, 0, 0, 0))
++    cv.rect(22 + L, 18 + b, 26 + L, 18 + b, P['moss']); cv.px(23 + L, 17 + b, P['moss_l']); cv.px(25 + L, 17 + b, P['moss'])
++    cv.px(26 + L, 22 + b, P['barn']); cv.px(25 + L, 23 + b, P['barn'])
++
++    # lengan dekat (pemegang pedang)
++    wx, wy = clamp_hand((24 + L, 21), pose.get('hand', (17, 29)))
++    cv.line((24 + L, 21 + b), (wx, wy + b), P['arm'], 3)
++    cv.line((24 + L, 21 + b), (wx, wy + b), P['arm_d'], 1)
++    cv.rect(wx - 1, wy + b - 1, wx + 1, wy + b + 1, P['skin'])
++
++    # leher + kepala (profil menghadap kiri)
++    cv.rect(22 + L, 18 + b, 26 + L, 19 + b, P['skin_d'])
++    ox, oy = hx + L, hy + b
++    cv.rect(18 + ox, 12 + oy, 26 + ox, 19 + oy, P['skin'])
++    cv.rect(26 + ox, 12 + oy, 26 + ox, 19 + oy, P['skin_d'])
++    cv.px(17 + ox, 15 + oy, P['skin']); cv.px(17 + ox, 16 + oy, P['skin_l'])           # hidung
++    cv.px(18 + ox, 19 + oy, P['skin_d'])
++    # mata
++    cv.rect(19 + ox, 14 + oy, 21 + ox, 16 + oy, P['socket'])
++    cv.px(20 + ox, 15 + oy, P['eye'] if not pose.get('hurt') else P['water_l'])
++    if not pose.get('dim'):
++        cv.px(20 + ox, 14 + oy, P['eye_d'])
++    # mulut
++    if pose.get('hurt'):
++        cv.rect(18 + ox, 17 + oy, 20 + ox, 19 + oy, P['socket']); cv.px(18 + ox, 17 + oy, P['bone'])
++    else:
++        cv.line((18 + ox, 18 + oy), (21 + ox, 18 + oy), P['skin_dd']); cv.px(19 + ox, 18 + oy, P['bone'])
++    # helm
++    cv.ell(17 + ox, 4 + oy, 29 + ox, 14 + oy, P['arm'])
++    cv.rect(17 + ox, 11 + oy, 29 + ox, 13 + oy, P['arm'])
++    cv.rect(15 + ox, 12 + oy, 29 + ox, 13 + oy, P['arm'])                              # bibir helm menjorok ke depan
++    cv.line((15 + ox, 13 + oy), (29 + ox, 13 + oy), P['arm_d'])
++    cv.line((19 + ox, 5 + oy), (26 + ox, 4 + oy), P['arm_l'])
++    cv.rect(22 + ox, 5 + oy, 23 + ox, 12 + oy, P['bronze']); cv.px(22 + ox, 5 + oy, P['gold'])
++    cv.px(26 + ox, 7 + oy, P['arm_dd']); cv.px(27 + ox, 8 + oy, P['arm_dd']); cv.px(27 + ox, 9 + oy, P['arm_dd'])
++    cv.px(17 + ox, 6 + oy, (0, 0, 0, 0)); cv.px(15 + ox, 12 + oy, (0, 0, 0, 0))
++    cv.speckle(18 + ox, 5 + oy, 28 + ox, 12 + oy, [P['moss'], P['arm_dd'], P['moss_l']], 6, 61)
++    # rumput laut dari helm (menjuntai ke belakang & bawah)
++    kelp_strand(cv, 27 + ox, 13 + oy, 10 + (sway % 2), sway, 8, True)
++    kelp_strand(cv, 25 + ox, 14 + oy, 6, sway + 1, 9)
++
++    finish_weapon(cv, pose, wx, wy + b, b, 7)
++    if pose.get('drips'):
++        drips(cv, [(19, 38), (31, 36), (23, 41)], pose['drips'])
++    return cv
++
++
++# ───────────── SISA-SISA (frame mati akhir, semua arah) ─────────────
++def draw_remains(stage, seed):
++    """Tumpukan zirah + helm + tulang + pedang di genangan air. stage 0..2 = makin mendatar / makin melebar."""
++    cv = Canvas()
++    g = GROUND
++    pw = 9 + stage * 3                                  # setengah lebar genangan
++    r = random.Random(seed)
++    # genangan
++    cv.ell(24 - pw, g - 4 - stage, 24 + pw, g + 1, P['puddle'])
++    cv.ell(24 - pw + 3, g - 3 - stage, 24 + pw - 3, g, P['puddle_l'])
++    for _ in range(4 + stage * 2):
++        cv.px(24 + r.randint(-pw + 3, pw - 3), g - 2 + r.randint(-1, 1), P['water_l'])
++    # jubah ambruk
++    cv.poly([(15, g - 3), (20, g - 11 + stage * 2), (29, g - 12 + stage * 2), (34, g - 3), (30, g - 1), (18, g - 1)], P['cloth_d'])
++    cv.poly([(18, g - 3), (22, g - 9 + stage * 2), (28, g - 9 + stage * 2), (31, g - 3)], P['cloth'])
++    cv.px(21, g - 6 + stage * 2, P['cloth_l']); cv.px(26, g - 5 + stage, P['cloth_dd'])
++    # breastplate terbelah
++    cv.bevel(17, g - 9 + stage * 2, 24, g - 3, P['arm'], P['arm_l'], P['arm_d'])
++    cv.px(19, g - 6 + stage * 2, P['gold']); cv.px(20, g - 7 + stage * 2, P['gold'])
++    cv.bevel(26, g - 8 + stage * 2, 31, g - 3, P['arm_d'], P['arm'], P['arm_dd'])
++    cv.px(24, g - 7 + stage * 2, (0, 0, 0, 0)); cv.px(25, g - 6 + stage * 2, (0, 0, 0, 0))
++    # tulang
++    cv.line((14, g - 2), (20, g - 4), P['bone'], 1); cv.line((29, g - 3), (35, g - 1), P['bone'], 1)
++    cv.px(33, g - 5, P['bone']); cv.px(34, g - 5, P['skin_l'])
++    # helm menggelinding
++    cv.ell(10, g - 8 + stage, 17, g - 2, P['arm']); cv.rect(10, g - 4 + stage, 17, g - 2, P['arm'])
++    cv.line((10, g - 2), (17, g - 2), P['arm_d']); cv.px(12, g - 7 + stage, P['arm_l']); cv.px(13, g - 7 + stage, P['arm_l'])
++    cv.px(15, g - 4 + stage, P['eye'] if stage == 0 else P['eye_d']); cv.px(14, g - 4 + stage, P['socket'])
++    cv.px(11, g - 1, P['kelp']); cv.px(10, g, P['kelp_l']); cv.px(12, g, P['kelp'])
++    # pedang tergeletak
++    sword(cv, (33, g - 4), 330 - stage * 6, 14, 9)
++    # rumput laut di atas timbunan
++    kelp_strand(cv, 22, g - 11 + stage * 2, 5, 1, 12); kelp_strand(cv, 27, g - 11 + stage * 2, 4, 2, 13)
++    cv.speckle(14, g - 12, 34, g - 1, [P['moss'], P['moss_l']], 7, 70 + seed)
++    return cv
++
++
++# ───────────── POSE PER ANIMASI ─────────────
++# Tampak belakang (up) selalu dibuat dengan mencerminkan pose tampak depan (down), jadi cukup dua set pose.
++def mirror_pose(p):
++    q = dict(p)
++
++    def mx(pt):
++        return (47 - pt[0], pt[1])
++    for k in ('hand', 'arm2'):
++        if k in q:
++            q[k] = mx(q[k])
++    if 'ang' in q:
++        q['ang'] = (180 - q['ang']) % 360
++    if 'sweep' in q:
++        q['sweep'] = (mx(q['sweep'][0]), (180 - q['sweep'][1]) % 360)
++    if 'legs' in q:
++        q['legs'] = [(-d, l) for d, l in reversed(q['legs'])]
++    if 'head' in q:
++        q['head'] = (-q['head'][0], q['head'][1])
++    if 'lean' in q:
++        q['lean'] = -q['lean']
++    return q
++
++
++def pose_idle(view, f):
++    if view == 'up':
++        return mirror_pose(pose_idle('down', f))
++    bob = (0, 0, 1, 1)[f]
++    p = {'bob': bob, 'sway': f, 'seed': 0, 'drips': (f + 1) if f % 2 == 0 else 0}
++    if view == 'down':
++        p.update(legs=[(0, 0), (0, 0)], hand=(14, 31), ang=250, arm2=(32, 31), head=(0, 0))
++    else:
++        p.update(stride=0, lifts=(0, 0), hand=(17, 29), ang=215, arm2=(27, 30), head=(0, 0))
++    return p
++
++
++def pose_walk(view, f):
++    if view == 'up':
++        return mirror_pose(pose_walk('down', f))
++    bob = 1 if f in (1, 4) else 0
++    p = {'bob': bob, 'sway': (f // 2) % 4, 'seed': 0}
++    if view == 'down':
++        lifts = [(0, 0), (3, 0), (2, 0), (0, 0), (0, 3), (0, 2)][f]
++        swing = [0, 1, 2, 0, -1, -2][f]
++        p.update(legs=[(0, lifts[0]), (0, lifts[1])], hand=(14 + swing, 31), ang=250 + swing * 4, arm2=(32 - swing, 31))
++    else:
++        ph = f / 6.0 * 2 * math.pi
++        stride = int(round(3 * math.sin(ph)))
++        p.update(stride=stride,
++                 lifts=(max(0, int(round(-math.cos(ph) * 3))), max(0, int(round(math.cos(ph) * 3)))),
++                 hand=(17 - stride // 2, 29), ang=215 + stride * 3, arm2=(27 + stride // 2, 30))
++    return p
++
++
++def pose_attack(view, f):
++    """6 frame: 0-1 angkat pedang, 2 awal ayun, 3 tebasan kena (frame hit), 4-5 pulih. Tiap pose = (tangan, sudut pedang)."""
++    if view == 'up':
++        return mirror_pose(pose_attack('down', f))
++    p = {'bob': (0, 0, 1, 1, 1, 0)[f], 'sway': f % 4, 'seed': 0}
++    if view == 'down':
++        hands = [(14, 27), (15, 20), (19, 21), (24, 28), (25, 30), (18, 31)]
++        angs = [262, 282, 320, 50, 65, 245]
++        arm2 = [(32, 30), (33, 28), (33, 27), (31, 30), (31, 31), (32, 31)]
++        head = [(0, 0), (0, -1), (0, 0), (0, 1), (0, 1), (0, 0)][f]
++        p.update(legs=[(0, 0), (0, 0)] if f < 3 else [(-1, 0), (1, 0)], hand=hands[f], ang=angs[f], arm2=arm2[f], head=head)
++        if f in (2, 3):
++            p['sweep'] = (hands[f - 1], angs[f - 1])
++    else:
++        hands = [(25, 21), (27, 17), (22, 17), (18, 24), (17, 29), (18, 29)]
++        angs = [292, 318, 255, 185, 150, 195]
++        arm2 = [(28, 29), (29, 27), (29, 26), (27, 29), (27, 30), (27, 30)]
++        p.update(stride=(0, 0, 0, 2, 2, 0)[f], lifts=(0, 0), hand=hands[f], ang=angs[f], arm2=arm2[f],
++                 head=[(0, 0), (0, -1), (0, 0), (-1, 1), (-1, 1), (0, 0)][f], lean=[0, -1, 0, 2, 2, 1][f])
++        if f in (2, 3):
++            p['sweep'] = (hands[f - 1], angs[f - 1])
++    return p
++
++
++def pose_hurt(view, f):
++    """2 frame: kepala terdongak, badan terhuyung ke belakang, mata & mulut terbuka."""
++    if view == 'up':
++        return mirror_pose(pose_hurt('down', f))
++    p = {'bob': 1, 'sway': 1 + f, 'seed': 0, 'hurt': True, 'head': (0, -1 if f == 0 else 0)}
++    if view == 'down':
++        p.update(legs=[(-1, 0), (1, 0)], hand=(13, 30), ang=238, arm2=(34, 28), lean=0 if f == 0 else 1)
++    else:
++        p.update(stride=-1, lifts=(0, 0), hand=(18, 28), ang=232, arm2=(29, 28), lean=-1 if f == 0 else 0,
++                 head=(1, -1 if f == 0 else 0))
++    return p
++
++
++def pose_death(view, f):
++    """0 terhuyung, 1 lutut menekuk (pedang lepas), 2 berlutut (pedang jatuh), 3-5 = tumpukan sisa (lihat draw_remains)."""
++    if view == 'up':
++        return mirror_pose(pose_death('down', f))
++    p = {'bob': 0, 'sway': f % 4, 'seed': 0, 'hurt': f == 0, 'dim': f >= 1}
++    sinks = [1, 4, 8]
++    heads = [(0, -1), (0, 1), (0, 3)]
++    if view == 'down':
++        p.update(legs=[(-1, 0), (1, 0)] if f == 0 else [(-2, 0), (2, 0)], sink=sinks[f], head=heads[f],
++                 hand=[(13, 30), (12, 31), (11, 32)][f], ang=[238, 120, 175][f], slen=[16, 11, 10][f],
++                 arm2=[(34, 28), (33, 31), (33, 32)][f])
++    else:
++        p.update(stride=-1 if f == 0 else -2, lifts=(0, 0), sink=sinks[f],
++                 head=(heads[f][0] - (0 if f == 0 else 1), heads[f][1]),
++                 hand=[(18, 28), (17, 30), (16, 31)][f], ang=[232, 125, 178][f], slen=[16, 11, 10][f],
++                 arm2=[(29, 28), (28, 31), (28, 32)][f], lean=-1 if f == 0 else -2)
++    return p
++
++
++def draw_view(view, pose):
++    if view == 'down':
++        return draw_front(pose)
++    if view == 'up':
++        return draw_back(pose)
++    return draw_side(pose)
++
++
++def build_frame(anim, view, f):
++    """Gambar 1 frame (sel 48x48). view 'right' = cermin horizontal dari 'left'."""
++    real = 'left' if view == 'right' else view
++    if anim == 'death' and f >= 3:
++        cv = draw_remains(f - 3, 3 if view in ('left', 'down') else 4)
++        if view in ('left', 'up'):
++            cv.im = cv.im.transpose(Image.FLIP_LEFT_RIGHT)
++            cv.d = ImageDraw.Draw(cv.im)
++    else:
++        pose = {'idle': pose_idle, 'walk': pose_walk, 'attack': pose_attack, 'hurt': pose_hurt, 'death': pose_death}[anim](real, f)
++        cv = draw_view(real, pose)
++    if not (anim == 'death' and f >= 3):
++        for yy in range(GROUND + 1, CELL):            # badan yang melorot (berlutut) gak boleh nembus tanah
++            for xx in range(CELL):
++                cv.im.putpixel((xx, yy), (0, 0, 0, 0))
++    cv.outline()
++    im = cv.im
++    if view == 'right':
++        im = im.transpose(Image.FLIP_LEFT_RIGHT)
++    return im
++
++
++def build_sheet():
++    sheet = Image.new('RGBA', (COLS * CELL, len(ANIMS) * len(DIRS) * CELL), (0, 0, 0, 0))
++    for ai, (anim, n) in enumerate(ANIMS):
++        for di, view in enumerate(DIRS):
++            row = ai * len(DIRS) + di
++            for f in range(n):
++                sheet.paste(build_frame(anim, view, f), (f * CELL, row * CELL))
++    return sheet
++
++
++# ───────────── IKON DROP: "Drowned Royal Emblem" ─────────────
++def build_icon():
++    """Lambang kerajaan bawah laut (medali perunggu berkarat dengan mahkota-trisula), 16x16 -> 64x64."""
++    im = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
++    d = ImageDraw.Draw(im)
++    d.ellipse([1, 1, 14, 14], fill=P['line'])
++    d.ellipse([2, 2, 13, 13], fill=P['bronze_d'])
++    d.ellipse([3, 3, 12, 12], fill=P['bronze'])
++    d.arc([3, 3, 12, 12], 200, 300, fill=P['gold'])
++    for (x, y) in ((7, 4), (8, 4), (5, 5), (10, 5), (5, 6), (10, 6), (6, 7), (9, 7), (7, 7), (8, 7), (7, 8), (8, 8), (7, 9), (8, 9), (7, 10), (8, 10)):
++        im.putpixel((x, y), P['gold'])
++    for (x, y) in ((6, 5), (9, 5), (7, 6), (8, 6), (6, 6)):
++        im.putpixel((x, y), P['bronze_d'])
++    r = random.Random(4)
++    for _ in range(9):
++        x, y = r.randint(3, 12), r.randint(3, 12)
++        if im.getpixel((x, y))[3]:
++            im.putpixel((x, y), r.choice([P['arm'], P['arm_d'], P['moss']]))
++    for (x, y) in ((3, 11), (4, 12), (11, 4), (12, 5)):
++        im.putpixel((x, y), P['barn'])
++    im.putpixel((10, 12), P['kelp']); im.putpixel((11, 12), P['kelp_l']); im.putpixel((11, 13), P['kelp'])
++    return im.resize((64, 64), Image.NEAREST)
++
++
++def build_preview(sheet, scale=4):
++    """Contact sheet diperbesar, dengan latar gelap + label baris (buat dicek mata, bukan dipakai game)."""
++    bg = Image.new('RGBA', (sheet.width * scale + 90, sheet.height * scale), (22, 40, 58, 255))
++    big = sheet.resize((sheet.width * scale, sheet.height * scale), Image.NEAREST)
++    bg.alpha_composite(big, (90, 0))
++    d = ImageDraw.Draw(bg)
++    for ai, (anim, n) in enumerate(ANIMS):
++        for di, view in enumerate(DIRS):
++            y = (ai * 4 + di) * CELL * scale
++            d.text((4, y + 4), f'{anim}\n{view}', fill=(230, 240, 255, 255))
++            d.line([(90, y), (bg.width, y)], fill=(255, 255, 255, 30))
++    return bg
++
++
++def main(argv):
++    sheet = build_sheet()
++    if '--preview' in argv:
++        out = Path(argv[argv.index('--preview') + 1])
++        build_preview(sheet).save(out)
++        print('preview ->', out)
++        return
++    SHEET_PATH.parent.mkdir(parents=True, exist_ok=True)
++    sheet.save(SHEET_PATH)
++    ICON_PATH.parent.mkdir(parents=True, exist_ok=True)
++    build_icon().save(ICON_PATH)
++    print('sheet ->', SHEET_PATH, sheet.size)
++    print('icon  ->', ICON_PATH)
++
++
++if __name__ == '__main__':
++    main(sys.argv[1:])

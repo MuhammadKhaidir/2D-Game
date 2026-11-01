@@ -10,6 +10,7 @@ import Entitas.DarkMerchant;
 import Entitas.Skeleton;
 import Entitas.Golem;
 import Entitas.Golemite;
+import Entitas.DrownedSoldier;
 import Entitas.SkeletonKing;
 import Item.ItemManager;
 import Item.ItemStack;
@@ -94,6 +95,25 @@ public class DomainManager {
     public List<Golem> getGolems() {
         return activeRoom != null ? java.util.Collections.emptyList() : golems;
     }
+
+    // ── Water Domain: Drowned Soldier (prajurit kerajaan bawah laut yang tenggelam) ──
+    private final List<DrownedSoldier> drownedSoldiers = new ArrayList<>();
+    public List<DrownedSoldier> getDrownedSoldiers() {
+        return activeRoom != null ? java.util.Collections.emptyList() : drownedSoldiers;
+    }
+
+    // Titik spawn Drowned Soldier (x, y entity, px koordinat domain). Semuanya sudah dicek di peta WaterDomainMap:
+    // tile lantai / pasir / air dangkal yang bebas dari tebing, air dalam, dan properti, terhubung ke titik pendaratan,
+    // dan jaraknya >= 750 px dari kolam kedatangan supaya player gak langsung dikeroyok pas muncul.
+    // Tersebar per area: jalan batu, Plaza Pasang-Surut, Kuil, Gua Karang, Taman Rumput Laut, Pantai Kerang,
+    // Pelataran Pilar, Gua Kristal, Taman Terendam.
+    private static final int[][] DROWNED_SOLDIER_SPAWNS = {
+        {2688, 2769}, {2688, 1425},                         // jalan batu selatan & utara
+        {2688, 1905}, {2976, 2097}, {2400, 2097},           // Plaza Pasang-Surut
+        {2688,  849}, {2352,  609}, {3024,  609},           // depan Kuil & dua sisinya
+        { 960, 2097}, {1152, 1953}, {1056,  993}, { 960, 3249},   // barat: Gua Karang, Taman Rumput Laut, Pantai Kerang
+        {4416, 2097}, {4224, 2241}, {4416,  945}, {4416, 3249}    // timur: Pelataran Pilar, Gua Kristal, Taman Terendam
+    };
 
     // ── Isi GolemHide: SEMUA golem ada di sini (koordinat interior, px) ──
     // Posisinya sudah dicek ada di lantai gua (bukan di tebing / di luar peta), jarak antar mob >= ~100 px,
@@ -382,6 +402,7 @@ public class DomainManager {
                 for (Skeleton sk : skeletons) sk.update();
                 for (Golemite g : golemites) g.update();
                 for (Golem g : golems) g.update();
+                for (DrownedSoldier d : drownedSoldiers) d.update();
             }
             if (darkMerchant != null) {
                 darkMerchant.update();
@@ -585,6 +606,7 @@ public class DomainManager {
         skeletons.clear();
         golemites.clear();
         golems.clear();
+        drownedSoldiers.clear();
         roomSkeletons.clear();
         bossSkeleton = null;
         gp.player.x = exitX;
@@ -626,11 +648,19 @@ public class DomainManager {
         golemites.add(g);
     }
 
+    private void spawnDrownedSoldier(int wx, int wy) {
+        DrownedSoldier d = new DrownedSoldier(gp);
+        d.x = wx; d.y = wy;
+        d.spawnX = wx; d.spawnY = wy;
+        drownedSoldiers.add(d);
+    }
+
     private void buildInteriorFor(DomainData d) {
         wallCollisions.clear();
         skeletons.clear();
         golemites.clear();
         golems.clear();
+        drownedSoldiers.clear();
         activeRoom = null;
         roomBgImage = null;
         nearDoorRoom = null;
@@ -676,6 +706,7 @@ public class DomainManager {
             // Water Domain tidak pakai gambar latar: lantai / air / properti digambar dari WaterDomainMap
             bgImage = null;
             prepareWaterDomain();
+            for (int[] p : DROWNED_SOLDIER_SPAWNS) spawnDrownedSoldier(p[0], p[1]);
         } else {
             try {
                 java.net.URL url = getClass().getResource(d.backgroundPath);

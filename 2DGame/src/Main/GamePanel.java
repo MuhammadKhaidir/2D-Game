@@ -1496,6 +1496,9 @@ public void paintComponent(Graphics g) {
         for (Entitas.Golem gl : domainManager.getGolems()) {
             if (gl != null && gl.isAlive()) sortList.add(gl);
         }
+        for (Entitas.DrownedSoldier ds : domainManager.getDrownedSoldiers()) {   // Water Domain (termasuk animasi mati / fade)
+            if (ds != null && ds.isVisible()) sortList.add(ds);
+        }
         if (domainManager.darkMerchant != null) {
             sortList.add(domainManager.darkMerchant);
         }
