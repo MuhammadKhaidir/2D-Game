@@ -216,6 +216,17 @@ public class DrownedSoldier extends Entity {
         direction = new String[]{"down", "up", "left", "right"}[dirIdx];
     }
 
+    /**
+     * Hadap lurus ke arah jalan (dx, dy cuma -1 / 0 / 1). Dipakai pas roaming. JANGAN pakai faceToward() buat ini:
+     * faceToward() ngitung selisih PIXEL dengan margin 6 px, jadi kalau dikasih vektor -1/0/1 dia gak pernah milih
+     * kiri/kanan dari posisi hadap depan/belakang (dan sebaliknya), akibatnya sprite jalan menyamping tapi hadap depan.
+     */
+    private void faceAxis(int dx, int dy) {
+        if (dx != 0) dirIdx = dx > 0 ? 3 : 2;
+        else dirIdx = dy >= 0 ? 0 : 1;
+        direction = new String[]{"down", "up", "left", "right"}[dirIdx];
+    }
+
     // ═══════════ COLLISION ═══════════
     /** Apakah langkah (dx, dy) terhalang: dinding / air dalam / pilar domain, player, atau prajurit lain. */
     private boolean blockedBy(int dx, int dy) {
@@ -425,7 +436,7 @@ public class DrownedSoldier extends Entity {
             wanderDx = d[0]; wanderDy = d[1];
         }
         wanderTimer = 40 + RNG.nextInt(70);
-        faceToward(wanderDx, wanderDy);
+        faceAxis(wanderDx, wanderDy);
     }
 
     private void doWander() {
