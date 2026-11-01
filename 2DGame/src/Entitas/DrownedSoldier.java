@@ -28,9 +28,11 @@ import javax.imageio.ImageIO;
  *                  frame ke-3 (HIT_FRAME), hitbox memanjang sempit lurus di depan badan
  *   HURT           terhuyung sebentar kalau kena pukul (tidak bisa di-stunlock: ada jeda kebal-stagger)
  *   RETURN         kalau player kabur terlalu jauh, balik ke titik spawn sambil pulih
- *   DYING          animasi mati (jatuh berlutut -> jadi tumpukan zirah di genangan), memudar, lalu respawn
+ *   DYING          animasi mati yang sama kayak player (3 frame, rebah), memudar, lalu respawn
  *
- * Sprite: sprite sheet ORIGINAL src/Aset/DrownedSoldier/drowned_soldier_sheet.png (dibuat tools/generate_drowned_soldier.py).
+ * Sprite: gaya sprite PLAYER (sel 64 px, proporsi, palet, dan gerakan sama), tampilannya tetap Drowned Soldier.
+ * Sheet src/Aset/DrownedSoldier/drowned_soldier_sheet.png dibuat tools/build_drowned_sheet_from_player.py dari pose
+ * frame player (idle, walk, tusukan, mati) yang di-skin jadi Drowned Soldier. Digambar 96 px, persis ukuran player.
  * Tata letak sheet: kolom = nomor frame, baris = anim * 4 + arah. Lihat konstanta di bawah.
  *
  * Mob ini hanya hidup di Water Domain (DomainManager yang nge-spawn, nge-update, dan membersihkannya waktu keluar).
@@ -40,21 +42,24 @@ public class DrownedSoldier extends Entity {
 
     // ═══════════ SPRITE SHEET ═══════════
     private static final String SHEET_PATH = "/Aset/DrownedSoldier/drowned_soldier_sheet.png";
-    private static final int CELL  = 48;               // ukuran satu sel di sheet (px)
-    private static final int SCALE = 2;                // diperbesar 2x (nearest) saat load -> 96 px di layar
-    private static final int DRAW  = CELL * SCALE;
+    private static final int CELL  = 64;               // ukuran satu sel di sheet (px), sama kayak frame player
+    private static final int DRAW  = 96;               // digambar 96 px di layar (= gp.tileSize * 2), persis ukuran player
 
     // indeks animasi (baris = ANIM * 4 + arah)
     private static final int A_IDLE = 0, A_WALK = 1, A_ATTACK = 2, A_HURT = 3, A_DEATH = 4;
-    private static final int[] FRAME_COUNT = {4, 6, 4, 2, 6};
+    // idle 1 frame (player juga diam 1 frame), hurt = frame idle (player gak punya animasi hurt), death 3 frame kayak player
+    private static final int[] FRAME_COUNT = {1, 6, 4, 2, 3};
     private static final int HIT_FRAME = 2;            // frame ke-3 attack = tusukan kena (tangan lurus penuh)
 
     private static final BufferedImage[][][] FRAMES = new BufferedImage[5][4][];   // [anim][arah][frame]
     private static boolean framesLoaded = false;
 
-    // posisi sprite relatif ke (x, y) entity: kaki di baris ke-44 sel -> sejajar dengan dasar hitbox
+    // posisi sprite relatif ke (x, y) entity: sama persis kayak player (screenX - tileSize/2, screenY - tileSize/3),
+    // jadi badan di tengah tile dan kaki sejajar dasar hitbox
     private static final int SPRITE_OFF_X = -24;
-    private static final int SPRITE_OFF_Y = -38;
+    private static final int SPRITE_OFF_Y = -16;
+    private static final int FEET_PX = 64;             // garis tanah dari atas sprite (px layar), pusat bayangan (sama kayak bayangan player)
+    private static final int HEAD_PX = 22;             // puncak kepala dari atas sprite (px layar), buat HP bar
 
     // ═══════════ STAT (gampang di-tune) ═══════════
     public static final int    MAX_LIFE        = 1100;
@@ -93,7 +98,7 @@ public class DrownedSoldier extends Entity {
     private boolean swingHitDone = false;
     private int hurtTimer = 0, hurtImmunity = 0;
     private int deathFrame = 0, deathTimer = 0, deathHold = 0, fadeTimer = 0;
-    private static final int DEATH_FRAME_TICKS = 7, DEATH_HOLD_TICKS = 100, DEATH_FADE_TICKS = 40;
+    private static final int DEATH_FRAME_TICKS = 8, DEATH_HOLD_TICKS = 100, DEATH_FADE_TICKS = 40;   // 8 tick/frame = sama kayak animasi mati player
 
     private int wanderTimer = 0, wanderIdleTimer = 0;
     private int wanderDx = 0, wanderDy = 0;
@@ -143,7 +148,7 @@ public class DrownedSoldier extends Entity {
     // ═══════════ LOAD SPRITE ═══════════
     public static synchronized void preloadImages() { loadFrames(); }
 
-    /** Frame idle menghadap depan (sudah diperbesar), buat ikon Mob Index. */
+    /** Frame idle menghadap depan (ukuran asli 64 px), buat ikon Mob Index. */
     public static BufferedImage getIconFrame() {
         loadFrames();
         return FRAMES[A_IDLE][0][0];
@@ -163,7 +168,7 @@ public class DrownedSoldier extends Entity {
                 FRAMES[a][d] = new BufferedImage[FRAME_COUNT[a]];
                 for (int f = 0; f < FRAME_COUNT[a]; f++) {
                     FRAMES[a][d][f] = sheet != null && sheet.getHeight() >= (a * 4 + d + 1) * CELL
-                            ? scaleUp(sheet.getSubimage(f * CELL, (a * 4 + d) * CELL, CELL, CELL))
+                            ? copyCell(sheet.getSubimage(f * CELL, (a * 4 + d) * CELL, CELL, CELL))
                             : placeholder();
                 }
             }
@@ -172,27 +177,21 @@ public class DrownedSoldier extends Entity {
         Main.Log.d("[DrownedSoldier] Selesai load sprite sheet.");
     }
 
-    /** Perbesar SCALE x dengan nearest-neighbor (tajam, tanpa interpolasi). */
-    private static BufferedImage scaleUp(BufferedImage src) {
-        BufferedImage out = new BufferedImage(DRAW, DRAW, BufferedImage.TYPE_INT_ARGB);
-        for (int py = 0; py < CELL; py++) {
-            for (int px = 0; px < CELL; px++) {
-                int argb = src.getRGB(px, py);
-                if ((argb >>> 24) == 0) continue;
-                for (int oy = 0; oy < SCALE; oy++) {
-                    for (int ox = 0; ox < SCALE; ox++) out.setRGB(px * SCALE + ox, py * SCALE + oy, argb);
-                }
-            }
-        }
+    /** Salinan mandiri satu sel (ukuran asli 64 px). Pembesaran ke 96 px dilakukan pas digambar, sama kayak player. */
+    private static BufferedImage copyCell(BufferedImage src) {
+        BufferedImage out = new BufferedImage(CELL, CELL, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = out.createGraphics();
+        g.drawImage(src, 0, 0, null);
+        g.dispose();
         return out;
     }
 
     /** Kotak teal polos kalau sprite sheet hilang, supaya game tetap jalan (dan mob tetap kelihatan). */
     private static BufferedImage placeholder() {
-        BufferedImage img = new BufferedImage(DRAW, DRAW, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(CELL, CELL, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
         g.setColor(new Color(70, 140, 130, 200));
-        g.fillRect(DRAW / 2 - 16, DRAW / 2 - 36, 32, 72);
+        g.fillRect(CELL / 2 - 8, 12, 16, 34);
         g.dispose();
         return img;
     }
@@ -674,8 +673,8 @@ public class DrownedSoldier extends Entity {
         if (!dying) {
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.35f));
             g2.setColor(Color.BLACK);
-            int shadowW = 34, shadowH = 11;
-            g2.fillOval(sx + DRAW / 2 - shadowW / 2, sy + 88 - shadowH / 2 - 2, shadowW, shadowH);
+            int shadowW = 28, shadowH = 12;        // ukuran bayangan player
+            g2.fillOval(sx + DRAW / 2 - shadowW / 2, sy + FEET_PX - shadowH / 2, shadowW, shadowH);
             g2.setComposite(old);
         }
 
@@ -683,7 +682,7 @@ public class DrownedSoldier extends Entity {
         if (!dying && life < maxLife) {
             int barW = 44, barH = 5;
             int fill = (int) ((double) Math.max(0, life) / maxLife * barW);
-            int bx = sx + DRAW / 2 - barW / 2, by = sy + 4;
+            int bx = sx + DRAW / 2 - barW / 2, by = sy + HEAD_PX - 10;
             g2.setColor(Color.DARK_GRAY);
             g2.fillRect(bx, by, barW, barH);
             g2.setColor(new Color(200, 50, 50));
@@ -698,7 +697,7 @@ public class DrownedSoldier extends Entity {
 
         BufferedImage img = currentFrame();
         if (img != null) {
-            g2.drawImage(whiteFlashTimer > 0 ? HitFlash.whiteVersion(img) : img, sx, sy, null);
+            g2.drawImage(whiteFlashTimer > 0 ? HitFlash.whiteVersion(img) : img, sx, sy, DRAW, DRAW, null);
         }
         g2.setComposite(old);
     }
