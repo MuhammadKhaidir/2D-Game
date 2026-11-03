@@ -935,6 +935,13 @@ public class player extends Entity {
         this.attack = getTotalDamage();
         gp.initInspectButtons();
 
+        // Saat naik perahu, Rowboat yang memindahkan posisi player.
+        if (gp.rowboat != null && gp.rowboat.isMounted()) {
+            isMoving = false;
+            wasMoving = false;
+            return;
+        }
+
         // ===== JUMP STATE =====
      // ===== JUMP STATE =====
         if (jumpState != JumpState.NONE) {

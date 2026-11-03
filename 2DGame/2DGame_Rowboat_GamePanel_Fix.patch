@@ -1,0 +1,19 @@
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -188,2 +188,3 @@
+ 	public TileM tileM = new TileM(this);
++	public World.Rowboat rowboat;
+ 	public bahan.SnowAtmosphere snow = new bahan.SnowAtmosphere(this); // hujan salju + kabut + warna dingin di biome es
+@@ -223,2 +224,3 @@
+ 		this.player = new player(this, KeyH); // Player lahir
++		this.rowboat = new World.Rowboat(this);
+ 		this.deathScreenUI = new UI.DeathScreenUI(this, player);
+@@ -1282,2 +1284,3 @@
+ 	    if (fishing != null) fishing.update(); // timer gigitan ikan (berhenti sendiri pas dialog / toko, karena return di atas)
++	    if (rowboat != null) rowboat.update();
+ 	    player.update();
+@@ -1559,2 +1562,3 @@
+         tileM.draw(g2);
++		if (rowboat != null) rowboat.draw(g2);
+         if (waterPortal != null) waterPortal.drawOutsidePool(g2);   // kolam portal Water Domain (rata di tanah, di bawah objek & pemain)

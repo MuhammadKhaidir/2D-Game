@@ -186,6 +186,7 @@ public class GamePanel extends JPanel implements Runnable{
 	//UI Field Death totem aka sung jin woo
 	public UI.TotemUI totemUI;
 	public TileM tileM = new TileM(this);
+	public World.Rowboat rowboat;
 	public bahan.SnowAtmosphere snow = new bahan.SnowAtmosphere(this); // hujan salju + kabut + warna dingin di biome es
 	
 	public MobIndexUI mobIndexUI = new MobIndexUI(this);
@@ -221,6 +222,7 @@ public class GamePanel extends JPanel implements Runnable{
 		this.setFocusable(true);
 		this.setFocusTraversalKeysEnabled(false);
 		this.player = new player(this, KeyH); // Player lahir
+		this.rowboat = new World.Rowboat(this);
 		this.deathScreenUI = new UI.DeathScreenUI(this, player);
 	    this.statUI = new PlayerStatUI(this, player);
 	    this.deathTotemManager = new DeathTotemManager(this);
@@ -1280,6 +1282,7 @@ public class GamePanel extends JPanel implements Runnable{
 		}
 	    // 2. UPDATE NORMAL
 	    if (fishing != null) fishing.update(); // timer gigitan ikan (berhenti sendiri pas dialog / toko, karena return di atas)
+	    if (rowboat != null) rowboat.update();
 	    player.update();
 	    if (waterPortal != null) waterPortal.update(); // portal Water Domain: pemicu + animasi lompat masuk / keluar
 
@@ -1557,6 +1560,7 @@ public void paintComponent(Graphics g) {
 
         applyWorldZoom(g2);
         tileM.draw(g2);
+        if (rowboat != null) rowboat.draw(g2);
         if (waterPortal != null) waterPortal.drawOutsidePool(g2);   // kolam portal Water Domain (rata di tanah, di bawah objek & pemain)
         g2.setTransform(baseTx);
         
