@@ -22,6 +22,8 @@ public final class WorldGen {
     public static final int WORLD_ROWS = 460;
     /** Lebar pita laut di tepi timur / selatan / utara area baru. */
     public static final int BORDER = 10;
+    /** Mulai baris ini, pantai selatan peta lama dibentuk ulang menjadi teluk dan pulau. */
+    private static final int COAST_RESHAPE_START = 164;
     /** Baris pertama daratan di area utara-baru (timur peta lama). Sambung dengan garis pantai peta lama. */
     public static final int NORTH_COAST_ROW = 7;
 
@@ -67,7 +69,7 @@ public final class WorldGen {
 
     // ------------------------------------------------------------------ parameter biome es
     /** Lebar pinggiran salju yang memudar ke hutan (tile). */
-    private static final float FADE = 30f;
+    private static final float FADE = 14f;
     private static final float WARP_AMP = 34f;
     private static final float CORNER_R = 22f;
     /** Salju dianggap "milik generator" (objek lama di sini dibuang) kalau ice() di atas ini. */
@@ -142,17 +144,29 @@ public final class WorldGen {
     // ================================================================== biome es
 
     /**
-     * Seberapa bersalju titik (tx, ty) (satuan tile): 0 = hutan biasa, 1 = es penuh.
-     * Bentuknya dua kotak membulat (pojok lama + daratan es di selatan) yang tepinya digoyang noise,
-     * lalu memudar halus selebar FADE tile, jadi tidak ada garis batas yang tajam.
+     * Seberapa bersalju titik (tx, ty): pusat pulau salju putih, tepi pantainya memudar halus.
+     * Bentuk biome mengikuti pulau, bukan dua kotak besar yang saling menempel.
      */
     public float ice(float tx, float ty) {
-        float wx = tx + WARP_AMP * (fbm(tx * 0.017f, ty * 0.017f, S + 1, 3) - 0.5f) * 2f;
-        float wy = ty + WARP_AMP * (fbm(tx * 0.017f + 41.3f, ty * 0.017f + 7.9f, S + 2, 3) - 0.5f) * 2f;
-        float d1 = sdRoundBox(wx, wy, -80f, 218f, 98f, 365f, CORNER_R);   // pojok lama (diperlebar ke timur)
-        float d2 = sdRoundBox(wx, wy, -80f, 345f, 178f, 640f, CORNER_R);  // dataran es selatan
-        float d = Math.min(d1, d2);
-        return smooth((FADE - d) / FADE);
+        return smooth((FADE - snowIslandDistance(tx, ty)) / FADE);
+    }
+
+    /** Jarak bertanda ke pantai pulau salju; negatif = daratan, positif = laut. */
+    private float snowIslandDistance(float x, float y) {
+        // Batas murah: di luar kotak ini jaraknya pasti lebih besar dari fade salju.
+        if (x < -90f || x > 126f || y < 200f || y > 420f) return 1000f;
+        return organicEllipseDistance(x, y, 18f, 310f, 82f, 94f, S + 61, 9f);
+    }
+
+    /** Elips yang garis pantainya digeser noise bertingkat, bukan tepi geometris yang kaku. */
+    private float organicEllipseDistance(float x, float y, float cx, float cy,
+                                         float rx, float ry, int seed, float warp) {
+        float wx = x + warp * (fbm(x * 0.028f, y * 0.028f, seed, 3) - 0.5f) * 2f;
+        float wy = y + warp * (fbm(x * 0.028f + 37.7f, y * 0.028f + 11.1f, seed + 1, 3) - 0.5f) * 2f;
+        float radial = (float) Math.sqrt(((wx - cx) / rx) * ((wx - cx) / rx)
+                                      + ((wy - cy) / ry) * ((wy - cy) / ry)) - 1f;
+        float detail = (fbm(x * 0.075f + 53f, y * 0.075f + 23f, seed + 2, 2) - 0.5f) * 0.18f;
+        return (radial + detail) * Math.min(rx, ry);
     }
 
     /**
@@ -180,11 +194,76 @@ public final class WorldGen {
 
     /** true kalau sel (c, r) daratan (bukan air). Dipakai buat memilih tile tepi pantai. */
     public boolean isLand(int c, int r) {
-        if (inCore(c, r)) return !WaterCollision.isWaterTile(core[c][r]);
-        if (c < 0 || r < 0) return true;                          // di luar kiri/atas: tidak pernah terlihat
+        if (c < 0 || r < 0) return true; // di luar sisi barat/utara tidak terlihat
         if (c >= WORLD_COLS - BORDER || r >= WORLD_ROWS - BORDER) return false;
-        if (c >= coreCols && r < NORTH_COAST_ROW) return false;   // laut utara di timur peta lama
-        return true;
+
+        if (inCore(c, r)) {
+            if (WaterCollision.isWaterTile(core[c][r])) return false;
+            if (r < COAST_RESHAPE_START) return true; // kota, jalan, dan bagian utara tetap utuh
+            float x = c + 0.5f, y = r + 0.5f;
+            return inMainlandCore(c, r) || snowIslandDistance(x, y) <= 0f || inMinorIsland(x, y);
+        }
+
+        if (c >= coreCols && r < NORTH_COAST_ROW) return false;
+        float x = c + 0.5f, y = r + 0.5f;
+        return inMainlandExtension(c, r) || snowIslandDistance(x, y) <= 0f
+                || inGreenIsland(x, y) || inMinorIsland(x, y);
+    }
+
+    /** Garis pantai utama: beberapa teluk besar dan tanjung, lalu dipecah lagi oleh noise 2D. */
+    private float mainlandSouthEdge(float x) {
+        float broad = (fbm(x * 0.022f + 4f, 12.3f, S + 41, 3) - 0.5f) * 34f;
+        float detail = (vnoise(x * 0.075f + 9f, 3.1f, S + 42) - 0.5f) * 14f;
+        float waves = 9f * (float) Math.sin(x * 0.035f) + 5f * (float) Math.sin(x * 0.091f + 1.2f);
+        float bayWest = 28f * (float) Math.exp(-Math.pow((x - 82f) / 25f, 2));
+        float bayCenter = 22f * (float) Math.exp(-Math.pow((x - 166f) / 22f, 2));
+        float peninsula = 14f * (float) Math.exp(-Math.pow((x - 215f) / 18f, 2));
+        return 164f + 0.43f * x + waves + broad + detail - bayWest - bayCenter + peninsula;
+    }
+
+    /** Gerigi pantai skala menengah-kecil agar garis pantai tidak tampak seperti satu garis lurus. */
+    private float mainlandCoastWarp(float x, float y) {
+        float broad = (fbm(x * 0.038f + 2f, y * 0.026f + 7f, S + 45, 3) - 0.5f) * 18f;
+        float detail = (vnoise(x * 0.11f + 3f, y * 0.09f + 5f, S + 46) - 0.5f) * 5f;
+        return broad + detail;
+    }
+
+    private boolean inMainlandCore(int c, int r) {
+        return r < mainlandSouthEdge(c) + mainlandCoastWarp(c, r);
+    }
+
+    /** Sambungan daratan utama ke timur, dengan pantai timur yang menyempit dan berlekuk ke selatan. */
+    private boolean inMainlandExtension(int c, int r) {
+        float x = c - (coreCols - 1f);
+        float south = mainlandSouthEdge(coreCols - 1f)
+                    + 0.10f * x
+                    + 7f * (float) Math.sin(x * 0.035f)
+                    + mainlandCoastWarp(c, r);
+        float east = 286f
+                   + 16f * (float) Math.sin(r * 0.027f + 0.7f)
+                   + (fbm(r * 0.024f + 8f, 2.7f, S + 47, 3) - 0.5f) * 28f
+                   - 0.19f * Math.max(0, r - 175);
+        return r < south && c < east;
+    }
+
+    /** Pulau hijau tenggara: dua massa tanah yang menyatu, dengan satu ceruk laut di sisi barat. */
+    private boolean inGreenIsland(float x, float y) {
+        if (x < 220f || x > 350f || y < 260f || y > 400f) return false;
+        float lobeA = organicEllipseDistance(x, y, 285f, 330f, 43f, 56f, S + 71, 7f);
+        float lobeB = organicEllipseDistance(x, y, 306f, 350f, 26f, 33f, S + 72, 5f);
+        boolean westCove = organicEllipseDistance(x, y, 250f, 315f, 13f, 26f, S + 73, 3f) < 0f;
+        return Math.min(lobeA, lobeB) < 0f && !westCove;
+    }
+
+    /** Pulau-pulau kecil di teluk: sengaja mungil, lebih cocok menjadi landmark daripada hutan baru. */
+    private boolean inMinorIsland(float x, float y) {
+        boolean first = Math.abs(x - 143f) < 15f && Math.abs(y - 303f) < 14f;
+        boolean second = Math.abs(x - 203f) < 17f && Math.abs(y - 388f) < 14f;
+        boolean third = Math.abs(x - 230f) < 17f && Math.abs(y - 292f) < 22f;
+        if (!first && !second && !third) return false;
+        return organicEllipseDistance(x, y, 143f, 303f, 10f, 9f, S + 81, 3f) < 0f
+            || organicEllipseDistance(x, y, 203f, 388f, 12f, 9f, S + 82, 3f) < 0f
+            || organicEllipseDistance(x, y, 230f, 292f, 12f, 17f, S + 83, 4f) < 0f;
     }
 
     /** Tile dasar sel (c, r): peta lama kalau di dalam core, selain itu hasil generator. */
