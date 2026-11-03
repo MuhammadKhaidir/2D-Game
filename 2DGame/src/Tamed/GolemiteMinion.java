@@ -20,7 +20,7 @@ import Entitas.monster;
  */
 public class GolemiteMinion extends GolemMinion {
 
-    public static final int MAX_LIFE = 1200;
+    public static final int MAX_LIFE = 2500;
 
     enum GState { IDLE, WALK, ATTACK, DEATH }
     private GState state = GState.IDLE;

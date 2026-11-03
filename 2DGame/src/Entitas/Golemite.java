@@ -74,7 +74,7 @@ public class Golemite extends Entity {
 
     public Golemite(GamePanel gp) {
         super(gp);
-        this.maxLife   = 1500;
+        this.maxLife   = 3000;
         this.life      = maxLife;
         this.speed     = 1.0;
         this.direction = "down";

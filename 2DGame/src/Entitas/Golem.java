@@ -127,7 +127,7 @@ public class Golem extends Entity {
 
     public Golem(GamePanel gp) {
         super(gp);
-        this.maxLife   = 5000;
+        this.maxLife   = 12000;
         this.life      = maxLife;
         this.speed     = 1.0;
         this.direction = "down";

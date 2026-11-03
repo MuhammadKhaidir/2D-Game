@@ -52,7 +52,7 @@ public class GolemMinion extends Entity {
         super(gp);
         this.ownerTotem = totem;
         this.alive       = true; 
-        this.maxLife    = 4000;   // lebih tanky dari skeleton minion
+        this.maxLife    = 10000;   // lebih tanky dari skeleton minion
         this.life       = maxLife;
         this.speed      = 0.9;    // lambat tapi kuat
         this.direction  = "down";
