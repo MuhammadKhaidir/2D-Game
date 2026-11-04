@@ -1012,12 +1012,13 @@ public class player extends Entity {
         if (KeyH.leftPressed)  { dx -= speed; direction = "left";  moving = true; }
         if (KeyH.rightPressed) { dx += speed; direction = "right"; moving = true; }
 
-        if (debugNoClip) {
-            collisionOn = false;
+        /*if (debugNoClip) {
+            collisionOn = false;   -- buat debug collision tembus
             x += dx;
             y += dy;
 
-        } else if (gp.gameState == GamePanel.GameState.OUTSIDE) {
+        } else if (gp.gameState == GamePanel.GameState.OUTSIDE) { */
+        if (gp.gameState == GamePanel.GameState.OUTSIDE) {
             collisionOn = false;
             gp.colision.checkObject(this, dx, dy);
             for (int i = 0; i < gp.npc.length; i++) {

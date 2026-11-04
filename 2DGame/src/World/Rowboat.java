@@ -343,7 +343,7 @@ public final class Rowboat {
 
     private void drawHint(Graphics2D g2, float screenX, float screenY) {
         if (!mounted && !isNearBoardingPoint()) return;
-        String label = mounted ? "E  TURUN DI PESISIR" : "E  NAIK PERAHU";
+        String label = mounted ? "E  (Get out of the boat)" : "E (Get on boat)";
         Font oldFont = g2.getFont();
         g2.setFont(new Font("Arial", Font.BOLD, 13));
         FontMetrics fm = g2.getFontMetrics();
