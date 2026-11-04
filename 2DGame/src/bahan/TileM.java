@@ -1135,7 +1135,12 @@ public TileM(GamePanel gp) {
 			    break;
 			}
 			case 4: { // player
-			    p.draw(g2);
+                Graphics2D passengerLayer = (Graphics2D) g2.create();
+                if (gp.rowboat != null && gp.rowboat.isMounted()) {
+                    gp.rowboat.applyPassengerMotion(passengerLayer);
+                }
+                p.draw(passengerLayer);
+                passengerLayer.dispose();
 			    break;
 			}
 			case 5: { // minion (golem/skeleton pion)

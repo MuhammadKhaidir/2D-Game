@@ -1585,7 +1585,12 @@ public void paintComponent(Graphics g) {
             if (n != null) n.drawOverhead(g2);
         }
         
-        player.drawOverhead(g2);
+        Graphics2D passengerOverlay = (Graphics2D) g2.create();
+        if (rowboat != null && rowboat.isMounted()) {
+            rowboat.applyPassengerMotion(passengerOverlay);
+        }
+        player.drawOverhead(passengerOverlay);
+        passengerOverlay.dispose();
         if (waterPortal != null) waterPortal.drawOverlay(g2);   // percikan + riak saat lompat / nyebur
         if (fishing != null) fishing.draw(g2); // joran + pelampung + tanda "!" pas ikan nyambar
         if (speechBubble != null) speechBubble.draw(g2);

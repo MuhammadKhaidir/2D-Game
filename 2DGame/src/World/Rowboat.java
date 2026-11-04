@@ -180,6 +180,38 @@ public final class Rowboat {
         gp.player.collisionOn = false;
     }
 
+    /**
+     * Apply the boat's floating motion to the passenger's complete render layer.
+     * The passenger remains at a stable world/collision position; only the visual
+     * pose follows the hull's vertical bob and subtle rocking around the boat centre.
+     * Call this on a child Graphics2D before drawing the player or overhead text.
+     */
+    public void applyPassengerMotion(Graphics2D g2) {
+        if (!mounted || gp.player == null) return;
+
+        int worldWidth = gp.maxWorldCol * gp.tileSize;
+        int worldHeight = gp.maxWorldRow * gp.tileSize;
+        int camX = gp.player.x;
+        int camY = gp.player.y;
+        if (camX < gp.player.screenX) camX = gp.player.screenX;
+        if (camX > worldWidth - gp.player.screenX) camX = worldWidth - gp.player.screenX;
+        if (camY < gp.player.screenY) camY = gp.player.screenY;
+        if (camY > worldHeight - gp.player.screenY) camY = worldHeight - gp.player.screenY;
+
+        float pivotX = worldX - camX + gp.player.screenX;
+        float pivotY = worldY - camY + gp.player.screenY;
+
+        AffineTransform passengerPose = new AffineTransform();
+        passengerPose.translate(pivotX, pivotY + bobOffset);
+        passengerPose.rotate(getRockingAngle());
+        passengerPose.translate(-pivotX, -pivotY);
+        g2.transform(passengerPose);
+    }
+
+    private float getRockingAngle() {
+        return (float) Math.sin(bobPhase * 0.62f) * (moving ? 0.008f : 0.018f);
+    }
+
     private boolean isNearBoardingPoint() {
         float forwardX = (float) Math.sin(heading);
         float forwardY = (float) Math.cos(heading);
@@ -300,7 +332,7 @@ public final class Rowboat {
         // Riak kecil saat perahu diam, supaya tetap terasa mengapung.
         if (!moving) drawIdleRipples(g2, screenX, screenY);
 
-        float sway = (float) Math.sin(bobPhase * 0.62f) * (moving ? 0.008f : 0.018f);
+        float sway = getRockingAngle();
         AffineTransform boatTransform = new AffineTransform();
         boatTransform.translate(screenX, screenY);
         boatTransform.rotate(-heading + sway);
