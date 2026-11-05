@@ -32,7 +32,8 @@ public class player extends Entity {
     private static final int REGEN_DELAY_FRAMES = 300; 
     private static final double REGEN_PERCENT_PER_SECOND = 0.02; 
     
-    public boolean debugNoClip = true;
+    /** Debug: true = player tembus semua collision. Default MATI. Nyala/matikan saat game jalan: tombol F6. */
+    public boolean debugNoClip = false;
     
     public int def   = 2;
     public int dodge = 0;

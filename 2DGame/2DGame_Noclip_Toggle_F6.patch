@@ -1,0 +1,76 @@
+diff --git a/2DGame/src/Entitas/player.java b/2DGame/src/Entitas/player.java
+index 89c5184..fc95723 100644
+--- a/2DGame/src/Entitas/player.java
++++ b/2DGame/src/Entitas/player.java
+@@ -32,7 +32,8 @@ public class player extends Entity {
+     private static final int REGEN_DELAY_FRAMES = 300; 
+     private static final double REGEN_PERCENT_PER_SECOND = 0.02; 
+     
+-    public boolean debugNoClip = true;
++    /** Debug: true = player tembus semua collision. Default MATI. Nyala/matikan saat game jalan: tombol F6. */
++    public boolean debugNoClip = false;
+     
+     public int def   = 2;
+     public int dodge = 0;
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index a720a44..4828d94 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -717,6 +717,14 @@ public class GamePanel extends JPanel implements Runnable{
+ 	    int x = LEFT_HUD_X;
+ 	    int y = 30;
+ 
++	    // Noclip nyala = collision player mati. Selalu ditampilkan biar tidak disangka bug.
++	    if (player != null && player.debugNoClip) {
++	        g2.setFont(new Font("Consolas", Font.BOLD, 14));
++	        g2.setColor(new Color(255, 170, 40));
++	        g2.drawString("NOCLIP ON  (F6 = matikan)", x, y);
++	        y += 22;
++	    }
++
+ 	    if (showDebug) {
+ 	        g2.setFont(new Font("Consolas", Font.PLAIN, 14));
+ 	        g2.setColor(Color.WHITE);
+@@ -824,6 +832,11 @@ public class GamePanel extends JPanel implements Runnable{
+ 		if (domainManager != null) domainManager.showCollisionDebug = on;
+ 	}
+ 
++	/** Nyala/matikan noclip: player tembus semua collision (tombol F6). Indikatornya tampil di HUD kiri atas. */
++	public void toggleNoClip() {
++		if (player != null) player.debugNoClip = !player.debugNoClip;
++	}
++
+ 	public void play() throws LineUnavailableException {
+ 	//	playMusic(0);
+ 		
+diff --git a/2DGame/src/Main/KeyHandler.java b/2DGame/src/Main/KeyHandler.java
+index be95ae0..040e973 100644
+--- a/2DGame/src/Main/KeyHandler.java
++++ b/2DGame/src/Main/KeyHandler.java
+@@ -28,6 +28,7 @@ public class KeyHandler implements KeyListener {
+     public boolean tabPressed;
+     GamePanel gp;
+     public boolean f5Pressed;
++    private boolean f6Held; // anti auto-repeat toggle noclip
+     // buat nahan auto-repeat: nahan angka 1-5 cuma dihitung SEKALI tekan (biar potion gak keabisan)
+     private final boolean[] hotbarKeyDown = new boolean[5];
+ 	public boolean mPressed;
+@@ -65,6 +66,10 @@ public class KeyHandler implements KeyListener {
+         if (code == KeyEvent.VK_F4 && gp != null) { // toggle kotak collision + log konsol
+             gp.toggleCollisionDebug();
+         }
++        if (code == KeyEvent.VK_F6 && gp != null && !f6Held) { // toggle noclip (player tembus collision)
++            f6Held = true;
++            gp.toggleNoClip();
++        }
+         // ZOOM: tombol + / = (zoom in), - (zoom out), 0 (reset 100%). Scroll mouse juga bisa.
+         if (gp != null && gp.canZoom()) {
+             if (code == KeyEvent.VK_EQUALS || code == KeyEvent.VK_PLUS || code == KeyEvent.VK_ADD) {
+@@ -139,6 +144,7 @@ public class KeyHandler implements KeyListener {
+         int hbRel = hotbarIndexFor(code);
+         if (hbRel != -1) hotbarKeyDown[hbRel] = false;
+         if (code == KeyEvent.VK_F5) f5Pressed = false;
++        if (code == KeyEvent.VK_F6) f6Held = false;
+         if (code == KeyEvent.VK_M) mPressed = false;
+         if (code == KeyEvent.VK_Z) zPressed = false;
+         if (code == KeyEvent.VK_X) xPressed = false;

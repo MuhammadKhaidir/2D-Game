@@ -717,6 +717,14 @@ public class GamePanel extends JPanel implements Runnable{
 	    int x = LEFT_HUD_X;
 	    int y = 30;
 
+	    // Noclip nyala = collision player mati. Selalu ditampilkan biar tidak disangka bug.
+	    if (player != null && player.debugNoClip) {
+	        g2.setFont(new Font("Consolas", Font.BOLD, 14));
+	        g2.setColor(new Color(255, 170, 40));
+	        g2.drawString("NOCLIP ON  (F6 = matikan)", x, y);
+	        y += 22;
+	    }
+
 	    if (showDebug) {
 	        g2.setFont(new Font("Consolas", Font.PLAIN, 14));
 	        g2.setColor(Color.WHITE);
@@ -822,6 +830,11 @@ public class GamePanel extends JPanel implements Runnable{
 		debugCollision = on;
 		Log.enabled = on;
 		if (domainManager != null) domainManager.showCollisionDebug = on;
+	}
+
+	/** Nyala/matikan noclip: player tembus semua collision (tombol F6). Indikatornya tampil di HUD kiri atas. */
+	public void toggleNoClip() {
+		if (player != null) player.debugNoClip = !player.debugNoClip;
 	}
 
 	public void play() throws LineUnavailableException {

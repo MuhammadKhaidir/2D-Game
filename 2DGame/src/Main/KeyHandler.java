@@ -28,6 +28,7 @@ public class KeyHandler implements KeyListener {
     public boolean tabPressed;
     GamePanel gp;
     public boolean f5Pressed;
+    private boolean f6Held; // anti auto-repeat toggle noclip
     // buat nahan auto-repeat: nahan angka 1-5 cuma dihitung SEKALI tekan (biar potion gak keabisan)
     private final boolean[] hotbarKeyDown = new boolean[5];
 	public boolean mPressed;
@@ -64,6 +65,10 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_F4 && gp != null) { // toggle kotak collision + log konsol
             gp.toggleCollisionDebug();
+        }
+        if (code == KeyEvent.VK_F6 && gp != null && !f6Held) { // toggle noclip (player tembus collision)
+            f6Held = true;
+            gp.toggleNoClip();
         }
         // ZOOM: tombol + / = (zoom in), - (zoom out), 0 (reset 100%). Scroll mouse juga bisa.
         if (gp != null && gp.canZoom()) {
@@ -139,6 +144,7 @@ public class KeyHandler implements KeyListener {
         int hbRel = hotbarIndexFor(code);
         if (hbRel != -1) hotbarKeyDown[hbRel] = false;
         if (code == KeyEvent.VK_F5) f5Pressed = false;
+        if (code == KeyEvent.VK_F6) f6Held = false;
         if (code == KeyEvent.VK_M) mPressed = false;
         if (code == KeyEvent.VK_Z) zPressed = false;
         if (code == KeyEvent.VK_X) xPressed = false;
