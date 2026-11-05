@@ -47,6 +47,11 @@ import bahan.WaterCollision;
  * di air memang petunjuk hasilnya: bayangan gede / bersinar = barang langka.
  * Hasil tangkapan langsung masuk backpack, lalu muncul melompat dari air dengan efek sesuai kelangkaannya.
  *
+ * DI ATAS PERAHU: naik Rowboat (E), BERHENTIKAN perahunya dulu, pegang pancingan, lalu klik air seperti biasa.
+ * Perahu yang masih jalan / meluncur / lagi dikemudikan (WASD, Shift) gak bisa dipakai mancing, dan kalau perahu
+ * mulai jalan pas tali sudah di air, talinya otomatis ditarik. Pelampung gak bisa dilempar ke badan perahu sendiri.
+ * Naik / turun perahu pas tali di air = tali ditarik diam-diam.
+ *
  * Alurnya state machine: IDLE -> CASTING -> WAITING -> BITE -> REELING -> COOLDOWN -> IDLE.
  * Semua waktu dalam detik, dikali gp.FPS pas dipakai, jadi aman kalau FPS diubah.
  */
@@ -90,6 +95,7 @@ public class FishingManager {
     private int bobberX, bobberY;
     private int castPX, castPY;
     private String castDir = "down";
+    private boolean castOnBoat = false;      // lemparan ini dilakukan dari atas perahu (Rowboat)
     private int lastLife;
     private int dirX = 1, dirY = 0;          // arah lempar (satu dari 4 arah)
 
@@ -221,6 +227,7 @@ public class FishingManager {
         castPX = p.x;
         castPY = p.y;
         castDir = p.direction;
+        castOnBoat = boatMounted();
         lastLife = p.life;
 
         pending = loot().roll(rng, rareBoost());   // apa yang bakal ketarik ditentukan dari sekarang (bayangan ikan = petunjuknya)
@@ -332,6 +339,18 @@ public class FishingManager {
         catchFx = null;
     }
 
+    private boolean boatMounted() {
+        return gp.rowboat != null && gp.rowboat.isMounted();
+    }
+
+    /**
+     * Arah hadap pemain selama mancing dari perahu (null = gak lagi mancing dari perahu, pakai hadap lambung).
+     * Dipakai Rowboat supaya pemain menghadap ke arah lemparan, bukan ke arah lambung.
+     */
+    public String getBoatSeatFacing() {
+        return (castOnBoat && state != State.IDLE) ? castDir : null;
+    }
+
     /** True selama tali lagi di air / di udara (dari lempar sampai ikan selesai ditarik). */
     public boolean isFishing() {
         return state == State.CASTING || state == State.WAITING || state == State.BITE || state == State.REELING;
@@ -417,8 +436,15 @@ public class FishingManager {
         if (p == null || p.isDead) return "";
         if (gp.gameState != GamePanel.GameState.OUTSIDE) return "";
         if (!hasRod() || !rodReady) return "";
-        if (p.x != castPX || p.y != castPY) return "You walked away from your line.";
-        if (p.direction != null && !p.direction.equals(castDir)) return "You turned away from your line.";
+        boolean onBoat = boatMounted();
+        if (onBoat != castOnBoat) return "";                      // naik / turun perahu: tali ditarik diam-diam
+        if (onBoat) {
+            // Di perahu, posisi & arah hadap pemain ikut lambung, jadi yang dicek adalah perahunya.
+            if (gp.rowboat.isUnderWay()) return "The boat moved. You pulled in your line.";
+        } else {
+            if (p.x != castPX || p.y != castPY) return "You walked away from your line.";
+            if (p.direction != null && !p.direction.equals(castDir)) return "You turned away from your line.";
+        }
         if (p.life < lastLife) return "Fishing interrupted!";
         lastLife = p.life;
         return null;
@@ -503,9 +529,14 @@ public class FishingManager {
         int footX = p.x + p.solidArea.x + p.solidArea.width / 2;
         int footY = p.y + p.solidArea.y + p.solidArea.height / 2;
 
+        boolean onBoat = boatMounted();
         aimOk = false;
-        if (isWaterAt(footX, footY)) {
+        if (!onBoat && isWaterAt(footX, footY)) {
             aimProblem = "I need solid ground to fish from.";
+        } else if (onBoat && gp.rowboat.isUnderWay()) {
+            aimProblem = "Let the boat come to a stop first.";
+        } else if (onBoat && gp.rowboat.containsPoint(aimX, aimY)) {
+            aimProblem = "I can't cast onto the boat.";
         } else if (!isWaterAt(aimX, aimY)) {
             aimProblem = tooFar ? "That's out of my reach." : "I can only cast onto open water.";
         } else if (!farFromLand(aimX, aimY)) {
@@ -748,6 +779,7 @@ public class FishingManager {
         double pitch = pitch();
         handX = p.x + ts / 2.0 + dirX * 8 + (dirY != 0 ? 7 : 0);       // joran dipegang tangan kanan
         handY = p.y + ts / 2.0 + 4;
+        if (boatMounted()) handY += gp.rowboat.getBobOffset();         // pemain di perahu ikut naik-turun diayun ombak
         double c = Math.cos(pitch), s = Math.sin(pitch);
         tipX = handX + ROD_LEN * c * dirX + (dirY != 0 ? 6 * c : 0);
         tipY = handY + ROD_LEN * (dirY * 0.75 * c - s);

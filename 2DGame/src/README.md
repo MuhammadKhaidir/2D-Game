@@ -30,10 +30,11 @@ Folder `src` harus ada di classpath karena gambar dan audio dimuat dari sana.
 | Tombol | Fungsi |
 |---|---|
 | W A S D | Bergerak |
-| Shift | Lari (butuh stamina) |
+| Shift | Lari (butuh stamina). Di atas perahu: tahan = dayung mundur lurus |
 | Spasi | Lompat |
 | Klik kiri | Memukul |
-| E | Berinteraksi / bicara dengan NPC |
+| E | Berinteraksi / bicara dengan NPC. Dekat perahu: naik / turun |
+| Klik kiri di air (pancingan dipegang) | Lempar / angkat pancingan. Dari perahu juga bisa, asal perahu sudah berhenti |
 | 1 / 2 / 3 | Memilih opsi dialog |
 | I | Perintah untuk NPC (stay / follow / cancel) |
 | Y | Buka/tutup backpack |

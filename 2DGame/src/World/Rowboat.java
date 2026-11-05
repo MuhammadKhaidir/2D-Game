@@ -32,6 +32,9 @@ import bahan.WaterCollision;
  * Kemudi: WASD menentukan ARAH TUJUAN, bukan arah hadap. Lambung berputar bertahap menuju arah itu
  * (punya momentum sudut), dorongan mesin selalu searah lambung, dan gerak menyamping diredam air
  * (lunas) sehingga perahu "menyapu" lebar saat menikung, tidak langsung menghadap / berbelok.
+ *
+ * Mundur: TAHAN Shift = dayung mundur lurus (buritan duluan), lambung tidak berputar. Lepas Shift = kemudi biasa lagi.
+ * Mancing: perahu harus berhenti dulu, lalu pegang pancingan dan klik air (lihat {@link Item.FishingManager}).
  */
 public final class Rowboat {
 
@@ -49,6 +52,10 @@ public final class Rowboat {
     /** Sisa kecepatan menyamping per tick (lunas menahan air). Makin besar = makin licin / drifting. */
     private static final float LATERAL_GRIP = 0.86f;
     private static final float REVERSE_THROTTLE = -0.45f;
+    /** Dorongan mundur manual (tahan Shift). Kecepatan mundur maksimum = MAX_SPEED * angka ini (sekitar 2,3 px/tick). */
+    private static final float MANUAL_REVERSE_THROTTLE = -0.55f;
+    /** Setelah Shift dilepas, perahu masih meluncur mundur sebentar; selama itu buritan tetap dicek biar gak masuk darat. */
+    private static final int REVERSE_GRACE_TICKS = 90;
 
     // ===== KEMUDI =====
     /** Laju putar maksimum (rad/tick) pada kecepatan penuh, sekitar 80 derajat per detik. */
@@ -76,6 +83,16 @@ public final class Rowboat {
     private static final float WATER_FRONT_CHECK = 78f;
     private static final float BOW_QUARTER_FORWARD = 52f;
     private static final float BOW_QUARTER_SIDE = 26f;
+    /** Cek buritan: HANYA dipakai saat perahu bergerak mundur. Gerak maju tidak memeriksa buritan, jadi sandar di pantai tetap aman. */
+    private static final float REAR_WATER_CHECK = 84f;
+    private static final float STERN_QUARTER_BACK = 56f;
+    private static final float STERN_QUARTER_SIDE = 28f;
+
+    // ===== MANCING DARI PERAHU =====
+    /** Di bawah laju ini perahu dianggap sudah berhenti dan boleh dipakai mancing (sama dengan ambang {@code moving}). */
+    private static final float FISHING_MAX_SPEED = 0.32f;
+    /** Putaran lambung di bawah ini dianggap sudah berhenti. */
+    private static final float FISHING_MAX_TURN = 0.004f;
 
     // ===== WAKE (jejak gelombang) =====
     private static final int WAKE_LIFE = 90;
@@ -109,6 +126,8 @@ public final class Rowboat {
     private float heading;
     private float angularVelocity;
     private int turnBlockedTicks;
+    /** Sisa tick "masa tenggang" cek buritan setelah mundur manual. */
+    private int reverseGrace;
     private float bobPhase;
     private float bobOffset;
     private float rockAmplitude = 0.018f;
@@ -152,6 +171,46 @@ public final class Rowboat {
 
     public boolean isMoving() {
         return moving;
+    }
+
+    /**
+     * True kalau perahu sedang dikemudikan (WASD / Shift), masih meluncur, atau lambungnya masih berputar.
+     * Mancing hanya bisa kalau perahu sudah diam; kalau perahu jalan, tali pancing otomatis ditarik.
+     */
+    public boolean isUnderWay() {
+        if (!mounted) return false;
+        boolean keys = gp.KeyH.upPressed || gp.KeyH.downPressed || gp.KeyH.leftPressed
+                || gp.KeyH.rightPressed || gp.KeyH.shiftPressed;
+        float speed = (float) Math.sqrt(velocityX * velocityX + velocityY * velocityY);
+        return keys || speed > FISHING_MAX_SPEED || Math.abs(angularVelocity) > FISHING_MAX_TURN;
+    }
+
+    /** Naik-turun lambung (px, + = turun). Dipakai joran biar ikut tangan pemain yang ikut terayun ombak. */
+    public float getBobOffset() {
+        return mounted ? bobOffset : 0f;
+    }
+
+    /**
+     * True kalau titik dunia (wx, wy) tepat di atas badan perahu (dicek per piksel sprite, ikut arah hadap).
+     * Dipakai mancing supaya pelampung tidak bisa dilempar ke dek perahu sendiri.
+     */
+    public boolean containsPoint(float wx, float wy) {
+        if (sprite == null) return false;
+        float dx = wx - worldX;
+        float dy = wy - worldY;
+        float c = (float) Math.cos(heading);
+        float s = (float) Math.sin(heading);
+        float lx = dx * c - dy * s + sprite.getWidth() / 2f;
+        float ly = dx * s + dy * c + sprite.getHeight() / 2f;
+        return hullPixel(lx, ly) || hullPixel(lx + 8f, ly) || hullPixel(lx - 8f, ly)
+                || hullPixel(lx, ly + 8f) || hullPixel(lx, ly - 8f);
+    }
+
+    private boolean hullPixel(float lx, float ly) {
+        int ix = (int) Math.floor(lx);
+        int iy = (int) Math.floor(ly);
+        if (ix < 0 || iy < 0 || ix >= sprite.getWidth() || iy >= sprite.getHeight()) return false;
+        return ((sprite.getRGB(ix, iy) >>> 24) & 0xFF) > 16;
     }
 
     public String getFacingDirection() {
@@ -220,6 +279,11 @@ public final class Rowboat {
         float inputX = (gp.KeyH.rightPressed ? 1f : 0f) - (gp.KeyH.leftPressed ? 1f : 0f);
         float inputY = (gp.KeyH.downPressed ? 1f : 0f) - (gp.KeyH.upPressed ? 1f : 0f);
         boolean hasInput = inputX != 0f || inputY != 0f;
+        // Tahan Shift = dayung mundur lurus. WASD tidak memutar lambung selama mundur.
+        boolean reversing = gp.KeyH.shiftPressed;
+        boolean steering = hasInput && !reversing;
+        if (reversing) reverseGrace = REVERSE_GRACE_TICKS;
+        else if (reverseGrace > 0) reverseGrace--;
 
         float fx = (float) Math.sin(heading);
         float fy = (float) Math.cos(heading);
@@ -228,7 +292,7 @@ public final class Rowboat {
         // ---- 1. KEMUDI: WASD = arah tujuan; lambung berputar pelan menujunya ----
         float diff = 0f;
         float desiredTurn = 0f;
-        if (hasInput) {
+        if (steering) {
             float desiredHeading = (float) Math.atan2(inputX, inputY);
             diff = wrapAngle(desiredHeading - heading);
             // Putar balik tepat 180 derajat: tetap lanjut ke arah yang sudah berjalan, jangan bolak-balik.
@@ -245,8 +309,8 @@ public final class Rowboat {
                         Math.min(maxRate, (float) Math.sqrt(2f * TURN_BRAKE * Math.abs(remaining))), remaining);
             }
         }
-        angularVelocity += (desiredTurn - angularVelocity) * (hasInput ? TURN_RESPONSE : TURN_RELEASE);
-        if (!hasInput && Math.abs(angularVelocity) < 0.0002f) angularVelocity = 0f;
+        angularVelocity += (desiredTurn - angularVelocity) * (steering ? TURN_RESPONSE : TURN_RELEASE);
+        if (!steering && Math.abs(angularVelocity) < 0.0002f) angularVelocity = 0f;
 
         boolean rotationBlocked = false;
         if (angularVelocity != 0f) {
@@ -263,7 +327,9 @@ public final class Rowboat {
 
         // ---- 2. DORONGAN: selalu searah lambung; makin menyimpang dari tujuan makin lemah ----
         float throttle = 0f;
-        if (hasInput) {
+        if (reversing) {
+            throttle = MANUAL_REVERSE_THROTTLE;
+        } else if (hasInput) {
             float alignment = Math.max(0f, (float) Math.cos(diff));
             throttle = TURN_THROTTLE_FLOOR + (1f - TURN_THROTTLE_FLOOR) * alignment;
             if (turnBlockedTicks > REVERSE_AFTER_BLOCKED_TICKS && Math.abs(diff) > 0.5f) {
@@ -281,7 +347,7 @@ public final class Rowboat {
         // ---- 3. AIR: hambatan searah lambung kecil, menyamping besar ----
         float forwardSpeed = velocityX * fx + velocityY * fy;
         float lateralSpeed = velocityX * sx + velocityY * sy;
-        forwardSpeed *= 1f - (hasInput ? FORWARD_DRAG : COAST_DRAG);
+        forwardSpeed *= 1f - ((hasInput || reversing) ? FORWARD_DRAG : COAST_DRAG);
         lateralSpeed *= LATERAL_GRIP;
         velocityX = fx * forwardSpeed + sx * lateralSpeed;
         velocityY = fy * forwardSpeed + sy * lateralSpeed;
@@ -297,13 +363,15 @@ public final class Rowboat {
         if (speed > 0.02f) {
             float nextX = worldX + velocityX;
             float nextY = worldY + velocityY;
-            if (canFloatAt(nextX, nextY, heading)) {
+            // Mundur manual: buritan juga harus tetap di air (gerak maju tidak memeriksa buritan).
+            boolean guardStern = (reversing || reverseGrace > 0) && (velocityX * fx + velocityY * fy) < -0.05f;
+            if (canSail(nextX, nextY, heading, guardStern)) {
                 worldX = nextX;
                 worldY = nextY;
-            } else if (canFloatAt(nextX, worldY, heading)) {
+            } else if (canSail(nextX, worldY, heading, guardStern)) {
                 worldX = nextX;
                 velocityY *= 0.35f;
-            } else if (canFloatAt(worldX, nextY, heading)) {
+            } else if (canSail(worldX, nextY, heading, guardStern)) {
                 worldY = nextY;
                 velocityX *= 0.35f;
             } else {
@@ -338,7 +406,9 @@ public final class Rowboat {
         float seatY = worldY - forwardY * 14f;
         gp.player.x = Math.round(seatX - gp.tileSize / 2f);
         gp.player.y = Math.round(seatY - gp.tileSize / 2f);
-        gp.player.direction = getFacingDirection();
+        // Selama tali pancing di air, pemain menghadap ke arah lemparannya (bukan ke arah hadap lambung).
+        String fishingFacing = gp.fishing != null ? gp.fishing.getBoatSeatFacing() : null;
+        gp.player.direction = fishingFacing != null ? fishingFacing : getFacingDirection();
         gp.player.collisionOn = false;
     }
 
@@ -431,6 +501,23 @@ public final class Rowboat {
         if (gp.tileM == null || gp.tileM.gen == null) return false;
         int tile = gp.tileM.gen.baseTile(col, row);
         return !WaterCollision.isWaterTile(tile) && gp.tileM.gen.isLand(col, row);
+    }
+
+    /** canFloatAt + (kalau guardStern) pastikan buritan juga di atas air. */
+    private boolean canSail(float x, float y, float direction, boolean guardStern) {
+        return canFloatAt(x, y, direction) && (!guardStern || sternIsWater(x, y, direction));
+    }
+
+    private boolean sternIsWater(float x, float y, float direction) {
+        float forwardX = (float) Math.sin(direction);
+        float forwardY = (float) Math.cos(direction);
+        float sideX = -forwardY;
+        float sideY = forwardX;
+        float quarterX = x - forwardX * STERN_QUARTER_BACK;
+        float quarterY = y - forwardY * STERN_QUARTER_BACK;
+        return isWaterPoint(x - forwardX * REAR_WATER_CHECK, y - forwardY * REAR_WATER_CHECK)
+                && isWaterPoint(quarterX + sideX * STERN_QUARTER_SIDE, quarterY + sideY * STERN_QUARTER_SIDE)
+                && isWaterPoint(quarterX - sideX * STERN_QUARTER_SIDE, quarterY - sideY * STERN_QUARTER_SIDE);
     }
 
     private boolean canFloatAt(float x, float y, float direction) {
@@ -800,7 +887,7 @@ public final class Rowboat {
 
     private void drawHint(Graphics2D g2, float screenX, float screenY) {
         if (!mounted && !isNearBoardingPoint()) return;
-        String label = mounted ? "E  (Get out of the boat)" : "E (Get on boat)";
+        String label = mounted ? "E  Get out   |   Shift  Reverse" : "E (Get on boat)";
         Font oldFont = g2.getFont();
         g2.setFont(new Font("Arial", Font.BOLD, 13));
         FontMetrics fm = g2.getFontMetrics();
