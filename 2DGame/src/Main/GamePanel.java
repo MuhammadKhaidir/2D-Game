@@ -300,6 +300,9 @@ public class GamePanel extends JPanel implements Runnable{
         // di dekat player tiap malam tiba, jadi gak perlu koordinat di sini.
         spawnWolves(45, 3);
 
+        // 3 werewolf penghuni daratan es (slot 6-8, kosong). Muncul sendiri pas player masuk biome es. Lihat Entitas/Werewolf.java.
+        spawnWerewolves(6, 3);
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -423,6 +426,13 @@ public class GamePanel extends JPanel implements Runnable{
 	private void spawnWolves(int startIndex, int count) {
 	    for (int i = 0; i < count; i++) {
 	        monsters[startIndex + i] = new Entitas.Wolf(this);
+	    }
+	}
+
+	// Werewolf: penghuni daratan es, muncul sendiri pas player masuk biome es. Lihat Entitas/Werewolf.java.
+	private void spawnWerewolves(int startIndex, int count) {
+	    for (int i = 0; i < count; i++) {
+	        monsters[startIndex + i] = new Entitas.Werewolf(this);
 	    }
 	}
 
@@ -1109,6 +1119,7 @@ public class GamePanel extends JPanel implements Runnable{
 		    	            || monsters[i] instanceof Entitas.Golem
 		    	            || monsters[i] instanceof Entitas.Golemite
 		    	            || monsters[i] instanceof Entitas.Wolf
+		    	            || monsters[i] instanceof Entitas.Werewolf
 		    	            || (monsters[i] instanceof Entitas.monster && ((Entitas.monster) monsters[i]).isDeathAnimPlaying())) {
 		    	        monsters[i].update();
 		    	    }
