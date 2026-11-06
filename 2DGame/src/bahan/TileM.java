@@ -1079,6 +1079,11 @@ public TileM(GamePanel gp) {
 			    drawList.add(new int[]{gp.chest.getSortY(), 6, 0});
 			}
 			
+			// Papan bounty
+			if (gp.bountyBoard != null) {
+			    drawList.add(new int[]{gp.bountyBoard.getSortY(), 8, 0});
+			}
+
 			// Player
 			drawList.add(new int[]{p.y + gp.tileSize, 4, 0});
 			
@@ -1149,6 +1154,10 @@ public TileM(GamePanel gp) {
 			}
 			case 6: { // peti penyimpanan
 			    gp.chest.draw(g2, fCamX, fCamY);
+			    break;
+			}
+			case 8: { // papan bounty
+			    gp.bountyBoard.draw(g2, fCamX, fCamY);
 			    break;
 			}
 			case 7: { // hiasan chunk (semak hutan / semak salju)

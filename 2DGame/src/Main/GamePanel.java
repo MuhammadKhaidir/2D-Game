@@ -93,6 +93,9 @@ public class GamePanel extends JPanel implements Runnable{
 	public UI.ArmorShopUI armorShop;
 	public World.StorageChest chest;   // peti penyimpanan di (800, 1110)
 	public UI.ChestUI chestUI;
+	public QuestManager quests;           // Quest & Bounty Board: misi aktif + progress (disimpan lewat SaveManager)
+	public World.BountyBoard bountyBoard; // papan bounty di dunia luar (dekat peti)
+	public UI.BountyBoardUI bountyUI;
 	public UI.BuffBar buffBar;
 	
 	public HouseManager houseManager;
@@ -250,6 +253,9 @@ public class GamePanel extends JPanel implements Runnable{
 		armorShop = new UI.ArmorShopUI(this);
 		chest = new World.StorageChest(this);
 		chestUI = new UI.ChestUI(this, chest);
+		quests = new QuestManager();
+		bountyBoard = new World.BountyBoard(this);
+		bountyUI = new UI.BountyBoardUI(this);
 		buffBar = new UI.BuffBar(this);
 
 		this.addMouseWheelListener(backpack);
@@ -311,6 +317,12 @@ public class GamePanel extends JPanel implements Runnable{
                     return;
                 }
  
+                // ── PAPAN BOUNTY ──
+                if (bountyUI != null && bountyUI.visible) {
+                    bountyUI.handleMouseClick(e);
+                    return;
+                }
+
                 // ── PETI PENYIMPANAN ──
                 if (chestUI != null && chestUI.visible) {
                     chestUI.handleMouseClick(e);
@@ -479,6 +491,7 @@ public class GamePanel extends JPanel implements Runnable{
 	    if (potionShop != null && potionShop.visible) return false;
 	    if (armorShop != null && armorShop.visible) return false;
 	    if (chestUI != null && chestUI.visible) return false;
+	    if (bountyUI != null && bountyUI.visible) return false;
 	    if (deathScreenUI != null && deathScreenUI.visible) return false;
 	    // di dalam domain: jangan zoom kalau lagi buka shop / dialog merchant / konfirmasi boss
 	    if (gameState == GameState.DOMAIN && domainManager != null) {
@@ -1058,6 +1071,15 @@ public class GamePanel extends JPanel implements Runnable{
 		    return;
 		}
 
+		// PAPAN BOUNTY KEBUKA → dunia berhenti, cuma ESC / klik yang diproses
+		if (bountyUI != null && bountyUI.visible) {
+		    bountyUI.update();
+		    KeyH.yPressed = false;
+		    KeyH.tabPressed = false;
+		    KeyH.mPressed = false;
+		    return;
+		}
+
 		world.update();
 		// Di bagian update(), setelah world.update()
 		int hour = world.hour;
@@ -1316,6 +1338,17 @@ public class GamePanel extends JPanel implements Runnable{
 		    if (KeyH.interactPressed && !player.isDead
 		            && !backpack.visible && !statUI.visible && !mobIndexUI.visible
 		            && chest.tryOpen(player)) {
+		        KeyH.interactPressed = false;
+		    }
+	    }
+
+	    //
+	    // 2c. PAPAN BOUNTY: interaksi [E]
+	    //
+	    if (gameState == GameState.OUTSIDE && bountyBoard != null) {
+		    if (KeyH.interactPressed && !player.isDead
+		            && !backpack.visible && !statUI.visible && !mobIndexUI.visible
+		            && bountyBoard.tryOpen(player)) {
 		        KeyH.interactPressed = false;
 		    }
 	    }
@@ -1643,6 +1676,7 @@ public void paintComponent(Graphics g) {
         drawLeftHud(g2, true);   // koordinat + jam + cuaca, semuanya di kiri (kanan khusus minimap)
         drawZoomHint(g2);
         if (chestUI != null) chestUI.draw(g2);       // panel peti
+        if (bountyUI != null) bountyUI.draw(g2);     // panel papan bounty
         if (potionShop != null) potionShop.draw(g2); // paling atas, nutup UI & drop di belakangnya
         if (armorShop != null) armorShop.draw(g2);
     }
@@ -1657,7 +1691,8 @@ public void paintComponent(Graphics g) {
 	    return (backpack != null && backpack.visible)
 	        || (statUI != null && statUI.visible)
 	        || (mobIndexUI != null && mobIndexUI.visible)
-	        || (totemUI != null && totemUI.visible);
+	        || (totemUI != null && totemUI.visible)
+	        || (bountyUI != null && bountyUI.visible);
 	}
 
 	public void drawInspectPanel(Graphics2D g2) {
@@ -1690,6 +1725,12 @@ public void paintComponent(Graphics g) {
 
 	    // hover hotbar (buat highlight + tooltip nama item)
 	    if (hotbar != null) hotbar.handleMouseMoved(e);
+
+	    // ── PAPAN BOUNTY HOVER ──
+	    if (bountyUI != null && bountyUI.visible) {
+	        bountyUI.handleMouseMove(e);
+	        return;
+	    }
 
 	    // ── PETI PENYIMPANAN HOVER ──
 	    if (chestUI != null && chestUI.visible) {

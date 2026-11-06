@@ -564,6 +564,9 @@ public class player extends Entity {
         // Dipasang di sini karena Orc & monster biasa gak lewat killMonster(), tapi semuanya lewat giveCoinReward().
         if (gp.armorEffects != null) gp.armorEffects.onKill(target);
 
+        // Bounty Board: titik yang sama kayak koin, jadi kill oleh minion ikut kehitung & pion boss (noDrop) sudah tersaring di atas.
+        if (gp.quests != null) gp.quests.onKill(target);
+
         int amount = Math.max(1, target.coinDrop);
         Item.ItemManager im = Item.ItemManager.get();
         im.add(im.COIN, amount);

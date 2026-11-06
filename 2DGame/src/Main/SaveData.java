@@ -52,4 +52,9 @@ public class SaveData implements Serializable {
     // Bisa null kalau save-nya dari versi sebelum ada peti.
     public List<String> chestNames   = new ArrayList<>();
     public List<Integer> chestAmounts = new ArrayList<>();
+
+    // Bounty Board: misi yang lagi diambil (0 = gak ada, 1..3 = nomor misi) + progress-nya.
+    // Field baru dengan serialVersionUID yang sama: save lama tetap kebaca (nilainya 0 = gak ada misi aktif).
+    public int questActive;
+    public int questProgress;
 }

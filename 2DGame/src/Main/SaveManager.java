@@ -70,6 +70,11 @@ public class SaveManager {
                 }
             }
         }
+        // Bounty Board (disimpan 1-based biar save lama yang nilainya 0 = gak ada misi)
+        if (gp.quests != null) {
+            data.questActive   = gp.quests.getActive() + 1;
+            data.questProgress = gp.quests.getProgress();
+        }
         // Inventory
         data.inventoryNames.clear();
         data.inventoryAmounts.clear();
@@ -190,6 +195,8 @@ public class SaveManager {
                 }
             }
         }
+        // Restore misi Bounty Board (save lama -> 0 -> gak ada misi aktif)
+        if (gp.quests != null) gp.quests.restore(data.questActive - 1, data.questProgress);
         if (gp.fishing != null) gp.fishing.reset(); // pancingan yang lagi dilempar sebelum load jangan kebawa
         // Restore hotbar (save lama yang belum punya hotbar → hotbarNames null → hotbar dikosongin)
         if (gp.hotbar != null) {

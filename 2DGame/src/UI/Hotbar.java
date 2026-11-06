@@ -148,6 +148,7 @@ public class Hotbar {
         if (gp.totemUI != null && gp.totemUI.visible) return false;
         if (gp.potionShop != null && gp.potionShop.visible) return false;
         if (gp.armorShop != null && gp.armorShop.visible) return false;
+        if (gp.bountyUI != null && gp.bountyUI.visible) return false;
         if (gp.gameState == GamePanel.GameState.DOMAIN && gp.domainManager != null) {
             Entitas.DarkMerchant dm = gp.domainManager.darkMerchant;
             if (dm != null && (dm.isShopOpen() || dm.isInDialog())) return false;
