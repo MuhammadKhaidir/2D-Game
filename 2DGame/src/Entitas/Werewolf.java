@@ -49,7 +49,7 @@ public class Werewolf extends Entity {
     private WerewolfState state = WerewolfState.ABSENT;
 
     // ── Stat ──
-    private static final int    MAX_LIFE        = 2000;
+    private static final int    MAX_LIFE        = 4000;
     private static final int    EXP_VALUE       = 400;
     private static final int    COIN_DROP       = 6;
     private static final double WANDER_SPEED    = 0.9;
@@ -59,7 +59,7 @@ public class Werewolf extends Entity {
     private static final int    AGGRO_RADIUS    = 420;    // mulai ngejar
     private static final int    LOSE_RADIUS     = 720;    // nyerah ngejar
     private static final int    ATTACK_RANGE    = 80;     // mulai mencakar (jarak antar titik tengah hitbox)
-    private static final int    ATTACK_DAMAGE   = 100;
+    private static final int    ATTACK_DAMAGE   = 300;
     private static final int    ATTACK_COOLDOWN = 90;     // 2,25 detik @40 FPS
     private static final int    ENRAGE_COOLDOWN = 60;
     private static final double ENRAGE_HP       = 0.35;   // sisa HP (rasio) buat mulai ngamuk
