@@ -31,7 +31,9 @@ import bahan.WorldGen;
  *  - Mati -> gak muncul lagi selama RESPAWN_TICKS (90 detik), baru boleh muncul lagi.
  *  - Kalau player jalan jauh di dalam biome es sampai werewolf ketinggalan (> RELOCATE_DIST), dia pindah ke dekat player lagi.
  *
- * Sprite 4 arah dari sheet (lihat WerewolfSprite; dibuat lewat tools/generate_werewolf.py).
+ * Sprite dari sheet (lihat WerewolfSprite; dibuat lewat tools/generate_werewolf.py dari gambar referensi):
+ * idle napas 4 frame, jalan mengintai 8 frame, cakaran 6 frame, terkam 3 frame, mati 4 frame. Pandangan 3/4:
+ * arah ATAS/BAWAH tetap menghadap ke sisi horizontal terakhir (facingRight).
  *
  * Catatan penting: pas gak ada werewolf berstatus ABSENT dan isDead = true, supaya semua kode lain (serang player, skill,
  * tabrakan, TileM) menganggapnya gak ada. Makanya GamePanel tetap harus manggil update() werewolf walau isDead
@@ -100,8 +102,8 @@ public class Werewolf extends Entity {
     private int whiteFlashTimer = 0;
 
     // ── Animasi ──
-    private static final int WALK_FRAME_TICKS   = 7;
-    private static final int IDLE_FRAME_TICKS   = 24;
+    private static final int WALK_FRAME_TICKS   = 5;      // 8 frame x 5 tick = 1 siklus langkah 1 detik @40 FPS
+    private static final int IDLE_FRAME_TICKS   = 16;     // 4 frame x 16 tick = 1 tarikan napas 1,6 detik
     private static final int ATTACK_FRAME_TICKS = 5;
     private static final int ATTACK_FRAMES      = WerewolfSprite.ATTACK_FRAMES;
     private static final int STRIKE_FRAME       = 3;      // frame cakaran (busur putih di sprite): damage masuk di sini
@@ -112,6 +114,7 @@ public class Werewolf extends Entity {
     private final int footLocalY;           // y telapak kaki relatif ke y entity
 
     private int dir = WerewolfSprite.DOWN;  // arah hadap: WerewolfSprite.RIGHT / LEFT / UP / DOWN
+    private boolean facingRight = true;     // sisi horizontal terakhir (buat UP / DOWN, karena art-nya pandangan 3/4)
     private boolean moving = false;
     private int walkFrame = 0, walkTick = 0;
     private int idleFrame = 0, idleTick = 0;
@@ -531,6 +534,8 @@ public class Werewolf extends Entity {
 
     private void setDir(int d) {
         dir = d;
+        if (d == WerewolfSprite.RIGHT) facingRight = true;
+        else if (d == WerewolfSprite.LEFT) facingRight = false;
         direction = WerewolfSprite.dirName(d);   // Entity.direction ikut disamakan
     }
 
@@ -656,15 +661,31 @@ public class Werewolf extends Entity {
     }
 
     private BufferedImage currentFrame() {
-        int d = dir;
+        int r = WerewolfSprite.row(dir, facingRight);
         switch (state) {
-            case DYING:  return sprite.dead[d];
-            case ATTACK: return sprite.attack[d][Math.min(attackFrame, ATTACK_FRAMES - 1)];
+            case DYING:  return sprite.dead[r][deadFrame()];
+            case ATTACK: return sprite.attack[r][Math.min(attackFrame, ATTACK_FRAMES - 1)];
+            case LUNGE:  return sprite.lunge[r][lungeFrame()];
             default:     break;
         }
         // (sengaja bukan ternary: compiler Eclipse pernah salah ngetik ternary bertipe referensi jadi Object -> VerifyError)
-        if (moving) return sprite.walk[d][walkFrame % WerewolfSprite.WALK_FRAMES];
-        return sprite.idle[d][idleFrame % WerewolfSprite.IDLE_FRAMES];
+        if (moving) return sprite.walk[r][walkFrame % WerewolfSprite.WALK_FRAMES];
+        return sprite.idle[r][idleFrame % WerewolfSprite.IDLE_FRAMES];
+    }
+
+    /** Frame terkam dari progres loncatan: tolak (coil) -> melayang -> cakar ke depan sebelum mendarat. */
+    private int lungeFrame() {
+        int elapsed = LUNGE_TICKS - lungeTicks;                       // 0 .. LUNGE_TICKS
+        int f = elapsed * WerewolfSprite.LUNGE_FRAMES / (LUNGE_TICKS + 1);
+        return Math.max(0, Math.min(WerewolfSprite.LUNGE_FRAMES - 1, f));
+    }
+
+    /** Frame mati dari timer: sempoyongan -> berlutut -> ambruk -> tergeletak (diam di frame terakhir). */
+    private int deadFrame() {
+        if (dyingTimer < 6)  return 0;
+        if (dyingTimer < 12) return 1;
+        if (dyingTimer < 20) return 2;
+        return WerewolfSprite.DEAD_FRAMES - 1;
     }
 
     private float alpha() {
@@ -715,7 +736,7 @@ public class Werewolf extends Entity {
         if (isAlive() && fadeIn >= FADE_IN_TICKS) {
             int bw = 56, bh = 5;
             int bx = ix + (drawW - bw) / 2;
-            int by = iy + (int) Math.round(8 * sprite.scale);   // tepat di atas telinga
+            int by = iy + sprite.headTopY - (int) Math.round(6 * sprite.scale);   // tepat di atas telinga
             if (life < maxLife) {
                 g2.setColor(Color.DARK_GRAY);
                 g2.fillRect(bx, by, bw, bh);
