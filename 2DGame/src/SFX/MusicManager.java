@@ -8,7 +8,8 @@ public class MusicManager {
 
     private Clip clip;
     private FloatControl volumeControl;
-    
+    private float musicDb = -10.0f; // volume BGM terakhir (dari setVolume), dipakai ulang tiap ganti lagu
+
  // TAMBAHKAN METHOD INI DI DALAM MUSICMANAGER
     public void playSE(String fileName) {
         try {
@@ -83,7 +84,9 @@ public class MusicManager {
             // Set volume (opsional)
             if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                volumeControl.setValue(-10.0f); // -10 dB, bisa diubah
+                // volume terakhir yang diatur player (default -10 dB). Dulu selalu di-reset ke -10 tiap ganti lagu,
+                // sekarang lagu ikut ganti tiap pindah area jadi slider volume ikut ke-reset kalau gak diingat.
+                volumeControl.setValue(Math.max(volumeControl.getMinimum(), Math.min(volumeControl.getMaximum(), musicDb)));
             }
 
             // LOOP TERUS MENERUS
@@ -122,6 +125,7 @@ public class MusicManager {
 
     public void setVolume(float db) {
         // db: -80.0f (mute) sampai 6.0f (max)
+        musicDb = db;
         if (volumeControl != null) {
             volumeControl.setValue(db);
         }

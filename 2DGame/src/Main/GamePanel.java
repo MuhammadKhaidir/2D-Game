@@ -117,6 +117,9 @@ public class GamePanel extends JPanel implements Runnable{
 	private static final String MUSIC_INSIDE  = "Amber Road Glee.wav";
 	private static final String MUSIC_DOMAIN  = "Umbrae Surgunt.wav";
 	public  static final String MUSIC_WATER_DOMAIN = "Echoes of Ancient Wisdom.wav"; // Water Domain (file ada di /SFX/)
+	// Musik per area di dunia luar (dataran pakai MUSIC_OUTSIDE). Dua file ini dibuat tools/generate_area_music.py
+	private static final String MUSIC_SEA     = "Open Sea Drift.wav";   // Open Sea
+	private static final String MUSIC_ICE     = "Frozen Silence.wav";   // Ice Land
 
 	//backpack
 	public BackpackUI backpack;
@@ -130,6 +133,9 @@ public class GamePanel extends JPanel implements Runnable{
 
 	// minimap di pojok kanan atas (cuma tampil di dunia luar)
 	public UI.MiniMap miniMap;
+
+	// banner "NOW ENTERING ..." di bawah layar tiap pindah area (dataran / laut / es / domain); juga penentu musik area
+	public UI.AreaBanner areaBanner;
 
 	// Atmosper
 	public boolean darkMode = true;
@@ -249,6 +255,7 @@ public class GamePanel extends JPanel implements Runnable{
 		hotbar = new UI.Hotbar(this);
 		fishing = new FishingManager(this);
 		miniMap = new UI.MiniMap(this);
+		areaBanner = new UI.AreaBanner(this);
 		potionShop = new UI.PotionShopUI(this);
 		armorShop = new UI.ArmorShopUI(this);
 		chest = new World.StorageChest(this);
@@ -896,7 +903,12 @@ public class GamePanel extends JPanel implements Runnable{
 	    } else if (gameState == GameState.INSIDE) {
 	        track = MUSIC_INSIDE;
 	    } else {
-	        track = MUSIC_OUTSIDE;
+	        // dunia luar: musik ngikut area terakhir yang diumumkan banner (dataran / laut / es)
+	        switch (areaBanner != null ? areaBanner.outdoorArea() : UI.AreaBanner.Area.PLAINS) {
+	            case SEA: track = MUSIC_SEA; break;
+	            case ICE: track = MUSIC_ICE; break;
+	            default:  track = MUSIC_OUTSIDE;
+	        }
 	    }
 
 	    if (!track.equals(lastTrack)) {
@@ -1030,6 +1042,7 @@ public class GamePanel extends JPanel implements Runnable{
 
 
 	public void update() {
+		if (areaBanner != null && !mainMenu.active) areaBanner.update(); // harus sebelum updateMusic(): musik ngikut area
 		updateMusic(); // NEW: cek & ganti BGM sesuai state, jalan tiap frame
 
 		if (deathScreenUI != null && player.isDeathAnimDone()) {
@@ -1594,6 +1607,7 @@ public void paintComponent(Graphics g) {
         if (hotbar != null) hotbar.draw(g2);
         if (buffBar != null) buffBar.draw(g2);
         if (waterPortal != null) waterPortal.drawHint(g2);   // "[E] ... keluar" di dekat kolam keluar Water Domain
+        if (areaBanner != null) areaBanner.draw(g2);         // "NOW ENTERING ..." (domain)
 
         // UI merchant — setelah entity, biar overlay di atas segalanya
         DarkMerchant dm = domainManager.darkMerchant;
@@ -1664,6 +1678,7 @@ public void paintComponent(Graphics g) {
         if (hotbar != null) hotbar.draw(g2);
         if (buffBar != null) buffBar.draw(g2);
         if (waterPortal != null) waterPortal.drawHint(g2);   // "Lompat ke dalam air ..." di dekat kolam portal
+        if (areaBanner != null) areaBanner.draw(g2);         // "NOW ENTERING ..." (dataran / laut / es)
         if (dialogOn) drawDialog(g2);
         if (inspectOn) drawInspectPanel(g2);
         if (backpack.visible) backpack.draw(g2, screenWidth, screenHeight, this);
