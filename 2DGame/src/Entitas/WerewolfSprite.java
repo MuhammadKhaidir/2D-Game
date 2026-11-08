@@ -117,8 +117,38 @@ public final class WerewolfSprite {
     }
 
     /** Potong satu sel dari sheet lalu perbesar. */
+    /** Perkecil kepala di tiap frame tanpa mengubah badan, kaki, atau titik pijak sprite. */
+    private BufferedImage shrinkHead(BufferedImage frame, int row) {
+        int x, y, w, h;
+        double scaleX, scaleY;
+        switch (row) {
+            case 0: x = 44; y = 8; w = 40; h = 32; scaleX = 0.76; scaleY = 0.82; break; // kanan
+            case 1: x = 28; y = 8; w = 40; h = 32; scaleX = 0.76; scaleY = 0.82; break; // kiri
+            case 2: x = 40; y = 8; w = 32; h = 30; scaleX = 0.82; scaleY = 0.86; break; // belakang
+            default: x = 40; y = 8; w = 34; h = 32; scaleX = 0.78; scaleY = 0.84; break; // depan
+        }
+
+        BufferedImage result = new BufferedImage(CELL_W, CELL_H, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = result.createGraphics();
+        g.drawImage(frame, 0, 0, null);
+
+        BufferedImage head = frame.getSubimage(x, y, w, h);
+        int newW = Math.max(1, (int) Math.round(w * scaleX));
+        int newH = Math.max(1, (int) Math.round(h * scaleY));
+        int destX = x + (w - newW) / 2;
+        int destY = y + h - newH; // jangkar bawah kepala agar tetap menyatu dengan leher
+
+        g.setComposite(java.awt.AlphaComposite.Clear);
+        g.fillRect(x, y, w, h);
+        g.setComposite(java.awt.AlphaComposite.SrcOver);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g.drawImage(head, destX, destY, newW, newH, null);
+        g.dispose();
+        return result;
+    }
+
     private BufferedImage cell(BufferedImage sheet, int row, int col) {
-        BufferedImage sub = sheet.getSubimage(col * CELL_W, row * CELL_H, CELL_W, CELL_H);
+        BufferedImage sub = shrinkHead(sheet.getSubimage(col * CELL_W, row * CELL_H, CELL_W, CELL_H), row);
         BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = out.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);

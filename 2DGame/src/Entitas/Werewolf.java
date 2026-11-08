@@ -60,9 +60,9 @@ public class Werewolf extends Entity {
     private static final int    AGGRO_RADIUS    = 420;    // mulai ngejar
     private static final int    LOSE_RADIUS     = 720;    // nyerah ngejar
     private static final int    ATTACK_RANGE    = 80;     // mulai mencakar (jarak antar titik tengah hitbox)
-    private static final int    ATTACK_DAMAGE   = 300;
-    private static final int    ATTACK_COOLDOWN = 90;     // 2,25 detik @40 FPS
-    private static final int    ENRAGE_COOLDOWN = 60;
+    private static final int    ATTACK_DAMAGE   = 100;
+    private static final int    ATTACK_COOLDOWN = 0;      // serangan berikutnya langsung setelah animasi selesai
+    private static final int    ENRAGE_COOLDOWN = 0;      // tanpa jeda saat enraged juga
     private static final double ENRAGE_HP       = 0.35;   // sisa HP (rasio) buat mulai ngamuk
     private static final int    PROVOKED_TICKS  = 280;    // abis dipukul, tetap ngejar walau agak jauh
     private static final double NIGHT_AGGRO     = 1.20;
@@ -105,7 +105,7 @@ public class Werewolf extends Entity {
     // ── Animasi ──
     private static final int WALK_FRAME_TICKS   = 6;      // 6 frame x 6 tick = 1 siklus langkah 0,9 detik @40 FPS (player: 8 tick/frame)
     private static final int IDLE_FRAME_TICKS   = 20;     // 2 frame x 20 tick = 1 tarikan napas 1 detik
-    private static final double ATTACK_SPEED   = 40.6;    // kecepatan serangan: 1.0 = pelan (kayak dulu), 2.0 = 2x lebih cepat
+    private static final double ATTACK_SPEED   = 2.0;    // kecepatan serangan: 1.0 = pelan (kayak dulu), 2.0 = 2x lebih cepat
     private static final int ATTACK_FRAME_TICKS = Math.max(1, (int) Math.round(5 / ATTACK_SPEED));    // 5 tick @1.0x -> 3 tick @1.6x per frame serangan
     private static final int ATTACK_WINDUP_TICKS = Math.max(1, (int) Math.round(10 / ATTACK_SPEED));  // 10 tick @1.0x -> 6 tick @1.6x; frame pertama ditahan biar kelihatan mau nyerang
     private static final int ATTACK_FRAMES      = 4;      // serangan player ke-3 dan ke-4 sama-sama 4 frame
@@ -159,14 +159,14 @@ public class Werewolf extends Entity {
         attackRange = ATTACK_RANGE;
         direction   = "down";
 
-        double scale = gp.tileSize / 32.0;      // tileSize 48 -> 1.5 (sama kayak sprite player)
+        double scale = gp.tileSize / 40.0;      // tileSize 48 -> sekitar 0.55; werewolf lebih proporsional
         sprite = WerewolfSprite.get(scale);
         drawW  = sprite.width;
         drawH  = sprite.height;
 
-        // hitbox di kaki (sama kayak player / monster lain), simetris di tengah badan
-        int boxW = (int) Math.round(40 * scale / 1.5);
-        int boxH = (int) Math.round(30 * scale / 1.5);
+        // hitbox tetap mengikuti ukuran collision dunia, tidak ikut mengecil bersama gambar
+        int boxW = (int) Math.round(40 * gp.tileSize / 48.0);
+        int boxH = (int) Math.round(30 * gp.tileSize / 48.0);
         footLocalY = gp.tileSize - 2;
         solidArea = new Rectangle(4, footLocalY - boxH, boxW, boxH);
         solidAreaDefaultX = solidArea.x;
@@ -385,7 +385,7 @@ public class Werewolf extends Entity {
         showHitbox();
         state = WerewolfState.IDLE;
         fadeIn = 0;
-        attackCd = 60;                  // jangan langsung mencakar pas muncul
+        attackCd = 0;                   // boleh menyerang begitu player masuk jangkauan
         lungeCd = 0;
         provokedTimer = 0;
         stuckTicks = 0;

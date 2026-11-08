@@ -1,0 +1,71 @@
+diff --git a/2DGame/src/Entitas/Werewolf.java b/2DGame/src/Entitas/Werewolf.java
+--- a/2DGame/src/Entitas/Werewolf.java
++++ b/2DGame/src/Entitas/Werewolf.java
+@@ -62,5 +62,5 @@
+     private static final int    ATTACK_RANGE    = 80;     // mulai mencakar (jarak antar titik tengah hitbox)
+     private static final int    ATTACK_DAMAGE   = 300;
+-    private static final int    ATTACK_COOLDOWN = 90;     // 2,25 detik @40 FPS
+-    private static final int    ENRAGE_COOLDOWN = 60;
++    private static final int    ATTACK_COOLDOWN = 0;      // serangan berikutnya langsung setelah animasi selesai
++    private static final int    ENRAGE_COOLDOWN = 0;      // tanpa jeda saat enraged juga
+     private static final double ENRAGE_HP       = 0.35;   // sisa HP (rasio) buat mulai ngamuk
+@@ -162,9 +162,9 @@
+-        double scale = gp.tileSize / 32.0;      // tileSize 48 -> 1.5 (sama kayak sprite player)
++        double scale = gp.tileSize / 88.0;      // tileSize 48 -> sekitar 0.55; werewolf lebih proporsional
+         sprite = WerewolfSprite.get(scale);
+         drawW  = sprite.width;
+         drawH  = sprite.height;
+ 
+-        // hitbox di kaki (sama kayak player / monster lain), simetris di tengah badan
+-        int boxW = (int) Math.round(40 * scale / 1.5);
+-        int boxH = (int) Math.round(30 * scale / 1.5);
++        // hitbox tetap mengikuti ukuran collision dunia, tidak ikut mengecil bersama gambar
++        int boxW = (int) Math.round(40 * gp.tileSize / 48.0);
++        int boxH = (int) Math.round(30 * gp.tileSize / 48.0);
+         footLocalY = gp.tileSize - 2;
+@@ -388,4 +388,4 @@
+         state = WerewolfState.IDLE;
+         fadeIn = 0;
+-        attackCd = 60;                  // jangan langsung mencakar pas muncul
++        attackCd = 0;                   // boleh menyerang begitu player masuk jangkauan
+         lungeCd = 0;
+diff --git a/2DGame/src/Entitas/WerewolfSprite.java b/2DGame/src/Entitas/WerewolfSprite.java
+--- a/2DGame/src/Entitas/WerewolfSprite.java
++++ b/2DGame/src/Entitas/WerewolfSprite.java
+@@ -120,5 +120,35 @@
++    /** Perkecil kepala di tiap frame tanpa mengubah badan, kaki, atau titik pijak sprite. */
++    private BufferedImage shrinkHead(BufferedImage frame, int row) {
++        int x, y, w, h;
++        double scaleX, scaleY;
++        switch (row) {
++            case 0: x = 44; y = 8; w = 40; h = 32; scaleX = 0.76; scaleY = 0.82; break; // kanan
++            case 1: x = 28; y = 8; w = 40; h = 32; scaleX = 0.76; scaleY = 0.82; break; // kiri
++            case 2: x = 40; y = 8; w = 32; h = 30; scaleX = 0.82; scaleY = 0.86; break; // belakang
++            default: x = 40; y = 8; w = 34; h = 32; scaleX = 0.78; scaleY = 0.84; break; // depan
++        }
++
++        BufferedImage result = new BufferedImage(CELL_W, CELL_H, BufferedImage.TYPE_INT_ARGB);
++        Graphics2D g = result.createGraphics();
++        g.drawImage(frame, 0, 0, null);
++
++        BufferedImage head = frame.getSubimage(x, y, w, h);
++        int newW = Math.max(1, (int) Math.round(w * scaleX));
++        int newH = Math.max(1, (int) Math.round(h * scaleY));
++        int destX = x + (w - newW) / 2;
++        int destY = y + h - newH; // jangkar bawah kepala agar tetap menyatu dengan leher
++
++        g.setComposite(java.awt.AlphaComposite.Clear);
++        g.fillRect(x, y, w, h);
++        g.setComposite(java.awt.AlphaComposite.SrcOver);
++        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
++        g.drawImage(head, destX, destY, newW, newH, null);
++        g.dispose();
++        return result;
++    }
++
+     private BufferedImage cell(BufferedImage sheet, int row, int col) {
+-        BufferedImage sub = sheet.getSubimage(col * CELL_W, row * CELL_H, CELL_W, CELL_H);
++        BufferedImage sub = shrinkHead(sheet.getSubimage(col * CELL_W, row * CELL_H, CELL_W, CELL_H), row);
+         BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+         Graphics2D g = out.createGraphics();
+         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
