@@ -62,7 +62,7 @@ public class Werewolf extends Entity {
     private static final int    AGGRO_RADIUS    = 420;    // mulai ngejar
     private static final int    LOSE_RADIUS     = 720;    // nyerah ngejar
     private static final int    ATTACK_RANGE    = 80;     // mulai mencakar (jarak antar titik tengah hitbox)
-    private static final int    ATTACK_DAMAGE   = 100;
+    private static final int    ATTACK_DAMAGE   = 80;
     private static final int    ATTACK_COOLDOWN = 0;      // serangan berikutnya langsung setelah animasi selesai
     private static final int    ENRAGE_COOLDOWN = 0;      // tanpa jeda saat enraged juga
     private static final double ENRAGE_HP       = 0.35;   // sisa HP (rasio) buat mulai ngamuk

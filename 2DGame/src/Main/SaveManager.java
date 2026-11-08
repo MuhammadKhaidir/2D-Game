@@ -219,6 +219,15 @@ public class SaveManager {
             mob.maxHP      = data.totemSlotMaxHP.get(i);
             mob.level      = data.totemSlotLevel.get(i);
             mob.currentExp = data.totemSlotExp.get(i);
+            // Migrasi save lama: maxHP Golem yang tersimpan masih hitungan base lama (4000).
+            // Hitung ulang dari baseMaxHP baru + level, HP sekarang ikut proporsional.
+            if (type == Item.DeathTotem.CapturedType.GOLEM && mob.maxHP > 0) {
+                int newMaxHP = (int)(mob.baseMaxHP * (1.0 + 0.01 * (mob.level - 1)));
+                if (newMaxHP != mob.maxHP) {
+                    mob.storedHP = (int) Math.min((long) newMaxHP, (long) mob.storedHP * newMaxHP / mob.maxHP);
+                    mob.maxHP    = newMaxHP;
+                }
+            }
             // baseMaxHP dan baseAttack di CapturedMob itu final, jadi ga bisa di-set langsung.
             // Nilai mereka udah bener dari constructor karena kita passing type yang sama.
             savedSlots.add(mob);

@@ -28,7 +28,7 @@ public class CapturedMob {
         this.type = type;
         switch (type) {
             case GOLEM:
-                this.baseMaxHP    = 4000;
+                this.baseMaxHP    = 10000;
                 this.baseAttack   = 200;
                 this.expPerLevel  = 1000;
                 break;
