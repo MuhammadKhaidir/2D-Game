@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import Main.GamePanel;
+import Tamed.GolemMinion;
+import Tamed.MinionTargeting;
 
 /**
  * Serigala — monster yang CUMA ADA PAS MALAM (jam game 18:00 - 05:59).
@@ -194,8 +196,9 @@ public class Wolf extends Entity {
         if (attackCooldown > 0) attackCooldown--;
         if (provokedTimer > 0) provokedTimer--;
 
-        boolean hunting = !gp.player.isDead;
-        double dist = hunting ? distanceToPlayer() : Double.MAX_VALUE;
+        Entity target = MinionTargeting.findNearestTarget(gp, this);
+        boolean hunting = target != null;
+        double dist = hunting ? MinionTargeting.distance(this, target) : Double.MAX_VALUE;
 
         switch (state) {
             case IDLE:
@@ -210,18 +213,18 @@ public class Wolf extends Entity {
                     state = WolfState.WANDER;
                     break;
                 }
-                faceTowardPlayer();
+                faceTowardTarget(target);
                 if (dist <= ATTACK_RANGE) {
-                    if (attackCooldown == 0) startAttack();
+                    if (attackCooldown == 0) startAttack(target);
                     // kalau masih cooldown: diam di tempat, nunggu giliran gigit lagi
                 } else {
-                    double[] v = dirToPlayer();
+                    double[] v = dirToTarget(target);
                     if (step(v[0], v[1], CHASE_SPEED)) moving = true;
                 }
                 break;
 
             case ATTACK:
-                updateAttack();
+                updateAttack(target);
                 break;
 
             default:
@@ -384,6 +387,13 @@ public class Wolf extends Entity {
                 if (box.intersects(mb)) return true;
             }
         }
+        if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
+            for (Entity m : gp.deathTotemManager.getMinions()) {
+                if (!(m instanceof GolemMinion) || !((GolemMinion) m).isAlive() || m.solidArea == null) continue;
+                Rectangle mb = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
+                if (box.intersects(mb)) return true;
+            }
+        }
         return false;
     }
 
@@ -414,6 +424,21 @@ public class Wolf extends Entity {
         if (Math.abs(dx) + Math.abs(dy) > 8) faceVector(dx, dy);   // zona mati 8px biar gak kedip-kedip
     }
 
+    private double[] dirToTarget(Entity target) {
+        double dx = MinionTargeting.centerX(target) - centerX();
+        double dy = MinionTargeting.centerY(target) - centerY();
+        double len = Math.hypot(dx, dy);
+        if (len == 0) return new double[] { 0, 0 };
+        return new double[] { dx / len, dy / len };
+    }
+
+    private void faceTowardTarget(Entity target) {
+        if (target == null) return;
+        int dx = MinionTargeting.centerX(target) - centerX();
+        int dy = MinionTargeting.centerY(target) - centerY();
+        if (Math.abs(dx) + Math.abs(dy) > 8) faceVector(dx, dy);
+    }
+
     private void setDir(int d) {
         dir = d;
         direction = WolfSprite.dirName(d);   // Entity.direction ikut disamakan
@@ -436,15 +461,15 @@ public class Wolf extends Entity {
 
     // ───────────────────────── Serang ─────────────────────────
 
-    private void startAttack() {
+    private void startAttack(Entity target) {
         state = WolfState.ATTACK;
         attackFrame = 0;
         attackTick = 0;
         biteDone = false;
-        faceTowardPlayer();
+        faceTowardTarget(target);
     }
 
-    private void updateAttack() {
+    private void updateAttack(Entity target) {
         attackTick++;
         if (attackTick < ATTACK_FRAME_TICKS) return;
         attackTick = 0;
@@ -453,8 +478,8 @@ public class Wolf extends Entity {
         // frame gigitan: damage masuk SEKALI, cuma kalau player masih dalam jangkauan
         if (attackFrame == BITE_FRAME && !biteDone) {
             biteDone = true;
-            if (!gp.player.isDead && distanceToPlayer() <= ATTACK_RANGE + 26) {
-                gp.player.takeDamageFrom(ATTACK_DAMAGE, this);
+            if (target != null && MinionTargeting.distance(this, target) <= ATTACK_RANGE + 26) {
+                MinionTargeting.applyDamage(gp, target, ATTACK_DAMAGE, this);
             }
         }
 

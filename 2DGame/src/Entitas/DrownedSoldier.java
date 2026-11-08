@@ -5,6 +5,7 @@ import Main.GamePanel;
 import Tamed.GolemMinion;
 import Tamed.GolemiteMinion;
 import Tamed.UndeadMinion;
+import Tamed.MinionTargeting;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -360,10 +361,11 @@ public class DrownedSoldier extends Entity {
 
         if (atkCooldown > 0) atkCooldown--;
 
-        Entity target = gp.player;
-        boolean targetValid = !gp.player.isDead;
-        int tx = cx(target), ty = cy(target);
-        double dist = Math.hypot(tx - centerX(), ty - centerY());
+        Entity target = MinionTargeting.findNearestTarget(gp, this);
+        boolean targetValid = target != null;
+        int tx = targetValid ? cx(target) : centerX();
+        int ty = targetValid ? cy(target) : centerY();
+        double dist = targetValid ? Math.hypot(tx - centerX(), ty - centerY()) : Double.MAX_VALUE;
         double spawnDist = Math.hypot(spawnX + 24 - centerX(), spawnY + 39 - centerY());
 
         switch (state) {

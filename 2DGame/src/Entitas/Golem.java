@@ -127,7 +127,7 @@ public class Golem extends Entity {
 
     public Golem(GamePanel gp) {
         super(gp);
-        this.maxLife   = 12000;
+        this.maxLife   = 10000;
         this.life      = maxLife;
         this.speed     = 1.0;
         this.direction = "down";
@@ -171,6 +171,54 @@ public class Golem extends Entity {
         int bcy = b.y + b.solidArea.y + b.solidArea.height / 2;
         int dx = acx - bcx, dy = acy - bcy;
         return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    /**
+     * Muat cache sprite statis tanpa harus membuat Golem liar di GolemHide.
+     * Dipanggil GolemMinion agar frame minion juga tersedia di dunia luar.
+     */
+    public static synchronized void preloadImages() {
+        if (imagesLoaded) return;
+        try {
+            for (int i = 0; i < 6; i++) {
+                int f = i + 1;
+                S_walkFront[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemFrontWalk (" + f + ").png"));
+                S_walkBack[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemBackWalk (" + f + ").png"));
+                S_walkLeft[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemLeftWalk (" + f + ").png"));
+                S_walkRight[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemRightWalk (" + f + ").png"));
+            }
+            for (int i = 0; i < 2; i++) {
+                int f = i + 1;
+                S_idleFront[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemFrontIdle (" + f + ").png"));
+                S_idleBack[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemBackIdle (" + f + ").png"));
+                S_idleLeft[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemLeftIdle (" + f + ").png"));
+                S_idleRight[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemRightIdle (" + f + ").png"));
+            }
+            for (int i = 0; i < 5; i++) {
+                S_attackFront[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemFrontAttack (" + (i + 1) + ").png"));
+            }
+            for (int i = 0; i < 6; i++) {
+                int f = i + 1;
+                S_attackBack[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemBackAttack (" + f + ").png"));
+                S_attackLeft[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemLeftAttack (" + f + ").png"));
+                S_attackRight[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemRightAttack (" + f + ").png"));
+            }
+            for (int i = 0; i < 5; i++) {
+                int f = i + 1;
+                S_smashFront[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemFrontSmash" + f + ".png"));
+                S_smashBack[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemBackSmash" + f + ".png"));
+                S_smashLeft[i]  = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemLeftSmash" + f + ".png"));
+                S_smashRight[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemRightSmash" + f + ".png"));
+                S_spawn[i]      = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemSpawn" + f + ".png"));
+            }
+            for (int i = 0; i < 7; i++) {
+                S_dead[i] = ImageIO.read(Golem.class.getResourceAsStream("/Aset/GolemFrontDead" + (i + 1) + ".png"));
+            }
+            imagesLoaded = true;
+            Main.Log.d("[Golem] Cache sprite berhasil di-preload.");
+        } catch (Exception e) {
+            System.out.println("[Golem] Gagal preload sprite: " + e.getMessage());
+        }
     }
 
     private void loadImages() {

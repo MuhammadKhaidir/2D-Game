@@ -10,6 +10,11 @@ import Entitas.Golem;
 import Entitas.Golemite;
 import Entitas.Skeleton;
 import Entitas.SkeletonKing;
+import Entitas.DrownedSoldier;
+import Entitas.Orc;
+import Entitas.Wolf;
+import Entitas.Werewolf;
+import Entitas.player;
 import Entitas.monster;
 
 public class GolemMinion extends Entity {
@@ -46,10 +51,11 @@ public class GolemMinion extends Entity {
     private final DeathTotem ownerTotem;
     public int  spawnX, spawnY;
     
-    private static final int THREAT_RADIUS_TO_PLAYER = 200;
+    private static final int THREAT_RADIUS_TO_PLAYER = 320; // radius deteksi musuh dari posisi minion
 
     public GolemMinion(GamePanel gp, DeathTotem totem) {
         super(gp);
+        Golem.preloadImages(); // sprite tersedia walau minion di-spawn di luar tambang
         this.ownerTotem = totem;
         this.alive       = true; 
         this.maxLife    = 10000;   // lebih tanky dari skeleton minion
@@ -185,11 +191,19 @@ public class GolemMinion extends Entity {
             gp.colision.checkEntity(this, gp.player, mdx, mdy);
         }
 
-        // 3. Cek collision dengan musuh (skeleton)
-        if (!this.collisionOn && gp.domainManager != null && gp.domainManager.getSkeletons() != null) {
+        // 3. Cek collision dengan skeleton aktif, termasuk skeleton di room.
+        if (!this.collisionOn && gp.domainManager != null) {
             for (Skeleton sk : gp.domainManager.getSkeletons()) {
                 if (sk == null || !sk.alive) continue;
                 gp.colision.checkEntity(this, sk, mdx, mdy);
+                if (this.collisionOn) break;
+            }
+            if (!this.collisionOn) {
+                for (Skeleton sk : gp.domainManager.getRoomSkeletons()) {
+                    if (sk == null || !sk.alive) continue;
+                    gp.colision.checkEntity(this, sk, mdx, mdy);
+                    if (this.collisionOn) break;
+                }
             }
         }
         
@@ -207,11 +221,19 @@ public class GolemMinion extends Entity {
                 if (this.collisionOn) break;
             }
         }
-        
+
+        if (!this.collisionOn && gp.domainManager != null && gp.domainManager.getDrownedSoldiers() != null) {
+            for (DrownedSoldier ds : gp.domainManager.getDrownedSoldiers()) {
+                if (ds == null || !ds.isAlive()) continue;
+                gp.colision.checkEntity(this, ds, mdx, mdy);
+                if (this.collisionOn) break;
+            }
+        }
+
+        // Semua mob aktif di luar tambang juga punya collision dengan minion.
         if (!this.collisionOn && gp.outsideMonsters() != null) {
             for (Entity m : gp.outsideMonsters()) {
-                if (m == null || m.isDead) continue;
-                if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
+                if (!isTargetableEnemy(m)) continue;
                 gp.colision.checkEntity(this, m, mdx, mdy);
                 if (this.collisionOn) break;
             }
@@ -240,77 +262,66 @@ public class GolemMinion extends Entity {
     }
 
     private Entity findThreatNearPlayer() {
-        int plCX = gp.player.x + gp.player.solidArea.x + gp.player.solidArea.width  / 2;
-        int plCY = gp.player.y + gp.player.solidArea.y + gp.player.solidArea.height / 2;
-
+        int myCX = x + solidArea.x + solidArea.width / 2;
+        int myCY = y + solidArea.y + solidArea.height / 2;
         Entity nearest = null;
-        double minDist = Double.MAX_VALUE;
+        double minDist = THREAT_RADIUS_TO_PLAYER;
 
-        // 1. Skeleton (domain)
-        if (gp.domainManager != null && gp.domainManager.getSkeletons() != null) {
+        if (gp.domainManager != null) {
             for (Skeleton sk : gp.domainManager.getSkeletons()) {
-                if (sk == null || !sk.alive) continue;
-                double d = distToPlayer(sk, plCX, plCY);
+                if (!isTargetableEnemy(sk)) continue;
+                double d = distFromPoint(sk, myCX, myCY);
                 if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = sk; }
             }
-        }
-        
-     // 1b. Golemite (domain GolemHide)
-        if (gp.domainManager != null && gp.domainManager.getGolemites() != null) {
+            for (Skeleton sk : gp.domainManager.getRoomSkeletons()) {
+                if (!isTargetableEnemy(sk)) continue;
+                double d = distFromPoint(sk, myCX, myCY);
+                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = sk; }
+            }
             for (Golemite gl : gp.domainManager.getGolemites()) {
-                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
-                double d = distToPlayer(gl, plCX, plCY);
+                if (!isTargetableEnemy(gl)) continue;
+                double d = distFromPoint(gl, myCX, myCY);
                 if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
             }
-        }
-        if (gp.domainManager != null && gp.domainManager.getGolems() != null) {
-            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
-                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
-                double d = distToPlayer(gl, plCX, plCY);
+            for (Golem gl : gp.domainManager.getGolems()) {
+                if (!isTargetableEnemy(gl)) continue;
+                double d = distFromPoint(gl, myCX, myCY);
                 if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = gl; }
             }
-        }
-
-        // 2. Golem liar & monster (slime) — sama-sama di gp.outsideMonsters()
-        if (gp.outsideMonsters() != null) {
-            for (Entity m : gp.outsideMonsters()) {
-                if (m == null || m.isDead) continue;
-                if (m == this) continue; // jaga-jaga, jangan target diri sendiri
-                if (!(m instanceof Golem) && !(m instanceof monster)) continue;
-
-                double d = distToPlayer(m, plCX, plCY);
-                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = m; }
+            for (DrownedSoldier ds : gp.domainManager.getDrownedSoldiers()) {
+                if (!isTargetableEnemy(ds)) continue;
+                double d = distFromPoint(ds, myCX, myCY);
+                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = ds; }
             }
-        }
-        
-        if (gp.outsideMonsters() != null) {
-            for (Entity m : gp.outsideMonsters()) {
-                if (m == null || m.isDead) continue;
-                if (m == this) continue; // jaga-jaga, jangan target diri sendiri
-                if (!(m instanceof Golemite) && !(m instanceof monster)) continue;
 
-                double d = distToPlayer(m, plCX, plCY);
-                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = m; }
-            }
-        }
-
-        // 3. FIX: SkeletonKing (boss Tomb) — biar golem juga inisiatif nyerang boss
-        if (gp.domainManager != null && gp.domainManager.getBossSkeleton() != null) {
             SkeletonKing king = gp.domainManager.getBossSkeleton();
-            if (king.alive) {
-                double d = distToPlayer(king, plCX, plCY);
+            if (isTargetableEnemy(king)) {
+                double d = distFromPoint(king, myCX, myCY);
                 if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = king; }
+            }
+        }
+
+        if (gp.outsideMonsters() != null) {
+            for (Entity m : gp.outsideMonsters()) {
+                if (!isTargetableEnemy(m)) continue;
+                double d = distFromPoint(m, myCX, myCY);
+                if (d <= THREAT_RADIUS_TO_PLAYER && d < minDist) { minDist = d; nearest = m; }
             }
         }
 
         return nearest;
     }
 
-    private double distToPlayer(Entity e, int plCX, int plCY) {
-        int cx = e.x + e.solidArea.x + e.solidArea.width  / 2;
-        int cy = e.y + e.solidArea.y + e.solidArea.height / 2;
-        int dx = cx - plCX, dy = cy - plCY;
-        return Math.sqrt(dx*dx + dy*dy);
+    private boolean isTargetableEnemy(Entity enemy) {
+        if (enemy == null || enemy == this || enemy.solidArea == null || enemy.isDead || enemy.life <= 0) return false;
+        if (enemy instanceof Skeleton) return ((Skeleton) enemy).alive;
+        if (enemy instanceof SkeletonKing) return ((SkeletonKing) enemy).alive;
+        if (enemy instanceof Golem) return ((Golem) enemy).isAlive();
+        if (enemy instanceof Golemite) return ((Golemite) enemy).isAlive();
+        if (enemy instanceof Wolf) return ((Wolf) enemy).isAlive();
+        if (enemy instanceof Werewolf) return ((Werewolf) enemy).isAlive();
+        if (enemy instanceof DrownedSoldier) return ((DrownedSoldier) enemy).isAlive();
+        return true;
     }
 
     private void updateAnimation(Entity target)  {
@@ -396,6 +407,15 @@ public class GolemMinion extends Entity {
         } else if (target instanceof Golemite) {
             ((Golemite) target).takeDamage(dmg);
             ((Golemite) target).knockbackFrom(this);
+        } else if (target instanceof DrownedSoldier) {
+            ((DrownedSoldier) target).takeDamage(dmg);
+            ((DrownedSoldier) target).knockbackFrom(this);
+        } else if (target instanceof Orc) {
+            ((Orc) target).takeDamage(dmg, (player) null);
+        } else if (target instanceof Wolf) {
+            ((Wolf) target).takeDamage(dmg, (player) null);
+        } else if (target instanceof Werewolf) {
+            ((Werewolf) target).takeDamage(dmg, (player) null);
         } else if (target instanceof monster) {
             ((monster) target).takeDamage(dmg, this);
         } else if (target instanceof SkeletonKing) {
@@ -406,83 +426,29 @@ public class GolemMinion extends Entity {
 
  // ── Smash: AOE, semua musuh (Skeleton/Golem liar/monster/SkeletonKing) dalam radius kena ──
     private void hitAreaSmash() {
-        int myCX = x + solidArea.x + solidArea.width  / 2;
+        int myCX = x + solidArea.x + solidArea.width / 2;
         int myCY = y + solidArea.y + solidArea.height / 2;
 
-        if (gp.domainManager != null && gp.domainManager.getSkeletons() != null) {
-            for (Skeleton sk : gp.domainManager.getSkeletons()) {
-                if (sk == null || !sk.alive) continue;
-                if (distFromPoint(sk, myCX, myCY) <= SMASH_RADIUS) {
-                    int lifeBefore = sk.life;
-                    sk.takeDamage(SMASH_DAMAGE);
-                    sk.knockbackFrom(this);
-                    if (lifeBefore > 0 && sk.life <= 0 && gp.deathTotemManager != null) {
-                        gp.deathTotemManager.onPawnKill(sk.getExpValue);
-                    }
-                }
-            }
-        }
-        
-        if (gp.domainManager != null && gp.domainManager.getGolemites() != null) {
-            for (Golemite gl : gp.domainManager.getGolemites()) {
-                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
-                if (distFromPoint(gl, myCX, myCY) <= SMASH_RADIUS) {
-                    int lifeBefore = gl.life;
-                    gl.takeDamage(SMASH_DAMAGE);
-                    gl.knockbackFrom(this);
-                    if (lifeBefore > 0 && gl.life <= 0 && gp.deathTotemManager != null) {
-                        gp.deathTotemManager.onPawnKill(gl.getExpValue);
-                    }
-                }
-            }
-        }
-        if (gp.domainManager != null && gp.domainManager.getGolems() != null) {
-            for (Entitas.Golem gl : gp.domainManager.getGolems()) {
-                if (gl == null || !gl.isAlive() || gl.life <= 0) continue;
-                if (distFromPoint(gl, myCX, myCY) <= SMASH_RADIUS) {
-                    int lifeBefore = gl.life;
-                    gl.takeDamage(SMASH_DAMAGE);
-                    if (lifeBefore > 0 && gl.life <= 0 && gp.deathTotemManager != null) {
-                        gp.deathTotemManager.onPawnKill(gl.getExpValue);
-                    }
-                }
-            }
+        if (gp.domainManager != null) {
+            for (Skeleton sk : gp.domainManager.getSkeletons()) smashTarget(sk, myCX, myCY);
+            for (Skeleton sk : gp.domainManager.getRoomSkeletons()) smashTarget(sk, myCX, myCY);
+            for (Golemite gl : gp.domainManager.getGolemites()) smashTarget(gl, myCX, myCY);
+            for (Golem gl : gp.domainManager.getGolems()) smashTarget(gl, myCX, myCY);
+            for (DrownedSoldier ds : gp.domainManager.getDrownedSoldiers()) smashTarget(ds, myCX, myCY);
+            smashTarget(gp.domainManager.getBossSkeleton(), myCX, myCY);
         }
 
         if (gp.outsideMonsters() != null) {
-            for (Entity m : gp.outsideMonsters()) {
-                if (m == null || m.isDead) continue;
-                if (!(m instanceof Golem) && !(m instanceof Golemite) && !(m instanceof monster)) continue;
-                if (distFromPoint(m, myCX, myCY) <= SMASH_RADIUS) {
-                    int lifeBefore = m.life;
-                    dealDamage(m, SMASH_DAMAGE);
-                    if (lifeBefore > 0 && m.life <= 0 && gp.deathTotemManager != null) {
-                        gp.deathTotemManager.onPawnKill(m.getExpValue);
-                    }
-                }
-            }
+            for (Entity m : gp.outsideMonsters()) smashTarget(m, myCX, myCY);
         }
+    }
 
-        // FIX: Boss SkeletonKing juga kena AOE smash kalau lagi ada di radius
-        if (gp.domainManager != null && gp.domainManager.getBossSkeleton() != null) {
-            SkeletonKing king = gp.domainManager.getBossSkeleton();
-            if (king.alive && distFromPoint(king, myCX, myCY) <= SMASH_RADIUS) {
-                int lifeBefore = king.life;
-                king.takeDamage(SMASH_DAMAGE);
-                if (lifeBefore > 0 && king.life <= 0 && gp.deathTotemManager != null) {
-                    gp.deathTotemManager.onPawnKill(king.getExpValue);
-                }
-            }
-        }
-    
-        if (gp.outsideMonsters() != null) {
-            for (Entity m : gp.outsideMonsters()) {
-                if (m == null || m.isDead) continue;
-                if (!(m instanceof Golem) && !(m instanceof monster)) continue;
-                if (distFromPoint(m, myCX, myCY) <= SMASH_RADIUS) {
-                    dealDamage(m, SMASH_DAMAGE);
-                }
-            }
+    private void smashTarget(Entity target, int myCX, int myCY) {
+        if (!isTargetableEnemy(target) || distFromPoint(target, myCX, myCY) > SMASH_RADIUS) return;
+        int lifeBefore = target.life;
+        dealDamage(target, SMASH_DAMAGE);
+        if (lifeBefore > 0 && target.life <= 0 && gp.deathTotemManager != null) {
+            gp.deathTotemManager.onPawnKill(target.getExpValue);
         }
     }
 

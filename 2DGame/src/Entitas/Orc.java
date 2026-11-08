@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import Main.GamePanel;
+import Tamed.MinionTargeting;
 
 /**
  * Orc — monster baru dengan 3 animasi:
@@ -179,9 +180,9 @@ public class Orc extends Entity {
     // =====================
     // CHASE PLAYER
     // =====================
-    private void chasePlayer() {
-        int dx = gp.player.x - x;
-        int dy = gp.player.y - y;
+    private void chaseTarget(Entity target) {
+        int dx = MinionTargeting.centerX(target) - (x + solidArea.x + solidArea.width / 2);
+        int dy = MinionTargeting.centerY(target) - (y + solidArea.y + solidArea.height / 2);
 
         if (Math.abs(dx) > Math.abs(dy)) {
             direction = (dx < 0) ? "left" : "right";
@@ -261,7 +262,7 @@ public class Orc extends Entity {
     // Damage baru dikirim ketika attackFrame == DAMAGE_FRAME.
     // State berpindah ke CHASE setelah frame terakhir selesai.
     // =====================
-    private void updateAttackAnim() {
+    private void updateAttackAnim(Entity target) {
         attackFrameTimer++;
 
         if (attackFrameTimer >= ATTACK_FRAME_SPEED) {
@@ -270,9 +271,8 @@ public class Orc extends Entity {
             // ── DAMAGE FRAME ──────────────────────────────
             // Frame ke-5 (index 4): baru kirim damage ke player
             if (attackFrame == DAMAGE_FRAME && !damageDealt) {
-                double dist = distanceTo(gp.player);
-                if (dist <= ATTACK_RANGE + 10) {          // sedikit toleransi
-                    gp.player.takeDamageFrom(ATTACK_DAMAGE, this);
+                if (target != null && distanceTo(target) <= ATTACK_RANGE + 10) {
+                    MinionTargeting.applyDamage(gp, target, ATTACK_DAMAGE, this);
                 }
                 damageDealt    = true;
                 attackCooldown = ATTACK_CD_MAX;
@@ -353,9 +353,12 @@ public class Orc extends Entity {
         // Tidak ada gerakan, tidak ada super.update() (supaya
         // animasi walk/idle di Entity tidak ikut jalan & ganggu).
         // Satu-satunya yang update adalah frame attack.
+        Entity target = MinionTargeting.findNearestTarget(gp, this);
+        double dist = target == null ? Double.MAX_VALUE : distanceTo(target);
+
         if (state == OrcState.ATTACKING) {
-            updateAttackAnim();
-            return;   // ← BERHENTI TOTAL, tidak gerak, tidak super.update()
+            updateAttackAnim(target);
+            return;   // animasi serangan tetap berjalan sampai selesai
         }
 
         // ── HP REGEN ────────────────────────────────────
@@ -367,7 +370,6 @@ public class Orc extends Entity {
             }
         }
 
-        double dist = distanceTo(gp.player);
 
         // ── STATE MACHINE ───────────────────────────────
         switch (state) {
@@ -379,16 +381,25 @@ public class Orc extends Entity {
 
             case WANDER:
                 wander();
-                if (dist < AGGRO_RADIUS) state = OrcState.CHASE;
+                if (target != null && dist < AGGRO_RADIUS) state = OrcState.CHASE;
                 break;
 
             case CHASE:
-                chasePlayer();
+                if (target == null || dist > AGGRO_RADIUS) {
+                    state = OrcState.WANDER;
+                    break;
+                }
                 if (dist < ATTACK_RANGE) {
+                    int dx = MinionTargeting.centerX(target) - (x + solidArea.x + solidArea.width / 2);
+                    int dy = MinionTargeting.centerY(target) - (y + solidArea.y + solidArea.height / 2);
+                    direction = Math.abs(dx) > Math.abs(dy)
+                            ? (dx < 0 ? "left" : "right")
+                            : (dy < 0 ? "up" : "down");
                     state = OrcState.ATTACKING;
                     startAttack();
+                } else {
+                    chaseTarget(target);
                 }
-                if (dist > AGGRO_RADIUS) state = OrcState.WANDER;
                 break;
 
             case HIT:

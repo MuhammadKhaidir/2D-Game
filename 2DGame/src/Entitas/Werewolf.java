@@ -11,6 +11,8 @@ import java.util.Random;
 
 import Main.GamePanel;
 import bahan.WorldGen;
+import Tamed.GolemMinion;
+import Tamed.MinionTargeting;
 
 /**
  * Werewolf — manusia serigala penghuni DARATAN ES (biome salju di barat daya dunia).
@@ -245,12 +247,23 @@ public class Werewolf extends Entity {
         if (lungeCd > 0) lungeCd--;
         if (provokedTimer > 0) provokedTimer--;
 
-        boolean hunting = !gp.player.isDead;
-        double dist = hunting ? distanceToPlayer() : Double.MAX_VALUE;
+        Entity target = MinionTargeting.findNearestTarget(gp, this);
+        boolean hunting = target != null;
+        double dist = hunting ? MinionTargeting.distance(this, target) : Double.MAX_VALUE;
         boolean playerInIce = iceAtPlayer() > LEAVE_ICE;
+        boolean targetInIce = target != null && target != gp.player
+                && iceAt(MinionTargeting.centerX(target), MinionTargeting.centerY(target)) > LEAVE_ICE;
 
-        // player udah ninggalin biome es dan jauh: menghilang
-        if (!playerInIce && dist > DESPAWN_DIST && state != WerewolfState.ATTACK) {
+        // Werewolf tetap menjaga biome es: kalau minion di luar salju, alihkan ke player (bila ada di salju).
+        if (target != null && target != gp.player && !targetInIce) {
+            target = playerInIce ? gp.player : null;
+            hunting = target != null;
+            dist = hunting ? MinionTargeting.distance(this, target) : Double.MAX_VALUE;
+        }
+        boolean targetInsideTerritory = target == gp.player ? playerInIce : targetInIce;
+
+        // Player dan minion sudah meninggalkan biome es dan werewolf jauh: menghilang.
+        if (!targetInsideTerritory && dist > DESPAWN_DIST && state != WerewolfState.ATTACK) {
             startLeaving();
             return;
         }
@@ -261,10 +274,10 @@ public class Werewolf extends Entity {
             case IDLE:
             case WANDER:
                 wander();
-                if (hunting && dist < aggro && iceAtPlayer() > LEAVE_ICE) {
+                if (hunting && dist < aggro && targetInsideTerritory) {
                     state = WerewolfState.CHASE;
                     stuckTicks = 0;
-                } else if (hunting && dist > RELOCATE_DIST && iceAtPlayer() > ACTIVATE_ICE) {
+                } else if (hunting && dist > RELOCATE_DIST && playerInIce) {
                     relocate();
                 }
                 break;
@@ -274,15 +287,15 @@ public class Werewolf extends Entity {
                     state = WerewolfState.WANDER;
                     break;
                 }
-                faceTowardPlayer();
+                faceTowardTarget(target);
                 if (dist <= ATTACK_RANGE) {
                     stuckTicks = 0;
-                    if (attackCd == 0) startAttack();
+                    if (attackCd == 0) startAttack(target);
                     // kalau masih cooldown: diam di tempat, nunggu giliran mencakar lagi
                 } else if (lungeCd == 0 && dist >= LUNGE_MIN && dist <= LUNGE_MAX) {
-                    startLunge();
+                    startLunge(target);
                 } else {
-                    double[] v = dirToPlayer();
+                    double[] v = dirToTarget(target);
                     double spd = enraged ? ENRAGE_SPEED : CHASE_SPEED;
                     if (step(v[0], v[1], spd)) {
                         moving = true;
@@ -297,11 +310,11 @@ public class Werewolf extends Entity {
                 break;
 
             case LUNGE:
-                updateLunge();
+                updateLunge(target);
                 break;
 
             case ATTACK:
-                updateAttack();
+                updateAttack(target);
                 break;
 
             default:
@@ -508,6 +521,13 @@ public class Werewolf extends Entity {
                 if (box.intersects(mb)) return true;
             }
         }
+        if (gp.deathTotemManager != null && gp.deathTotemManager.getMinions() != null) {
+            for (Entity m : gp.deathTotemManager.getMinions()) {
+                if (!(m instanceof GolemMinion) || !((GolemMinion) m).isAlive() || m.solidArea == null) continue;
+                Rectangle mb = new Rectangle(m.x + m.solidArea.x, m.y + m.solidArea.y, m.solidArea.width, m.solidArea.height);
+                if (box.intersects(mb)) return true;
+            }
+        }
         return false;
     }
 
@@ -521,6 +541,21 @@ public class Werewolf extends Entity {
 
     private double distanceToPlayer() {
         return Math.hypot(playerCX() - centerX(), playerCY() - centerY());
+    }
+
+    private double[] dirToTarget(Entity target) {
+        double dx = MinionTargeting.centerX(target) - centerX();
+        double dy = MinionTargeting.centerY(target) - centerY();
+        double len = Math.hypot(dx, dy);
+        if (len == 0) return new double[] { 0, 0 };
+        return new double[] { dx / len, dy / len };
+    }
+
+    private void faceTowardTarget(Entity target) {
+        if (target == null) return;
+        int dx = MinionTargeting.centerX(target) - centerX();
+        int dy = MinionTargeting.centerY(target) - centerY();
+        if (Math.abs(dx) + Math.abs(dy) > 8) faceVector(dx, dy);
     }
 
     private double[] dirToPlayer() {
@@ -557,20 +592,24 @@ public class Werewolf extends Entity {
 
     // ───────────────────────── Terkam ─────────────────────────
 
-    private void startLunge() {
-        double[] v = dirToPlayer();
+    private void startLunge(Entity target) {
+        double[] v = dirToTarget(target);
         lungeDX = v[0];
         lungeDY = v[1];
         lungeTicks = LUNGE_TICKS;
         state = WerewolfState.LUNGE;
-        faceTowardPlayer();
+        faceTowardTarget(target);
     }
 
-    private void updateLunge() {
+    private void updateLunge(Entity target) {
+        if (target == null) {
+            state = WerewolfState.CHASE;
+            return;
+        }
         moving = true;
         boolean moved = step(lungeDX, lungeDY, LUNGE_SPEED);
         lungeTicks--;
-        if (!moved || lungeTicks <= 0 || distanceToPlayer() <= ATTACK_RANGE) {
+        if (!moved || lungeTicks <= 0 || MinionTargeting.distance(this, target) <= ATTACK_RANGE) {
             lungeCd = LUNGE_COOLDOWN;
             state = WerewolfState.CHASE;
         }
@@ -578,16 +617,16 @@ public class Werewolf extends Entity {
 
     // ───────────────────────── Serang ─────────────────────────
 
-    private void startAttack() {
+    private void startAttack(Entity target) {
         state = WerewolfState.ATTACK;
         attackFrame = 0;
         attackTick = 0;
         strikeDone = false;
         attackVariant = (attackVariant == 3) ? 4 : 3;   // gantian: serangan player ke-3, ke-4, ke-3, ...
-        faceTowardPlayer();
+        faceTowardTarget(target);
     }
 
-    private void updateAttack() {
+    private void updateAttack(Entity target) {
         attackTick++;
         int need = (attackFrame == 0) ? ATTACK_WINDUP_TICKS : ATTACK_FRAME_TICKS;
         if (attackTick < need) return;
@@ -597,9 +636,9 @@ public class Werewolf extends Entity {
         // frame cakaran: damage masuk SEKALI, cuma kalau player masih dalam jangkauan
         if (attackFrame == STRIKE_FRAME && !strikeDone) {
             strikeDone = true;
-            if (!gp.player.isDead && distanceToPlayer() <= ATTACK_RANGE + 34) {
+            if (target != null && MinionTargeting.distance(this, target) <= ATTACK_RANGE + 34) {
                 int dmg = isNight() ? (int) Math.round(ATTACK_DAMAGE * NIGHT_DAMAGE) : ATTACK_DAMAGE;
-                gp.player.takeDamageFrom(dmg, this);
+                MinionTargeting.applyDamage(gp, target, dmg, this);
             }
         }
 
