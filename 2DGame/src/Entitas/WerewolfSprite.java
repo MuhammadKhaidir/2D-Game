@@ -6,40 +6,45 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 /**
- * Sprite manusia serigala dari SATU sprite sheet /Aset/werewolf_sheet.png
- * (dibuat lewat tools/generate_werewolf.py dari gambar referensi, lihat tools/werewolf_gen/):
+ * Sprite manusia serigala dari SATU sprite sheet /Aset/werewolf_sheet.png.
+ * Sheet ini dibuat dari frame PLAYER (lewat tools/werewolf_gen/player_sheet.py), jadi pose & animasinya sama persis
+ * dengan player: arah beneran 4 (kanan / kiri / atas / bawah), bukan pandangan 3/4.
  *
- *     25 kolom x 4 baris, tiap sel 136 x 100 px, telapak kaki nempel di baris ke-94
- *     baris  : 0 right | 1 left | 2 back_right | 3 back_left
- *     kolom  : idle (4) | walk (8) | attack (6, frame ke-4 = cakaran) | lunge (3) | dead (4)
+ *     22 kolom x 4 baris, tiap sel 112 x 96 px, telapak kaki nempel di baris ke-75
+ *     baris  : 0 right | 1 left | 2 up | 3 down   (sama dengan indeks arah RIGHT / LEFT / UP / DOWN di bawah)
+ *     kolom  : idle (2) | walk (6) | run (3) | attack3 (4) | attack4 (4) | dead (3)
  *
- * Arah hadap (RIGHT/LEFT/UP/DOWN) dipetakan ke baris lewat {@link #row(int, boolean)}:
- *   RIGHT -> baris 0, LEFT -> baris 1,
- *   DOWN  -> baris 0/1 (pandangan 3/4 depan, menghadap ke sisi horizontal terakhir),
- *   UP    -> baris 2/3 (pandangan 3/4 belakang, menghadap ke sisi horizontal terakhir).
+ *   idle    = XxxIdle1 player (frame ke-2 = napas)
+ *   walk    = XxxWalk1..6 player
+ *   run     = XxxRun1..3 player, dipakai buat terkam (lunge)
+ *   attack3 = serangan player ke-3 ("Front (1..4)"), attack4 = serangan player ke-4 ("Front (5..8)").
+ *             Serangan player ke-1 dan ke-2 sengaja tidak dipakai.
+ *   dead    = idle yang direbahkan (sempoyongan -> jatuh -> tergeletak)
  *
  * Mau pakai art sendiri? Timpa werewolf_sheet.png dengan grid yang sama, kode ini gak perlu diubah.
  * Gambar diperbesar pakai nearest-neighbor (tajam) sebesar `scale`; 1.5 = skala yang sama dengan sprite player.
  */
 public final class WerewolfSprite {
 
-    /** Ukuran satu sel di sheet (sebelum diperbesar). HARUS sama dengan CELL_W / CELL_H di tools/werewolf_gen/anim.py. */
-    public static final int CELL_W = 136, CELL_H = 100;
+    /** Ukuran satu sel di sheet (sebelum diperbesar). HARUS sama dengan CELL_W / CELL_H di tools/werewolf_gen/player_sheet.py. */
+    public static final int CELL_W = 112, CELL_H = 96;
     /** Baris telapak kaki di dalam sel (sebelum diperbesar). */
-    private static final int GROUND_ROW = 94;
+    private static final int GROUND_ROW = 75;
+    /** Kolom sumbu tengah badan di dalam sel (sebelum diperbesar). */
+    private static final int CENTER_X = 55;
     /** Baris ujung telinga di dalam sel (buat naruh HP bar tepat di atas kepala). */
-    public static final int HEAD_TOP_ROW = 18;
+    public static final int HEAD_TOP_ROW = 10;
 
-    // Indeks arah hadap (logika game)
+    // Indeks arah hadap (logika game) = indeks baris di sheet
     public static final int RIGHT = 0, LEFT = 1, UP = 2, DOWN = 3;
     private static final String[] DIR_NAMES = { "right", "left", "up", "down" };
 
     // Indeks baris di sheet
-    public static final int ROW_RIGHT = 0, ROW_LEFT = 1, ROW_BACK_RIGHT = 2, ROW_BACK_LEFT = 3;
+    public static final int ROW_RIGHT = 0, ROW_LEFT = 1, ROW_UP = 2, ROW_DOWN = 3;
 
-    // Jumlah frame tiap animasi (harus sama dengan SPEC di tools/werewolf_gen/sheet.py)
-    public static final int IDLE_FRAMES = 4, WALK_FRAMES = 8, ATTACK_FRAMES = 6, LUNGE_FRAMES = 3, DEAD_FRAMES = 4;
-    private static final int COLS = IDLE_FRAMES + WALK_FRAMES + ATTACK_FRAMES + LUNGE_FRAMES + DEAD_FRAMES;
+    // Jumlah frame tiap animasi (harus sama dengan N_* di tools/werewolf_gen/player_sheet.py)
+    public static final int IDLE_FRAMES = 2, WALK_FRAMES = 6, RUN_FRAMES = 3, ATTACK3_FRAMES = 4, ATTACK4_FRAMES = 4, DEAD_FRAMES = 3;
+    private static final int COLS = IDLE_FRAMES + WALK_FRAMES + RUN_FRAMES + ATTACK3_FRAMES + ATTACK4_FRAMES + DEAD_FRAMES;
 
     public final double scale;         // boleh pecahan (mis. 1.5)
     public final int width, height;    // ukuran satu frame setelah diperbesar
@@ -47,12 +52,13 @@ public final class WerewolfSprite {
     public final int centerX;          // sumbu tengah badan di frame yang sudah diperbesar
     public final int headTopY;         // ujung telinga di frame yang sudah diperbesar
 
-    // Semua array diindeks per BARIS sheet (lihat row()), bukan per arah.
-    public final BufferedImage[][] idle   = new BufferedImage[4][IDLE_FRAMES];
-    public final BufferedImage[][] walk   = new BufferedImage[4][WALK_FRAMES];
-    public final BufferedImage[][] attack = new BufferedImage[4][ATTACK_FRAMES];
-    public final BufferedImage[][] lunge  = new BufferedImage[4][LUNGE_FRAMES];
-    public final BufferedImage[][] dead   = new BufferedImage[4][DEAD_FRAMES];
+    // Semua array diindeks per BARIS sheet (= arah hadap).
+    public final BufferedImage[][] idle    = new BufferedImage[4][IDLE_FRAMES];
+    public final BufferedImage[][] walk    = new BufferedImage[4][WALK_FRAMES];
+    public final BufferedImage[][] run     = new BufferedImage[4][RUN_FRAMES];
+    public final BufferedImage[][] attack3 = new BufferedImage[4][ATTACK3_FRAMES];
+    public final BufferedImage[][] attack4 = new BufferedImage[4][ATTACK4_FRAMES];
+    public final BufferedImage[][] dead    = new BufferedImage[4][DEAD_FRAMES];
 
     private static WerewolfSprite instance;
 
@@ -67,36 +73,29 @@ public final class WerewolfSprite {
         return DIR_NAMES[dir];
     }
 
-    /**
-     * Baris sheet buat sebuah arah hadap. Arah vertikal (UP/DOWN) tetap menghadap ke sisi horizontal terakhir
-     * (facingRight), karena art-nya pandangan 3/4.
-     */
-    public static int row(int dir, boolean facingRight) {
-        switch (dir) {
-            case RIGHT: return ROW_RIGHT;
-            case LEFT:  return ROW_LEFT;
-            case UP:    return facingRight ? ROW_BACK_RIGHT : ROW_BACK_LEFT;
-            default:    return facingRight ? ROW_RIGHT : ROW_LEFT;     // DOWN
-        }
-    }
-
     private WerewolfSprite(double scale) {
         this.scale  = Math.max(0.25, scale);
         this.width  = (int) Math.round(CELL_W * this.scale);
         this.height = (int) Math.round(CELL_H * this.scale);
         this.footY   = (int) Math.round((GROUND_ROW + 1) * this.scale);
-        this.centerX = (int) Math.round(CELL_W / 2.0 * this.scale);
+        this.centerX = (int) Math.round(CENTER_X * this.scale);
         this.headTopY = (int) Math.round(HEAD_TOP_ROW * this.scale);
 
         BufferedImage sheet = loadSheet();
 
-        int c0 = 0, c1 = IDLE_FRAMES, c2 = c1 + WALK_FRAMES, c3 = c2 + ATTACK_FRAMES, c4 = c3 + LUNGE_FRAMES;
+        int c0 = 0;
+        int c1 = c0 + IDLE_FRAMES;
+        int c2 = c1 + WALK_FRAMES;
+        int c3 = c2 + RUN_FRAMES;
+        int c4 = c3 + ATTACK3_FRAMES;
+        int c5 = c4 + ATTACK4_FRAMES;
         for (int r = 0; r < 4; r++) {
-            for (int f = 0; f < IDLE_FRAMES;   f++) idle[r][f]   = cell(sheet, r, c0 + f);
-            for (int f = 0; f < WALK_FRAMES;   f++) walk[r][f]   = cell(sheet, r, c1 + f);
-            for (int f = 0; f < ATTACK_FRAMES; f++) attack[r][f] = cell(sheet, r, c2 + f);
-            for (int f = 0; f < LUNGE_FRAMES;  f++) lunge[r][f]  = cell(sheet, r, c3 + f);
-            for (int f = 0; f < DEAD_FRAMES;   f++) dead[r][f]   = cell(sheet, r, c4 + f);
+            for (int f = 0; f < IDLE_FRAMES;    f++) idle[r][f]    = cell(sheet, r, c0 + f);
+            for (int f = 0; f < WALK_FRAMES;    f++) walk[r][f]    = cell(sheet, r, c1 + f);
+            for (int f = 0; f < RUN_FRAMES;     f++) run[r][f]     = cell(sheet, r, c2 + f);
+            for (int f = 0; f < ATTACK3_FRAMES; f++) attack3[r][f] = cell(sheet, r, c3 + f);
+            for (int f = 0; f < ATTACK4_FRAMES; f++) attack4[r][f] = cell(sheet, r, c4 + f);
+            for (int f = 0; f < DEAD_FRAMES;    f++) dead[r][f]    = cell(sheet, r, c5 + f);
         }
     }
 

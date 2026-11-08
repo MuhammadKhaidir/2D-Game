@@ -19,7 +19,8 @@ import bahan.WorldGen;
  *  - Penjaga wilayah: berkeliaran pelan di salju di sekitar "sarang"-nya dan TIDAK PERNAH keluar dari biome es
  *    (langkah yang nyeberang ke luar salju ditolak). Player yang kabur ke hutan / pantai gak akan dikejar sampai situ.
  *  - Pemburu: kalau player masuk radius pandang dia ngejar, dan dari jarak menengah dia LONCAT menerkam (lunge) untuk
- *    nutup jarak, lalu mencakar (cakaran sekali, 6 frame, damage di frame cakaran).
+ *    nutup jarak, lalu mencakar. Cakaran gantian pakai gerakan serangan player ke-3 dan ke-4 (masing-masing 4 frame,
+ *    damage masuk di frame ke-2); serangan player ke-1 dan ke-2 gak dipakai.
  *  - Ngamuk (enrage): HP di bawah 35% -> lebih cepat, jeda serangan lebih pendek, bayangan kakinya jadi merah.
  *  - Malam hari (jam game 18:00 - 05:59) lebih galak: radius pandang +20%, damage +25%.
  *  - Kuat: HP 220, exp 90, koin 6. Cakaran 16 damage (dikurangi DEF/armor player), jadi jangan diladeni sendirian di awal.
@@ -31,9 +32,9 @@ import bahan.WorldGen;
  *  - Mati -> gak muncul lagi selama RESPAWN_TICKS (90 detik), baru boleh muncul lagi.
  *  - Kalau player jalan jauh di dalam biome es sampai werewolf ketinggalan (> RELOCATE_DIST), dia pindah ke dekat player lagi.
  *
- * Sprite dari sheet (lihat WerewolfSprite; dibuat lewat tools/generate_werewolf.py dari gambar referensi):
- * idle napas 4 frame, jalan mengintai 8 frame, cakaran 6 frame, terkam 3 frame, mati 4 frame. Pandangan 3/4:
- * arah ATAS/BAWAH tetap menghadap ke sisi horizontal terakhir (facingRight).
+ * Sprite dari sheet (lihat WerewolfSprite; dibuat lewat tools/werewolf_gen/player_sheet.py dari frame PLAYER, jadi
+ * animasinya sama dengan player): idle napas 2 frame, jalan 6 frame, terkam = frame lari player 3 frame,
+ * cakaran = serangan player ke-3 / ke-4 (4 frame), mati 3 frame. Empat arah beneran (kanan / kiri / atas / bawah).
  *
  * Catatan penting: pas gak ada werewolf berstatus ABSENT dan isDead = true, supaya semua kode lain (serang player, skill,
  * tabrakan, TileM) menganggapnya gak ada. Makanya GamePanel tetap harus manggil update() werewolf walau isDead
@@ -102,11 +103,13 @@ public class Werewolf extends Entity {
     private int whiteFlashTimer = 0;
 
     // ── Animasi ──
-    private static final int WALK_FRAME_TICKS   = 5;      // 8 frame x 5 tick = 1 siklus langkah 1 detik @40 FPS
-    private static final int IDLE_FRAME_TICKS   = 16;     // 4 frame x 16 tick = 1 tarikan napas 1,6 detik
-    private static final int ATTACK_FRAME_TICKS = 5;
-    private static final int ATTACK_FRAMES      = WerewolfSprite.ATTACK_FRAMES;
-    private static final int STRIKE_FRAME       = 3;      // frame cakaran (busur putih di sprite): damage masuk di sini
+    private static final int WALK_FRAME_TICKS   = 6;      // 6 frame x 6 tick = 1 siklus langkah 0,9 detik @40 FPS (player: 8 tick/frame)
+    private static final int IDLE_FRAME_TICKS   = 20;     // 2 frame x 20 tick = 1 tarikan napas 1 detik
+    private static final double ATTACK_SPEED   = 40.6;    // kecepatan serangan: 1.0 = pelan (kayak dulu), 2.0 = 2x lebih cepat
+    private static final int ATTACK_FRAME_TICKS = Math.max(1, (int) Math.round(5 / ATTACK_SPEED));    // 5 tick @1.0x -> 3 tick @1.6x per frame serangan
+    private static final int ATTACK_WINDUP_TICKS = Math.max(1, (int) Math.round(10 / ATTACK_SPEED));  // 10 tick @1.0x -> 6 tick @1.6x; frame pertama ditahan biar kelihatan mau nyerang
+    private static final int ATTACK_FRAMES      = 4;      // serangan player ke-3 dan ke-4 sama-sama 4 frame
+    private static final int STRIKE_FRAME       = 1;      // damage masuk begitu masuk frame ke-2 (player juga gitu)
 
     private final WerewolfSprite sprite;
     private final int drawW, drawH;
@@ -114,11 +117,11 @@ public class Werewolf extends Entity {
     private final int footLocalY;           // y telapak kaki relatif ke y entity
 
     private int dir = WerewolfSprite.DOWN;  // arah hadap: WerewolfSprite.RIGHT / LEFT / UP / DOWN
-    private boolean facingRight = true;     // sisi horizontal terakhir (buat UP / DOWN, karena art-nya pandangan 3/4)
     private boolean moving = false;
     private int walkFrame = 0, walkTick = 0;
     private int idleFrame = 0, idleTick = 0;
     private int attackFrame = 0, attackTick = 0;
+    private int attackVariant = 4;          // gerakan serangan player yang lagi dipakai: 3 atau 4 (gantian tiap nyerang)
     private boolean strikeDone = false;
 
     // ── Status ──
@@ -534,8 +537,6 @@ public class Werewolf extends Entity {
 
     private void setDir(int d) {
         dir = d;
-        if (d == WerewolfSprite.RIGHT) facingRight = true;
-        else if (d == WerewolfSprite.LEFT) facingRight = false;
         direction = WerewolfSprite.dirName(d);   // Entity.direction ikut disamakan
     }
 
@@ -582,12 +583,14 @@ public class Werewolf extends Entity {
         attackFrame = 0;
         attackTick = 0;
         strikeDone = false;
+        attackVariant = (attackVariant == 3) ? 4 : 3;   // gantian: serangan player ke-3, ke-4, ke-3, ...
         faceTowardPlayer();
     }
 
     private void updateAttack() {
         attackTick++;
-        if (attackTick < ATTACK_FRAME_TICKS) return;
+        int need = (attackFrame == 0) ? ATTACK_WINDUP_TICKS : ATTACK_FRAME_TICKS;
+        if (attackTick < need) return;
         attackTick = 0;
         attackFrame++;
 
@@ -661,11 +664,14 @@ public class Werewolf extends Entity {
     }
 
     private BufferedImage currentFrame() {
-        int r = WerewolfSprite.row(dir, facingRight);
+        int r = dir;    // baris sheet = arah hadap (kanan / kiri / atas / bawah)
         switch (state) {
             case DYING:  return sprite.dead[r][deadFrame()];
-            case ATTACK: return sprite.attack[r][Math.min(attackFrame, ATTACK_FRAMES - 1)];
-            case LUNGE:  return sprite.lunge[r][lungeFrame()];
+            case ATTACK:
+                // (sengaja if/else, bukan ternary bertipe referensi: lihat catatan Eclipse di bawah)
+                if (attackVariant == 3) return sprite.attack3[r][Math.min(attackFrame, ATTACK_FRAMES - 1)];
+                return sprite.attack4[r][Math.min(attackFrame, ATTACK_FRAMES - 1)];
+            case LUNGE:  return sprite.run[r][lungeFrame()];
             default:     break;
         }
         // (sengaja bukan ternary: compiler Eclipse pernah salah ngetik ternary bertipe referensi jadi Object -> VerifyError)
@@ -673,18 +679,17 @@ public class Werewolf extends Entity {
         return sprite.idle[r][idleFrame % WerewolfSprite.IDLE_FRAMES];
     }
 
-    /** Frame terkam dari progres loncatan: tolak (coil) -> melayang -> cakar ke depan sebelum mendarat. */
+    /** Frame terkam (frame lari player) dari progres loncatan: 3 frame dibagi rata sepanjang loncatan. */
     private int lungeFrame() {
         int elapsed = LUNGE_TICKS - lungeTicks;                       // 0 .. LUNGE_TICKS
-        int f = elapsed * WerewolfSprite.LUNGE_FRAMES / (LUNGE_TICKS + 1);
-        return Math.max(0, Math.min(WerewolfSprite.LUNGE_FRAMES - 1, f));
+        int f = elapsed * WerewolfSprite.RUN_FRAMES / (LUNGE_TICKS + 1);
+        return Math.max(0, Math.min(WerewolfSprite.RUN_FRAMES - 1, f));
     }
 
-    /** Frame mati dari timer: sempoyongan -> berlutut -> ambruk -> tergeletak (diam di frame terakhir). */
+    /** Frame mati dari timer: sempoyongan -> jatuh -> tergeletak (diam di frame terakhir). */
     private int deadFrame() {
-        if (dyingTimer < 6)  return 0;
-        if (dyingTimer < 12) return 1;
-        if (dyingTimer < 20) return 2;
+        if (dyingTimer < 8)  return 0;
+        if (dyingTimer < 16) return 1;
         return WerewolfSprite.DEAD_FRAMES - 1;
     }
 
@@ -720,7 +725,7 @@ public class Werewolf extends Entity {
 
         // bayangan di bawah kaki (merah kalau lagi ngamuk)
         if (state != WerewolfState.DYING) {
-            int sw = drawW / 2, sh = (int) Math.round(sprite.scale * 9);
+            int sw = (int) Math.round(sprite.scale * 30), sh = (int) Math.round(sprite.scale * 9);
             g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (enraged ? 0.42f : 0.30f) * a));
             g2.setColor(enraged ? new Color(120, 0, 0) : Color.BLACK);
             g2.fillOval(sx + solidArea.x + solidArea.width / 2 - sw / 2, sy + footLocalY - sh / 2 - 1, sw, sh);
