@@ -68,13 +68,16 @@ public class GolemiteMinion extends GolemMinion {
         this.life       = maxLife;
         this.speed      = 1.0;
         this.direction  = "down";
-        this.solidArea  = new Rectangle(14, 28, 20, 20);
+        this.solidArea  = defaultSolidArea();
         this.solidAreaDefaultX = solidArea.x;
         this.solidAreaDefaultY = solidArea.y;
         this.getExpValue = 0; // pion nggak kasih EXP ke musuh
 
         Golemite.preloadImages();
     }
+
+    /** Hitbox pion ini (relatif ke x, y). Dipakai juga buat ngecek spot spawn / teleport sebelum pionnya ada. */
+    public static Rectangle defaultSolidArea() { return new Rectangle(14, 28, 20, 20); }
 
     @Override
     public boolean isDeathAnimDone() { return !alive && deathDone; }

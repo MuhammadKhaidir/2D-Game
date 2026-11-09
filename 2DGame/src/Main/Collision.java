@@ -104,11 +104,19 @@ public class Collision {
      * gak ikut dicek di sini. Dipakai buat skill gerak cepat kayak dash Z.
      */
     public boolean isBlockedByWorld(Entity e, int worldX, int worldY) {
+        return isBlockedByWorld(e.solidArea, worldX, worldY);
+    }
+
+    /**
+     * Sama kayak isBlockedByWorld(Entity, ...) tapi cuma butuh hitbox (relatif ke worldX, worldY), jadi spot bisa
+     * dicek SEBELUM entity-nya dibikin. Dipakai Death Totem buat ngecek spot spawn pion.
+     */
+    public boolean isBlockedByWorld(Rectangle solid, int worldX, int worldY) {
         Rectangle box = new Rectangle(
-            worldX + e.solidArea.x,
-            worldY + e.solidArea.y,
-            e.solidArea.width,
-            e.solidArea.height
+            worldX + solid.x,
+            worldY + solid.y,
+            solid.width,
+            solid.height
         );
 
         switch (gp.gameState) {

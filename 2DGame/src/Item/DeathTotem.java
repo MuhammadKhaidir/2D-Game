@@ -6,6 +6,7 @@ import Tamed.GolemMinion;
 import Tamed.GolemiteMinion;
 import Tamed.UndeadMinion;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,6 +140,19 @@ public class DeathTotem extends SuperItem {
     }
 
     public int getActivePawnSlot() { return activePawnSlot; }
+
+    /**
+     * Hitbox (relatif ke x, y) pion yang bakal muncul dari slot ini, atau null kalau slotnya gak valid.
+     * Dipakai buat ngecek spot spawn kehalang collision ATAU nggak, sebelum pionnya beneran dibikin.
+     */
+    public Rectangle getPawnSolidArea(int slotIndex) {
+        if (slotIndex < 0 || slotIndex >= slots.size()) return null;
+        switch (slots.get(slotIndex).type) {
+            case GOLEM:    return GolemMinion.defaultSolidArea();
+            case GOLEMITE: return GolemiteMinion.defaultSolidArea();
+            default:       return UndeadMinion.defaultSolidArea();
+        }
+    }
 
     /**
      * Spawn pion dari slot tertentu.

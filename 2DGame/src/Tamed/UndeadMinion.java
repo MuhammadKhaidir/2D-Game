@@ -50,11 +50,14 @@ public class UndeadMinion extends Entity {
         this.life       = maxLife;
         this.speed      = 1.8;
         this.direction  = "down";
-        this.solidArea  = new Rectangle(20, 20, 40, 40);
+        this.solidArea  = defaultSolidArea();
         this.solidAreaDefaultX = solidArea.x;
         this.solidAreaDefaultY = solidArea.y;
         this.getExpValue = 0;   // pion tidak kasih EXP ke musuh
     }
+
+    /** Hitbox pion ini (relatif ke x, y). Dipakai juga buat ngecek spot spawn / teleport sebelum pionnya ada. */
+    public static Rectangle defaultSolidArea() { return new Rectangle(20, 20, 40, 40); }
 
     public boolean isAlive()        { return alive; }
     public boolean isDeathAnimDone(){ return !alive && deathDone; }

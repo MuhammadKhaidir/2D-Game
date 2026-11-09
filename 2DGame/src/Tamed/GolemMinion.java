@@ -62,7 +62,7 @@ public class GolemMinion extends Entity {
         this.life       = maxLife;
         this.speed      = 0.9;    // lambat tapi kuat
         this.direction  = "down";
-        this.solidArea = new Rectangle(14, 28, 20, 20);
+        this.solidArea = defaultSolidArea();
         this.solidAreaDefaultX = solidArea.x;
         this.solidAreaDefaultY = solidArea.y;
         this.getExpValue = 0;
@@ -74,6 +74,9 @@ public class GolemMinion extends Entity {
         
         gp.playSE("GolemSpawn.wav", 6.0f);
     }
+
+    /** Hitbox pion ini (relatif ke x, y). Dipakai juga buat ngecek spot spawn / teleport sebelum pionnya ada. */
+    public static Rectangle defaultSolidArea() { return new Rectangle(14, 28, 20, 20); }
 
     public boolean isAlive()         { return alive; }
     public boolean isDeathAnimDone() { return !alive && deathDone; }
