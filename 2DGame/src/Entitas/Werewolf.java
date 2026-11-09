@@ -56,7 +56,7 @@ public class Werewolf extends Entity {
     private static final int    EXP_VALUE       = 400;
     private static final int    COIN_DROP       = 6;
     private static final double WANDER_SPEED    = 0.9;
-    private static final double CHASE_SPEED     = 3.0;    // player jalan 2.5, lari 5.0
+    private static final double CHASE_SPEED     = 3.5;    // player jalan 2.5, lari 5.0
     private static final double ENRAGE_SPEED    = 3.7;
     private static final double LUNGE_SPEED     = 7.5;    // loncatan menerkam
     private static final int    AGGRO_RADIUS    = 420;    // mulai ngejar
