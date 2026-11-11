@@ -17,11 +17,12 @@ import java.util.List;
 public final class WorldGen {
 
     // ------------------------------------------------------------------ ukuran dunia (tile)
-    /** Ukuran dunia setelah diperluas. Peta lama (243 x 321) ada di pojok kiri-atas. */
-    public static final int WORLD_COLS = 340;
-    public static final int WORLD_ROWS = 460;
-    /** Lebar pita laut di tepi timur / selatan / utara area baru. */
-    public static final int BORDER = 10;
+    /**
+     * Ukuran dunia setelah diperluas lagi: 640 x 860 tile (sekitar 3,5x luas versi 340 x 460 sebelumnya).
+     * Peta lama (243 x 321) tetap ada di pojok kiri-atas, persis seperti aslinya.
+     */
+    public static final int WORLD_COLS = 640;
+    public static final int WORLD_ROWS = 860;
     /** Mulai baris ini, pantai selatan peta lama dibentuk ulang menjadi teluk dan pulau. */
     private static final int COAST_RESHAPE_START = 164;
     /** Baris pertama daratan di area utara-baru (timur peta lama). Sambung dengan garis pantai peta lama. */
@@ -42,6 +43,9 @@ public final class WorldGen {
     /** Tile "permukaan" untuk minimap / pewarnaan rata-rata: salju dan es. */
     public static final int TILE_SNOW = 100;
     public static final int TILE_ICE = 131;
+    /** Tile "permukaan" biome terkutuk (khusus minimap) dan tile jurang di ujung dunia (collision). */
+    public static final int TILE_CURSED = 160;
+    public static final int TILE_VOID = 161;
 
     // ------------------------------------------------------------------ jenis objek hasil populate()
     public static final int K_OAK = 0;          // pohon biasa (pohon tebang, rangka animasi yang sama dengan peta lama)
@@ -58,6 +62,15 @@ public final class WorldGen {
     public static final int K_PEBBLE = 11;      // kerikil bersalju (hiasan)
     public static final int K_SHARD = 12;       // pecahan es kecil (hiasan)
     public static final int K_DRIFT = 13;       // gundukan salju rendah (hiasan)
+    // ---- biome terkutuk
+    public static final int K_CTREE = 14;       // pohon kutukan yang meliuk (pohon tebang)
+    public static final int K_COBSIDIAN = 15;   // batu obsidian (bisa dihancurkan)
+    public static final int K_CCRYSTAL = 16;    // kristal kutukan ungu (bisa dihancurkan)
+    public static final int K_TOMB = 17;        // nisan (bisa dihancurkan, jatuh tulang)
+    public static final int K_CGLOW = 18;       // cahaya ungu di bawah kristal kutukan (hiasan datar)
+    public static final int K_THORN = 19;       // semak duri hitam (hiasan)
+    public static final int K_BONES = 20;       // tumpukan tulang (hiasan datar)
+    public static final int K_WITHER = 21;      // pohon biasa yang layu terkena kutukan (pohon tebang)
 
     /** Satu objek hasil populate(): posisi kiri-atas dalam piksel dunia. */
     public static final class Spawn {
@@ -77,8 +90,31 @@ public final class WorldGen {
     /** Pohon lama dengan ice() di atas ini diberi salju tipis. */
     public static final float FROST_ICE = 0.20f;
 
+    // ------------------------------------------------------------------ parameter biome terkutuk
+    /**
+     * Lebar jurang di ujung dunia (tile). Di sinilah dunia berakhir: tile-nya gelap dan tidak bisa dilewati,
+     * jadi player berhenti di tepinya dan kamera ikut berhenti di ujung dunia (lihat GamePanel.camX()).
+     */
+    public static final int VOID_W = 3;
+    /** Jarak (tile) dari tepi dunia ke garis tengah peralihan biome terkutuk, dan lebar peralihannya. */
+    private static final float CURSE_RIM = 62f;
+    private static final float CURSE_FADE = 34f;
+    private static final float CURSE_WARP = 22f;
+    /** Di titik dengan curse() di atas ini selalu daratan (supaya pita terkutuk menyambung sampai jurang). */
+    private static final float CURSE_LAND = 0.06f;
+    /** Pohon biasa dengan curse() di atas ini mulai layu; di atas CURSE_OWN semua objek memakai jenis terkutuk. */
+    public static final float CURSE_WITHER = 0.10f;
+    public static final float CURSE_OWN = 0.46f;
+    /** Tepi utara terkutuk mulai dari kolom ini ke timur; tepi barat terkutuk mulai dari baris ini ke selatan. */
+    private static final int NORTH_CURSE_COL = 343;
+    private static final int WEST_CURSE_ROW = 470;
+    /** Tembok barat lama (di bawah peta lama) berhenti di baris ini; lebih ke selatan itu tepi barat yang terkutuk. */
+    public static final int WEST_WALL_END_ROW = WEST_CURSE_ROW - 40;
+
     private final int[][] core;
     private final int coreCols, coreRows;
+    /** isLand() untuk seluruh dunia, dihitung sekali di konstruktor (geometri pantai pakai banyak noise; dipanggil jutaan kali). */
+    private final boolean[] land;
 
     /**
      * @param core tile peta lama [kolom][baris] (sesudah dibereskan, lihat TileM)
@@ -87,6 +123,11 @@ public final class WorldGen {
         this.core = core;
         this.coreCols = coreCols;
         this.coreRows = coreRows;
+        this.land = new boolean[WORLD_COLS * WORLD_ROWS];
+        // Tiap sel murni fungsi dari koordinatnya, jadi baris boleh dihitung paralel (tiap baris menulis sel miliknya sendiri).
+        java.util.stream.IntStream.range(0, WORLD_ROWS).parallel().forEach(r -> {
+            for (int c = 0; c < WORLD_COLS; c++) land[r * WORLD_COLS + c] = computeLand(c, r);
+        });
     }
 
     public int coreCols() { return coreCols; }
@@ -195,8 +236,12 @@ public final class WorldGen {
     /** true kalau sel (c, r) daratan (bukan air). Dipakai buat memilih tile tepi pantai. */
     public boolean isLand(int c, int r) {
         if (c < 0 || r < 0) return true; // di luar sisi barat/utara tidak terlihat
-        if (c >= WORLD_COLS - BORDER || r >= WORLD_ROWS - BORDER) return false;
+        if (c >= WORLD_COLS || r >= WORLD_ROWS) return false;
+        return land[r * WORLD_COLS + c];
+    }
 
+    /** Bentuk daratan sebenarnya (geometri). isLand() cuma membaca hasilnya dari cache. */
+    private boolean computeLand(int c, int r) {
         if (inCore(c, r)) {
             if (WaterCollision.isWaterTile(core[c][r])) return false;
             if (r < COAST_RESHAPE_START) return true; // kota, jalan, dan bagian utara tetap utuh
@@ -204,10 +249,15 @@ public final class WorldGen {
             return inMainlandCore(c, r) || snowIslandDistance(x, y) <= 0f || inMinorIsland(x, y);
         }
 
-        if (c >= coreCols && r < NORTH_COAST_ROW) return false;
         float x = c + 0.5f, y = r + 0.5f;
-        return inMainlandExtension(c, r) || snowIslandDistance(x, y) <= 0f
-                || inGreenIsland(x, y) || inMinorIsland(x, y);
+        // pita biome terkutuk di tepi dunia selalu daratan, sampai jurang di ujungnya
+        if (curse(x, y) > CURSE_LAND) return true;
+
+        if (c >= coreCols && r < NORTH_COAST_ROW) return false;
+        if (inLake(x, y)) return false;
+        return inMainlandExtension(c, r) || inEastLand(c, r) || inSouthLand(c, r)
+                || snowIslandDistance(x, y) <= 0f
+                || inGreenIsland(x, y) || inMinorIsland(x, y) || inBayIsland(x, y);
     }
 
     /** Garis pantai utama: beberapa teluk besar dan tanjung, lalu dipecah lagi oleh noise 2D. */
@@ -232,18 +282,156 @@ public final class WorldGen {
         return r < mainlandSouthEdge(c) + mainlandCoastWarp(c, r);
     }
 
-    /** Sambungan daratan utama ke timur, dengan pantai timur yang menyempit dan berlekuk ke selatan. */
+    /**
+     * Sambungan daratan utama ke timur. Dulu berhenti di pantai timur (kolom sekitar 286); sekarang terus sampai ke tepi
+     * dunia, di mana biome terkutuk mengambil alih. Pantai selatannya melanjutkan garis pantai peta lama.
+     */
     private boolean inMainlandExtension(int c, int r) {
         float x = c - (coreCols - 1f);
         float south = mainlandSouthEdge(coreCols - 1f)
                     + 0.10f * x
                     + 7f * (float) Math.sin(x * 0.035f)
                     + mainlandCoastWarp(c, r);
-        float east = 286f
-                   + 16f * (float) Math.sin(r * 0.027f + 0.7f)
-                   + (fbm(r * 0.024f + 8f, 2.7f, S + 47, 3) - 0.5f) * 28f
-                   - 0.19f * Math.max(0, r - 175);
-        return r < south && c < east;
+        return r < south;
+    }
+
+    /** Pantai barat daratan timur (sisi timur teluk tengah), sebagai fungsi baris. */
+    private float eastShore(float r) {
+        return 478f + 26f * (float) Math.sin(r * 0.019f + 1.1f)
+                + (fbm(r * 0.016f + 6f, 3.3f, S + 101, 3) - 0.5f) * 80f
+                + 9f * (float) Math.sin(r * 0.071f);
+    }
+
+    /** Pantai utara daratan selatan (sisi selatan teluk tengah), sebagai fungsi kolom. */
+    private float southShore(float c) {
+        return 566f + 24f * (float) Math.sin(c * 0.016f + 0.4f)
+                + (fbm(c * 0.015f + 11f, 8.1f, S + 102, 3) - 0.5f) * 90f
+                + 7f * (float) Math.sin(c * 0.067f + 2f);
+    }
+
+    /** Daratan timur: lajur lebar dari daratan utama ke selatan, di timur teluk tengah. */
+    private boolean inEastLand(int c, int r) {
+        if (r < 150) return false;
+        return c >= eastShore(r) + mainlandCoastWarp(c, r) * 0.6f;
+    }
+
+    /** Daratan selatan: benua luas di selatan teluk tengah, menyambung ke daratan timur. */
+    private boolean inSouthLand(int c, int r) {
+        if (r < 440) return false;
+        return r >= southShore(c) + mainlandCoastWarp(c, r) * 0.6f;
+    }
+
+    /** {cx, cy, rx, ry, warp, seed}: pulau-pulau baru di teluk tengah (selain pulau hijau dan pulau kecil yang lama). */
+    private static final float[][] BAY_ISLANDS = {
+        {330f, 440f, 52f, 36f, 8f, 91f},
+        {150f, 478f, 34f, 20f, 6f, 92f},
+        {420f, 352f, 30f, 24f, 6f, 93f},
+        { 92f, 508f, 24f, 15f, 5f, 94f},
+        {255f, 503f, 30f, 17f, 5f, 95f},
+        {436f, 478f, 22f, 20f, 5f, 96f},
+        {362f, 338f, 16f, 12f, 4f, 97f},
+    };
+
+    private boolean inBayIsland(float x, float y) {
+        for (float[] i : BAY_ISLANDS) {
+            if (Math.abs(x - i[0]) > i[2] * 1.5f + 14f || Math.abs(y - i[1]) > i[3] * 1.5f + 14f) continue;
+            if (organicEllipseDistance(x, y, i[0], i[1], i[2], i[3], S + (int) i[5], i[4]) < 0f) return true;
+        }
+        return false;
+    }
+
+    /** {cx, cy, rx, ry, warp, seed}: danau air tawar di daratan baru (jauh dari pita terkutuk dan biome es). */
+    private static final float[][] LAKES = {
+        {330f, 170f, 26f, 16f, 4f, 111f},
+        {420f, 232f, 20f, 20f, 4f, 112f},
+        {505f, 378f, 24f, 28f, 4f, 113f},
+        {498f, 468f, 20f, 24f, 4f, 114f},
+        {110f, 690f, 28f, 16f, 4f, 115f},
+        {292f, 652f, 24f, 20f, 4f, 116f},
+        {204f, 738f, 26f, 13f, 4f, 117f},
+        {420f, 690f, 30f, 20f, 4f, 118f},
+        {528f, 640f, 16f, 14f, 3f, 119f},
+    };
+
+    private boolean inLake(float x, float y) {
+        for (float[] l : LAKES) {
+            if (Math.abs(x - l[0]) > l[2] * 1.5f + 10f || Math.abs(y - l[1]) > l[3] * 1.5f + 10f) continue;
+            if (organicEllipseDistance(x, y, l[0], l[1], l[2], l[3], S + (int) l[5], l[4]) < 0f) return true;
+        }
+        return false;
+    }
+
+    // ================================================================== biome terkutuk
+
+    /**
+     * Jarak (tile) dari titik ke tepi dunia "terkutuk" terdekat. Tepi terkutuk: timur, selatan, utara di timur peta lama,
+     * dan barat di selatan teluk. Tepi barat / utara peta lama sengaja tidak termasuk (itu laut dan tembok buatan tangan,
+     * tetap utuh). Memakai "soft minimum" supaya pojok-pojoknya membulat, bukan siku tajam.
+     */
+    public float edgeDistance(float tx, float ty) {
+        double dE = WORLD_COLS - tx;
+        double dS = WORLD_ROWS - ty;
+        // tepi utara: baru terkutuk di timur peta lama (di baratnya laut)
+        double nPush = 1.0 - smooth((tx - (NORTH_CURSE_COL - 43f)) / 80f);
+        double dN = ty + 600.0 * nPush;
+        // tepi barat: baru terkutuk di selatan teluk tengah (di utaranya pulau salju dan tembok barat peta lama)
+        double wPush = 1.0 - smooth((ty - (WEST_CURSE_ROW - 40f)) / 50f);
+        double dW = tx + 600.0 * wPush;
+        final double k = 12.0;
+        double sum = Math.exp(-dE / k) + Math.exp(-dS / k) + Math.exp(-dN / k) + Math.exp(-dW / k);
+        return (float) (-k * Math.log(sum));
+    }
+
+    /**
+     * Seberapa terkutuk titik (tx, ty): 0 = hutan biasa, 1 = tengah biome terkutuk. Berupa pita selebar sekitar 85 tile di
+     * sepanjang tepi dunia, batasnya digeser noise supaya tidak lurus, dan memudar halus ke dalam.
+     */
+    public float curse(float tx, float ty) {
+        // jauh dari semua tepi: jelas 0 (hemat noise; computeLand memanggil ini untuk ratusan ribu sel)
+        if (tx > 130f && ty > 130f && tx < WORLD_COLS - 130f && ty < WORLD_ROWS - 130f) return 0f;
+        float d = edgeDistance(tx, ty);
+        float warp = (fbm(tx * 0.018f + 70f, ty * 0.018f + 40f, S + 91, 3) - 0.5f) * 2f * CURSE_WARP;
+        return smooth((CURSE_RIM + warp - d) / CURSE_FADE);
+    }
+
+    /**
+     * true kalau sel (c, r) adalah jurang di ujung dunia: pita {@link #VOID_W} tile paling luar di tepi terkutuk,
+     * hanya di sel yang daratan (di laut tetap laut).
+     */
+    public boolean isVoid(int c, int r) {
+        if (c < 0 || r < 0 || c >= WORLD_COLS || r >= WORLD_ROWS) return false;
+        boolean band = c >= WORLD_COLS - VOID_W
+                    || r >= WORLD_ROWS - VOID_W
+                    || (r < VOID_W && c >= NORTH_CURSE_COL)
+                    || (c < VOID_W && r >= WEST_CURSE_ROW);
+        return band && land[r * WORLD_COLS + c];
+    }
+
+    /** Jurang sebagai rectangle collision (piksel dunia): sel jurang digabung per baris, lalu antar baris yang sama. */
+    public java.util.List<java.awt.Rectangle> voidBlockers(int tileSize) {
+        java.util.List<java.awt.Rectangle> out = new ArrayList<>();
+        java.util.List<int[]> open = new ArrayList<>();      // {c0, c1, row0, rows} yang masih bisa dilebarkan ke bawah
+        for (int r = 0; r <= WORLD_ROWS; r++) {
+            java.util.List<int[]> now = new ArrayList<>();
+            int c = 0;
+            while (r < WORLD_ROWS && c < WORLD_COLS) {
+                if (!isVoid(c, r)) { c++; continue; }
+                int c1 = c;
+                while (c1 < WORLD_COLS && isVoid(c1, r)) c1++;
+                now.add(new int[] {c, c1, r, 1});
+                c = c1;
+            }
+            java.util.List<int[]> next = new ArrayList<>();
+            for (int[] o : open) {
+                int[] same = null;
+                for (int[] n : now) if (n[0] == o[0] && n[1] == o[1] && n[3] == 1 && n[2] == r) { same = n; break; }
+                if (same != null) { o[3]++; next.add(o); now.remove(same); }
+                else out.add(new java.awt.Rectangle(o[0] * tileSize, o[2] * tileSize, (o[1] - o[0]) * tileSize, o[3] * tileSize));
+            }
+            next.addAll(now);
+            open = next;
+        }
+        return out;
     }
 
     /** Pulau hijau tenggara: dua massa tanah yang menyatu, dengan satu ceruk laut di sisi barat. */
@@ -284,7 +472,7 @@ public final class WorldGen {
     /** Tile dasar sel di luar peta lama: rumput (varian acak) atau air + tepi pantainya. */
     public int groundTile(int c, int r) {
         if (c >= WORLD_COLS || r >= WORLD_ROWS) return 2;
-        if (isLand(c, r)) return GRASS[(h2(c, r, 7) >>> 4) % 3];
+        if (isLand(c, r)) return isVoid(c, r) ? TILE_VOID : GRASS[(h2(c, r, 7) >>> 4) % 3];
         return waterTile(c, r);
     }
 
@@ -322,6 +510,7 @@ public final class WorldGen {
         if (WaterCollision.isWaterTile(base) || base >= SNOW_SHORE_FIRST) return base;
         boolean grassLike = isGrassLike(base);
         if (!grassLike) return base;
+        if (curse(c + 0.5f, r + 0.5f) > 0.5f) return TILE_CURSED;
         float i = ice(c + 0.5f, r + 0.5f);
         if (i > 0.5f) return depth(c + 0.5f, r + 0.5f, i) > 0f && i > 0.82f ? TILE_ICE : TILE_SNOW;
         return (base == 67 || base == 68) ? GRASS[(h2(c, r, 7) >>> 4) % 3] : base;
@@ -353,8 +542,12 @@ public final class WorldGen {
 
     private boolean buildableLand(int c, int r) {
         if (c < 3 || r < 3) return false;
-        if (c >= WORLD_COLS - BORDER - 2 || r >= WORLD_ROWS - BORDER - 2) return false;
-        if (c >= coreCols && r < NORTH_COAST_ROW + 2) return false;
+        // jangan menaruh objek di dekat jurang (dan di luar dunia)
+        for (int d = -1; d <= 1; d++) {
+            if (isVoid(c + 3 * d, r) || isVoid(c, r + 3 * d) || isVoid(c + 3 * d, r + 3 * d) || isVoid(c + 3 * d, r - 3 * d)) return false;
+        }
+        if (c >= WORLD_COLS - VOID_W - 2 || r >= WORLD_ROWS - VOID_W - 2) return false;
+        if (c >= coreCols && r < NORTH_COAST_ROW + 2 && curse(c + 0.5f, r + 0.5f) <= CURSE_LAND) return false;
         // sel di sekitar harus darat (jangan numpuk di pinggir laut)
         return isLand(c, r) && isLand(c - 1, r) && isLand(c + 1, r) && isLand(c, r - 1) && isLand(c, r + 1);
     }
@@ -377,6 +570,13 @@ public final class WorldGen {
         int px = (int) (fx * ts), py = (int) (fy * ts);
 
         float grove = fbm(fx * 0.06f, fy * 0.06f, S + 31, 3);
+
+        // ---- biome terkutuk: semua objeknya jenis sendiri (di pinggirannya cuma pohon layu + semak duri, lihat di bawah)
+        float cs = curse(fx, fy);
+        if (cs > CURSE_OWN) {
+            placeCursed(out, sx, sy, fx, fy, px, py, roll, roll2, roll3, grove, cs);
+            return;
+        }
 
         // ---- kristal: bergerombol di "ladang kristal" (cuma di tengah biome es)
         if (ice > 0.9f) {
@@ -413,7 +613,9 @@ public final class WorldGen {
             int w = 170 + (int) (roll2 * 30);
             int hp = roll3 < 0.2f ? 800 : 500;
             if (ice < 0.12f) {
-                out.add(new Spawn(K_OAK, px - w / 2, py - w + 40, w, w, hp, 0));
+                // pinggiran biome terkutuk: makin ke dalam makin banyak pohon yang layu
+                boolean wither = cs > CURSE_WITHER && rnd(sx, sy, S + 139) < smooth((cs - CURSE_WITHER) / 0.30f);
+                out.add(new Spawn(wither ? K_WITHER : K_OAK, px - w / 2, py - w + 40, w, w, hp, 0));
             } else if (ice < 0.55f) {
                 float pFrost = smooth((ice - 0.12f) / 0.30f);
                 float k = rnd(sx, sy, S + 26);
@@ -438,7 +640,8 @@ public final class WorldGen {
         float bushP = 0.10f + 0.12f * smooth((ice - 0.4f) / 0.4f);
         if (roll < rockP + treeP + bushP) {
             int w = 82 + (int) (roll2 * 26);
-            out.add(new Spawn(ice > 0.4f ? K_BUSH_SNOW : K_BUSH, px - w / 2, py - w / 2, w, w, 0, 0));
+            boolean thorn = cs > CURSE_WITHER && rnd(sx, sy, S + 140) < smooth((cs - CURSE_WITHER) / 0.25f);
+            out.add(new Spawn(thorn ? K_THORN : (ice > 0.4f ? K_BUSH_SNOW : K_BUSH), px - w / 2, py - w / 2, w, w, 0, thorn ? ((int) (roll3 * 2f) & 1) : 0));
             return;
         }
 
@@ -453,6 +656,69 @@ public final class WorldGen {
                 else if (pick < 0.80f) { int w = 44 + (int) (roll2 * 26); out.add(new Spawn(K_SHARD, px - w / 2, py - (int) (w * 1.22f) + 12, w, (int) (w * 1.22f), 0, v)); }
                 else { int w = 48 + (int) (roll2 * 24); out.add(new Spawn(K_TUFT, px - w / 2, py - (int) (w * 0.94f) + 10, w, (int) (w * 0.94f), 0, v)); }
             }
+        }
+    }
+
+    /** Objek di dalam biome terkutuk (curse() > CURSE_OWN): kristal ungu, nisan, obsidian, pohon meliuk, duri, tulang. */
+    private void placeCursed(List<Spawn> out, int sx, int sy, float fx, float fy, int px, int py,
+                             float roll, float roll2, float roll3, float grove, float cs) {
+        // ---- ladang kristal kutukan (cuma di tengah biome)
+        if (cs > 0.70f) {
+            float cf = fbm(fx * 0.035f + 155f, fy * 0.035f + 155f, S + 132, 3);
+            if (cf > 0.60f && roll < 0.38f) {
+                int n = 1 + (int) (roll2 * 3.2f);                    // 1..4 kristal
+                for (int i = 0; i < n; i++) {
+                    float a = (float) (i * 2.4 + roll3 * 6.0);
+                    int w = 74 + (int) (rnd(sx + i, sy, S + 133) * 50);
+                    int cx = px + (int) (Math.cos(a) * (i == 0 ? 0 : 52));
+                    int cy = py + (int) (Math.sin(a) * (i == 0 ? 0 : 34));
+                    int v = (int) (rnd(sx, sy + i, S + 134) * 3f);
+                    out.add(new Spawn(K_CGLOW, cx - 60, cy - 36, 160, 110, 0, 0));
+                    out.add(new Spawn(K_CCRYSTAL, cx - w / 2, cy - w + 20, w, (int) (w * 1.25f), 800, v));
+                }
+                return;
+            }
+        }
+
+        // ---- kuburan: nisan bergerombol, kadang dengan tumpukan tulang di dekatnya
+        float gy = fbm(fx * 0.045f + 210f, fy * 0.045f + 90f, S + 135, 3);
+        if (gy > 0.60f && roll < 0.34f) {
+            int w = 66 + (int) (roll2 * 26);
+            int h = (int) (w * 1.3f);
+            out.add(new Spawn(K_TOMB, px - w / 2, py - h / 2, w, h, 500, (int) (roll3 * 2f)));
+            if (rnd(sx, sy, S + 136) < 0.5f) out.add(new Spawn(K_BONES, px + 30, py + 14, 62, 34, 0, (int) (roll3 * 2f) & 1));
+            return;
+        }
+
+        // ---- obsidian
+        float rockP = 0.03f + 0.06f * smoothstep(0.58f, 0.74f, fbm(fx * 0.05f + 9f, fy * 0.05f + 9f, S + 35, 2));
+        if (roll < rockP) {
+            int w = 96 + (int) (roll2 * 44);
+            int h = (int) (w * 0.85f);
+            out.add(new Spawn(K_COBSIDIAN, px - w / 2, py - h / 2, w, h, 1000, (int) (roll3 * 3f)));
+            return;
+        }
+
+        // ---- pohon meliuk: hutan muram yang rapat di beberapa tempat, jarang di tempat lain
+        float treeP = 0.12f + 0.40f * smoothstep(0.42f, 0.66f, grove);
+        if (roll < rockP + treeP) {
+            int w = 178 + (int) (roll2 * 34);
+            int h = (int) (w * 1.22f);
+            int v = (int) (rnd(sx, sy, S + 137) * 3f);
+            out.add(new Spawn(K_CTREE, px - w / 2, py - h + 40, w, h, roll3 < 0.2f ? 800 : 600, v));
+            return;
+        }
+
+        // ---- semak duri (hiasan, tanpa collision)
+        if (roll < rockP + treeP + 0.14f) {
+            int w = 76 + (int) (roll2 * 30);
+            out.add(new Spawn(K_THORN, px - w / 2, py - w / 2, w, w, 0, (int) (roll3 * 2f) & 1));
+            return;
+        }
+
+        // ---- tulang berserakan (hiasan datar)
+        if (rnd(sx, sy, S + 138) < 0.10f) {
+            out.add(new Spawn(K_BONES, px - 31, py - 17, 62, 34, 0, (int) (roll3 * 2f) & 1));
         }
     }
 

@@ -24,10 +24,9 @@ public class Barang {
         int screenX = worldX - gp.player.x + gp.player.screenX;
         int screenY = worldY - gp.player.y + gp.player.screenY;
 
-        if (worldX + gp.tileSize > gp.player.x - gp.player.screenX &&
-            worldX - gp.tileSize < gp.player.x + gp.player.screenX &&
-            worldY + gp.tileSize > gp.player.y - gp.player.screenY &&
-            worldY - gp.tileSize < gp.player.y + gp.player.screenY) {
+        // batas layar yang kelihatan (ikut zoom dan geseran kamera di ujung dunia)
+        if (screenX + gp.tileSize > gp.viewMinX() && screenX - gp.tileSize < gp.viewMaxX() &&
+            screenY + gp.tileSize > gp.viewMinY() && screenY - gp.tileSize < gp.viewMaxY()) {
 
             g2.drawImage(image, screenX,screenY, gp.tileSize, gp.tileSize, null);
         }

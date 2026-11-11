@@ -705,10 +705,10 @@ public class Entity {
 	        return;
 	    }
 
-	    if (x + gp.tileSize > gp.player.x - gp.player.screenX &&
-	        x - gp.tileSize < gp.player.x + gp.player.screenX &&
-	        y + gp.tileSize > gp.player.y - gp.player.screenY &&
-	        y - gp.tileSize < gp.player.y + gp.player.screenY) {
+	    // culling pakai batas layar yang kelihatan (ikut zoom dan geseran kamera di ujung dunia), bukan jendela di sekitar player
+	    int cullX = x - gp.player.x + gp.player.screenX, cullY = y - gp.player.y + gp.player.screenY;
+	    if (cullX + gp.tileSize > gp.viewMinX() && cullX - gp.tileSize < gp.viewMaxX() &&
+	        cullY + gp.tileSize > gp.viewMinY() && cullY - gp.tileSize < gp.viewMaxY()) {
 
 	        switch (direction) {
 	            case "down":

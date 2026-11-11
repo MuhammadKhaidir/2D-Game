@@ -1146,13 +1146,13 @@ public class SkillV extends Skill {
 
     // Koordinat dunia -> koordinat layar (sudah termasuk zoom, pivot di tengah layar kayak GamePanel.applyWorldZoom)
     private float toScreenX(float worldX) {
-        float sx = worldX - owner.x + owner.screenX;
+        float sx = worldX - owner.x + owner.screenX + gp.camOffsetX();
         float cx = gp.screenWidth / 2f;
         return cx + (sx - cx) * gp.renderZoom();
     }
 
     private float toScreenY(float worldY) {
-        float sy = worldY - owner.y + owner.screenY;
+        float sy = worldY - owner.y + owner.screenY + gp.camOffsetY();
         float cy = gp.screenHeight / 2f;
         return cy + (sy - cy) * gp.renderZoom();
     }

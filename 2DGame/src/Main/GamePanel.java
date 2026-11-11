@@ -164,8 +164,9 @@ public class GamePanel extends JPanel implements Runnable{
 	public final int screenWidth = tileSize * maxScreenColumn;
 	public final int screenHeight = tileSize * maxScreenRow;
 	// interior
+	// Kapasitas array dunia (>= bahan.WorldGen.WORLD_COLS x WORLD_ROWS = 640 x 860). Ukuran dunia yang sebenarnya ada di WorldGen.
 	public final int maxWorldCol = 700;
-	public final int maxWorldRow = 700;
+	public final int maxWorldRow = 900;
 	public final int worldWidth = tileSize * maxWorldCol;
 	public final int worldHeight = tileSize * maxWorldRow;
 
@@ -197,6 +198,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public TileM tileM = new TileM(this);
 	public World.Rowboat rowboat;
 	public bahan.SnowAtmosphere snow = new bahan.SnowAtmosphere(this); // hujan salju + kabut + warna dingin di biome es
+	public bahan.CurseAtmosphere curse = new bahan.CurseAtmosphere(this); // kabut ungu + abu melayang di biome terkutuk (tepi dunia)
 	
 	public MobIndexUI mobIndexUI = new MobIndexUI(this);
 	
@@ -568,21 +570,60 @@ public class GamePanel extends JPanel implements Runnable{
 	// jadi pengecekan "di luar layar → skip gambar" harus pakai batas ini,
 	// kalau nggak, objek di pinggir bakal ilang pas zoom out.
 	// Pas zoom in (>=1) hasilnya sama persis kayak sebelumnya (0 .. screenWidth).
-	public int viewMinX() {
+	// Semua koordinat layar "pra-zoom" di kode gambar dihitung relatif ke player: layarX = duniaX - player.x + player.screenX.
+	// Kalau kamera sedang berhenti di ujung dunia (lihat camX()), seluruh dunia digeser sebesar camOffsetX() / camOffsetY()
+	// lewat applyWorldZoom(), jadi batas yang kelihatan untuk culling ikut bergeser dengan angka yang sama.
+	private int rawViewMinX() {
 	    return Math.min(0, (int) Math.floor(screenWidth / 2.0 - screenWidth / (2.0 * renderZoom())));
 	}
-	public int viewMaxX() {
+	private int rawViewMaxX() {
 	    return Math.max(screenWidth, (int) Math.ceil(screenWidth / 2.0 + screenWidth / (2.0 * renderZoom())));
 	}
-	public int viewMinY() {
+	private int rawViewMinY() {
 	    return Math.min(0, (int) Math.floor(screenHeight / 2.0 - screenHeight / (2.0 * renderZoom())));
 	}
-	public int viewMaxY() {
+	private int rawViewMaxY() {
 	    return Math.max(screenHeight, (int) Math.ceil(screenHeight / 2.0 + screenHeight / (2.0 * renderZoom())));
+	}
+	public int viewMinX() { return rawViewMinX() - camOffsetX(); }
+	public int viewMaxX() { return rawViewMaxX() - camOffsetX(); }
+	public int viewMinY() { return rawViewMinY() - camOffsetY(); }
+	public int viewMaxY() { return rawViewMaxY() - camOffsetY(); }
+
+	/**
+	 * Titik dunia (px) yang ada di posisi player.screenX di layar (dunia luar). Biasanya sama dengan player.x, tapi
+	 * kamera berhenti di ujung dunia (biome terkutuk): player terus berjalan ke arah tepi layar sementara kamera diam.
+	 * Memperhitungkan zoom, jadi yang terlihat tidak pernah melewati tepi dunia.
+	 */
+	public int camX() {
+	    int w = bahan.WorldGen.WORLD_COLS * tileSize;
+	    int lo = player.screenX - rawViewMinX();
+	    int hi = w + player.screenX - rawViewMaxX();
+	    if (lo >= hi) return (lo + hi) / 2;          // dunia lebih sempit dari layar
+	    return Math.max(lo, Math.min(hi, player.x));
+	}
+
+	public int camY() {
+	    int h = bahan.WorldGen.WORLD_ROWS * tileSize;
+	    int lo = player.screenY - rawViewMinY();
+	    int hi = h + player.screenY - rawViewMaxY();
+	    if (lo >= hi) return (lo + hi) / 2;
+	    return Math.max(lo, Math.min(hi, player.y));
+	}
+
+	/** Berapa piksel dunia digeser dari "player di tengah layar" (0 di mana-mana kecuali dunia luar dekat ujung dunia). */
+	public int camOffsetX() {
+	    if (gameState != GameState.OUTSIDE || player == null) return 0;
+	    return player.x - camX();
+	}
+
+	public int camOffsetY() {
+	    if (gameState != GameState.OUTSIDE || player == null) return 0;
+	    return player.y - camY();
 	}
 
 	/**
-	 * Pasang transform zoom (pivot = tengah layar = posisi player).
+	 * Pasang transform zoom (pivot = tengah layar = posisi player), plus geseran kamera di ujung dunia (dunia luar).
 	 * Balikin transform lama; setelah selesai gambar dunia, panggil g2.setTransform(hasilnya)
 	 * supaya UI digambar di layar normal (gak ikut ke-zoom).
 	 */
@@ -596,6 +637,8 @@ public class GamePanel extends JPanel implements Runnable{
 	        g2.scale(z, z);
 	        g2.translate(-cx, -cy);
 	    }
+	    int ox = camOffsetX(), oy = camOffsetY();
+	    if (ox != 0 || oy != 0) g2.translate(ox, oy);
 	    return previous;
 	}
 
@@ -616,7 +659,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public void drawSunsetOverlay(Graphics2D g2) {
 	    if (!sunsetMode) return;
 	    // di biome es cahaya senja oranye diredam (suasananya biru-putih, bukan oranye)
-	    float si = sunsetIntensity * (1f - 0.8f * snow.intensity());
+	    float si = sunsetIntensity * (1f - 0.8f * snow.intensity()) * (1f - 0.85f * curse.intensity());
 
 	    // Base warm amber overlay
 	    Composite old = g2.getComposite();
@@ -907,6 +950,7 @@ public class GamePanel extends JPanel implements Runnable{
 	        switch (areaBanner != null ? areaBanner.outdoorArea() : UI.AreaBanner.Area.PLAINS) {
 	            case SEA: track = MUSIC_SEA; break;
 	            case ICE: track = MUSIC_ICE; break;
+	            case CURSED: track = MUSIC_DOMAIN; break;   // belum ada lagu khusus: pakai lagu gelap Umbrae Surgunt
 	            default:  track = MUSIC_OUTSIDE;
 	        }
 	    }
@@ -932,6 +976,9 @@ public class GamePanel extends JPanel implements Runnable{
 
 	    // malam di biome es: gelapnya condong ke biru tua, bukan hitam polos
 	    float sk = snow.intensity();
+	    float ck = curse.intensity();   // malam di biome terkutuk: gelapnya condong ke ungu tua
+	    if (ck > 0.01f) g2.setColor(new Color((int) (22 * ck), (int) (4 * ck), (int) (40 * ck)));
+	    else
 	    g2.setColor(sk < 0.01f ? Color.BLACK : new Color((int) (6 * sk), (int) (16 * sk), (int) (46 * sk)));
 	    g2.fillRect(0, 0, screenWidth, screenHeight);
 
@@ -1055,6 +1102,7 @@ public class GamePanel extends JPanel implements Runnable{
 		    tileM.chunks.update();                 // muat / buang chunk peta di sekitar player
 		    snow.setHeavy(world.isRaining);        // hujan di biome es = badai salju
 		    snow.update();
+		    curse.update();
 		}
 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
 
@@ -1669,6 +1717,7 @@ public void paintComponent(Graphics g) {
 
         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
         snow.draw(g2);
+        curse.draw(g2);
         drawDarkOverlay(g2);
         drawSunsetOverlay(g2);
         if (waterPortal != null) waterPortal.drawFade(g2);   // layar gelap transisi portal

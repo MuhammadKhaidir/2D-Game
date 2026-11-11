@@ -314,6 +314,7 @@ public TileM(GamePanel gp) {
 	 * Tile baru untuk dunia yang diperluas:
 	 *  76-78  = rumput (gambar sama dengan tile 4 / 6 / 10, tapi TIDAK collision) untuk area baru dan bekas tanah salju lama
 	 *  100    = salju, 131 = es (polos; cuma dipakai minimap)
+	 *  160    = tanah terkutuk (polos; cuma dipakai minimap), 161 = jurang di ujung dunia
 	 *  140-151 = tile tepi pantai versi salju (urutan sama dengan WorldGen.SHORE_BASE)
 	 */
 	private void addIceTiles() {
@@ -326,6 +327,12 @@ public TileM(GamePanel gp) {
 		tile[WorldGen.TILE_SNOW].image = IceSprites.flat(0xE8F1FA);
 		tile[WorldGen.TILE_ICE] = new Tile();
 		tile[WorldGen.TILE_ICE].image = IceSprites.flat(0x9ACFEF);
+		// biome terkutuk: 160 = tanah terkutuk (polos; cuma dipakai minimap), 161 = jurang di ujung dunia (gelap, tidak bisa dilewati)
+		tile[WorldGen.TILE_CURSED] = new Tile();
+		tile[WorldGen.TILE_CURSED].image = IceSprites.flat(0x3A2B4C);
+		tile[WorldGen.TILE_VOID] = new Tile();
+		tile[WorldGen.TILE_VOID].image = IceSprites.flat(0x0A0612);
+		tile[WorldGen.TILE_VOID].collision = true;
 		for (int i = 0; i < WorldGen.SHORE_BASE.length; i++) {
 			Tile base = tile[WorldGen.SHORE_BASE[i]];
 			Tile t = new Tile();
@@ -912,14 +919,10 @@ public TileM(GamePanel gp) {
 	}
 
 	public void draw(Graphics2D g2) {
-        int worldWidth  = gp.maxWorldCol * gp.tileSize;
-        int worldHeight = gp.maxWorldRow * gp.tileSize;
+        // Semua digambar relatif ke player. Kamera yang berhenti di ujung dunia (biome terkutuk) ditangani satu kali
+        // oleh GamePanel.applyWorldZoom() (seluruh dunia digeser), supaya tile, objek, dan entity tidak pernah berselisih.
         int camX = gp.player.x;
         int camY = gp.player.y;
-        if (camX < gp.player.screenX) camX = gp.player.screenX;
-        if (camX > worldWidth  - gp.player.screenX) camX = worldWidth  - gp.player.screenX;
-        if (camY < gp.player.screenY)  camY = gp.player.screenY;
-        if (camY > worldHeight - gp.player.screenY) camY = worldHeight - gp.player.screenY;
 
         // Hanya gambar tile dasar (ground layer)
         // Cuma telusuri tile yang kelihatan di layar (sekitar 17x13), bukan seluruh peta 700x700
@@ -980,15 +983,10 @@ public TileM(GamePanel gp) {
 			            Entitas.Entity[] npcs,
 			            Entitas.Entity[] monsters) {
 			
-			int worldWidth  = gp.maxWorldCol * gp.tileSize;
-			int worldHeight = gp.maxWorldRow * gp.tileSize;
+			// relatif ke player; geseran kamera di ujung dunia dipasang di GamePanel.applyWorldZoom()
 			int camX = gp.player.x;
 			int camY = gp.player.y;
-			if (camX < p.screenX) camX = p.screenX;
-			if (camX > worldWidth  - p.screenX) camX = worldWidth  - p.screenX;
-			if (camY < p.screenY)  camY = p.screenY;
-			if (camY > worldHeight - p.screenY) camY = worldHeight - p.screenY;
-			
+
 			final int fCamX = camX, fCamY = camY;
 			
 			
@@ -1228,8 +1226,21 @@ public TileM(GamePanel gp) {
 	    //AIR-LAMA gp.objCol.add(350,1490,255,265);
 	    gp.objCol.add(350,1490,45,9065);
 	    // lanjutan tembok barat, hanya untuk bagian dunia yang BARU (di bawah peta lama): area peta lama dibiarkan persis seperti sebelumnya
+	    // Berhenti di WEST_WALL_END_ROW: lebih ke selatan itu tepi barat biome terkutuk, yang batasnya jurang (lihat di bawah).
 	    int westWallTop = (gen != null ? gen.coreRows() : 321) * gp.tileSize;
-	    gp.objCol.add(350, westWallTop, 45, WorldGen.WORLD_ROWS * gp.tileSize - westWallTop);
+	    gp.objCol.add(350, westWallTop, 45, WorldGen.WEST_WALL_END_ROW * gp.tileSize - westWallTop);
+
+	    // ── UJUNG DUNIA (biome terkutuk) ──
+	    // Jurang di ujung dunia tidak bisa dilewati: player berhenti di bibirnya, sementara kamera sudah berhenti di ujung
+	    // dunia (GamePanel.camX / camY). Tembok di luar dunia mencegah monster muncul / tersesat di luar peta.
+	    if (gen != null) {
+	        for (Rectangle r : gen.voidBlockers(gp.tileSize)) gp.objCol.add(r.x, r.y, r.width, r.height);
+	    }
+	    int worldW = WorldGen.WORLD_COLS * gp.tileSize, worldH = WorldGen.WORLD_ROWS * gp.tileSize, far = 8000;
+	    gp.objCol.add(worldW, -far, far, worldH + 2 * far);        // timur
+	    gp.objCol.add(-far, worldH, worldW + 2 * far, far);        // selatan
+	    gp.objCol.add(-far, -far, worldW + 2 * far, far);          // utara
+	    gp.objCol.add(-far, -far, far, worldH + 2 * far);          // barat
 	    //AIR-LAMA gp.objCol.add(695,1520,110,220);
 	    //AIR-LAMA gp.objCol.add(900,1520,105,220);
 	    //AIR-LAMA gp.objCol.add(1095,1530,5000,210);

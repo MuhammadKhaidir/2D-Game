@@ -416,20 +416,13 @@ public final class Rowboat {
     //  PENUMPANG
     // =====================================================================================
 
+    // Relatif ke player, sama seperti TileM. Kamera yang berhenti di ujung dunia dipasang sekali di GamePanel.applyWorldZoom().
     private int cameraX() {
-        int worldWidth = gp.maxWorldCol * gp.tileSize;
-        int camX = gp.player.x;
-        if (camX < gp.player.screenX) camX = gp.player.screenX;
-        if (camX > worldWidth - gp.player.screenX) camX = worldWidth - gp.player.screenX;
-        return camX;
+        return gp.player.x;
     }
 
     private int cameraY() {
-        int worldHeight = gp.maxWorldRow * gp.tileSize;
-        int camY = gp.player.y;
-        if (camY < gp.player.screenY) camY = gp.player.screenY;
-        if (camY > worldHeight - gp.player.screenY) camY = worldHeight - gp.player.screenY;
-        return camY;
+        return gp.player.y;
     }
 
     /**

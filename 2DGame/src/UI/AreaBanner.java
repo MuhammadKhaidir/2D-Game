@@ -15,7 +15,7 @@ import World.DomainManager;
 
 /**
  * Banner nama tempat di bawah layar (di atas hotbar) tiap player pindah ke tempat baru:
- * dataran, laut, daratan es, dan domain (Tomb, Golem Hide, Water Domain).
+ * dataran, laut, daratan es, tanah terkutuk (tepi dunia), dan domain (Tomb, Golem Hide, Water Domain).
  *
  * Sekaligus jadi sumber "lagi di area luar mana" buat musik: GamePanel.updateMusic() menanyakan {@link #outdoorArea()}.
  *
@@ -30,13 +30,15 @@ import World.DomainManager;
 public class AreaBanner {
 
     /** Area di dunia luar. Dipakai juga buat memilih musik. */
-    public enum Area { PLAINS, SEA, ICE }
+    public enum Area { PLAINS, SEA, ICE, CURSED }
 
     // ── Deteksi ──
     private static final int   CHECK_EVERY   = 10;      // game jalan 40 FPS -> cek posisi 4x per detik
     private static final int   SETTLE_CHECKS = 4;       // calon area harus bertahan segini kali cek berturut-turut
     private static final float ICE_ENTER     = 0.50f;   // sama dengan batas "bersalju" di WorldGen.surfaceTile / minimap
     private static final float ICE_LEAVE     = 0.35f;
+    private static final float CURSE_ENTER   = 0.55f;   // WorldGen.curse(): sudah masuk dalam biome terkutuk (pohon layu mulai dari 0.10)
+    private static final float CURSE_LEAVE   = 0.40f;
     private static final float SEA_ENTER     = 0.70f;   // porsi air di jendela sekitar player buat dianggap laut lepas
     private static final float SEA_LEAVE     = 0.50f;
     private static final int   SEA_WINDOW    = 4;       // jendela sampling: +-4 tile, tiap 2 tile -> 25 titik
@@ -129,6 +131,7 @@ public class AreaBanner {
             case "PLAINS":           return new Object[] { "GREEN PLAINS", new Color(160, 220, 90) };
             case "SEA":              return new Object[] { "OPEN SEA",     new Color(90, 190, 240) };
             case "ICE":              return new Object[] { "ICE LAND",     new Color(200, 238, 255) };
+            case "CURSED":           return new Object[] { "CURSED LAND",  new Color(190, 90, 255) };
             case "DOMAIN:Tomb":      return new Object[] { "THE TOMB",     new Color(190, 130, 255) };
             case "DOMAIN:GolemHide": return new Object[] { "GOLEM HIDE",   new Color(235, 170, 80) };
             default:
@@ -148,6 +151,10 @@ public class AreaBanner {
         double cy = gp.player.y + gp.player.solidArea.y + gp.player.solidArea.height / 2.0;
         float tx = (float) (cx / gp.tileSize), ty = (float) (cy / gp.tileSize);
         int col = (int) Math.floor(tx), row = (int) Math.floor(ty);
+
+        // biome terkutuk (tepi dunia) diperiksa paling dulu: di sana tidak ada es / laut yang perlu dibedakan
+        float curseLimit = (outdoor == Area.CURSED) ? CURSE_LEAVE : CURSE_ENTER;
+        if (g.isLand(col, row) && g.curse(tx, ty) >= curseLimit) return Area.CURSED;
 
         if (!g.isLand(col, row)) {
             float need = (outdoor == Area.SEA) ? SEA_LEAVE : SEA_ENTER;

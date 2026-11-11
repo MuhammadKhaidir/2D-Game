@@ -45,6 +45,7 @@ public final class ChunkManager {
     private final TileM tm;
     private final WorldGen gen;
     private final IceSprites spr;
+    private final CursedSprites csp;
     private final int ts;
     private final int ncx, ncy;
     private final Chunk[] chunks;
@@ -86,11 +87,17 @@ public final class ChunkManager {
      * Thread gambar (EDT) cuma MEMBACA: daftar chunk lewat 'view', gambar lewat 'baked', hiasan lewat 'decor' --
      * ketiganya diganti utuh (volatile), tidak pernah diubah di tempat.
      */
+    /** Hasil bake satu chunk: kulit salju / es dan kulit tanah terkutuk (salah satunya boleh null). */
+    private static final class Baked {
+        final IceGround.Result ice, cursed;
+        Baked(IceGround.Result ice, IceGround.Result cursed) { this.ice = ice; this.cursed = cursed; }
+    }
+
     private static final class Chunk {
         final int cx, cy, col0, row0;
         boolean active;                      // thread game saja
-        Future<IceGround.Result> future;     // thread game saja
-        volatile IceGround.Result baked;     // gambar salju/es + penanda tile tertutup; null = belum siap / tidak ada
+        Future<Baked> future;                // thread game saja
+        volatile Baked baked;                // gambar salju/es/terkutuk + penanda tile tertutup; null = belum siap / tidak ada
         boolean bakeDone;                    // thread game saja
         int[] slots = new int[0];            // thread game saja
         volatile Decor decor = Decor.EMPTY;
@@ -108,6 +115,7 @@ public final class ChunkManager {
         this.tm = tm;
         this.gen = gen;
         this.spr = spr;
+        this.csp = new CursedSprites(oakIdle, oakHit, oakDown);
         this.ts = gp.tileSize;
         this.ncx = (WorldGen.WORLD_COLS + CH - 1) / CH;
         this.ncy = (WorldGen.WORLD_ROWS + CH - 1) / CH;
@@ -201,11 +209,13 @@ public final class ChunkManager {
             }
         }
 
-        // 2) gambar salju / es: di thread lain
+        // 2) gambar salju / es dan tanah terkutuk: di thread lain
         final int col0 = c.col0, row0 = c.row0;
         c.future = baker.submit(() -> {
             try {
-                return IceGround.bake(gen, col0, row0, CH);
+                IceGround.Result ice = IceGround.bake(gen, col0, row0, CH);
+                IceGround.Result cursed = CursedGround.bake(gen, col0, row0, CH);
+                return (ice == null && cursed == null) ? null : new Baked(ice, cursed);
             } catch (Throwable t) {
                 t.printStackTrace();
                 return null;
@@ -232,7 +242,9 @@ public final class ChunkManager {
                 breakable b = create(s);
                 if (b == null) { freeSlots[nFree++] = slot; continue; }
                 tm.breakables[slot] = b;
-                tm.breakableTile[slot] = (s.kind == WorldGen.K_ICE_ROCK || s.kind == WorldGen.K_CRYSTAL || s.kind == WorldGen.K_ROCK) ? 71 : 55;
+                boolean rocky = s.kind == WorldGen.K_ICE_ROCK || s.kind == WorldGen.K_CRYSTAL || s.kind == WorldGen.K_ROCK
+                             || s.kind == WorldGen.K_COBSIDIAN || s.kind == WorldGen.K_CCRYSTAL || s.kind == WorldGen.K_TOMB;
+                tm.breakableTile[slot] = rocky ? 71 : 55;
                 c.slots[usedBreak++] = slot;
             }
         }
@@ -290,11 +302,20 @@ public final class ChunkManager {
 
     private static boolean isDecor(int kind) {
         return kind == WorldGen.K_BUSH || kind == WorldGen.K_BUSH_SNOW || kind == WorldGen.K_GLOW
-            || (kind >= WorldGen.K_TUFT && kind <= WorldGen.K_DRIFT);
+            || (kind >= WorldGen.K_TUFT && kind <= WorldGen.K_DRIFT)
+            || kind == WorldGen.K_CGLOW || kind == WorldGen.K_THORN || kind == WorldGen.K_BONES;
+    }
+
+    /** hiasan datar yang bersinar (digambar di tanah, di bawah semua objek, dengan denyut pelan) */
+    private static boolean isGlow(int kind) {
+        return kind == WorldGen.K_GLOW || kind == WorldGen.K_CGLOW;
     }
 
     private BufferedImage decorImage(WorldGen.Spawn s) {
         switch (s.kind) {
+            case WorldGen.K_CGLOW: return csp.glow;
+            case WorldGen.K_THORN: return csp.thorn[s.variant & 1];
+            case WorldGen.K_BONES: return csp.bones[s.variant & 1];
             case WorldGen.K_BUSH: return bushImg;
             case WorldGen.K_BUSH_SNOW: return snowBushImg;
             case WorldGen.K_GLOW: return spr.glow;
@@ -332,6 +353,19 @@ public final class ChunkManager {
                 img = spr.crystal[v % spr.crystal.length]; col = new double[] {0.18, 0.62, 0.64, 0.26}; break;
             case WorldGen.K_ROCK:
                 img = rockImg; break;
+            // ---- biome terkutuk
+            case WorldGen.K_CTREE:
+                img = csp.tree[v % csp.tree.length]; hit = csp.treeHit[v % csp.tree.length]; down = csp.treeDown[v % csp.tree.length];
+                drop = ItemManager.get().LOG; col = new double[] {0.38, 0.78, 0.24, 0.13}; break;
+            case WorldGen.K_WITHER:
+                img = csp.witherIdle[0]; idle = csp.witherIdle; hit = csp.witherHit; down = csp.witherDown;
+                drop = ItemManager.get().LOG; shadow = true; break;
+            case WorldGen.K_COBSIDIAN:
+                img = csp.obsidian[v % csp.obsidian.length]; col = new double[] {0.14, 0.46, 0.72, 0.32}; break;
+            case WorldGen.K_CCRYSTAL:
+                img = csp.crystal[v % csp.crystal.length]; col = new double[] {0.18, 0.62, 0.64, 0.26}; break;
+            case WorldGen.K_TOMB:
+                img = csp.tomb[v % csp.tomb.length]; drop = ItemManager.get().BONE; col = new double[] {0.12, 0.55, 0.76, 0.38}; break;
             default:
                 return null;
         }
@@ -356,8 +390,10 @@ public final class ChunkManager {
         int cx = col / CH, cy = row / CH;
         if (cx >= ncx || cy >= ncy) return false;
         Chunk c = chunks[cy * ncx + cx];
-        IceGround.Result r = c.baked;
-        return r != null && r.covered[(row - c.row0) * CH + (col - c.col0)];
+        Baked b = c.baked;
+        if (b == null) return false;
+        int i = (row - c.row0) * CH + (col - c.col0);
+        return (b.ice != null && b.ice.covered[i]) || (b.cursed != null && b.cursed.covered[i]);
     }
 
     /** Salju / es dan cahaya kristal: digambar tepat di atas tile dasar, di bawah semua objek. */
@@ -369,8 +405,10 @@ public final class ChunkManager {
         for (Chunk c : vs) {
             int sx = c.col0 * ts + sxOff, sy = c.row0 * ts + syOff;
             if (sx + size < vx0 || sx > vx1 || sy + size < vy0 || sy > vy1) continue;
-            IceGround.Result r = c.baked;
-            if (r != null) g2.drawImage(r.image, sx, sy, size, size, null);
+            Baked b = c.baked;
+            if (b == null) continue;
+            if (b.ice != null) g2.drawImage(b.ice.image, sx, sy, size, size, null);
+            if (b.cursed != null) g2.drawImage(b.cursed.image, sx, sy, size, size, null);
         }
         // cahaya kristal berdenyut pelan
         Composite old = null;
@@ -378,7 +416,7 @@ public final class ChunkManager {
         for (Chunk c : vs) {
             Decor d = c.decor;
             for (int i = 0; i < d.n; i++) {
-                if (d.kind[i] != WorldGen.K_GLOW) continue;
+                if (!isGlow(d.kind[i])) continue;
                 int sx = d.x[i] + sxOff, sy = d.y[i] + syOff;
                 if (sx + d.w[i] < vx0 || sx > vx1 || sy + d.h[i] < vy0 || sy > vy1) continue;
                 if (old == null) old = g2.getComposite();
@@ -397,12 +435,12 @@ public final class ChunkManager {
             int ci = c.cy * ncx + c.cx;
             Decor d = c.decor;
             for (int i = 0; i < d.n; i++) {
-                if (d.kind[i] == WorldGen.K_GLOW) continue;
+                if (isGlow(d.kind[i])) continue;
                 int sx = d.x[i] + sxOff, sy = d.y[i] + syOff;
                 if (sx + d.w[i] < vx0 || sx > vx1 || sy + d.h[i] < vy0 || sy > vy1) continue;
                 int k = d.kind[i];
                 int sortY = (k == WorldGen.K_BUSH || k == WorldGen.K_BUSH_SNOW) ? d.y[i] + d.h[i] - 40
-                          : (k == WorldGen.K_DRIFT ? d.y[i] + d.h[i] - 400 : d.y[i] + d.h[i]);   // gundukan salju selalu di bawah objek berdiri
+                          : ((k == WorldGen.K_DRIFT || k == WorldGen.K_BONES) ? d.y[i] + d.h[i] - 400 : d.y[i] + d.h[i]);   // gundukan salju & tulang selalu di bawah objek berdiri
                 drawList.add(new int[] {sortY, 7, ci * 4096 + i});
             }
         }

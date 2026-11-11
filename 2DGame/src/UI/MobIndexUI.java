@@ -106,7 +106,7 @@ public class MobIndexUI {
         mobList.add(new MobData("GOLEMITE", "RARE", "A small offshoot of the Stone Golem, chipped off its parent's body. Fast on its feet and hits harder than it looks. Nests in the Golem Hide, can be tamed.", 3000, 80, 1, "Coin (100%)", gp.setup("golemiteFrontWalk (1)")));
         mobList.add(new MobData("DROWNED SOLDIER", "RARE", "A royal guard of the Sunken Kingdom who never left his post when the sea took the city. Rust-eaten blade, patina-green armor, seaweed in his helm - he still patrols the flooded ruins and cuts down anything that walks the halls. Found in the Water Domain.", 4000, 180, 1.4, "Coin (100%), Bone (70%), Drowned Royal Emblem (35%)", squareIcon(Entitas.DrownedSoldier.getIconFrame())));
         mobList.add(new MobData("WEREWOLF", "EPIC", "A beast-man that guards the Ice Land and never leaves the snow. It hunts intruders with its tremendeous attack speed, leaps to close the gap, then rakes with its claws. Fiercer at night, and it enrages when badly wounded.", 4000, 80, 3.5, "Coin (100%)", squareIcon(Entitas.WerewolfSprite.get(gp.tileSize / 32.0).idle[Entitas.WerewolfSprite.ROW_RIGHT][0])));
-        mobList.add(new MobData("STONE GOLEM", "EPIC", "A massive, powerful construct carved from living solid stone. Awakens from deep underground to crush intruders, can be tamed.", 12000, 200, 1, "Coin (100%)", gp.setup("GolemFrontWalk (6)")));
+        mobList.add(new MobData("STONE GOLEM", "LEGENDARY", "A massive, powerful construct carved from living solid stone. Awakens from deep underground to crush intruders, can be tamed.", 12000, 200, 1, "Coin (100%)", gp.setup("GolemFrontWalk (6)")));
     }
 
     // Grid & detail menggambar ikon ke kotak persegi. Sprite yang lebar (serigala 62x34) dipotong ke bagian

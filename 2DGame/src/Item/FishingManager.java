@@ -493,7 +493,8 @@ public class FishingManager {
         double cx = gp.screenWidth / 2.0, cy = gp.screenHeight / 2.0;
         double ux = cx + (mx - cx) / z;           // koordinat layar sebelum di-zoom
         double uy = cy + (my - cy) / z;
-        return new int[] { (int) Math.round(ux - p.screenX + p.x), (int) Math.round(uy - p.screenY + p.y) };
+        // dikurangi geseran kamera (nol kecuali kamera lagi berhenti di ujung dunia, lihat GamePanel.camOffsetX)
+        return new int[] { (int) Math.round(ux - gp.camOffsetX() - p.screenX + p.x), (int) Math.round(uy - gp.camOffsetY() - p.screenY + p.y) };
     }
 
     /** Tiap frame pas pancingan dipegang & belum dilempar: joran ngikut hadap player, bidikan ngikut mouse. */

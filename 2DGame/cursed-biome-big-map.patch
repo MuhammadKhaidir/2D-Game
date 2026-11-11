@@ -1,0 +1,1818 @@
+diff --git a/2DGame/src/Entitas/Entity.java b/2DGame/src/Entitas/Entity.java
+index 2674e21..ffbe88a 100644
+--- a/2DGame/src/Entitas/Entity.java
++++ b/2DGame/src/Entitas/Entity.java
+@@ -705,10 +705,10 @@ public class Entity {
+ 	        return;
+ 	    }
+ 
+-	    if (x + gp.tileSize > gp.player.x - gp.player.screenX &&
+-	        x - gp.tileSize < gp.player.x + gp.player.screenX &&
+-	        y + gp.tileSize > gp.player.y - gp.player.screenY &&
+-	        y - gp.tileSize < gp.player.y + gp.player.screenY) {
++	    // culling pakai batas layar yang kelihatan (ikut zoom dan geseran kamera di ujung dunia), bukan jendela di sekitar player
++	    int cullX = x - gp.player.x + gp.player.screenX, cullY = y - gp.player.y + gp.player.screenY;
++	    if (cullX + gp.tileSize > gp.viewMinX() && cullX - gp.tileSize < gp.viewMaxX() &&
++	        cullY + gp.tileSize > gp.viewMinY() && cullY - gp.tileSize < gp.viewMaxY()) {
+ 
+ 	        switch (direction) {
+ 	            case "down":
+diff --git a/2DGame/src/Item/FishingManager.java b/2DGame/src/Item/FishingManager.java
+index 453468c..033fe38 100644
+--- a/2DGame/src/Item/FishingManager.java
++++ b/2DGame/src/Item/FishingManager.java
+@@ -493,7 +493,8 @@ public class FishingManager {
+         double cx = gp.screenWidth / 2.0, cy = gp.screenHeight / 2.0;
+         double ux = cx + (mx - cx) / z;           // koordinat layar sebelum di-zoom
+         double uy = cy + (my - cy) / z;
+-        return new int[] { (int) Math.round(ux - p.screenX + p.x), (int) Math.round(uy - p.screenY + p.y) };
++        // dikurangi geseran kamera (nol kecuali kamera lagi berhenti di ujung dunia, lihat GamePanel.camOffsetX)
++        return new int[] { (int) Math.round(ux - gp.camOffsetX() - p.screenX + p.x), (int) Math.round(uy - gp.camOffsetY() - p.screenY + p.y) };
+     }
+ 
+     /** Tiap frame pas pancingan dipegang & belum dilempar: joran ngikut hadap player, bidikan ngikut mouse. */
+diff --git a/2DGame/src/Main/GamePanel.java b/2DGame/src/Main/GamePanel.java
+index 22f432f..47a1d93 100644
+--- a/2DGame/src/Main/GamePanel.java
++++ b/2DGame/src/Main/GamePanel.java
+@@ -164,8 +164,9 @@ public class GamePanel extends JPanel implements Runnable{
+ 	public final int screenWidth = tileSize * maxScreenColumn;
+ 	public final int screenHeight = tileSize * maxScreenRow;
+ 	// interior
++	// Kapasitas array dunia (>= bahan.WorldGen.WORLD_COLS x WORLD_ROWS = 640 x 860). Ukuran dunia yang sebenarnya ada di WorldGen.
+ 	public final int maxWorldCol = 700;
+-	public final int maxWorldRow = 700;
++	public final int maxWorldRow = 900;
+ 	public final int worldWidth = tileSize * maxWorldCol;
+ 	public final int worldHeight = tileSize * maxWorldRow;
+ 
+@@ -197,6 +198,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 	public TileM tileM = new TileM(this);
+ 	public World.Rowboat rowboat;
+ 	public bahan.SnowAtmosphere snow = new bahan.SnowAtmosphere(this); // hujan salju + kabut + warna dingin di biome es
++	public bahan.CurseAtmosphere curse = new bahan.CurseAtmosphere(this); // kabut ungu + abu melayang di biome terkutuk (tepi dunia)
+ 	
+ 	public MobIndexUI mobIndexUI = new MobIndexUI(this);
+ 	
+@@ -568,21 +570,60 @@ public class GamePanel extends JPanel implements Runnable{
+ 	// jadi pengecekan "di luar layar → skip gambar" harus pakai batas ini,
+ 	// kalau nggak, objek di pinggir bakal ilang pas zoom out.
+ 	// Pas zoom in (>=1) hasilnya sama persis kayak sebelumnya (0 .. screenWidth).
+-	public int viewMinX() {
++	// Semua koordinat layar "pra-zoom" di kode gambar dihitung relatif ke player: layarX = duniaX - player.x + player.screenX.
++	// Kalau kamera sedang berhenti di ujung dunia (lihat camX()), seluruh dunia digeser sebesar camOffsetX() / camOffsetY()
++	// lewat applyWorldZoom(), jadi batas yang kelihatan untuk culling ikut bergeser dengan angka yang sama.
++	private int rawViewMinX() {
+ 	    return Math.min(0, (int) Math.floor(screenWidth / 2.0 - screenWidth / (2.0 * renderZoom())));
+ 	}
+-	public int viewMaxX() {
++	private int rawViewMaxX() {
+ 	    return Math.max(screenWidth, (int) Math.ceil(screenWidth / 2.0 + screenWidth / (2.0 * renderZoom())));
+ 	}
+-	public int viewMinY() {
++	private int rawViewMinY() {
+ 	    return Math.min(0, (int) Math.floor(screenHeight / 2.0 - screenHeight / (2.0 * renderZoom())));
+ 	}
+-	public int viewMaxY() {
++	private int rawViewMaxY() {
+ 	    return Math.max(screenHeight, (int) Math.ceil(screenHeight / 2.0 + screenHeight / (2.0 * renderZoom())));
+ 	}
++	public int viewMinX() { return rawViewMinX() - camOffsetX(); }
++	public int viewMaxX() { return rawViewMaxX() - camOffsetX(); }
++	public int viewMinY() { return rawViewMinY() - camOffsetY(); }
++	public int viewMaxY() { return rawViewMaxY() - camOffsetY(); }
+ 
+ 	/**
+-	 * Pasang transform zoom (pivot = tengah layar = posisi player).
++	 * Titik dunia (px) yang ada di posisi player.screenX di layar (dunia luar). Biasanya sama dengan player.x, tapi
++	 * kamera berhenti di ujung dunia (biome terkutuk): player terus berjalan ke arah tepi layar sementara kamera diam.
++	 * Memperhitungkan zoom, jadi yang terlihat tidak pernah melewati tepi dunia.
++	 */
++	public int camX() {
++	    int w = bahan.WorldGen.WORLD_COLS * tileSize;
++	    int lo = player.screenX - rawViewMinX();
++	    int hi = w + player.screenX - rawViewMaxX();
++	    if (lo >= hi) return (lo + hi) / 2;          // dunia lebih sempit dari layar
++	    return Math.max(lo, Math.min(hi, player.x));
++	}
++
++	public int camY() {
++	    int h = bahan.WorldGen.WORLD_ROWS * tileSize;
++	    int lo = player.screenY - rawViewMinY();
++	    int hi = h + player.screenY - rawViewMaxY();
++	    if (lo >= hi) return (lo + hi) / 2;
++	    return Math.max(lo, Math.min(hi, player.y));
++	}
++
++	/** Berapa piksel dunia digeser dari "player di tengah layar" (0 di mana-mana kecuali dunia luar dekat ujung dunia). */
++	public int camOffsetX() {
++	    if (gameState != GameState.OUTSIDE || player == null) return 0;
++	    return player.x - camX();
++	}
++
++	public int camOffsetY() {
++	    if (gameState != GameState.OUTSIDE || player == null) return 0;
++	    return player.y - camY();
++	}
++
++	/**
++	 * Pasang transform zoom (pivot = tengah layar = posisi player), plus geseran kamera di ujung dunia (dunia luar).
+ 	 * Balikin transform lama; setelah selesai gambar dunia, panggil g2.setTransform(hasilnya)
+ 	 * supaya UI digambar di layar normal (gak ikut ke-zoom).
+ 	 */
+@@ -596,6 +637,8 @@ public class GamePanel extends JPanel implements Runnable{
+ 	        g2.scale(z, z);
+ 	        g2.translate(-cx, -cy);
+ 	    }
++	    int ox = camOffsetX(), oy = camOffsetY();
++	    if (ox != 0 || oy != 0) g2.translate(ox, oy);
+ 	    return previous;
+ 	}
+ 
+@@ -616,7 +659,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 	public void drawSunsetOverlay(Graphics2D g2) {
+ 	    if (!sunsetMode) return;
+ 	    // di biome es cahaya senja oranye diredam (suasananya biru-putih, bukan oranye)
+-	    float si = sunsetIntensity * (1f - 0.8f * snow.intensity());
++	    float si = sunsetIntensity * (1f - 0.8f * snow.intensity()) * (1f - 0.85f * curse.intensity());
+ 
+ 	    // Base warm amber overlay
+ 	    Composite old = g2.getComposite();
+@@ -907,6 +950,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 	        switch (areaBanner != null ? areaBanner.outdoorArea() : UI.AreaBanner.Area.PLAINS) {
+ 	            case SEA: track = MUSIC_SEA; break;
+ 	            case ICE: track = MUSIC_ICE; break;
++	            case CURSED: track = MUSIC_DOMAIN; break;   // belum ada lagu khusus: pakai lagu gelap Umbrae Surgunt
+ 	            default:  track = MUSIC_OUTSIDE;
+ 	        }
+ 	    }
+@@ -932,6 +976,9 @@ public class GamePanel extends JPanel implements Runnable{
+ 
+ 	    // malam di biome es: gelapnya condong ke biru tua, bukan hitam polos
+ 	    float sk = snow.intensity();
++	    float ck = curse.intensity();   // malam di biome terkutuk: gelapnya condong ke ungu tua
++	    if (ck > 0.01f) g2.setColor(new Color((int) (22 * ck), (int) (4 * ck), (int) (40 * ck)));
++	    else
+ 	    g2.setColor(sk < 0.01f ? Color.BLACK : new Color((int) (6 * sk), (int) (16 * sk), (int) (46 * sk)));
+ 	    g2.fillRect(0, 0, screenWidth, screenHeight);
+ 
+@@ -1055,6 +1102,7 @@ public class GamePanel extends JPanel implements Runnable{
+ 		    tileM.chunks.update();                 // muat / buang chunk peta di sekitar player
+ 		    snow.setHeavy(world.isRaining);        // hujan di biome es = badai salju
+ 		    snow.update();
++		    curse.update();
+ 		}
+ 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
+ 
+@@ -1669,6 +1717,7 @@ public void paintComponent(Graphics g) {
+ 
+         if (totemUI != null && totemUI.visible) totemUI.draw(g2);
+         snow.draw(g2);
++        curse.draw(g2);
+         drawDarkOverlay(g2);
+         drawSunsetOverlay(g2);
+         if (waterPortal != null) waterPortal.drawFade(g2);   // layar gelap transisi portal
+diff --git a/2DGame/src/Object/Barang.java b/2DGame/src/Object/Barang.java
+index e23725e..b122de5 100644
+--- a/2DGame/src/Object/Barang.java
++++ b/2DGame/src/Object/Barang.java
+@@ -24,10 +24,9 @@ public class Barang {
+         int screenX = worldX - gp.player.x + gp.player.screenX;
+         int screenY = worldY - gp.player.y + gp.player.screenY;
+ 
+-        if (worldX + gp.tileSize > gp.player.x - gp.player.screenX &&
+-            worldX - gp.tileSize < gp.player.x + gp.player.screenX &&
+-            worldY + gp.tileSize > gp.player.y - gp.player.screenY &&
+-            worldY - gp.tileSize < gp.player.y + gp.player.screenY) {
++        // batas layar yang kelihatan (ikut zoom dan geseran kamera di ujung dunia)
++        if (screenX + gp.tileSize > gp.viewMinX() && screenX - gp.tileSize < gp.viewMaxX() &&
++            screenY + gp.tileSize > gp.viewMinY() && screenY - gp.tileSize < gp.viewMaxY()) {
+ 
+             g2.drawImage(image, screenX,screenY, gp.tileSize, gp.tileSize, null);
+         }
+diff --git a/2DGame/src/Skill/SkillV.java b/2DGame/src/Skill/SkillV.java
+index 13ff72a..967df2d 100644
+--- a/2DGame/src/Skill/SkillV.java
++++ b/2DGame/src/Skill/SkillV.java
+@@ -1146,13 +1146,13 @@ public class SkillV extends Skill {
+ 
+     // Koordinat dunia -> koordinat layar (sudah termasuk zoom, pivot di tengah layar kayak GamePanel.applyWorldZoom)
+     private float toScreenX(float worldX) {
+-        float sx = worldX - owner.x + owner.screenX;
++        float sx = worldX - owner.x + owner.screenX + gp.camOffsetX();
+         float cx = gp.screenWidth / 2f;
+         return cx + (sx - cx) * gp.renderZoom();
+     }
+ 
+     private float toScreenY(float worldY) {
+-        float sy = worldY - owner.y + owner.screenY;
++        float sy = worldY - owner.y + owner.screenY + gp.camOffsetY();
+         float cy = gp.screenHeight / 2f;
+         return cy + (sy - cy) * gp.renderZoom();
+     }
+diff --git a/2DGame/src/UI/AreaBanner.java b/2DGame/src/UI/AreaBanner.java
+index 628be1e..1416060 100644
+--- a/2DGame/src/UI/AreaBanner.java
++++ b/2DGame/src/UI/AreaBanner.java
+@@ -15,7 +15,7 @@ import World.DomainManager;
+ 
+ /**
+  * Banner nama tempat di bawah layar (di atas hotbar) tiap player pindah ke tempat baru:
+- * dataran, laut, daratan es, dan domain (Tomb, Golem Hide, Water Domain).
++ * dataran, laut, daratan es, tanah terkutuk (tepi dunia), dan domain (Tomb, Golem Hide, Water Domain).
+  *
+  * Sekaligus jadi sumber "lagi di area luar mana" buat musik: GamePanel.updateMusic() menanyakan {@link #outdoorArea()}.
+  *
+@@ -30,13 +30,15 @@ import World.DomainManager;
+ public class AreaBanner {
+ 
+     /** Area di dunia luar. Dipakai juga buat memilih musik. */
+-    public enum Area { PLAINS, SEA, ICE }
++    public enum Area { PLAINS, SEA, ICE, CURSED }
+ 
+     // ── Deteksi ──
+     private static final int   CHECK_EVERY   = 10;      // game jalan 40 FPS -> cek posisi 4x per detik
+     private static final int   SETTLE_CHECKS = 4;       // calon area harus bertahan segini kali cek berturut-turut
+     private static final float ICE_ENTER     = 0.50f;   // sama dengan batas "bersalju" di WorldGen.surfaceTile / minimap
+     private static final float ICE_LEAVE     = 0.35f;
++    private static final float CURSE_ENTER   = 0.55f;   // WorldGen.curse(): sudah masuk dalam biome terkutuk (pohon layu mulai dari 0.10)
++    private static final float CURSE_LEAVE   = 0.40f;
+     private static final float SEA_ENTER     = 0.70f;   // porsi air di jendela sekitar player buat dianggap laut lepas
+     private static final float SEA_LEAVE     = 0.50f;
+     private static final int   SEA_WINDOW    = 4;       // jendela sampling: +-4 tile, tiap 2 tile -> 25 titik
+@@ -129,6 +131,7 @@ public class AreaBanner {
+             case "PLAINS":           return new Object[] { "GREEN PLAINS", new Color(160, 220, 90) };
+             case "SEA":              return new Object[] { "OPEN SEA",     new Color(90, 190, 240) };
+             case "ICE":              return new Object[] { "ICE LAND",     new Color(200, 238, 255) };
++            case "CURSED":           return new Object[] { "CURSED LAND",  new Color(190, 90, 255) };
+             case "DOMAIN:Tomb":      return new Object[] { "THE TOMB",     new Color(190, 130, 255) };
+             case "DOMAIN:GolemHide": return new Object[] { "GOLEM HIDE",   new Color(235, 170, 80) };
+             default:
+@@ -149,6 +152,10 @@ public class AreaBanner {
+         float tx = (float) (cx / gp.tileSize), ty = (float) (cy / gp.tileSize);
+         int col = (int) Math.floor(tx), row = (int) Math.floor(ty);
+ 
++        // biome terkutuk (tepi dunia) diperiksa paling dulu: di sana tidak ada es / laut yang perlu dibedakan
++        float curseLimit = (outdoor == Area.CURSED) ? CURSE_LEAVE : CURSE_ENTER;
++        if (g.isLand(col, row) && g.curse(tx, ty) >= curseLimit) return Area.CURSED;
++
+         if (!g.isLand(col, row)) {
+             float need = (outdoor == Area.SEA) ? SEA_LEAVE : SEA_ENTER;
+             if (waterFraction(g, col, row) >= need) return Area.SEA;
+diff --git a/2DGame/src/World/Rowboat.java b/2DGame/src/World/Rowboat.java
+index 05a3f79..7ec6359 100644
+--- a/2DGame/src/World/Rowboat.java
++++ b/2DGame/src/World/Rowboat.java
+@@ -416,20 +416,13 @@ public final class Rowboat {
+     //  PENUMPANG
+     // =====================================================================================
+ 
++    // Relatif ke player, sama seperti TileM. Kamera yang berhenti di ujung dunia dipasang sekali di GamePanel.applyWorldZoom().
+     private int cameraX() {
+-        int worldWidth = gp.maxWorldCol * gp.tileSize;
+-        int camX = gp.player.x;
+-        if (camX < gp.player.screenX) camX = gp.player.screenX;
+-        if (camX > worldWidth - gp.player.screenX) camX = worldWidth - gp.player.screenX;
+-        return camX;
++        return gp.player.x;
+     }
+ 
+     private int cameraY() {
+-        int worldHeight = gp.maxWorldRow * gp.tileSize;
+-        int camY = gp.player.y;
+-        if (camY < gp.player.screenY) camY = gp.player.screenY;
+-        if (camY > worldHeight - gp.player.screenY) camY = worldHeight - gp.player.screenY;
+-        return camY;
++        return gp.player.y;
+     }
+ 
+     /**
+diff --git a/2DGame/src/bahan/ChunkManager.java b/2DGame/src/bahan/ChunkManager.java
+index e2d6b6f..e0975b1 100644
+--- a/2DGame/src/bahan/ChunkManager.java
++++ b/2DGame/src/bahan/ChunkManager.java
+@@ -45,6 +45,7 @@ public final class ChunkManager {
+     private final TileM tm;
+     private final WorldGen gen;
+     private final IceSprites spr;
++    private final CursedSprites csp;
+     private final int ts;
+     private final int ncx, ncy;
+     private final Chunk[] chunks;
+@@ -86,11 +87,17 @@ public final class ChunkManager {
+      * Thread gambar (EDT) cuma MEMBACA: daftar chunk lewat 'view', gambar lewat 'baked', hiasan lewat 'decor' --
+      * ketiganya diganti utuh (volatile), tidak pernah diubah di tempat.
+      */
++    /** Hasil bake satu chunk: kulit salju / es dan kulit tanah terkutuk (salah satunya boleh null). */
++    private static final class Baked {
++        final IceGround.Result ice, cursed;
++        Baked(IceGround.Result ice, IceGround.Result cursed) { this.ice = ice; this.cursed = cursed; }
++    }
++
+     private static final class Chunk {
+         final int cx, cy, col0, row0;
+         boolean active;                      // thread game saja
+-        Future<IceGround.Result> future;     // thread game saja
+-        volatile IceGround.Result baked;     // gambar salju/es + penanda tile tertutup; null = belum siap / tidak ada
++        Future<Baked> future;                // thread game saja
++        volatile Baked baked;                // gambar salju/es/terkutuk + penanda tile tertutup; null = belum siap / tidak ada
+         boolean bakeDone;                    // thread game saja
+         int[] slots = new int[0];            // thread game saja
+         volatile Decor decor = Decor.EMPTY;
+@@ -108,6 +115,7 @@ public final class ChunkManager {
+         this.tm = tm;
+         this.gen = gen;
+         this.spr = spr;
++        this.csp = new CursedSprites(oakIdle, oakHit, oakDown);
+         this.ts = gp.tileSize;
+         this.ncx = (WorldGen.WORLD_COLS + CH - 1) / CH;
+         this.ncy = (WorldGen.WORLD_ROWS + CH - 1) / CH;
+@@ -201,11 +209,13 @@ public final class ChunkManager {
+             }
+         }
+ 
+-        // 2) gambar salju / es: di thread lain
++        // 2) gambar salju / es dan tanah terkutuk: di thread lain
+         final int col0 = c.col0, row0 = c.row0;
+         c.future = baker.submit(() -> {
+             try {
+-                return IceGround.bake(gen, col0, row0, CH);
++                IceGround.Result ice = IceGround.bake(gen, col0, row0, CH);
++                IceGround.Result cursed = CursedGround.bake(gen, col0, row0, CH);
++                return (ice == null && cursed == null) ? null : new Baked(ice, cursed);
+             } catch (Throwable t) {
+                 t.printStackTrace();
+                 return null;
+@@ -232,7 +242,9 @@ public final class ChunkManager {
+                 breakable b = create(s);
+                 if (b == null) { freeSlots[nFree++] = slot; continue; }
+                 tm.breakables[slot] = b;
+-                tm.breakableTile[slot] = (s.kind == WorldGen.K_ICE_ROCK || s.kind == WorldGen.K_CRYSTAL || s.kind == WorldGen.K_ROCK) ? 71 : 55;
++                boolean rocky = s.kind == WorldGen.K_ICE_ROCK || s.kind == WorldGen.K_CRYSTAL || s.kind == WorldGen.K_ROCK
++                             || s.kind == WorldGen.K_COBSIDIAN || s.kind == WorldGen.K_CCRYSTAL || s.kind == WorldGen.K_TOMB;
++                tm.breakableTile[slot] = rocky ? 71 : 55;
+                 c.slots[usedBreak++] = slot;
+             }
+         }
+@@ -290,11 +302,20 @@ public final class ChunkManager {
+ 
+     private static boolean isDecor(int kind) {
+         return kind == WorldGen.K_BUSH || kind == WorldGen.K_BUSH_SNOW || kind == WorldGen.K_GLOW
+-            || (kind >= WorldGen.K_TUFT && kind <= WorldGen.K_DRIFT);
++            || (kind >= WorldGen.K_TUFT && kind <= WorldGen.K_DRIFT)
++            || kind == WorldGen.K_CGLOW || kind == WorldGen.K_THORN || kind == WorldGen.K_BONES;
++    }
++
++    /** hiasan datar yang bersinar (digambar di tanah, di bawah semua objek, dengan denyut pelan) */
++    private static boolean isGlow(int kind) {
++        return kind == WorldGen.K_GLOW || kind == WorldGen.K_CGLOW;
+     }
+ 
+     private BufferedImage decorImage(WorldGen.Spawn s) {
+         switch (s.kind) {
++            case WorldGen.K_CGLOW: return csp.glow;
++            case WorldGen.K_THORN: return csp.thorn[s.variant & 1];
++            case WorldGen.K_BONES: return csp.bones[s.variant & 1];
+             case WorldGen.K_BUSH: return bushImg;
+             case WorldGen.K_BUSH_SNOW: return snowBushImg;
+             case WorldGen.K_GLOW: return spr.glow;
+@@ -332,6 +353,19 @@ public final class ChunkManager {
+                 img = spr.crystal[v % spr.crystal.length]; col = new double[] {0.18, 0.62, 0.64, 0.26}; break;
+             case WorldGen.K_ROCK:
+                 img = rockImg; break;
++            // ---- biome terkutuk
++            case WorldGen.K_CTREE:
++                img = csp.tree[v % csp.tree.length]; hit = csp.treeHit[v % csp.tree.length]; down = csp.treeDown[v % csp.tree.length];
++                drop = ItemManager.get().LOG; col = new double[] {0.38, 0.78, 0.24, 0.13}; break;
++            case WorldGen.K_WITHER:
++                img = csp.witherIdle[0]; idle = csp.witherIdle; hit = csp.witherHit; down = csp.witherDown;
++                drop = ItemManager.get().LOG; shadow = true; break;
++            case WorldGen.K_COBSIDIAN:
++                img = csp.obsidian[v % csp.obsidian.length]; col = new double[] {0.14, 0.46, 0.72, 0.32}; break;
++            case WorldGen.K_CCRYSTAL:
++                img = csp.crystal[v % csp.crystal.length]; col = new double[] {0.18, 0.62, 0.64, 0.26}; break;
++            case WorldGen.K_TOMB:
++                img = csp.tomb[v % csp.tomb.length]; drop = ItemManager.get().BONE; col = new double[] {0.12, 0.55, 0.76, 0.38}; break;
+             default:
+                 return null;
+         }
+@@ -356,8 +390,10 @@ public final class ChunkManager {
+         int cx = col / CH, cy = row / CH;
+         if (cx >= ncx || cy >= ncy) return false;
+         Chunk c = chunks[cy * ncx + cx];
+-        IceGround.Result r = c.baked;
+-        return r != null && r.covered[(row - c.row0) * CH + (col - c.col0)];
++        Baked b = c.baked;
++        if (b == null) return false;
++        int i = (row - c.row0) * CH + (col - c.col0);
++        return (b.ice != null && b.ice.covered[i]) || (b.cursed != null && b.cursed.covered[i]);
+     }
+ 
+     /** Salju / es dan cahaya kristal: digambar tepat di atas tile dasar, di bawah semua objek. */
+@@ -369,8 +405,10 @@ public final class ChunkManager {
+         for (Chunk c : vs) {
+             int sx = c.col0 * ts + sxOff, sy = c.row0 * ts + syOff;
+             if (sx + size < vx0 || sx > vx1 || sy + size < vy0 || sy > vy1) continue;
+-            IceGround.Result r = c.baked;
+-            if (r != null) g2.drawImage(r.image, sx, sy, size, size, null);
++            Baked b = c.baked;
++            if (b == null) continue;
++            if (b.ice != null) g2.drawImage(b.ice.image, sx, sy, size, size, null);
++            if (b.cursed != null) g2.drawImage(b.cursed.image, sx, sy, size, size, null);
+         }
+         // cahaya kristal berdenyut pelan
+         Composite old = null;
+@@ -378,7 +416,7 @@ public final class ChunkManager {
+         for (Chunk c : vs) {
+             Decor d = c.decor;
+             for (int i = 0; i < d.n; i++) {
+-                if (d.kind[i] != WorldGen.K_GLOW) continue;
++                if (!isGlow(d.kind[i])) continue;
+                 int sx = d.x[i] + sxOff, sy = d.y[i] + syOff;
+                 if (sx + d.w[i] < vx0 || sx > vx1 || sy + d.h[i] < vy0 || sy > vy1) continue;
+                 if (old == null) old = g2.getComposite();
+@@ -397,12 +435,12 @@ public final class ChunkManager {
+             int ci = c.cy * ncx + c.cx;
+             Decor d = c.decor;
+             for (int i = 0; i < d.n; i++) {
+-                if (d.kind[i] == WorldGen.K_GLOW) continue;
++                if (isGlow(d.kind[i])) continue;
+                 int sx = d.x[i] + sxOff, sy = d.y[i] + syOff;
+                 if (sx + d.w[i] < vx0 || sx > vx1 || sy + d.h[i] < vy0 || sy > vy1) continue;
+                 int k = d.kind[i];
+                 int sortY = (k == WorldGen.K_BUSH || k == WorldGen.K_BUSH_SNOW) ? d.y[i] + d.h[i] - 40
+-                          : (k == WorldGen.K_DRIFT ? d.y[i] + d.h[i] - 400 : d.y[i] + d.h[i]);   // gundukan salju selalu di bawah objek berdiri
++                          : ((k == WorldGen.K_DRIFT || k == WorldGen.K_BONES) ? d.y[i] + d.h[i] - 400 : d.y[i] + d.h[i]);   // gundukan salju & tulang selalu di bawah objek berdiri
+                 drawList.add(new int[] {sortY, 7, ci * 4096 + i});
+             }
+         }
+diff --git a/2DGame/src/bahan/CurseAtmosphere.java b/2DGame/src/bahan/CurseAtmosphere.java
+new file mode 100644
+index 0000000..672dc4a
+--- /dev/null
++++ b/2DGame/src/bahan/CurseAtmosphere.java
+@@ -0,0 +1,154 @@
++package bahan;
++
++import java.awt.AlphaComposite;
++import java.awt.Color;
++import java.awt.Composite;
++import java.awt.Graphics2D;
++import java.awt.RadialGradientPaint;
++import java.awt.image.BufferedImage;
++import java.util.Random;
++
++import Main.GamePanel;
++
++/**
++ * Suasana biome terkutuk, digambar di layar (bukan di dunia) di atas semua objek:
++ *  - serpihan abu dan percikan ungu yang melayang naik pelan (3 lapis kedalaman, ikut bergeser waktu player jalan)
++ *  - kabut ungu gelap yang melayang pelan + vignette gelap keunguan di tepi layar, berdenyut sangat pelan
++ *  - sapuan warna ungu di seluruh layar
++ *
++ * Kekuatannya mengikuti seberapa "terkutuk" posisi player (WorldGen.curse) dan berubah pelan-pelan, jadi waktu player
++ * berjalan dari hutan ke biome terkutuk suasananya beralih halus. Di luar biome semuanya mati (tidak ada biaya gambar).
++ */
++public final class CurseAtmosphere {
++
++    private static final int N = 220;                 // jumlah maksimum serpihan
++    private final GamePanel gp;
++    private final int W, H;
++
++    private float intensity = 0f;                     // 0..1, dihaluskan
++    private float target = 0f;
++
++    private final float[] bx = new float[N], by = new float[N], depth = new float[N], drift = new float[N], phase = new float[N];
++    private final boolean[] reddish = new boolean[N];
++    private float time = 0f;
++
++    private BufferedImage vignette;                   // sapuan ungu + vignette gelap di tepi layar
++    private BufferedImage fog;                        // gumpalan kabut lembut
++    private final int[] order = new int[N];           // serpihan diurutkan per kedalaman: jauh -> dekat
++    private final int[] classEnd = new int[3];
++
++    public CurseAtmosphere(GamePanel gp) {
++        this.gp = gp;
++        this.W = gp.screenWidth;
++        this.H = gp.screenHeight;
++        Random rnd = new Random(13);
++        for (int i = 0; i < N; i++) {
++            bx[i] = rnd.nextFloat() * W;
++            by[i] = rnd.nextFloat() * H;
++            depth[i] = 0.30f + 0.70f * rnd.nextFloat() * rnd.nextFloat() + 0.25f * rnd.nextFloat();
++            if (depth[i] > 1f) depth[i] = 1f;
++            drift[i] = (rnd.nextFloat() - 0.5f) * 2f;
++            phase[i] = rnd.nextFloat() * 6.2832f;
++            reddish[i] = rnd.nextFloat() < 0.18f;
++        }
++        Integer[] idx = new Integer[N];
++        for (int i = 0; i < N; i++) idx[i] = i;
++        java.util.Arrays.sort(idx, (x, y) -> Float.compare(depth[x], depth[y]));
++        for (int i = 0; i < N; i++) order[i] = idx[i];
++        int c0 = 0, c1 = 0;
++        for (int i = 0; i < N; i++) { if (depth[order[i]] < 0.55f) c0 = i + 1; if (depth[order[i]] < 0.82f) c1 = i + 1; }
++        classEnd[0] = c0; classEnd[1] = c1; classEnd[2] = N;
++        buildSprites();
++    }
++
++    private void buildSprites() {
++        vignette = new BufferedImage(W, H, BufferedImage.TYPE_INT_ARGB);
++        Graphics2D g = vignette.createGraphics();
++        g.setColor(new Color(70, 20, 110, 40));              // sapuan ungu di seluruh layar
++        g.fillRect(0, 0, W, H);
++        float r = (float) Math.hypot(W, H) * 0.55f;
++        g.setPaint(new RadialGradientPaint(W / 2f, H / 2f, r, new float[] {0f, 0.50f, 1f},
++                new Color[] {new Color(20, 4, 34, 0), new Color(20, 4, 34, 40), new Color(14, 2, 26, 190)}));
++        g.fillRect(0, 0, W, H);
++        g.dispose();
++
++        int fw = 720, fh = 360;
++        fog = new BufferedImage(fw, fh, BufferedImage.TYPE_INT_ARGB);
++        g = fog.createGraphics();
++        g.setPaint(new RadialGradientPaint(fw / 2f, fh / 2f, fw / 2f, new float[] {0f, 1f},
++                new Color[] {new Color(60, 22, 92, 110), new Color(60, 22, 92, 0)}));
++        g.scale(1.0, fh / (double) fw);
++        g.fillRect(0, 0, fw, fw);
++        g.dispose();
++    }
++
++    /** kekuatan efek sekarang (0..1); dipakai juga untuk menggelapkan layar di malam hari */
++    public float intensity() { return intensity; }
++
++    /** Dipanggil tiap frame saat di dunia luar. */
++    public void update() {
++        WorldGen gen = gp.tileM.gen;
++        if (gen != null && gp.player != null) {
++            float cs = gen.curse((gp.player.x + gp.tileSize / 2f) / gp.tileSize, (gp.player.y + gp.tileSize / 2f) / gp.tileSize);
++            // mulai terasa waktu pohon-pohon mulai layu, penuh di dalam biome
++            float t = (cs - 0.08f) / 0.55f;
++            target = t < 0f ? 0f : (t > 1f ? 1f : t * t * (3f - 2f * t));
++        }
++        // naik pelan (~3 detik), turun pelan (~4 detik)
++        intensity += (target - intensity) * (target > intensity ? 0.012f : 0.009f);
++        if (Math.abs(target - intensity) < 0.002f) intensity = target;
++        time += 1f / gp.FPS;
++    }
++
++    /** Gambar di layar normal (sesudah transform zoom dunia dilepas). */
++    public void draw(Graphics2D g2) {
++        if (intensity < 0.01f) return;
++        Composite old = g2.getComposite();
++        float in = intensity;
++        float pulse = 0.92f + 0.08f * (float) Math.sin(time * 0.7f);
++
++        // 1) sapuan ungu + vignette gelap (satu gambar)
++        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, in * pulse)));
++        g2.drawImage(vignette, 0, 0, null);
++
++        // 2) kabut melayang
++        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, 0.60f * in)));
++        for (int i = 0; i < 2; i++) {
++            float speed = 7f + 5f * i;
++            int fw = fog.getWidth(), fh = fog.getHeight();
++            float cycle = W + fw;
++            float x = ((time * speed + i * 380f + gp.player.x * 0.05f) % cycle) - fw;
++            int y = (int) (H * (0.25f + 0.40f * i) + Math.sin(time * 0.17f + i * 2.3f) * 24f - gp.player.y * 0.02f % 40f);
++            g2.drawImage(fog, (int) x, y, null);
++        }
++
++        // 3) abu dan percikan ungu yang naik pelan, digambar per kelompok kedalaman
++        int count = (int) (N * (0.30f + 0.70f * in));
++        float camX = gp.player.x, camY = gp.player.y;
++        float[] classAlpha = {0.45f, 0.70f, 0.95f};
++        int[] classSize = {2, 3, 3};
++        Color violet = new Color(196, 140, 255), ember = new Color(255, 96, 140), ash = new Color(170, 150, 190);
++        int start = 0;
++        for (int cls = 0; cls < 3; cls++) {
++            int end = Math.min(classEnd[cls], N);
++            float a = classAlpha[cls] * Math.min(1f, in * 1.2f);
++            int size = classSize[cls];
++            for (int k = start; k < end; k++) {
++                int i = order[k];
++                if ((i * 7919) % N >= count) continue;
++                float d = depth[i];
++                float sx = bx[i] + time * (drift[i] * 6f) + (float) Math.sin(time * 0.9f + phase[i]) * 11f * d - camX * 0.45f * d;
++                float sy = by[i] - time * (10f + 22f * d) - camY * 0.45f * d;       // naik
++                sx = ((sx % W) + W) % W;
++                sy = ((sy % H) + H) % H;
++                // berkedip pelan
++                float tw = 0.65f + 0.35f * (float) Math.sin(time * 2.1f + phase[i] * 3f);
++                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, a * tw)));
++                g2.setColor(i % 5 == 0 ? ash : (reddish[i] ? ember : violet));
++                g2.fillRect((int) sx, (int) sy, size, size);
++            }
++            start = end;
++        }
++        g2.setComposite(old);
++    }
++}
+diff --git a/2DGame/src/bahan/CursedGround.java b/2DGame/src/bahan/CursedGround.java
+new file mode 100644
+index 0000000..66cf171
+--- /dev/null
++++ b/2DGame/src/bahan/CursedGround.java
+@@ -0,0 +1,261 @@
++package bahan;
++
++import java.awt.image.BufferedImage;
++
++/**
++ * Menggambar "kulit" tanah terkutuk + jurang di ujung dunia untuk satu chunk peta (di-bake sekali, lalu tinggal
++ * ditempel tiap frame). Cara kerjanya sama dengan {@link IceGround}: gambar RGBA {@link IceGround#PPT} piksel per tile,
++ * piksel yang tidak tertutup dibiarkan transparan sehingga rumput di bawahnya kelihatan. Makin ke tengah biome makin
++ * banyak piksel tanah abu-abu gelap (dither + gumpalan), makin ke pinggir makin jarang, jadi hutan perlahan "membusuk"
++ * menjadi tanah terkutuk, bukan garis potong.
++ *
++ * Tambahan dibanding salju:
++ *  - di tengah biome ada retakan yang bersinar ungu
++ *  - sel jurang ({@link WorldGen#isVoid}) digambar penuh: hitam keunguan berbintang, dan tepi daratan di sebelahnya
++ *    digerogoti noise (rapuh) dengan bibir tebing yang menyala
++ *
++ * Murni fungsi dari koordinat dunia, jadi chunk bersebelahan nyambung dan hasilnya selalu sama.
++ */
++public final class CursedGround {
++
++    private CursedGround() {}
++
++    private static final int PPT = IceGround.PPT;
++
++    // ------------------------------------------------------------------ palet (ARGB)
++    private static final int G_HI   = 0xFF4B3C60;
++    private static final int G_1    = 0xFF352B45;
++    private static final int G_2    = 0xFF2B2238;
++    private static final int G_3    = 0xFF221A2C;
++    private static final int G_RIM  = 0xFF130D1A;
++    private static final int ASH    = 0xFF74698A;
++    private static final int SPARK  = 0xFFC9A0FF;
++    private static final int VEIN_L = 0xFFE0B3FF;
++    private static final int VEIN   = 0xFFA24BFF;
++    private static final int VEIN_D = 0xFF5B1FA6;
++
++    private static final int V_0 = 0xFF06030A, V_1 = 0xFF0C0714, V_2 = 0xFF150B24;
++    private static final int STAR = 0xFF7A52BE, STAR_R = 0xFFB03A5E;
++    private static final int LIP_1 = 0xFFA06AF0, LIP_2 = 0xFF5C34A0;
++
++    private static final int NS1 = 0x4D11, NS2 = 0x2A63, NS3 = 0x79C1, NS4 = 0x1E37, NS5 = 0x6B05, NS6 = 0x3A9D,
++                             NS7 = 0x5F29, NS8 = 0x2C71, NS9 = 0x7D43, NS10 = 0x13B9;
++
++    private static final byte M_NONE = 0, M_GROUND = 1, M_VOID = 2, M_LIP = 3;
++
++    /**
++     * @return gambar (size*PPT) x (size*PPT) beserta tile yang tertutup penuh, atau null kalau chunk ini sama sekali
++     *         tidak terkena kutukan.
++     */
++    public static IceGround.Result bake(WorldGen gen, int col0, int row0, int size) {
++        final int W = size * PPT;
++        final int PW = W + 2;                 // lebar dengan pinggiran 1 px (untuk bayangan tepi yang pas di batas chunk)
++
++        // --- curse() di kisi 1/2 tile, mulai dari 1 tile sebelum chunk
++        final int GS = (size + 2) * 2 + 1;
++        float[] curG = new float[GS * GS];
++        float maxCur = 0f;
++        for (int gy = 0; gy < GS; gy++) {
++            for (int gx = 0; gx < GS; gx++) {
++                float tx = col0 - 1 + gx * 0.5f, ty = row0 - 1 + gy * 0.5f;
++                float cv = gen.curse(tx, ty);
++                curG[gy * GS + gx] = cv;
++                if (cv > maxCur) maxCur = cv;
++            }
++        }
++
++        // --- tile mana yang jurang, tile mana yang boleh tertutup tanah (pinggiran 1 tile)
++        final int TS = size + 2;
++        boolean[] voidT = new boolean[TS * TS];
++        boolean[] elig = new boolean[TS * TS];
++        boolean anyVoid = false;
++        for (int r = 0; r < TS; r++) {
++            for (int c = 0; c < TS; c++) {
++                int cc = col0 - 1 + c, rr = row0 - 1 + r;
++                if (cc < 0 || rr < 0 || cc >= WorldGen.WORLD_COLS || rr >= WorldGen.WORLD_ROWS) continue;
++                boolean v = gen.isVoid(cc, rr);
++                voidT[r * TS + c] = v;
++                if (v) anyVoid = true;
++                else elig[r * TS + c] = WorldGen.isGrassLike(gen.baseTile(cc, rr));
++            }
++        }
++        if (maxCur < 0.04f && !anyVoid) return null;
++
++        byte[] mask = new byte[PW * PW];
++        int[] colr = new int[PW * PW];
++        final int gx0 = col0 * PPT - 1, gy0 = row0 * PPT - 1;      // koordinat piksel seni dunia dari piksel (0,0) berpinggiran
++        boolean any = false;
++
++        for (int py = 0; py < PW; py++) {
++            int gy = gy0 + py;
++            int tr = Math.floorDiv(gy, PPT) - (row0 - 1);
++            int ly = Math.floorMod(gy, PPT);
++            float v = (py + 0.5f) / 8f;                            // posisi di kisi 1/2 tile (1 sel = 8 piksel seni)
++            int v0 = (int) v; if (v0 > GS - 2) v0 = GS - 2;
++            float fv = v - v0;
++            for (int px = 0; px < PW; px++) {
++                int gx = gx0 + px;
++                int tc = Math.floorDiv(gx, PPT) - (col0 - 1);
++                int lx = Math.floorMod(gx, PPT);
++                int ti = tr * TS + tc;
++                int idx = py * PW + px;
++
++                // ---- jurang: digambar penuh
++                if (voidT[ti]) {
++                    mask[idx] = M_VOID;
++                    colr[idx] = voidColor(gx, gy);
++                    any = true;
++                    continue;
++                }
++                if (!elig[ti]) continue;
++
++                // ---- tepi daratan di sebelah jurang: digerogoti noise, dengan bibir yang menyala
++                float dv = 99f;
++                if (tc > 0 && voidT[ti - 1]) dv = Math.min(dv, lx);
++                if (tc < TS - 1 && voidT[ti + 1]) dv = Math.min(dv, PPT - 1 - lx);
++                if (tr > 0 && voidT[ti - TS]) dv = Math.min(dv, ly);
++                if (tr < TS - 1 && voidT[ti + TS]) dv = Math.min(dv, PPT - 1 - ly);
++                if (tr > 0 && tc > 0 && voidT[ti - TS - 1]) dv = Math.min(dv, (float) Math.hypot(lx, ly));
++                if (tr > 0 && tc < TS - 1 && voidT[ti - TS + 1]) dv = Math.min(dv, (float) Math.hypot(PPT - 1 - lx, ly));
++                if (tr < TS - 1 && tc > 0 && voidT[ti + TS - 1]) dv = Math.min(dv, (float) Math.hypot(lx, PPT - 1 - ly));
++                if (tr < TS - 1 && tc < TS - 1 && voidT[ti + TS + 1]) dv = Math.min(dv, (float) Math.hypot(PPT - 1 - lx, PPT - 1 - ly));
++                if (dv < 90f) {
++                    float e = 2.2f + 3.4f * WorldGen.vnoise(gx * 0.30f, gy * 0.30f, NS8) + 1.3f * WorldGen.rnd(gx, gy, NS9);
++                    if (dv < e - 1.4f) {
++                        mask[idx] = M_VOID;
++                        colr[idx] = voidColor(gx, gy);
++                        any = true;
++                        continue;
++                    }
++                    if (dv < e) {
++                        mask[idx] = M_LIP;
++                        colr[idx] = (dv < e - 0.6f) ? LIP_1 : LIP_2;
++                        any = true;
++                        continue;
++                    }
++                }
++
++                // ---- tanah terkutuk
++                float u = (px + 0.5f) / 8f;
++                int u0 = (int) u; if (u0 > GS - 2) u0 = GS - 2;
++                float fu = u - u0;
++                int i00 = v0 * GS + u0;
++                float cv = lerp2(curG[i00], curG[i00 + 1], curG[i00 + GS], curG[i00 + GS + 1], fu, fv);
++                if (cv < 0.03f) continue;
++
++                float white = WorldGen.rnd(gx, gy, NS3);
++                float clump = 0.55f * WorldGen.vnoise(gx * 0.060f, gy * 0.060f, NS1)
++                            + 0.30f * WorldGen.vnoise(gx * 0.150f + 7f, gy * 0.150f + 3f, NS2)
++                            + 0.15f * WorldGen.vnoise(gx * 0.330f + 2f, gy * 0.330f + 9f, NS4);
++                float t = 0.84f * clump + 0.16f * white;
++                t = (t - 0.20f) / 0.60f;
++                if (t > 1f) t = 1f;
++                float cover = smoothstep(0.04f, 0.70f, cv) * 1.10f;
++                if (!(cover > t)) continue;
++
++                mask[idx] = M_GROUND;
++                colr[idx] = groundColor(gx, gy, white, cv);
++                any = true;
++            }
++        }
++        if (!any) return null;
++
++        // ---- tepi: ketebalan tanah (bawah gelap, atas terang)
++        int[] out = new int[W * W];
++        for (int py = 0; py < W; py++) {
++            for (int px = 0; px < W; px++) {
++                int idx = (py + 1) * PW + (px + 1);
++                byte m = mask[idx];
++                if (m == M_NONE) continue;
++                int c = colr[idx];
++                if (m == M_GROUND) {
++                    byte up = mask[idx - PW], dn = mask[idx + PW];
++                    if (dn == M_NONE) c = G_RIM;
++                    else if (up == M_NONE) c = G_HI;
++                }
++                out[py * W + px] = c;
++            }
++        }
++        boolean[] covered = new boolean[size * size];
++        for (int tr = 0; tr < size; tr++) {
++            for (int tc = 0; tc < size; tc++) {
++                boolean full = true;
++                scan:
++                for (int y = tr * PPT; y < (tr + 1) * PPT; y++) {
++                    int base = y * W + tc * PPT;
++                    for (int x = 0; x < PPT; x++) {
++                        if ((out[base + x] >>> 24) == 0) { full = false; break scan; }
++                    }
++                }
++                covered[tr * size + tc] = full;
++            }
++        }
++        BufferedImage img = new BufferedImage(W, W, BufferedImage.TYPE_INT_ARGB);
++        img.setRGB(0, 0, W, W, out, 0, W);
++        return new IceGround.Result(img, covered);
++    }
++
++    // ------------------------------------------------------------------ warna
++
++    private static int groundColor(int gx, int gy, float white, float cv) {
++        float drift = 0.80f * WorldGen.fbm(gx * 0.030f, gy * 0.030f, NS5, 3) + 0.20f * WorldGen.vnoise(gx * 0.12f, gy * 0.12f, NS6);
++
++        // retakan yang bersinar, cuma di dalam biome: jarak ke tepi sel Voronoi (sel besar ~ 2 tile)
++        if (cv > 0.62f) {
++            final float CS = 34f;
++            float px = gx / CS, py = gy / CS;
++            int cx = (int) Math.floor(px), cy = (int) Math.floor(py);
++            float f1 = 1e9f, f2 = 1e9f;
++            int id1 = 0, id2 = 0;
++            for (int j = -1; j <= 1; j++) {
++                for (int i = -1; i <= 1; i++) {
++                    int ax = cx + i, ay = cy + j;
++                    float sx = ax + WorldGen.rnd(ax, ay, 0x2B3C);
++                    float sy = ay + WorldGen.rnd(ax, ay, 0x4D5E);
++                    float dx = (sx - px) * CS, dy = (sy - py) * CS;
++                    float d = dx * dx + dy * dy;
++                    int id = WorldGen.h2(ax, ay, 0x66);
++                    if (d < f1) { f2 = f1; id2 = id1; f1 = d; id1 = id; }
++                    else if (d < f2) { f2 = d; id2 = id; }
++                }
++            }
++            float gap = (float) (Math.sqrt(f2) - Math.sqrt(f1));
++            if (((id1 ^ id2) & 7) < 3) {
++                if (gap < 0.7f) return VEIN_L;
++                if (gap < 1.5f) return VEIN;
++                if (gap < 2.4f) return VEIN_D;
++            }
++        }
++
++        if (white < 0.0045f && cv > 0.5f) return SPARK;
++        if (white > 0.992f) return ASH;
++        if (drift < 0.30f) return G_3;
++        if (drift < 0.42f) return G_2;
++        if (drift > 0.66f) return G_HI;
++        return G_1;
++    }
++
++    private static int voidColor(int gx, int gy) {
++        float w = WorldGen.rnd(gx, gy, NS7);
++        if (w < 0.0035f) return STAR;
++        if (w < 0.0046f) return STAR_R;
++        float warp = WorldGen.vnoise(gx * 0.02f, gy * 0.02f, NS8) * 6f;
++        float sw = 0.6f * WorldGen.vnoise(gx * 0.045f + warp, gy * 0.060f, NS10) + 0.4f * WorldGen.vnoise(gx * 0.11f, gy * 0.11f + warp, NS9);
++        if (sw > 0.62f) return V_2;
++        if (sw > 0.46f) return V_1;
++        return V_0;
++    }
++
++    // ------------------------------------------------------------------ util
++
++    private static float lerp2(float a, float b, float c, float d, float fu, float fv) {
++        float top = a + (b - a) * fu, bot = c + (d - c) * fu;
++        return top + (bot - top) * fv;
++    }
++
++    private static float smoothstep(float a, float b, float x) {
++        float t = (x - a) / (b - a);
++        if (t < 0f) t = 0f; else if (t > 1f) t = 1f;
++        return t * t * (3f - 2f * t);
++    }
++}
+diff --git a/2DGame/src/bahan/CursedSprites.java b/2DGame/src/bahan/CursedSprites.java
+new file mode 100644
+index 0000000..c3eb785
+--- /dev/null
++++ b/2DGame/src/bahan/CursedSprites.java
+@@ -0,0 +1,429 @@
++package bahan;
++
++import java.awt.BasicStroke;
++import java.awt.Color;
++import java.awt.Graphics2D;
++import java.awt.Polygon;
++import java.awt.RadialGradientPaint;
++import java.awt.RenderingHints;
++import java.awt.geom.Ellipse2D;
++import java.awt.geom.Line2D;
++import java.awt.geom.QuadCurve2D;
++import java.awt.image.BufferedImage;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Random;
++import java.util.stream.IntStream;
++
++/**
++ * Gambar-gambar biome terkutuk. Semuanya dilukis lewat kode (tanpa file aset), sebagai "piksel seni" kecil yang
++ * diperbesar {@link #Z} kali tanpa penghalusan, jadi gayanya sama dengan sprite biome es:
++ *  - pohon kutukan yang meliuk (3 variasi) + animasi kena-pukul / tumbang (dibuat dari sprite-nya)
++ *  - batu obsidian, kristal ungu, nisan, semak duri, tumpukan tulang, cahaya ungu di bawah kristal
++ *  - {@link #wither}: pohon biasa yang layu (daun jadi ungu keabu-abuan dan rontok sebagian), dipakai di pinggiran biome
++ */
++public final class CursedSprites {
++
++    /** tiap piksel seni diperbesar segini kali */
++    static final int Z = 4;
++
++    public final BufferedImage[] tree = new BufferedImage[3];
++    public final BufferedImage[][] treeHit = new BufferedImage[3][];
++    public final BufferedImage[][] treeDown = new BufferedImage[3][];
++    public final BufferedImage[] obsidian = new BufferedImage[3];
++    public final BufferedImage[] crystal = new BufferedImage[3];
++    public final BufferedImage[] tomb = new BufferedImage[2];
++    public final BufferedImage[] thorn = new BufferedImage[2];
++    public final BufferedImage[] bones = new BufferedImage[2];
++    public final BufferedImage glow;
++
++    /** pohon biasa yang layu: frame diam / dipukul / tumbang (dari frame pohon biasa) */
++    public final BufferedImage[] witherIdle, witherHit, witherDown;
++
++    // ------------------------------------------------------------------ palet (ARGB)
++    private static final int OUT      = 0xFF120A18;
++    private static final int BARK     = 0xFF33243B;
++    private static final int BARK_HI  = 0xFF5A4469;
++    private static final int BARK_LO  = 0xFF1D1325;
++    private static final int LEAF_A   = 0xFF4A2358;
++    private static final int LEAF_B   = 0xFF6B2F7F;
++    private static final int LEAF_C   = 0xFF8E4AA6;
++    private static final int WISP     = 0xFFE3B5FF;
++    private static final int VEIN     = 0xFFA24BFF;
++    private static final int VEIN_L   = 0xFFE0B3FF;
++
++    public CursedSprites(BufferedImage[] oakIdle, BufferedImage[] oakHit, BufferedImage[] oakDown) {
++        for (int i = 0; i < tree.length; i++) {
++            tree[i] = paintTree(i);
++            treeHit[i] = IceSprites.hitFrames(tree[i]);
++            treeDown[i] = IceSprites.downFrames(tree[i]);
++        }
++        for (int i = 0; i < obsidian.length; i++) obsidian[i] = paintObsidian(i);
++        for (int i = 0; i < crystal.length; i++) crystal[i] = paintCrystal(i);
++        for (int i = 0; i < tomb.length; i++) tomb[i] = paintTomb(i);
++        for (int i = 0; i < thorn.length; i++) thorn[i] = paintThorn(i);
++        for (int i = 0; i < bones.length; i++) bones[i] = paintBones(i);
++        glow = paintGlow();
++        witherIdle = witherAll(oakIdle);
++        witherHit = witherAll(oakHit);
++        witherDown = witherAll(oakDown);
++    }
++
++    // ================================================================== kanvas piksel seni
++
++    private static final class Art {
++        final BufferedImage img;
++        final Graphics2D g;
++
++        Art(int w, int h) {
++            img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
++            g = img.createGraphics();
++            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
++        }
++
++        void poly(int argb, int... xy) {
++            Polygon p = new Polygon();
++            for (int i = 0; i + 1 < xy.length; i += 2) p.addPoint(xy[i], xy[i + 1]);
++            g.setColor(new Color(argb, true));
++            g.fillPolygon(p);
++        }
++
++        /** poligon yang dibesarkan s kali dari titik pusatnya (dipakai buat garis tepi) */
++        void polyOutline(int outArgb, int fillArgb, float s, int... xy) {
++            float cx = 0, cy = 0;
++            int n = xy.length / 2;
++            for (int i = 0; i < n; i++) { cx += xy[2 * i]; cy += xy[2 * i + 1]; }
++            cx /= n; cy /= n;
++            int[] big = new int[xy.length];
++            for (int i = 0; i < n; i++) {
++                big[2 * i] = Math.round(cx + (xy[2 * i] - cx) * s);
++                big[2 * i + 1] = Math.round(cy + (xy[2 * i + 1] - cy) * s);
++            }
++            poly(outArgb, big);
++            poly(fillArgb, xy);
++        }
++
++        void line(int argb, float w, float x0, float y0, float x1, float y1) {
++            g.setStroke(new BasicStroke(w, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
++            g.setColor(new Color(argb, true));
++            g.draw(new Line2D.Float(x0, y0, x1, y1));
++        }
++
++        void curve(int argb, float w, float x0, float y0, float cx, float cy, float x1, float y1) {
++            g.setStroke(new BasicStroke(w, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
++            g.setColor(new Color(argb, true));
++            g.draw(new QuadCurve2D.Float(x0, y0, cx, cy, x1, y1));
++        }
++
++        void oval(int argb, float x, float y, float w, float h) {
++            g.setColor(new Color(argb, true));
++            g.fill(new Ellipse2D.Float(x, y, w, h));
++        }
++
++        void rect(int argb, int x, int y, int w, int h) {
++            g.setColor(new Color(argb, true));
++            g.fillRect(x, y, w, h);
++        }
++
++        void dot(int argb, int x, int y) {
++            rect(argb, x, y, 1, 1);
++        }
++
++        BufferedImage done() {
++            g.dispose();
++            int w = img.getWidth() * Z, h = img.getHeight() * Z;
++            BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
++            Graphics2D og = out.createGraphics();
++            og.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
++            og.drawImage(img, 0, 0, w, h, null);
++            og.dispose();
++            return out;
++        }
++    }
++
++    // ================================================================== pohon kutukan
++
++    /** satu ruas dahan: {x0, y0, x1, y1, tebal} */
++    private static void grow(List<float[]> segs, List<float[]> tips, Random rnd,
++                             float x, float y, float angleDeg, int steps, float thick, int depth) {
++        for (int i = 0; i < steps; i++) {
++            angleDeg += (rnd.nextFloat() - 0.5f) * 34f;
++            float len = 4.2f + rnd.nextFloat() * 2.4f;
++            float nx = x + (float) Math.cos(Math.toRadians(angleDeg)) * len;
++            float ny = y + (float) Math.sin(Math.toRadians(angleDeg)) * len;
++            segs.add(new float[] {x, y, nx, ny, thick});
++            if (depth < 2 && i >= 1 && i < steps - 1 && rnd.nextFloat() < 0.78f) {
++                float side = rnd.nextBoolean() ? 1f : -1f;
++                grow(segs, tips, rnd, nx, ny, angleDeg + side * (38f + rnd.nextFloat() * 26f),
++                        3 + rnd.nextInt(3), Math.max(1.4f, thick * 0.68f), depth + 1);
++            }
++            x = nx; y = ny;
++            thick = Math.max(1.3f, thick * 0.84f);
++        }
++        tips.add(new float[] {x, y});
++    }
++
++    private static BufferedImage paintTree(int variant) {
++        final int W = 48, H = 58;
++        Art a = new Art(W, H);
++        Random rnd = new Random(0xC0FFEEL + variant * 7919L);
++        float bx = W / 2f, by = 53f;
++
++        a.oval(0x55000000, 7, 49, 34, 8);                           // bayangan di tanah
++
++        List<float[]> segs = new ArrayList<>();
++        List<float[]> tips = new ArrayList<>();
++        grow(segs, tips, rnd, bx, by, -90f + (rnd.nextFloat() - 0.5f) * 14f, 6, 7.4f, 0);
++
++        // akar yang mencengkeram tanah
++        for (int i = 0; i < 4; i++) {
++            float side = (i % 2 == 0) ? -1f : 1f;
++            float len = 6f + rnd.nextFloat() * 5f;
++            segs.add(new float[] {bx + side * 1.5f, by - 1f, bx + side * len, by + 1.5f + rnd.nextFloat() * 2f, 3.2f});
++        }
++
++        // garis tepi dulu, lalu kulit kayu, lalu sorot terang di kiri dan bayangan di kanan
++        for (float[] s : segs) a.line(OUT, s[4] + 2.2f, s[0], s[1], s[2], s[3]);
++        for (float[] s : segs) a.line(BARK, s[4], s[0], s[1], s[2], s[3]);
++        for (float[] s : segs) if (s[4] > 2.6f) {
++            a.line(BARK_HI, Math.max(1f, s[4] * 0.30f), s[0] - s[4] * 0.24f, s[1], s[2] - s[4] * 0.24f, s[3]);
++            a.line(BARK_LO, Math.max(1f, s[4] * 0.28f), s[0] + s[4] * 0.26f, s[1], s[2] + s[4] * 0.26f, s[3]);
++        }
++
++        // sedikit daun kusam di ujung dahan, dengan serpihan cahaya
++        int[] leafCols = {LEAF_A, LEAF_B, LEAF_C};
++        for (float[] t : tips) {
++            int n = 2 + rnd.nextInt(2);
++            for (int i = 0; i < n; i++) {
++                float ox = (rnd.nextFloat() - 0.5f) * 8f, oy = (rnd.nextFloat() - 0.5f) * 6f - 1f;
++                float w = 4f + rnd.nextFloat() * 4f, h = 3f + rnd.nextFloat() * 3f;
++                a.oval(OUT, t[0] + ox - w / 2 - 0.8f, t[1] + oy - h / 2 - 0.8f, w + 1.6f, h + 1.6f);
++            }
++        }
++        for (float[] t : tips) {
++            int n = 2 + rnd.nextInt(2);
++            for (int i = 0; i < n; i++) {
++                float ox = (rnd.nextFloat() - 0.5f) * 8f, oy = (rnd.nextFloat() - 0.5f) * 6f - 1f;
++                float w = 4f + rnd.nextFloat() * 4f, h = 3f + rnd.nextFloat() * 3f;
++                a.oval(leafCols[rnd.nextInt(3)], t[0] + ox - w / 2, t[1] + oy - h / 2, w, h);
++            }
++            if (rnd.nextFloat() < 0.7f) a.dot(WISP, Math.round(t[0] + (rnd.nextFloat() - 0.5f) * 6f), Math.round(t[1] + 2f + rnd.nextFloat() * 4f));
++        }
++
++        // lubang di batang dengan dua mata ungu yang menyala
++        float[] mid = segs.get(Math.min(2, segs.size() - 1));
++        int ex = Math.round((mid[0] + mid[2]) / 2f), ey = Math.round((mid[1] + mid[3]) / 2f);
++        a.oval(0xFF08040B, ex - 2.5f, ey - 3f, 5f, 6f);
++        a.dot(WISP, ex - 1, ey - 1);
++        a.dot(WISP, ex + 1, ey - 1);
++        a.dot(VEIN, ex - 1, ey);
++        a.dot(VEIN, ex + 1, ey);
++        return a.done();
++    }
++
++    // ================================================================== obsidian
++
++    private static BufferedImage paintObsidian(int v) {
++        Art a = new Art(32, 28);
++        Random rnd = new Random(500L + v * 31L);
++        a.oval(0x55000000, 1, 22, 30, 6);
++        int[] p = {4, 24, 2, 16, 6, 9, 12, 3, 19, 4, 25, 9, 29, 17, 27, 24, 16, 26};
++        for (int i = 0; i < p.length; i++) p[i] += rnd.nextInt(3) - 1;
++        a.polyOutline(0xFF0C070F, 0xFF241A31, 1.10f, p);
++        // sisi terang di kiri, sisi gelap di kanan
++        a.poly(0xFF3D2E52, p[4 - 2], p[5 - 2], p[6], p[7], p[6] + 1, 13, p[2] + 2, 17);
++        a.poly(0xFF181021, p[8], p[9], p[10], p[11], p[12], p[13], p[12] - 7, 17);
++        a.line(0xFF77579E, 1f, p[6], p[7], p[6] + 1, 13);
++        a.line(0xFF5B4380, 1f, p[2] + 1, p[3] + 1, p[4], p[5]);
++        a.line(0xFF77579E, 1f, p[4], p[5], p[6], p[7]);
++        // retakan yang bersinar
++        if (v != 1) {
++            float x = 14 + rnd.nextInt(3), y = 25;
++            for (int i = 0; i < 4; i++) {
++                float nx = x + (rnd.nextFloat() - 0.4f) * 3f, ny = y - 4f - rnd.nextFloat() * 2f;
++                a.line(VEIN, 1f, x, y, nx, ny);
++                a.dot(VEIN_L, Math.round(nx), Math.round(ny));
++                x = nx; y = ny;
++            }
++        }
++        return a.done();
++    }
++
++    // ================================================================== kristal kutukan
++
++    private static BufferedImage paintCrystal(int v) {
++        Art a = new Art(28, 36);
++        int[][] pal = {
++            {0xFF8A4DF0, 0xFF5B2BB0, 0xFFD2B0FF},
++            {0xFFC45BE0, 0xFF8A2BA8, 0xFFF0B8FF},
++            {0xFF6C7CF2, 0xFF3F45B4, 0xFFC2C8FF},
++        };
++        int[] c = pal[v % 3];
++        a.oval(0x55000000, 1, 30, 26, 6);
++        a.poly(0xFF1B1224, 2, 34, 4, 30, 12, 29, 20, 29, 25, 31, 26, 34, 14, 35);
++        int h1 = 1 + (v == 1 ? 3 : 0);
++        // pecahan kiri dan kanan (lebih kecil), lalu pecahan utama di depan
++        int[][] left = {{4, 31}, {4, 19}, {7, 12}, {10, 19}, {10, 31}};
++        int[][] right = {{19, 31}, {19, 22}, {22, 16}, {25, 22}, {25, 31}};
++        shard(a, left, c);
++        shard(a, right, c);
++        int[][] mainS = {{9, 31}, {9, 12}, {14, h1}, {19, 12}, {19, 31}};
++        shard(a, mainS, c);
++        a.line(c[2], 1f, 10, 29, 10, 12);
++        a.line(c[2], 1f, 10, 12, 14, h1 + 1);
++        a.dot(0xFFFFFFFF, 12, 9);
++        return a.done();
++    }
++
++    private static void shard(Art a, int[][] pts, int[] c) {
++        int n = pts.length;
++        int[] flat = new int[n * 2];
++        for (int i = 0; i < n; i++) { flat[2 * i] = pts[i][0]; flat[2 * i + 1] = pts[i][1]; }
++        int topIdx = 0;
++        for (int i = 0; i < n; i++) if (pts[i][1] < pts[topIdx][1]) topIdx = i;
++        a.polyOutline(0xFF0E0716, c[1], 1.12f, flat);
++        int cx = pts[topIdx][0];
++        // sisi kiri lebih terang
++        a.poly(c[0], flat[0], flat[1], pts[1][0], pts[1][1], pts[topIdx][0], pts[topIdx][1], cx, pts[0][1]);
++    }
++
++    // ================================================================== nisan
++
++    private static BufferedImage paintTomb(int v) {
++        Art a = new Art(24, 30);
++        a.oval(0x66000000, 1, 25, 22, 5);
++        a.oval(0xFF2A2030, 1, 23, 22, 6);                                  // gundukan tanah
++        a.rect(0xFF1A1620, 2, 10, 20, 16);
++        a.oval(0xFF1A1620, 2, 2, 20, 16);
++        a.rect(0xFF6B6679, 4, 10, 16, 15);
++        a.oval(0xFF6B6679, 4, 4, 16, 12);
++        a.rect(0xFF8A859C, 4, 10, 3, 15);                                  // sisi terang
++        a.rect(0xFF4A4558, 17, 10, 3, 15);                                 // sisi gelap
++        a.rect(0xFF8A859C, 6, 5, 3, 2);
++        if (v == 0) {                                                       // salib
++            a.rect(0xFF2C2735, 11, 8, 2, 11);
++            a.rect(0xFF2C2735, 8, 11, 8, 2);
++        } else {                                                            // rune ungu
++            a.g.setStroke(new BasicStroke(1f));
++            a.g.setColor(new Color(VEIN, true));
++            a.g.draw(new Ellipse2D.Float(8, 10, 8, 8));
++            a.dot(VEIN_L, 12, 14);
++            a.dot(VEIN_L, 12, 10);
++        }
++        a.line(0xFF2C2735, 1f, 7, 26, 9, 21);                              // retakan di kaki nisan
++        a.line(0xFF2C2735, 1f, 9, 21, 8, 17);
++        a.line(0xFF2C2735, 1f, 9, 21, 12, 22);
++        return a.done();
++    }
++
++    // ================================================================== semak duri
++
++    private static BufferedImage paintThorn(int v) {
++        Art a = new Art(26, 24);
++        Random rnd = new Random(900L + v * 17L);
++        a.oval(0x55000000, 3, 19, 20, 5);
++        int n = 11;
++        float[][] sp = new float[n][6];
++        for (int i = 0; i < n; i++) {
++            float k = i - (n - 1) / 2f;
++            float ang = (float) Math.toRadians(-90 + k * 14f + (rnd.nextFloat() - 0.5f) * 8f);
++            float len = 11f - Math.abs(k) * 0.9f + rnd.nextFloat() * 4f;
++            float x0 = 13 + k * 1.3f, y0 = 22f;
++            float x1 = x0 + (float) Math.cos(ang) * len, y1 = y0 + (float) Math.sin(ang) * len;
++            float bend = (rnd.nextFloat() - 0.5f) * 8f;
++            float cx = (x0 + x1) / 2 + (float) -Math.sin(ang) * bend, cy = (y0 + y1) / 2 + (float) Math.cos(ang) * bend;
++            sp[i] = new float[] {x0, y0, cx, cy, x1, y1};
++        }
++        for (float[] s : sp) a.curve(OUT, 3.4f, s[0], s[1], s[2], s[3], s[4], s[5]);
++        for (float[] s : sp) a.curve(0xFF1A1224, 2.2f, s[0], s[1], s[2], s[3], s[4], s[5]);
++        for (float[] s : sp) {
++            a.curve(0xFF44335A, 1f, s[0] - 0.6f, s[1], s[2] - 0.6f, s[3], s[4], s[5]);
++            a.dot(0xFFD03A62, Math.round(s[4]), Math.round(s[5]));
++        }
++        return a.done();
++    }
++
++    // ================================================================== tulang
++
++    private static BufferedImage paintBones(int v) {
++        Art a = new Art(20, 10);
++        final int BONE = 0xFFD9D2C0, BONE_D = 0xFF9A9384, BONE_OUT = 0xFF2A2430;
++        if (v == 0) {                                                       // tengkorak dan satu tulang
++            a.oval(BONE_OUT, 1, 1, 9, 8);
++            a.oval(BONE, 2, 1, 7, 6);
++            a.rect(BONE, 3, 6, 5, 2);
++            a.dot(0xFF1A1420, 3, 3); a.dot(0xFF1A1420, 6, 3);
++            a.dot(BONE_D, 4, 7); a.dot(BONE_D, 6, 7);
++            a.line(BONE_OUT, 3.2f, 11, 8, 18, 4);
++            a.line(BONE, 2f, 11, 8, 18, 4);
++            a.dot(BONE, 11, 7); a.dot(BONE, 18, 3);
++        } else {                                                            // tulang bersilang
++            a.line(BONE_OUT, 3.2f, 3, 2, 16, 8);
++            a.line(BONE_OUT, 3.2f, 3, 8, 16, 2);
++            a.line(BONE, 2f, 3, 2, 16, 8);
++            a.line(BONE_D, 1f, 3, 8, 16, 2);
++            a.line(BONE, 2f, 3, 8, 16, 2);
++            a.dot(BONE, 2, 1); a.dot(BONE, 17, 9); a.dot(BONE, 2, 9); a.dot(BONE, 17, 1);
++        }
++        return a.done();
++    }
++
++    // ================================================================== cahaya ungu di bawah kristal
++
++    private static BufferedImage paintGlow() {
++        int w = 160, h = 110;
++        BufferedImage im = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
++        Graphics2D g = im.createGraphics();
++        g.setPaint(new RadialGradientPaint(w / 2f, w / 2f, w / 2f, new float[] {0f, 0.5f, 1f},
++                new Color[] {new Color(170, 90, 255, 150), new Color(120, 50, 200, 60), new Color(90, 30, 160, 0)}));
++        g.scale(1.0, h / (double) w);
++        g.fillRect(0, 0, w, w);
++        g.dispose();
++        return im;
++    }
++
++    // ================================================================== pohon biasa yang layu
++
++    private static BufferedImage[] witherAll(BufferedImage[] in) {
++        BufferedImage[] out = new BufferedImage[in.length];
++        IntStream.range(0, in.length).parallel().forEach(i -> out[i] = in[i] == null ? null : wither(in[i]));
++        return out;
++    }
++
++    /**
++     * Versi layu dari gambar pohon biasa: daun jadi ungu keabu-abuan, sebagian kotak daun (12 px) rontok, batang
++     * sedikit lebih gelap dan keunguan. Pola rontoknya ditentukan oleh posisi kotak, jadi semua frame animasi konsisten.
++     */
++    public static BufferedImage wither(BufferedImage src) {
++        final int B = 12;
++        int w = src.getWidth(), h = src.getHeight();
++        int[] px = src.getRGB(0, 0, w, h, null, 0, w);
++        int[] res = px.clone();
++        for (int y = 0; y < h; y++) {
++            for (int x = 0; x < w; x++) {
++                int p = px[y * w + x];
++                int a = p >>> 24;
++                if (a == 0) continue;
++                int r = p >> 16 & 255, g = p >> 8 & 255, b = p & 255;
++                if (g > r + 6 && g >= b) {                                           // daun
++                    if ((WorldGen.h2(x / B, y / B, 141) >>> 6) % 100 < 26) { res[y * w + x] = 0; continue; }   // rontok
++                    float lum = (r * 0.3f + g * 0.55f + b * 0.15f) / 255f;
++                    float t = Math.max(0f, Math.min(1f, (lum - 0.12f) / 0.5f));
++                    res[y * w + x] = a << 24 | mix(0x2B1D36, 0x7B5E8C, t);
++                } else {                                                             // batang dan lainnya
++                    res[y * w + x] = a << 24 | ((int) (r * 0.78f) + 6) << 16 | ((int) (g * 0.70f)) << 8 | ((int) (b * 0.86f) + 10);
++                }
++            }
++        }
++        BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
++        out.setRGB(0, 0, w, h, res, 0, w);
++        return out;
++    }
++
++    private static int mix(int a, int b, float t) {
++        int r = (int) ((a >> 16 & 255) * (1 - t) + (b >> 16 & 255) * t);
++        int g = (int) ((a >> 8 & 255) * (1 - t) + (b >> 8 & 255) * t);
++        int bl = (int) ((a & 255) * (1 - t) + (b & 255) * t);
++        return r << 16 | g << 8 | bl;
++    }
++}
+diff --git a/2DGame/src/bahan/TileM.java b/2DGame/src/bahan/TileM.java
+index 9e2a656..6574add 100644
+--- a/2DGame/src/bahan/TileM.java
++++ b/2DGame/src/bahan/TileM.java
+@@ -314,6 +314,7 @@ public TileM(GamePanel gp) {
+ 	 * Tile baru untuk dunia yang diperluas:
+ 	 *  76-78  = rumput (gambar sama dengan tile 4 / 6 / 10, tapi TIDAK collision) untuk area baru dan bekas tanah salju lama
+ 	 *  100    = salju, 131 = es (polos; cuma dipakai minimap)
++	 *  160    = tanah terkutuk (polos; cuma dipakai minimap), 161 = jurang di ujung dunia
+ 	 *  140-151 = tile tepi pantai versi salju (urutan sama dengan WorldGen.SHORE_BASE)
+ 	 */
+ 	private void addIceTiles() {
+@@ -326,6 +327,12 @@ public TileM(GamePanel gp) {
+ 		tile[WorldGen.TILE_SNOW].image = IceSprites.flat(0xE8F1FA);
+ 		tile[WorldGen.TILE_ICE] = new Tile();
+ 		tile[WorldGen.TILE_ICE].image = IceSprites.flat(0x9ACFEF);
++		// biome terkutuk: 160 = tanah terkutuk (polos; cuma dipakai minimap), 161 = jurang di ujung dunia (gelap, tidak bisa dilewati)
++		tile[WorldGen.TILE_CURSED] = new Tile();
++		tile[WorldGen.TILE_CURSED].image = IceSprites.flat(0x3A2B4C);
++		tile[WorldGen.TILE_VOID] = new Tile();
++		tile[WorldGen.TILE_VOID].image = IceSprites.flat(0x0A0612);
++		tile[WorldGen.TILE_VOID].collision = true;
+ 		for (int i = 0; i < WorldGen.SHORE_BASE.length; i++) {
+ 			Tile base = tile[WorldGen.SHORE_BASE[i]];
+ 			Tile t = new Tile();
+@@ -912,14 +919,10 @@ public TileM(GamePanel gp) {
+ 	}
+ 
+ 	public void draw(Graphics2D g2) {
+-        int worldWidth  = gp.maxWorldCol * gp.tileSize;
+-        int worldHeight = gp.maxWorldRow * gp.tileSize;
++        // Semua digambar relatif ke player. Kamera yang berhenti di ujung dunia (biome terkutuk) ditangani satu kali
++        // oleh GamePanel.applyWorldZoom() (seluruh dunia digeser), supaya tile, objek, dan entity tidak pernah berselisih.
+         int camX = gp.player.x;
+         int camY = gp.player.y;
+-        if (camX < gp.player.screenX) camX = gp.player.screenX;
+-        if (camX > worldWidth  - gp.player.screenX) camX = worldWidth  - gp.player.screenX;
+-        if (camY < gp.player.screenY)  camY = gp.player.screenY;
+-        if (camY > worldHeight - gp.player.screenY) camY = worldHeight - gp.player.screenY;
+ 
+         // Hanya gambar tile dasar (ground layer)
+         // Cuma telusuri tile yang kelihatan di layar (sekitar 17x13), bukan seluruh peta 700x700
+@@ -980,15 +983,10 @@ public TileM(GamePanel gp) {
+ 			            Entitas.Entity[] npcs,
+ 			            Entitas.Entity[] monsters) {
+ 			
+-			int worldWidth  = gp.maxWorldCol * gp.tileSize;
+-			int worldHeight = gp.maxWorldRow * gp.tileSize;
++			// relatif ke player; geseran kamera di ujung dunia dipasang di GamePanel.applyWorldZoom()
+ 			int camX = gp.player.x;
+ 			int camY = gp.player.y;
+-			if (camX < p.screenX) camX = p.screenX;
+-			if (camX > worldWidth  - p.screenX) camX = worldWidth  - p.screenX;
+-			if (camY < p.screenY)  camY = p.screenY;
+-			if (camY > worldHeight - p.screenY) camY = worldHeight - p.screenY;
+-			
++
+ 			final int fCamX = camX, fCamY = camY;
+ 			
+ 			
+@@ -1228,8 +1226,21 @@ public TileM(GamePanel gp) {
+ 	    //AIR-LAMA gp.objCol.add(350,1490,255,265);
+ 	    gp.objCol.add(350,1490,45,9065);
+ 	    // lanjutan tembok barat, hanya untuk bagian dunia yang BARU (di bawah peta lama): area peta lama dibiarkan persis seperti sebelumnya
++	    // Berhenti di WEST_WALL_END_ROW: lebih ke selatan itu tepi barat biome terkutuk, yang batasnya jurang (lihat di bawah).
+ 	    int westWallTop = (gen != null ? gen.coreRows() : 321) * gp.tileSize;
+-	    gp.objCol.add(350, westWallTop, 45, WorldGen.WORLD_ROWS * gp.tileSize - westWallTop);
++	    gp.objCol.add(350, westWallTop, 45, WorldGen.WEST_WALL_END_ROW * gp.tileSize - westWallTop);
++
++	    // ── UJUNG DUNIA (biome terkutuk) ──
++	    // Jurang di ujung dunia tidak bisa dilewati: player berhenti di bibirnya, sementara kamera sudah berhenti di ujung
++	    // dunia (GamePanel.camX / camY). Tembok di luar dunia mencegah monster muncul / tersesat di luar peta.
++	    if (gen != null) {
++	        for (Rectangle r : gen.voidBlockers(gp.tileSize)) gp.objCol.add(r.x, r.y, r.width, r.height);
++	    }
++	    int worldW = WorldGen.WORLD_COLS * gp.tileSize, worldH = WorldGen.WORLD_ROWS * gp.tileSize, far = 8000;
++	    gp.objCol.add(worldW, -far, far, worldH + 2 * far);        // timur
++	    gp.objCol.add(-far, worldH, worldW + 2 * far, far);        // selatan
++	    gp.objCol.add(-far, -far, worldW + 2 * far, far);          // utara
++	    gp.objCol.add(-far, -far, far, worldH + 2 * far);          // barat
+ 	    //AIR-LAMA gp.objCol.add(695,1520,110,220);
+ 	    //AIR-LAMA gp.objCol.add(900,1520,105,220);
+ 	    //AIR-LAMA gp.objCol.add(1095,1530,5000,210);
+diff --git a/2DGame/src/bahan/WorldGen.java b/2DGame/src/bahan/WorldGen.java
+index 481e58c..6ea34d9 100644
+--- a/2DGame/src/bahan/WorldGen.java
++++ b/2DGame/src/bahan/WorldGen.java
+@@ -17,11 +17,12 @@ import java.util.List;
+ public final class WorldGen {
+ 
+     // ------------------------------------------------------------------ ukuran dunia (tile)
+-    /** Ukuran dunia setelah diperluas. Peta lama (243 x 321) ada di pojok kiri-atas. */
+-    public static final int WORLD_COLS = 340;
+-    public static final int WORLD_ROWS = 460;
+-    /** Lebar pita laut di tepi timur / selatan / utara area baru. */
+-    public static final int BORDER = 10;
++    /**
++     * Ukuran dunia setelah diperluas lagi: 640 x 860 tile (sekitar 3,5x luas versi 340 x 460 sebelumnya).
++     * Peta lama (243 x 321) tetap ada di pojok kiri-atas, persis seperti aslinya.
++     */
++    public static final int WORLD_COLS = 640;
++    public static final int WORLD_ROWS = 860;
+     /** Mulai baris ini, pantai selatan peta lama dibentuk ulang menjadi teluk dan pulau. */
+     private static final int COAST_RESHAPE_START = 164;
+     /** Baris pertama daratan di area utara-baru (timur peta lama). Sambung dengan garis pantai peta lama. */
+@@ -42,6 +43,9 @@ public final class WorldGen {
+     /** Tile "permukaan" untuk minimap / pewarnaan rata-rata: salju dan es. */
+     public static final int TILE_SNOW = 100;
+     public static final int TILE_ICE = 131;
++    /** Tile "permukaan" biome terkutuk (khusus minimap) dan tile jurang di ujung dunia (collision). */
++    public static final int TILE_CURSED = 160;
++    public static final int TILE_VOID = 161;
+ 
+     // ------------------------------------------------------------------ jenis objek hasil populate()
+     public static final int K_OAK = 0;          // pohon biasa (pohon tebang, rangka animasi yang sama dengan peta lama)
+@@ -58,6 +62,15 @@ public final class WorldGen {
+     public static final int K_PEBBLE = 11;      // kerikil bersalju (hiasan)
+     public static final int K_SHARD = 12;       // pecahan es kecil (hiasan)
+     public static final int K_DRIFT = 13;       // gundukan salju rendah (hiasan)
++    // ---- biome terkutuk
++    public static final int K_CTREE = 14;       // pohon kutukan yang meliuk (pohon tebang)
++    public static final int K_COBSIDIAN = 15;   // batu obsidian (bisa dihancurkan)
++    public static final int K_CCRYSTAL = 16;    // kristal kutukan ungu (bisa dihancurkan)
++    public static final int K_TOMB = 17;        // nisan (bisa dihancurkan, jatuh tulang)
++    public static final int K_CGLOW = 18;       // cahaya ungu di bawah kristal kutukan (hiasan datar)
++    public static final int K_THORN = 19;       // semak duri hitam (hiasan)
++    public static final int K_BONES = 20;       // tumpukan tulang (hiasan datar)
++    public static final int K_WITHER = 21;      // pohon biasa yang layu terkena kutukan (pohon tebang)
+ 
+     /** Satu objek hasil populate(): posisi kiri-atas dalam piksel dunia. */
+     public static final class Spawn {
+@@ -77,8 +90,31 @@ public final class WorldGen {
+     /** Pohon lama dengan ice() di atas ini diberi salju tipis. */
+     public static final float FROST_ICE = 0.20f;
+ 
++    // ------------------------------------------------------------------ parameter biome terkutuk
++    /**
++     * Lebar jurang di ujung dunia (tile). Di sinilah dunia berakhir: tile-nya gelap dan tidak bisa dilewati,
++     * jadi player berhenti di tepinya dan kamera ikut berhenti di ujung dunia (lihat GamePanel.camX()).
++     */
++    public static final int VOID_W = 3;
++    /** Jarak (tile) dari tepi dunia ke garis tengah peralihan biome terkutuk, dan lebar peralihannya. */
++    private static final float CURSE_RIM = 62f;
++    private static final float CURSE_FADE = 34f;
++    private static final float CURSE_WARP = 22f;
++    /** Di titik dengan curse() di atas ini selalu daratan (supaya pita terkutuk menyambung sampai jurang). */
++    private static final float CURSE_LAND = 0.06f;
++    /** Pohon biasa dengan curse() di atas ini mulai layu; di atas CURSE_OWN semua objek memakai jenis terkutuk. */
++    public static final float CURSE_WITHER = 0.10f;
++    public static final float CURSE_OWN = 0.46f;
++    /** Tepi utara terkutuk mulai dari kolom ini ke timur; tepi barat terkutuk mulai dari baris ini ke selatan. */
++    private static final int NORTH_CURSE_COL = 343;
++    private static final int WEST_CURSE_ROW = 470;
++    /** Tembok barat lama (di bawah peta lama) berhenti di baris ini; lebih ke selatan itu tepi barat yang terkutuk. */
++    public static final int WEST_WALL_END_ROW = WEST_CURSE_ROW - 40;
++
+     private final int[][] core;
+     private final int coreCols, coreRows;
++    /** isLand() untuk seluruh dunia, dihitung sekali di konstruktor (geometri pantai pakai banyak noise; dipanggil jutaan kali). */
++    private final boolean[] land;
+ 
+     /**
+      * @param core tile peta lama [kolom][baris] (sesudah dibereskan, lihat TileM)
+@@ -87,6 +123,11 @@ public final class WorldGen {
+         this.core = core;
+         this.coreCols = coreCols;
+         this.coreRows = coreRows;
++        this.land = new boolean[WORLD_COLS * WORLD_ROWS];
++        // Tiap sel murni fungsi dari koordinatnya, jadi baris boleh dihitung paralel (tiap baris menulis sel miliknya sendiri).
++        java.util.stream.IntStream.range(0, WORLD_ROWS).parallel().forEach(r -> {
++            for (int c = 0; c < WORLD_COLS; c++) land[r * WORLD_COLS + c] = computeLand(c, r);
++        });
+     }
+ 
+     public int coreCols() { return coreCols; }
+@@ -195,8 +236,12 @@ public final class WorldGen {
+     /** true kalau sel (c, r) daratan (bukan air). Dipakai buat memilih tile tepi pantai. */
+     public boolean isLand(int c, int r) {
+         if (c < 0 || r < 0) return true; // di luar sisi barat/utara tidak terlihat
+-        if (c >= WORLD_COLS - BORDER || r >= WORLD_ROWS - BORDER) return false;
++        if (c >= WORLD_COLS || r >= WORLD_ROWS) return false;
++        return land[r * WORLD_COLS + c];
++    }
+ 
++    /** Bentuk daratan sebenarnya (geometri). isLand() cuma membaca hasilnya dari cache. */
++    private boolean computeLand(int c, int r) {
+         if (inCore(c, r)) {
+             if (WaterCollision.isWaterTile(core[c][r])) return false;
+             if (r < COAST_RESHAPE_START) return true; // kota, jalan, dan bagian utara tetap utuh
+@@ -204,10 +249,15 @@ public final class WorldGen {
+             return inMainlandCore(c, r) || snowIslandDistance(x, y) <= 0f || inMinorIsland(x, y);
+         }
+ 
+-        if (c >= coreCols && r < NORTH_COAST_ROW) return false;
+         float x = c + 0.5f, y = r + 0.5f;
+-        return inMainlandExtension(c, r) || snowIslandDistance(x, y) <= 0f
+-                || inGreenIsland(x, y) || inMinorIsland(x, y);
++        // pita biome terkutuk di tepi dunia selalu daratan, sampai jurang di ujungnya
++        if (curse(x, y) > CURSE_LAND) return true;
++
++        if (c >= coreCols && r < NORTH_COAST_ROW) return false;
++        if (inLake(x, y)) return false;
++        return inMainlandExtension(c, r) || inEastLand(c, r) || inSouthLand(c, r)
++                || snowIslandDistance(x, y) <= 0f
++                || inGreenIsland(x, y) || inMinorIsland(x, y) || inBayIsland(x, y);
+     }
+ 
+     /** Garis pantai utama: beberapa teluk besar dan tanjung, lalu dipecah lagi oleh noise 2D. */
+@@ -232,18 +282,156 @@ public final class WorldGen {
+         return r < mainlandSouthEdge(c) + mainlandCoastWarp(c, r);
+     }
+ 
+-    /** Sambungan daratan utama ke timur, dengan pantai timur yang menyempit dan berlekuk ke selatan. */
++    /**
++     * Sambungan daratan utama ke timur. Dulu berhenti di pantai timur (kolom sekitar 286); sekarang terus sampai ke tepi
++     * dunia, di mana biome terkutuk mengambil alih. Pantai selatannya melanjutkan garis pantai peta lama.
++     */
+     private boolean inMainlandExtension(int c, int r) {
+         float x = c - (coreCols - 1f);
+         float south = mainlandSouthEdge(coreCols - 1f)
+                     + 0.10f * x
+                     + 7f * (float) Math.sin(x * 0.035f)
+                     + mainlandCoastWarp(c, r);
+-        float east = 286f
+-                   + 16f * (float) Math.sin(r * 0.027f + 0.7f)
+-                   + (fbm(r * 0.024f + 8f, 2.7f, S + 47, 3) - 0.5f) * 28f
+-                   - 0.19f * Math.max(0, r - 175);
+-        return r < south && c < east;
++        return r < south;
++    }
++
++    /** Pantai barat daratan timur (sisi timur teluk tengah), sebagai fungsi baris. */
++    private float eastShore(float r) {
++        return 478f + 26f * (float) Math.sin(r * 0.019f + 1.1f)
++                + (fbm(r * 0.016f + 6f, 3.3f, S + 101, 3) - 0.5f) * 80f
++                + 9f * (float) Math.sin(r * 0.071f);
++    }
++
++    /** Pantai utara daratan selatan (sisi selatan teluk tengah), sebagai fungsi kolom. */
++    private float southShore(float c) {
++        return 566f + 24f * (float) Math.sin(c * 0.016f + 0.4f)
++                + (fbm(c * 0.015f + 11f, 8.1f, S + 102, 3) - 0.5f) * 90f
++                + 7f * (float) Math.sin(c * 0.067f + 2f);
++    }
++
++    /** Daratan timur: lajur lebar dari daratan utama ke selatan, di timur teluk tengah. */
++    private boolean inEastLand(int c, int r) {
++        if (r < 150) return false;
++        return c >= eastShore(r) + mainlandCoastWarp(c, r) * 0.6f;
++    }
++
++    /** Daratan selatan: benua luas di selatan teluk tengah, menyambung ke daratan timur. */
++    private boolean inSouthLand(int c, int r) {
++        if (r < 440) return false;
++        return r >= southShore(c) + mainlandCoastWarp(c, r) * 0.6f;
++    }
++
++    /** {cx, cy, rx, ry, warp, seed}: pulau-pulau baru di teluk tengah (selain pulau hijau dan pulau kecil yang lama). */
++    private static final float[][] BAY_ISLANDS = {
++        {330f, 440f, 52f, 36f, 8f, 91f},
++        {150f, 478f, 34f, 20f, 6f, 92f},
++        {420f, 352f, 30f, 24f, 6f, 93f},
++        { 92f, 508f, 24f, 15f, 5f, 94f},
++        {255f, 503f, 30f, 17f, 5f, 95f},
++        {436f, 478f, 22f, 20f, 5f, 96f},
++        {362f, 338f, 16f, 12f, 4f, 97f},
++    };
++
++    private boolean inBayIsland(float x, float y) {
++        for (float[] i : BAY_ISLANDS) {
++            if (Math.abs(x - i[0]) > i[2] * 1.5f + 14f || Math.abs(y - i[1]) > i[3] * 1.5f + 14f) continue;
++            if (organicEllipseDistance(x, y, i[0], i[1], i[2], i[3], S + (int) i[5], i[4]) < 0f) return true;
++        }
++        return false;
++    }
++
++    /** {cx, cy, rx, ry, warp, seed}: danau air tawar di daratan baru (jauh dari pita terkutuk dan biome es). */
++    private static final float[][] LAKES = {
++        {330f, 170f, 26f, 16f, 4f, 111f},
++        {420f, 232f, 20f, 20f, 4f, 112f},
++        {505f, 378f, 24f, 28f, 4f, 113f},
++        {498f, 468f, 20f, 24f, 4f, 114f},
++        {110f, 690f, 28f, 16f, 4f, 115f},
++        {292f, 652f, 24f, 20f, 4f, 116f},
++        {204f, 738f, 26f, 13f, 4f, 117f},
++        {420f, 690f, 30f, 20f, 4f, 118f},
++        {528f, 640f, 16f, 14f, 3f, 119f},
++    };
++
++    private boolean inLake(float x, float y) {
++        for (float[] l : LAKES) {
++            if (Math.abs(x - l[0]) > l[2] * 1.5f + 10f || Math.abs(y - l[1]) > l[3] * 1.5f + 10f) continue;
++            if (organicEllipseDistance(x, y, l[0], l[1], l[2], l[3], S + (int) l[5], l[4]) < 0f) return true;
++        }
++        return false;
++    }
++
++    // ================================================================== biome terkutuk
++
++    /**
++     * Jarak (tile) dari titik ke tepi dunia "terkutuk" terdekat. Tepi terkutuk: timur, selatan, utara di timur peta lama,
++     * dan barat di selatan teluk. Tepi barat / utara peta lama sengaja tidak termasuk (itu laut dan tembok buatan tangan,
++     * tetap utuh). Memakai "soft minimum" supaya pojok-pojoknya membulat, bukan siku tajam.
++     */
++    public float edgeDistance(float tx, float ty) {
++        double dE = WORLD_COLS - tx;
++        double dS = WORLD_ROWS - ty;
++        // tepi utara: baru terkutuk di timur peta lama (di baratnya laut)
++        double nPush = 1.0 - smooth((tx - (NORTH_CURSE_COL - 43f)) / 80f);
++        double dN = ty + 600.0 * nPush;
++        // tepi barat: baru terkutuk di selatan teluk tengah (di utaranya pulau salju dan tembok barat peta lama)
++        double wPush = 1.0 - smooth((ty - (WEST_CURSE_ROW - 40f)) / 50f);
++        double dW = tx + 600.0 * wPush;
++        final double k = 12.0;
++        double sum = Math.exp(-dE / k) + Math.exp(-dS / k) + Math.exp(-dN / k) + Math.exp(-dW / k);
++        return (float) (-k * Math.log(sum));
++    }
++
++    /**
++     * Seberapa terkutuk titik (tx, ty): 0 = hutan biasa, 1 = tengah biome terkutuk. Berupa pita selebar sekitar 85 tile di
++     * sepanjang tepi dunia, batasnya digeser noise supaya tidak lurus, dan memudar halus ke dalam.
++     */
++    public float curse(float tx, float ty) {
++        // jauh dari semua tepi: jelas 0 (hemat noise; computeLand memanggil ini untuk ratusan ribu sel)
++        if (tx > 130f && ty > 130f && tx < WORLD_COLS - 130f && ty < WORLD_ROWS - 130f) return 0f;
++        float d = edgeDistance(tx, ty);
++        float warp = (fbm(tx * 0.018f + 70f, ty * 0.018f + 40f, S + 91, 3) - 0.5f) * 2f * CURSE_WARP;
++        return smooth((CURSE_RIM + warp - d) / CURSE_FADE);
++    }
++
++    /**
++     * true kalau sel (c, r) adalah jurang di ujung dunia: pita {@link #VOID_W} tile paling luar di tepi terkutuk,
++     * hanya di sel yang daratan (di laut tetap laut).
++     */
++    public boolean isVoid(int c, int r) {
++        if (c < 0 || r < 0 || c >= WORLD_COLS || r >= WORLD_ROWS) return false;
++        boolean band = c >= WORLD_COLS - VOID_W
++                    || r >= WORLD_ROWS - VOID_W
++                    || (r < VOID_W && c >= NORTH_CURSE_COL)
++                    || (c < VOID_W && r >= WEST_CURSE_ROW);
++        return band && land[r * WORLD_COLS + c];
++    }
++
++    /** Jurang sebagai rectangle collision (piksel dunia): sel jurang digabung per baris, lalu antar baris yang sama. */
++    public java.util.List<java.awt.Rectangle> voidBlockers(int tileSize) {
++        java.util.List<java.awt.Rectangle> out = new ArrayList<>();
++        java.util.List<int[]> open = new ArrayList<>();      // {c0, c1, row0, rows} yang masih bisa dilebarkan ke bawah
++        for (int r = 0; r <= WORLD_ROWS; r++) {
++            java.util.List<int[]> now = new ArrayList<>();
++            int c = 0;
++            while (r < WORLD_ROWS && c < WORLD_COLS) {
++                if (!isVoid(c, r)) { c++; continue; }
++                int c1 = c;
++                while (c1 < WORLD_COLS && isVoid(c1, r)) c1++;
++                now.add(new int[] {c, c1, r, 1});
++                c = c1;
++            }
++            java.util.List<int[]> next = new ArrayList<>();
++            for (int[] o : open) {
++                int[] same = null;
++                for (int[] n : now) if (n[0] == o[0] && n[1] == o[1] && n[3] == 1 && n[2] == r) { same = n; break; }
++                if (same != null) { o[3]++; next.add(o); now.remove(same); }
++                else out.add(new java.awt.Rectangle(o[0] * tileSize, o[2] * tileSize, (o[1] - o[0]) * tileSize, o[3] * tileSize));
++            }
++            next.addAll(now);
++            open = next;
++        }
++        return out;
+     }
+ 
+     /** Pulau hijau tenggara: dua massa tanah yang menyatu, dengan satu ceruk laut di sisi barat. */
+@@ -284,7 +472,7 @@ public final class WorldGen {
+     /** Tile dasar sel di luar peta lama: rumput (varian acak) atau air + tepi pantainya. */
+     public int groundTile(int c, int r) {
+         if (c >= WORLD_COLS || r >= WORLD_ROWS) return 2;
+-        if (isLand(c, r)) return GRASS[(h2(c, r, 7) >>> 4) % 3];
++        if (isLand(c, r)) return isVoid(c, r) ? TILE_VOID : GRASS[(h2(c, r, 7) >>> 4) % 3];
+         return waterTile(c, r);
+     }
+ 
+@@ -322,6 +510,7 @@ public final class WorldGen {
+         if (WaterCollision.isWaterTile(base) || base >= SNOW_SHORE_FIRST) return base;
+         boolean grassLike = isGrassLike(base);
+         if (!grassLike) return base;
++        if (curse(c + 0.5f, r + 0.5f) > 0.5f) return TILE_CURSED;
+         float i = ice(c + 0.5f, r + 0.5f);
+         if (i > 0.5f) return depth(c + 0.5f, r + 0.5f, i) > 0f && i > 0.82f ? TILE_ICE : TILE_SNOW;
+         return (base == 67 || base == 68) ? GRASS[(h2(c, r, 7) >>> 4) % 3] : base;
+@@ -353,8 +542,12 @@ public final class WorldGen {
+ 
+     private boolean buildableLand(int c, int r) {
+         if (c < 3 || r < 3) return false;
+-        if (c >= WORLD_COLS - BORDER - 2 || r >= WORLD_ROWS - BORDER - 2) return false;
+-        if (c >= coreCols && r < NORTH_COAST_ROW + 2) return false;
++        // jangan menaruh objek di dekat jurang (dan di luar dunia)
++        for (int d = -1; d <= 1; d++) {
++            if (isVoid(c + 3 * d, r) || isVoid(c, r + 3 * d) || isVoid(c + 3 * d, r + 3 * d) || isVoid(c + 3 * d, r - 3 * d)) return false;
++        }
++        if (c >= WORLD_COLS - VOID_W - 2 || r >= WORLD_ROWS - VOID_W - 2) return false;
++        if (c >= coreCols && r < NORTH_COAST_ROW + 2 && curse(c + 0.5f, r + 0.5f) <= CURSE_LAND) return false;
+         // sel di sekitar harus darat (jangan numpuk di pinggir laut)
+         return isLand(c, r) && isLand(c - 1, r) && isLand(c + 1, r) && isLand(c, r - 1) && isLand(c, r + 1);
+     }
+@@ -378,6 +571,13 @@ public final class WorldGen {
+ 
+         float grove = fbm(fx * 0.06f, fy * 0.06f, S + 31, 3);
+ 
++        // ---- biome terkutuk: semua objeknya jenis sendiri (di pinggirannya cuma pohon layu + semak duri, lihat di bawah)
++        float cs = curse(fx, fy);
++        if (cs > CURSE_OWN) {
++            placeCursed(out, sx, sy, fx, fy, px, py, roll, roll2, roll3, grove, cs);
++            return;
++        }
++
+         // ---- kristal: bergerombol di "ladang kristal" (cuma di tengah biome es)
+         if (ice > 0.9f) {
+             float cf = fbm(fx * 0.035f + 55f, fy * 0.035f + 55f, S + 32, 3);
+@@ -413,7 +613,9 @@ public final class WorldGen {
+             int w = 170 + (int) (roll2 * 30);
+             int hp = roll3 < 0.2f ? 800 : 500;
+             if (ice < 0.12f) {
+-                out.add(new Spawn(K_OAK, px - w / 2, py - w + 40, w, w, hp, 0));
++                // pinggiran biome terkutuk: makin ke dalam makin banyak pohon yang layu
++                boolean wither = cs > CURSE_WITHER && rnd(sx, sy, S + 139) < smooth((cs - CURSE_WITHER) / 0.30f);
++                out.add(new Spawn(wither ? K_WITHER : K_OAK, px - w / 2, py - w + 40, w, w, hp, 0));
+             } else if (ice < 0.55f) {
+                 float pFrost = smooth((ice - 0.12f) / 0.30f);
+                 float k = rnd(sx, sy, S + 26);
+@@ -438,7 +640,8 @@ public final class WorldGen {
+         float bushP = 0.10f + 0.12f * smooth((ice - 0.4f) / 0.4f);
+         if (roll < rockP + treeP + bushP) {
+             int w = 82 + (int) (roll2 * 26);
+-            out.add(new Spawn(ice > 0.4f ? K_BUSH_SNOW : K_BUSH, px - w / 2, py - w / 2, w, w, 0, 0));
++            boolean thorn = cs > CURSE_WITHER && rnd(sx, sy, S + 140) < smooth((cs - CURSE_WITHER) / 0.25f);
++            out.add(new Spawn(thorn ? K_THORN : (ice > 0.4f ? K_BUSH_SNOW : K_BUSH), px - w / 2, py - w / 2, w, w, 0, thorn ? ((int) (roll3 * 2f) & 1) : 0));
+             return;
+         }
+ 
+@@ -456,6 +659,69 @@ public final class WorldGen {
+         }
+     }
+ 
++    /** Objek di dalam biome terkutuk (curse() > CURSE_OWN): kristal ungu, nisan, obsidian, pohon meliuk, duri, tulang. */
++    private void placeCursed(List<Spawn> out, int sx, int sy, float fx, float fy, int px, int py,
++                             float roll, float roll2, float roll3, float grove, float cs) {
++        // ---- ladang kristal kutukan (cuma di tengah biome)
++        if (cs > 0.70f) {
++            float cf = fbm(fx * 0.035f + 155f, fy * 0.035f + 155f, S + 132, 3);
++            if (cf > 0.60f && roll < 0.38f) {
++                int n = 1 + (int) (roll2 * 3.2f);                    // 1..4 kristal
++                for (int i = 0; i < n; i++) {
++                    float a = (float) (i * 2.4 + roll3 * 6.0);
++                    int w = 74 + (int) (rnd(sx + i, sy, S + 133) * 50);
++                    int cx = px + (int) (Math.cos(a) * (i == 0 ? 0 : 52));
++                    int cy = py + (int) (Math.sin(a) * (i == 0 ? 0 : 34));
++                    int v = (int) (rnd(sx, sy + i, S + 134) * 3f);
++                    out.add(new Spawn(K_CGLOW, cx - 60, cy - 36, 160, 110, 0, 0));
++                    out.add(new Spawn(K_CCRYSTAL, cx - w / 2, cy - w + 20, w, (int) (w * 1.25f), 800, v));
++                }
++                return;
++            }
++        }
++
++        // ---- kuburan: nisan bergerombol, kadang dengan tumpukan tulang di dekatnya
++        float gy = fbm(fx * 0.045f + 210f, fy * 0.045f + 90f, S + 135, 3);
++        if (gy > 0.60f && roll < 0.34f) {
++            int w = 66 + (int) (roll2 * 26);
++            int h = (int) (w * 1.3f);
++            out.add(new Spawn(K_TOMB, px - w / 2, py - h / 2, w, h, 500, (int) (roll3 * 2f)));
++            if (rnd(sx, sy, S + 136) < 0.5f) out.add(new Spawn(K_BONES, px + 30, py + 14, 62, 34, 0, (int) (roll3 * 2f) & 1));
++            return;
++        }
++
++        // ---- obsidian
++        float rockP = 0.03f + 0.06f * smoothstep(0.58f, 0.74f, fbm(fx * 0.05f + 9f, fy * 0.05f + 9f, S + 35, 2));
++        if (roll < rockP) {
++            int w = 96 + (int) (roll2 * 44);
++            int h = (int) (w * 0.85f);
++            out.add(new Spawn(K_COBSIDIAN, px - w / 2, py - h / 2, w, h, 1000, (int) (roll3 * 3f)));
++            return;
++        }
++
++        // ---- pohon meliuk: hutan muram yang rapat di beberapa tempat, jarang di tempat lain
++        float treeP = 0.12f + 0.40f * smoothstep(0.42f, 0.66f, grove);
++        if (roll < rockP + treeP) {
++            int w = 178 + (int) (roll2 * 34);
++            int h = (int) (w * 1.22f);
++            int v = (int) (rnd(sx, sy, S + 137) * 3f);
++            out.add(new Spawn(K_CTREE, px - w / 2, py - h + 40, w, h, roll3 < 0.2f ? 800 : 600, v));
++            return;
++        }
++
++        // ---- semak duri (hiasan, tanpa collision)
++        if (roll < rockP + treeP + 0.14f) {
++            int w = 76 + (int) (roll2 * 30);
++            out.add(new Spawn(K_THORN, px - w / 2, py - w / 2, w, w, 0, (int) (roll3 * 2f) & 1));
++            return;
++        }
++
++        // ---- tulang berserakan (hiasan datar)
++        if (rnd(sx, sy, S + 138) < 0.10f) {
++            out.add(new Spawn(K_BONES, px - 31, py - 17, 62, 34, 0, (int) (roll3 * 2f) & 1));
++        }
++    }
++
+     private void addPine(List<Spawn> out, int px, int py, float rA, float rB) {
+         int v = (int) (rB * 3f);
+         int w = 150 + (int) (rA * 46);
