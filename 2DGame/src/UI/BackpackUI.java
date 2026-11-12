@@ -244,7 +244,7 @@ public class BackpackUI implements MouseWheelListener {
         drawButton(g2, closeDetailBtnRect, "X", colorSlot);
 
         // Header: ikon, qty, nama
-        int iconSize = 36;
+        int iconSize = 33;
         int iconX = x + pad;
         int iconY = y + 36;
 

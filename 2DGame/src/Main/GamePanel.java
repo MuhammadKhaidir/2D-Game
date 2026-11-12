@@ -275,13 +275,15 @@ public class GamePanel extends JPanel implements Runnable{
 		// ZOOM pakai scroll mouse (scroll naik = zoom in, scroll turun = zoom out).
 		// Cuma jalan kalau gak ada UI yang kebuka, jadi gak bentrok sama scroll backpack/shop.
 		this.addMouseWheelListener(e -> {
-		    if (canZoom()) {
+		    if (miniMap != null && miniMap.isExpanded()) {
+		        miniMap.handleMouseWheel(e);
+		    } else if (canZoom()) {
 		        zoomBy(-e.getWheelRotation() * ZOOM_STEP);
 		    }
 		});
 
 		this.addMouseWheelListener(e -> {
-		    if (domainManager != null) {
+		    if ((miniMap == null || !miniMap.isExpanded()) && domainManager != null) {
 		        domainManager.handleMerchantMouseWheel(
 		            e.getWheelRotation()
 		        );
@@ -320,6 +322,12 @@ public class GamePanel extends JPanel implements Runnable{
                 // Harus paling atas supaya klik Respawn benar-benar diterima
                 if (deathScreenUI != null && deathScreenUI.visible) {
                     deathScreenUI.handleClick(e);
+                    return;
+                }
+
+                // ── PETA BESAR ── (prioritas sebelum UI/gameplay lain)
+                if (miniMap != null && (miniMap.isExpanded() || !GamePanel.this.isMinimapHidden())
+                        && miniMap.handleMousePressed(e)) {
                     return;
                 }
  
@@ -401,6 +409,7 @@ public class GamePanel extends JPanel implements Runnable{
             @Override
             public void mouseReleased(MouseEvent e) {
                 // lepas klik: selesaiin drag & drop ke hotbar (kalau lagi ada)
+                if (miniMap != null) miniMap.handleMouseReleased(e);
                 // drag & drop antar kotak backpack: harus SEBELUM hotbar, soalnya hotbar mereset status drag
                 if (backpack != null) backpack.handleMouseReleased(e, GamePanel.this);
                 if (hotbar != null) hotbar.handleMouseReleased(e);
@@ -421,6 +430,8 @@ public class GamePanel extends JPanel implements Runnable{
 		    public void mouseDragged(MouseEvent e) {
 		        GamePanel.this.mouseX = e.getX();
 		        GamePanel.this.mouseY = e.getY();
+		        // Saat peta besar terbuka, drag digunakan untuk menggeser peta.
+		        if (miniMap != null && miniMap.handleMouseDragged(e)) return;
 		        // seret item dari backpack / antar slot hotbar
 		        if (hotbar != null) hotbar.handleMouseDragged(e);
 		    }
@@ -1746,7 +1757,7 @@ public void paintComponent(Graphics g) {
 
         // Minimap di kanan atas. Digambar SETELAH drop item supaya tidak tertimpa,
         // dan disembunyikan saat panel besar (tas, stat, mob index, totem) terbuka.
-        if (miniMap != null && !isMinimapHidden()) miniMap.draw(g2);
+        if (miniMap != null && !miniMap.isExpanded() && !isMinimapHidden()) miniMap.draw(g2);
 
         drawLeftHud(g2, true);   // koordinat + jam + cuaca, semuanya di kiri (kanan khusus minimap)
         drawZoomHint(g2);
@@ -1756,6 +1767,8 @@ public void paintComponent(Graphics g) {
         if (armorShop != null) armorShop.draw(g2);
     }
     if (hotbar != null) hotbar.drawOverlay(g2); // tooltip + ikon yang lagi diseret, di atas semua UI
+    // Overlay peta digambar paling atas supaya tetap terlihat jelas dan tidak tertutup HUD lain.
+    if (miniMap != null && miniMap.isExpanded()) miniMap.draw(g2);
     if (deathScreenUI != null) {
         deathScreenUI.draw(g2);
     }
