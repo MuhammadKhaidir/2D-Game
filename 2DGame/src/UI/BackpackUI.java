@@ -662,7 +662,7 @@ public class BackpackUI implements MouseWheelListener {
                 ItemStack stack = items.get(i);
                 if (stack != null && stack.item != null) {
                     int baseIconSize = slotSize - 12;
-                    int iconSize = getIconDrawSize(stack.item, baseIconSize);
+                    int iconSize = getInventoryIconDrawSize(stack.item, baseIconSize);
                     int iconX = sx + (slotSize - iconSize) / 2;
                     int iconY = sy + (slotSize - iconSize) / 2;
                     g2.drawImage(stack.item.icon, iconX, iconY, iconSize, iconSize, null);
@@ -694,6 +694,17 @@ public class BackpackUI implements MouseWheelListener {
             return (int) (baseSize * 1.4);
         }
         return baseSize;
+    }
+
+    // Ikon hasil mancing dibuat lebih kecil khusus di grid backpack.
+    // Slot equipment dan tampilan item lain tetap memakai ukuran normal.
+    private int getInventoryIconDrawSize(Item.Item item, int baseSize) {
+        ItemManager manager = ItemManager.get();
+        if (item != null && manager.fishingLoot != null
+                && manager.fishingLoot.entryFor(item.name) != null) {
+            return Math.max(1, (int) (baseSize * 0.70));
+        }
+        return getIconDrawSize(item, baseSize);
     }
 
     private void drawPixelSlot(Graphics2D g2, int x, int y, boolean highlight) {
