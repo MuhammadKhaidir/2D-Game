@@ -165,7 +165,7 @@ public class player extends Entity {
     boolean staminaLocked = false;
     int jumpCooldown = 0;
     final int JUMP_COOLDOWN_TIME = 40;
-    public double baseSpeed = 2.5;
+    public double baseSpeed = 22.5;
     double sprintMultiplier = 2.0;
     
     // Stamina

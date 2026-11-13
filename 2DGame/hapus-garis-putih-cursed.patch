@@ -1,0 +1,56 @@
+diff --git a/2DGame/src/bahan/CursedGround.java b/2DGame/src/bahan/CursedGround.java
+index 66cf171..4762413 100644
+--- a/2DGame/src/bahan/CursedGround.java
++++ b/2DGame/src/bahan/CursedGround.java
+@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
+  * menjadi tanah terkutuk, bukan garis potong.
+  *
+  * Tambahan dibanding salju:
+- *  - di tengah biome ada retakan yang bersinar ungu
+  *  - sel jurang ({@link WorldGen#isVoid}) digambar penuh: hitam keunguan berbintang, dan tepi daratan di sebelahnya
+  *    digerogoti noise (rapuh) dengan bibir tebing yang menyala
+  *
+@@ -30,9 +29,6 @@ public final class CursedGround {
+     private static final int G_RIM  = 0xFF130D1A;
+     private static final int ASH    = 0xFF74698A;
+     private static final int SPARK  = 0xFFC9A0FF;
+-    private static final int VEIN_L = 0xFFE0B3FF;
+-    private static final int VEIN   = 0xFFA24BFF;
+-    private static final int VEIN_D = 0xFF5B1FA6;
+ 
+     private static final int V_0 = 0xFF06030A, V_1 = 0xFF0C0714, V_2 = 0xFF150B24;
+     private static final int STAR = 0xFF7A52BE, STAR_R = 0xFFB03A5E;
+@@ -200,33 +196,6 @@ public final class CursedGround {
+     private static int groundColor(int gx, int gy, float white, float cv) {
+         float drift = 0.80f * WorldGen.fbm(gx * 0.030f, gy * 0.030f, NS5, 3) + 0.20f * WorldGen.vnoise(gx * 0.12f, gy * 0.12f, NS6);
+ 
+-        // retakan yang bersinar, cuma di dalam biome: jarak ke tepi sel Voronoi (sel besar ~ 2 tile)
+-        if (cv > 0.62f) {
+-            final float CS = 34f;
+-            float px = gx / CS, py = gy / CS;
+-            int cx = (int) Math.floor(px), cy = (int) Math.floor(py);
+-            float f1 = 1e9f, f2 = 1e9f;
+-            int id1 = 0, id2 = 0;
+-            for (int j = -1; j <= 1; j++) {
+-                for (int i = -1; i <= 1; i++) {
+-                    int ax = cx + i, ay = cy + j;
+-                    float sx = ax + WorldGen.rnd(ax, ay, 0x2B3C);
+-                    float sy = ay + WorldGen.rnd(ax, ay, 0x4D5E);
+-                    float dx = (sx - px) * CS, dy = (sy - py) * CS;
+-                    float d = dx * dx + dy * dy;
+-                    int id = WorldGen.h2(ax, ay, 0x66);
+-                    if (d < f1) { f2 = f1; id2 = id1; f1 = d; id1 = id; }
+-                    else if (d < f2) { f2 = d; id2 = id; }
+-                }
+-            }
+-            float gap = (float) (Math.sqrt(f2) - Math.sqrt(f1));
+-            if (((id1 ^ id2) & 7) < 3) {
+-                if (gap < 0.7f) return VEIN_L;
+-                if (gap < 1.5f) return VEIN;
+-                if (gap < 2.4f) return VEIN_D;
+-            }
+-        }
+-
+         if (white < 0.0045f && cv > 0.5f) return SPARK;
+         if (white > 0.992f) return ASH;
+         if (drift < 0.30f) return G_3;
