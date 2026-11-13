@@ -489,6 +489,7 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 
 	public void setupGame() {
+	    if (miniMap != null) miniMap.resetExplored(); // new game / load game mulai dengan peta belum dijelajahi (load mengisinya lagi dari save)
 	    AS.setObject();
 
 	    setupDialogs();
@@ -1114,6 +1115,7 @@ public class GamePanel extends JPanel implements Runnable{
 		    snow.setHeavy(world.isRaining);        // hujan di biome es = badai salju
 		    snow.update();
 		    curse.update();
+		    if (miniMap != null) miniMap.update();  // buka area peta di sekitar player (penjelajahan)
 		}
 		if (hotbar != null) hotbar.update(); // efek kedip slot hotbar
 

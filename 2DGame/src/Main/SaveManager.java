@@ -70,6 +70,8 @@ public class SaveManager {
                 }
             }
         }
+        // Area peta yang sudah dijelajahi
+        data.mapExplored = gp.miniMap != null ? gp.miniMap.exportExplored() : null;
         // Bounty Board (disimpan 1-based biar save lama yang nilainya 0 = gak ada misi)
         if (gp.quests != null) {
             data.questActive   = gp.quests.getActive() + 1;
@@ -195,6 +197,8 @@ public class SaveManager {
                 }
             }
         }
+        // Restore area peta yang sudah dijelajahi (save lama -> null -> peta mulai dari nol)
+        if (gp.miniMap != null) gp.miniMap.importExplored(data.mapExplored);
         // Restore misi Bounty Board (save lama -> 0 -> gak ada misi aktif)
         if (gp.quests != null) gp.quests.restore(data.questActive - 1, data.questProgress);
         if (gp.fishing != null) gp.fishing.reset(); // pancingan yang lagi dilempar sebelum load jangan kebawa

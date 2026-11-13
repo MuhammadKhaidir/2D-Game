@@ -57,4 +57,8 @@ public class SaveData implements Serializable {
     // Field baru dengan serialVersionUID yang sama: save lama tetap kebaca (nilainya 0 = gak ada misi aktif).
     public int questActive;
     public int questProgress;
+
+    // Area peta yang sudah dijelajahi player (lihat UI.MiniMap.exportExplored: header lebar+tinggi peta, lalu bitset).
+    // Field baru dengan serialVersionUID yang sama: save lama tetap kebaca (nilainya null = belum ada yang dijelajahi).
+    public byte[] mapExplored;
 }

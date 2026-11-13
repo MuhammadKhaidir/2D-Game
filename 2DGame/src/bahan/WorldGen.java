@@ -105,6 +105,9 @@ public final class WorldGen {
     /** Pohon biasa dengan curse() di atas ini mulai layu; di atas CURSE_OWN semua objek memakai jenis terkutuk. */
     public static final float CURSE_WITHER = 0.10f;
     public static final float CURSE_OWN = 0.46f;
+    /** Peluang tiap kotak 4x4 tile di inti biome terkutuk diisi pohon layu: dasar + tambahan di area "grove" tinggi. Kecilkan kalau kebanyakan. */
+    private static final float CURSED_WITHER_BASE = 0.03f;
+    private static final float CURSED_WITHER_GROVE = 0.07f;
     /** Tepi utara terkutuk mulai dari kolom ini ke timur; tepi barat terkutuk mulai dari baris ini ke selatan. */
     private static final int NORTH_CURSE_COL = 343;
     private static final int WEST_CURSE_ROW = 470;
@@ -571,10 +574,18 @@ public final class WorldGen {
 
         float grove = fbm(fx * 0.06f, fy * 0.06f, S + 31, 3);
 
-        // ---- biome terkutuk: bagian dalamnya dibiarkan kosong (cuma tanah), tanpa kristal / nisan / pohon / duri.
-        // Satu-satunya yang tersisa adalah pohon layu beranimasi idle di pinggirannya (lihat bagian pohon di bawah).
+        // ---- biome terkutuk: bagian dalamnya cuma tanah, tanpa kristal / nisan / duri. Satu-satunya objek di sini
+        // pohon layu beranimasi idle (sama dengan yang di pinggiran), disebar JARANG: kebanyakan sendirian,
+        // sesekali agak bergerombol di tempat yang "grove"-nya tinggi.
         float cs = curse(fx, fy);
-        if (cs > CURSE_OWN) return;
+        if (cs > CURSE_OWN) {
+            float p = CURSED_WITHER_BASE + CURSED_WITHER_GROVE * smoothstep(0.56f, 0.72f, grove);
+            if (roll < p) {
+                int w = 170 + (int) (roll2 * 30);
+                out.add(new Spawn(K_WITHER, px - w / 2, py - w + 40, w, w, roll3 < 0.2f ? 800 : 500, 0));
+            }
+            return;
+        }
 
         // ---- kristal: bergerombol di "ladang kristal" (cuma di tengah biome es)
         if (ice > 0.9f) {

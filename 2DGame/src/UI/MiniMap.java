@@ -23,8 +23,11 @@ import bahan.TileM;
  * - Menampilkan SELURUH peta (area yang benar-benar terisi di map01.txt), diperkecil.
  * - Isinya: tanah/air/jalan/salju, objek (pohon, batu, jembatan, semak, reruntuhan),
  *   bangunan, peti, dan posisi player. MONSTER SENGAJA TIDAK DIGAMBAR.
- * - Lapisan statis (tile + objek dunia) digambar SEKALI ke gambar cache, jadi per frame
- *   ongkosnya kecil: tinggal drawImage + titik pohon/batu (yang bisa ditebang & respawn) + marker player.
+ * - PENJELAJAHAN: objek (rumah, pohon, jembatan, reruntuhan, peti, titik pohon/batu) cuma muncul di area yang
+ *   sudah dihampiri player (radius REVEAL_RADIUS_TILES dari posisinya). Sisanya cuma tanah yang digelapkan.
+ *   Area yang sudah dijelajahi ikut tersimpan di save (lihat exportExplored / importExplored).
+ * - Lapisan statis (tanah + objek dunia) digambar SEKALI, lalu gambar cache cuma di-update di piksel yang baru
+ *   terbuka, jadi per frame ongkosnya kecil: tinggal drawImage + titik pohon/batu + marker player.
  * - Posisi player dipetakan dengan skala yang sama persis dengan peta, jadi akurat.
  */
 public class MiniMap {
@@ -38,6 +41,12 @@ public class MiniMap {
     private static final int BORDER = 3;
     /** Transparansi panel (1 = pekat). Dibuat sedikit tembus biar gak nutupin gameplay. */
     private static final float PANEL_ALPHA = 0.88f;
+
+    // ===== PENJELAJAHAN (ubah di sini kalau mau) =====
+    /** Seberapa jauh (dalam tile) area di sekitar player ikut terbuka di peta. Layar game sendiri lebarnya 16 tile. */
+    private static final int REVEAL_RADIUS_TILES = 24;
+    /** Gelap tanah yang belum dijelajahi: 0 = tampil normal (cuma objeknya yang disembunyikan), 1 = hitam penuh. */
+    private static final float UNEXPLORED_DIM = 0.55f;
 
     // ===== WARNA =====
     private static final Color FRAME      = new Color(220, 190, 150);
@@ -57,7 +66,12 @@ public class MiniMap {
 
     private final GamePanel gp;
 
-    private BufferedImage base;          // cache resolusi per-tile agar tetap jelas saat di-zoom
+    private volatile BufferedImage base; // cache resolusi per-tile agar tetap jelas saat di-zoom (yang dipajang di layar)
+    private int[] terrainPx;             // tanah penuh warna, 1 piksel = 1 tile (RGB)
+    private int[] objectPx;              // objek dunia (ARGB, alpha 0 = tidak ada objek di piksel itu)
+    private boolean[] explored;          // 1 sel = 1 piksel peta = 1 tile; true kalau sudah dihampiri player
+    private byte[] pendingExplored;      // hasil load save yang datang sebelum peta sempat di-bake
+    private int lastRevealX = Integer.MIN_VALUE, lastRevealY = Integer.MIN_VALUE;
     private int mapW, mapH;              // ukuran cache dalam tile/pixel
     private int previewW, previewH;      // ukuran minimap kecil di layar
     private double baseScaleX, baseScaleY;
@@ -83,12 +97,125 @@ public class MiniMap {
     }
 
     // =====================================================================
+    //  PENJELAJAHAN (fog of war)
+    // =====================================================================
+
+    /**
+     * Dipanggil tiap frame selama player di dunia luar (GamePanel.update): buka area di sekitar player.
+     * Jalan terus walau minimap lagi tersembunyi, jadi jalur yang dilewati tetap tercatat.
+     */
+    public void update() {
+        if (gp.gameState != GamePanel.GameState.OUTSIDE) return; // di dalam rumah/domain koordinatnya beda dunia
+        ensureBaked();
+        int tx = (int) Math.floor((gp.player.x + gp.tileSize / 2.0) * baseScaleX);
+        int ty = (int) Math.floor((gp.player.y + gp.tileSize / 2.0) * baseScaleY);
+        if (tx == lastRevealX && ty == lastRevealY) return;  // belum pindah tile
+        synchronized (this) {
+            lastRevealX = tx;
+            lastRevealY = ty;
+            reveal(tx, ty);
+        }
+    }
+
+    /** Tandai lingkaran di sekitar (cx, cy) sebagai sudah dijelajahi dan terangkan piksel yang baru terbuka. */
+    private void reveal(int cx, int cy) {
+        if (explored == null || base == null) return;
+        final int r = REVEAL_RADIUS_TILES, r2 = r * r;
+        for (int dy = -r; dy <= r; dy++) {
+            int y = cy + dy;
+            if (y < 0 || y >= mapH) continue;
+            for (int dx = -r; dx <= r; dx++) {
+                if (dx * dx + dy * dy > r2) continue;
+                int x = cx + dx;
+                if (x < 0 || x >= mapW) continue;
+                int i = y * mapW + x;
+                if (explored[i]) continue;
+                explored[i] = true;
+                base.setRGB(x, y, pixelAt(i));
+            }
+        }
+    }
+
+    /** true kalau titik dunia (px) ini sudah pernah dihampiri player. */
+    private boolean isExploredAt(double worldX, double worldY) {
+        boolean[] ex = explored;
+        if (ex == null) return false;
+        int x = (int) Math.floor(worldX * baseScaleX), y = (int) Math.floor(worldY * baseScaleY);
+        if (x < 0 || y < 0 || x >= mapW || y >= mapH) return false;
+        return ex[y * mapW + x];
+    }
+
+    /** Hapus semua area yang sudah dijelajahi (dipanggil GamePanel.setupGame: new game / load game mulai dari nol). */
+    public synchronized void resetExplored() {
+        pendingExplored = null;
+        lastRevealX = lastRevealY = Integer.MIN_VALUE;
+        if (explored == null || base == null) return;
+        java.util.Arrays.fill(explored, false);
+        rebuildBase(base);
+    }
+
+    /**
+     * Area yang sudah dijelajahi sebagai byte[] untuk disimpan di save: 8 byte header (lebar, tinggi peta) + bitset.
+     * Bisa null kalau belum ada apa-apa.
+     */
+    public synchronized byte[] exportExplored() {
+        if (explored == null) return pendingExplored;   // peta belum di-bake: teruskan data hasil load apa adanya
+        java.util.BitSet bs = new java.util.BitSet(explored.length);
+        for (int i = 0; i < explored.length; i++) if (explored[i]) bs.set(i);
+        byte[] bits = bs.toByteArray();
+        return java.nio.ByteBuffer.allocate(8 + bits.length).putInt(mapW).putInt(mapH).put(bits).array();
+    }
+
+    /** Kebalikan exportExplored (dari save). null / format tidak cocok = diabaikan, save lama tetap aman. */
+    public synchronized void importExplored(byte[] data) {
+        if (data == null || data.length < 8) return;
+        if (explored == null || base == null) {         // peta baru di-bake nanti saat player pertama kali di luar
+            pendingExplored = data;
+            return;
+        }
+        if (applyExplored(data)) rebuildBase(base);
+    }
+
+    private boolean applyExplored(byte[] data) {
+        java.nio.ByteBuffer bb = java.nio.ByteBuffer.wrap(data);
+        if (bb.getInt() != mapW || bb.getInt() != mapH) return false;   // ukuran dunia berubah sejak save dibuat
+        byte[] bits = new byte[bb.remaining()];
+        bb.get(bits);
+        java.util.BitSet bs = java.util.BitSet.valueOf(bits);
+        for (int i = bs.nextSetBit(0); i >= 0 && i < explored.length; i = bs.nextSetBit(i + 1)) explored[i] = true;
+        return true;
+    }
+
+    private synchronized void ensureBaked() {
+        if (base == null) bake();
+    }
+
+    /** Warna piksel i di gambar peta: belum dijelajahi = tanah digelapkan; sudah = tanah + objek. */
+    private int pixelAt(int i) {
+        if (!explored[i]) return dim(terrainPx[i]);
+        int o = objectPx[i];
+        return (o >>> 24) != 0 ? (o & 0xFFFFFF) : terrainPx[i];
+    }
+
+    private void rebuildBase(BufferedImage target) {
+        int[] px = new int[mapW * mapH];
+        for (int i = 0; i < px.length; i++) px[i] = pixelAt(i);
+        target.setRGB(0, 0, mapW, mapH, px, 0, mapW);
+    }
+
+    private static int dim(int rgb) {
+        float k = 1f - UNEXPLORED_DIM;
+        int r = (int) (((rgb >> 16) & 0xFF) * k), g = (int) (((rgb >> 8) & 0xFF) * k), b = (int) ((rgb & 0xFF) * k);
+        return r << 16 | g << 8 | b;
+    }
+
+    // =====================================================================
     //  GAMBAR PER FRAME
     // =====================================================================
 
     public void draw(Graphics2D g2) {
         if (gp.gameState != GamePanel.GameState.OUTSIDE) return; // di dalam rumah/domain koordinatnya beda dunia
-        if (base == null) bake();
+        ensureBaked();
 
         if (expanded) {
             drawExpanded(g2);
@@ -145,6 +272,7 @@ public class MiniMap {
         for (int i = 0; i < list.length; i++) {
             breakable b = list[i];
             if (b == null || b.destroyed) continue;
+            if (!isExploredAt(b.worldX + b.width / 2.0, b.worldY + b.height / 2.0)) continue; // belum dihampiri: jangan dibocorkan
             g2.setColor(tiles[i] == 55 ? TREE : ROCK); // 55 = pohon, sisanya batu
             int cx = mx + (int) Math.round((b.worldX + b.width / 2.0) * sx);
             int cy = my + (int) Math.round((b.worldY + b.height / 2.0) * sy);
@@ -154,6 +282,7 @@ public class MiniMap {
 
     private void drawChest(Graphics2D g2, int mx, int my, double sx, double sy) {
         if (gp.chest == null) return;
+        if (!isExploredAt(World.StorageChest.WORLD_X + gp.tileSize / 2.0, World.StorageChest.WORLD_Y + gp.tileSize / 2.0)) return;
         int cx = mx + (int) Math.round((World.StorageChest.WORLD_X + gp.tileSize / 2.0) * sx);
         int cy = my + (int) Math.round((World.StorageChest.WORLD_Y + gp.tileSize / 2.0) * sy);
         g2.setColor(BUILDING_O);
@@ -450,19 +579,17 @@ public class MiniMap {
             }
         }
 
-        base = new BufferedImage(mapW, mapH, BufferedImage.TYPE_INT_RGB);
-        for (int y = 0; y < mapH; y++) {
-            for (int x = 0; x < mapW; x++) {
-                int i = y * mapW + x;
-                int c = Math.max(1, cnt[i]);
-                int rgb = (int) (sr[i] / c) << 16 | (int) (sg[i] / c) << 8 | (int) (sb[i] / c);
-                base.setRGB(x, y, rgb);
-            }
+        terrainPx = new int[mapW * mapH];
+        for (int i = 0; i < terrainPx.length; i++) {
+            int c = Math.max(1, cnt[i]);
+            terrainPx[i] = (int) (sr[i] / c) << 16 | (int) (sg[i] / c) << 8 | (int) (sb[i] / c);
         }
 
-        // 2) objek dunia: yang kecil dulu, bangunan paling atas
+        // 2) objek dunia: yang kecil dulu, bangunan paling atas. Digambar ke lapisan sendiri (transparan di tempat
+        //    kosong) supaya bisa disembunyikan di area yang belum dijelajahi.
         int[][] objs = tm.getWorldObjects();
-        Graphics2D bg = base.createGraphics();
+        BufferedImage layer = new BufferedImage(mapW, mapH, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D bg = layer.createGraphics();
         if (objs != null) {
             for (int[] o : objs) {
                 int kind = kindOf(o[4]);
@@ -474,6 +601,19 @@ public class MiniMap {
             }
         }
         bg.dispose();
+        objectPx = layer.getRGB(0, 0, mapW, mapH, null, 0, mapW);
+
+        // 3) area yang sudah dijelajahi (dari save kalau ada), lalu gabungkan jadi gambar yang dipajang.
+        //    `base` diisi paling akhir supaya draw() tidak pernah melihat gambar setengah jadi.
+        explored = new boolean[mapW * mapH];
+        lastRevealX = lastRevealY = Integer.MIN_VALUE;
+        if (pendingExplored != null) {
+            applyExplored(pendingExplored);
+            pendingExplored = null;
+        }
+        BufferedImage img = new BufferedImage(mapW, mapH, BufferedImage.TYPE_INT_RGB);
+        rebuildBase(img);
+        base = img;
     }
 
     /** Warna rata-rata tiap index tile (piksel transparan dicampur dengan warna rumput). */
