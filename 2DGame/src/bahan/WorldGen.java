@@ -571,12 +571,10 @@ public final class WorldGen {
 
         float grove = fbm(fx * 0.06f, fy * 0.06f, S + 31, 3);
 
-        // ---- biome terkutuk: semua objeknya jenis sendiri (di pinggirannya cuma pohon layu + semak duri, lihat di bawah)
+        // ---- biome terkutuk: bagian dalamnya dibiarkan kosong (cuma tanah), tanpa kristal / nisan / pohon / duri.
+        // Satu-satunya yang tersisa adalah pohon layu beranimasi idle di pinggirannya (lihat bagian pohon di bawah).
         float cs = curse(fx, fy);
-        if (cs > CURSE_OWN) {
-            placeCursed(out, sx, sy, fx, fy, px, py, roll, roll2, roll3, grove, cs);
-            return;
-        }
+        if (cs > CURSE_OWN) return;
 
         // ---- kristal: bergerombol di "ladang kristal" (cuma di tengah biome es)
         if (ice > 0.9f) {
@@ -640,8 +638,9 @@ public final class WorldGen {
         float bushP = 0.10f + 0.12f * smooth((ice - 0.4f) / 0.4f);
         if (roll < rockP + treeP + bushP) {
             int w = 82 + (int) (roll2 * 26);
-            boolean thorn = cs > CURSE_WITHER && rnd(sx, sy, S + 140) < smooth((cs - CURSE_WITHER) / 0.25f);
-            out.add(new Spawn(thorn ? K_THORN : (ice > 0.4f ? K_BUSH_SNOW : K_BUSH), px - w / 2, py - w / 2, w, w, 0, thorn ? ((int) (roll3 * 2f) & 1) : 0));
+            // pinggiran biome terkutuk: tempat yang tadinya semak duri sekarang dikosongkan
+            if (cs > CURSE_WITHER && rnd(sx, sy, S + 140) < smooth((cs - CURSE_WITHER) / 0.25f)) return;
+            out.add(new Spawn(ice > 0.4f ? K_BUSH_SNOW : K_BUSH, px - w / 2, py - w / 2, w, w, 0, 0));
             return;
         }
 
@@ -656,69 +655,6 @@ public final class WorldGen {
                 else if (pick < 0.80f) { int w = 44 + (int) (roll2 * 26); out.add(new Spawn(K_SHARD, px - w / 2, py - (int) (w * 1.22f) + 12, w, (int) (w * 1.22f), 0, v)); }
                 else { int w = 48 + (int) (roll2 * 24); out.add(new Spawn(K_TUFT, px - w / 2, py - (int) (w * 0.94f) + 10, w, (int) (w * 0.94f), 0, v)); }
             }
-        }
-    }
-
-    /** Objek di dalam biome terkutuk (curse() > CURSE_OWN): kristal ungu, nisan, obsidian, pohon meliuk, duri, tulang. */
-    private void placeCursed(List<Spawn> out, int sx, int sy, float fx, float fy, int px, int py,
-                             float roll, float roll2, float roll3, float grove, float cs) {
-        // ---- ladang kristal kutukan (cuma di tengah biome)
-        if (cs > 0.70f) {
-            float cf = fbm(fx * 0.035f + 155f, fy * 0.035f + 155f, S + 132, 3);
-            if (cf > 0.60f && roll < 0.38f) {
-                int n = 1 + (int) (roll2 * 3.2f);                    // 1..4 kristal
-                for (int i = 0; i < n; i++) {
-                    float a = (float) (i * 2.4 + roll3 * 6.0);
-                    int w = 74 + (int) (rnd(sx + i, sy, S + 133) * 50);
-                    int cx = px + (int) (Math.cos(a) * (i == 0 ? 0 : 52));
-                    int cy = py + (int) (Math.sin(a) * (i == 0 ? 0 : 34));
-                    int v = (int) (rnd(sx, sy + i, S + 134) * 3f);
-                    out.add(new Spawn(K_CGLOW, cx - 60, cy - 36, 160, 110, 0, 0));
-                    out.add(new Spawn(K_CCRYSTAL, cx - w / 2, cy - w + 20, w, (int) (w * 1.25f), 800, v));
-                }
-                return;
-            }
-        }
-
-        // ---- kuburan: nisan bergerombol, kadang dengan tumpukan tulang di dekatnya
-        float gy = fbm(fx * 0.045f + 210f, fy * 0.045f + 90f, S + 135, 3);
-        if (gy > 0.60f && roll < 0.34f) {
-            int w = 66 + (int) (roll2 * 26);
-            int h = (int) (w * 1.3f);
-            out.add(new Spawn(K_TOMB, px - w / 2, py - h / 2, w, h, 500, (int) (roll3 * 2f)));
-            if (rnd(sx, sy, S + 136) < 0.5f) out.add(new Spawn(K_BONES, px + 30, py + 14, 62, 34, 0, (int) (roll3 * 2f) & 1));
-            return;
-        }
-
-        // ---- obsidian
-        float rockP = 0.03f + 0.06f * smoothstep(0.58f, 0.74f, fbm(fx * 0.05f + 9f, fy * 0.05f + 9f, S + 35, 2));
-        if (roll < rockP) {
-            int w = 96 + (int) (roll2 * 44);
-            int h = (int) (w * 0.85f);
-            out.add(new Spawn(K_COBSIDIAN, px - w / 2, py - h / 2, w, h, 1000, (int) (roll3 * 3f)));
-            return;
-        }
-
-        // ---- pohon meliuk: hutan muram yang rapat di beberapa tempat, jarang di tempat lain
-        float treeP = 0.12f + 0.40f * smoothstep(0.42f, 0.66f, grove);
-        if (roll < rockP + treeP) {
-            int w = 178 + (int) (roll2 * 34);
-            int h = (int) (w * 1.22f);
-            int v = (int) (rnd(sx, sy, S + 137) * 3f);
-            out.add(new Spawn(K_CTREE, px - w / 2, py - h + 40, w, h, roll3 < 0.2f ? 800 : 600, v));
-            return;
-        }
-
-        // ---- semak duri (hiasan, tanpa collision)
-        if (roll < rockP + treeP + 0.14f) {
-            int w = 76 + (int) (roll2 * 30);
-            out.add(new Spawn(K_THORN, px - w / 2, py - w / 2, w, w, 0, (int) (roll3 * 2f) & 1));
-            return;
-        }
-
-        // ---- tulang berserakan (hiasan datar)
-        if (rnd(sx, sy, S + 138) < 0.10f) {
-            out.add(new Spawn(K_BONES, px - 31, py - 17, 62, 34, 0, (int) (roll3 * 2f) & 1));
         }
     }
 

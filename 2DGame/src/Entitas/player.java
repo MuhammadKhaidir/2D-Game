@@ -175,6 +175,7 @@ public class player extends Entity {
     int staminaRegen = 3;
     boolean canSprint = true;
     boolean showStaminaBar = false;
+    
     int animIndex = 0;
     boolean wasMoving = false;
     
